@@ -2,9 +2,483 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Ehrenmarkt – Anmeldung</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Georgia, "Times New Roman", serif;
+            color: #f2e6cf;
+
+            background-image:
+                linear-gradient(
+                    rgba(8, 6, 5, 0.35),
+                    rgba(8, 6, 5, 0.70)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Login.png");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 15px;
+        }
+
+
+        /* =========================
+           LOGIN-BEREICH
+           ========================= */
+
+        .login-box {
+            width: 100%;
+            max-width: 440px;
+
+            background: rgba(18, 14, 11, 0.94);
+
+            border: 2px solid #b88a3b;
+            border-radius: 16px;
+
+            padding: 32px 26px;
+
+            box-shadow:
+                0 15px 50px rgba(0, 0, 0, 0.75),
+                inset 0 0 30px rgba(184, 138, 59, 0.08);
+        }
+
+
+        /* =========================
+           LOGO / ÜBERSCHRIFT
+           ========================= */
+
+        .logo {
+            text-align: center;
+        }
+
+        .logo h1 {
+            margin: 0;
+
+            font-size: 40px;
+            letter-spacing: 2px;
+
+            color: #d6ad52;
+
+            text-shadow:
+                0 2px 6px #000;
+        }
+
+        .logo p {
+            margin: 8px 0 0;
+
+            color: #c8b99e;
+            font-size: 16px;
+        }
+
+
+        .linie {
+            height: 1px;
+
+            background: #8f6b32;
+
+            margin: 25px 0;
+        }
+
+
+        /* =========================
+           FORMULAR
+           ========================= */
+
+        .feld {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #d6ad52;
+
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 15px;
+
+            background: #0f0c09;
+
+            color: white;
+
+            border: 1px solid #6f552d;
+            border-radius: 9px;
+
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+
+            border-color: #d6ad52;
+
+            box-shadow:
+                0 0 10px rgba(214, 173, 82, 0.25);
+        }
+
+        input::placeholder {
+            color: #8f8475;
+        }
+
+
+        /* =========================
+           ANMELDE-BUTTON
+           ========================= */
+
+        .login-button {
+            width: 100%;
+
+            margin-top: 5px;
+
+            padding: 15px;
+
+            background:
+                linear-gradient(
+                    #c79b48,
+                    #8f6b32
+                );
+
+            color: white;
+
+            border: 1px solid #e1bd6b;
+            border-radius: 9px;
+
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-button:hover {
+            filter: brightness(1.12);
+        }
+
+        .login-button:active {
+            transform: scale(0.99);
+        }
+
+
+        /* =========================
+           MELDUNG
+           ========================= */
+
+        #meldung {
+            min-height: 24px;
+
+            margin-top: 16px;
+
+            text-align: center;
+
+            color: #d9a477;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           LINKS
+           ========================= */
+
+        .links {
+            text-align: center;
+
+            margin-top: 22px;
+        }
+
+        .links p {
+            margin: 13px 0;
+        }
+
+        .links a {
+            color: #d6ad52;
+
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .zurueck {
+            color: #bcae98 !important;
+        }
+
+                /* =========================
+           HANDY
+           ========================= */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 18px 12px;
+
+                background-position: center;
+                background-attachment: scroll;
+            }
+
+            .login-box {
+                max-width: 100%;
+
+                padding: 26px 20px;
+
+                border-radius: 14px;
+            }
+
+            .logo h1 {
+                font-size: 32px;
+            }
+
+            .logo p {
+                font-size: 14px;
+            }
+
+            input {
+                padding: 14px;
+
+                font-size: 16px;
+            }
+
+            .login-button {
+                padding: 14px;
+
+                font-size: 17px;
+            }
+        }
+
+
+        /* =========================
+           KLEINE HANDYS
+           ========================= */
+
+        @media (max-width: 380px) {
+
+            body {
+                padding: 12px 8px;
+            }
+
+            .login-box {
+                padding: 22px 16px;
+            }
+
+            .logo h1 {
+                font-size: 29px;
+            }
+
+            .linie {
+                margin: 20px 0;
+            }
+        }
+
+
+        /* =========================
+           PC / GROSSER BILDSCHIRM
+           ========================= */
+
+        @media (min-width: 601px) {
+
+            body {
+                padding: 40px;
+            }
+
+            .login-box {
+                max-width: 450px;
+            }
+        }
+
+    </style>
 </head>
+
 <body>
-    <h1>Anmeldung</h1>
+
+    <main class="login-box">
+
+        <div class="logo">
+
+            <h1>Ehrenmarkt</h1>
+
+            <p>
+                Willkommen zurück
+            </p>
+
+        </div>
+
+
+        <div class="linie"></div>
+
+
+        <form id="loginForm">
+
+            <div class="feld">
+
+                <label for="email">
+                    E-Mail-Adresse
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Deine E-Mail-Adresse"
+                    required
+                >
+
+            </div>
+
+
+            <div class="feld">
+
+                <label for="passwort">
+                    Passwort
+                </label>
+
+                <input
+                    type="password"
+                    id="passwort"
+                    placeholder="Dein Passwort"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                ⚜ Anmelden ⚜
+            </button>
+
+        </form>
+
+
+        <div id="meldung"></div>
+
+
+        <div class="links">
+
+            <p>
+                <a href="#">
+                    Passwort vergessen?
+                </a>
+            </p>
+
+
+            <p>
+                Noch kein Konto?
+
+                <a href="registrieren.html">
+                    Registrieren
+                </a>
+            </p>
+
+
+            <p>
+                <a
+                    href="../index.html"
+                    class="zurueck"
+                >
+                    ← Zurück zum Ehrenmarkt
+                </a>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+    <script src="../auth.js"></script>
+
+
+    <!-- Login -->
+
+    <script>
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const meldung =
+            document.getElementById("meldung");
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const email =
+                    document.getElementById("email").value;
+
+
+                const passwort =
+                    document.getElementById("passwort").value;
+
+
+                meldung.textContent =
+                    "Anmeldung läuft...";
+
+
+                const erfolgreich =
+                    await anmelden(
+                        email,
+                        passwort
+                    );
+
+
+                if (erfolgreich) {
+
+                    meldung.textContent =
+                        "Anmeldung erfolgreich!";
+
+
+                    window.location.href =
+                        "startseite.html";
+
+                } else {
+
+                    meldung.textContent =
+                        "Anmeldung fehlgeschlagen.";
+
+                }
+
+            }
+        );
+
+    </script>
+
 </body>
 </html>
