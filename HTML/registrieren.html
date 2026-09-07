@@ -37,11 +37,6 @@
             padding: 30px 15px;
         }
 
-
-        /* =========================
-           REGISTRIERUNGS-BEREICH
-           ========================= */
-
         .register-box {
             width: 100%;
             max-width: 450px;
@@ -57,11 +52,6 @@
                 0 15px 50px rgba(0, 0, 0, 0.80),
                 inset 0 0 30px rgba(184, 138, 59, 0.08);
         }
-
-
-        /* =========================
-           ÜBERSCHRIFT
-           ========================= */
 
         .logo {
             text-align: center;
@@ -86,7 +76,6 @@
             font-size: 16px;
         }
 
-
         .linie {
             height: 1px;
 
@@ -94,11 +83,6 @@
 
             margin: 25px 0;
         }
-
-
-        /* =========================
-           FORMULAR
-           ========================= */
 
         .feld {
             margin-bottom: 18px;
@@ -144,11 +128,6 @@
             color: #8f8475;
         }
 
-
-        /* =========================
-           REGISTRIEREN-BUTTON
-           ========================= */
-
         .register-button {
             width: 100%;
 
@@ -185,11 +164,6 @@
             transform: scale(0.99);
         }
 
-
-        /* =========================
-           MELDUNG
-           ========================= */
-
         #meldung {
             min-height: 24px;
 
@@ -200,13 +174,11 @@
             color: #d9a477;
 
             font-size: 14px;
+
+            line-height: 1.5;
         }
 
-                /* =========================
-           LINKS
-           ========================= */
-
-        .links {
+                .links {
             text-align: center;
             margin-top: 22px;
         }
@@ -237,7 +209,6 @@
 
             body {
                 padding: 18px 12px;
-                background-position: center;
                 background-attachment: scroll;
             }
 
@@ -400,7 +371,6 @@
                 </a>
             </p>
 
-
             <p>
                 <a
                     href="../index.html"
@@ -443,18 +413,18 @@
 
 
                 const email =
-                    document.getElementById("email").value;
-
+                    document.getElementById("email").value.trim();
 
                 const passwort =
                     document.getElementById("passwort").value;
-
 
                 const passwortWiederholen =
                     document.getElementById(
                         "passwortWiederholen"
                     ).value;
 
+
+                /* Passwörter vergleichen */
 
                 if (passwort !== passwortWiederholen) {
 
@@ -469,23 +439,37 @@
                     "Registrierung läuft...";
 
 
-                const erfolgreich =
-                    await registrieren(
-                        email,
-                        passwort
+                const { data, error } =
+                    await supabaseClient.auth.signUp({
+                        email: email,
+                        password: passwort
+                    });
+
+
+                /* Fehler */
+
+                if (error) {
+
+                    console.error(
+                        "Registrierung fehlgeschlagen:",
+                        error
                     );
 
-
-                if (erfolgreich) {
-
                     meldung.textContent =
-                        "Registrierung erfolgreich!";
+                        error.message;
 
-                } else {
+                    return;
+                }
 
-                    meldung.textContent =
-                        "Registrierung fehlgeschlagen.";
 
+                /* Erfolgreiche Registrierung */
+
+                if (data.user) {
+
+                    meldung.innerHTML =
+                        "✓ Registrierung erfolgreich!<br>" +
+                        "📧 Wir haben dir eine Bestätigungs-Mail geschickt.<br>" +
+                        "Bitte überprüfe dein E-Mail-Postfach.";
                 }
 
             }
@@ -495,4 +479,3 @@
 
 </body>
 </html>
-        
