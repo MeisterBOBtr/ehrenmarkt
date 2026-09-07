@@ -3,27 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ehrenmarkt</title>
+
+    <title>Ehrenmarkt – Die mittelalterliche Minecraft-Community</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Georgia, "Times New Roman", serif;
+            color: #f2e6cf;
+
+            background-image:
+                linear-gradient(
+                    rgba(5, 7, 10, 0.30),
+                    rgba(5, 7, 10, 0.72)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 15px;
+        }
+
+
+        /* =========================
+           HAUPTBEREICH
+           ========================= */
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+
+            background: rgba(14, 11, 9, 0.78);
+
+            border: 2px solid #b88a3b;
+            border-radius: 18px;
+
+            padding: 35px;
+
+            box-shadow:
+                0 18px 60px rgba(0, 0, 0, 0.80),
+                inset 0 0 35px rgba(184, 138, 59, 0.08);
+
+            backdrop-filter: blur(3px);
+        }
+
+
+        /* =========================
+           EHRENMARKT TITEL
+           ========================= */
+
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+
+            color: #d6ad52;
+
+            font-size: 48px;
+            letter-spacing: 3px;
+
+            text-shadow:
+                0 3px 8px #000;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+
+            color: #d0c2aa;
+
+            font-size: 18px;
+        }
+
+
+        .linie {
+            height: 1px;
+
+            background: #8f6b32;
+
+            margin: 28px 0;
+        }
+
+
+        /* =========================
+           WILLKOMMEN
+           ========================= */
+
+        .willkommen {
+            text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+        .willkommen h2 {
+            margin: 0 0 10px;
+
+            color: #e0bb69;
+
+            font-size: 28px;
+        }
+
+        .willkommen p {
+            margin: 0 auto;
+
+            max-width: 700px;
+
+            line-height: 1.7;
+
+            color: #e2d7c5;
+
+            font-size: 16px;
+        }
+
+
+        /* =========================
+           SERVICES
+           ========================= */
+
+        .services {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-top: 25px;
+        }
+
+        .service {
+            background: rgba(10, 8, 7, 0.72);
+
+            border: 1px solid #6f552d;
+            border-radius: 12px;
+
+            padding: 20px 12px;
+
+            text-align: center;
+
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s;
+        }
+
+        .service:hover {
+            transform: translateY(-4px);
+
+            border-color: #d6ad52;
+
+            background: rgba(20, 15, 10, 0.90);
+        }
+
+        .service-icon {
+            font-size: 30px;
+
+            margin-bottom: 10px;
+        }
+
+        .service h3 {
+            margin: 0 0 7px;
+
+            color: #d6ad52;
+
+            font-size: 17px;
+        }
+
+        .service p {
+            margin: 0;
+
+            color: #bfb29f;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+                /* =========================
+           NEUE MITGLIEDER
+           ========================= */
+
+        .mitglied {
+            margin-top: 30px;
+
+            padding: 22px;
+
+            text-align: center;
+
+            background: rgba(20, 15, 10, 0.65);
+
+            border: 1px solid #8f6b32;
+            border-radius: 12px;
+        }
+
+        .mitglied h2 {
+            margin: 0 0 10px;
+
+            color: #e0bb69;
+
+            font-size: 24px;
+        }
+
+        .mitglied p {
+            margin: 0;
+
+            color: #d0c2aa;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           BUTTONS
+           ========================= */
+
+        .buttons {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 14px;
+
+            flex-wrap: wrap;
+
+            margin-top: 28px;
+        }
+
+        .button {
+            display: inline-block;
+
+            min-width: 170px;
+
+            padding: 14px 20px;
+
+            border-radius: 9px;
+
+            font-family: Georgia, "Times New Roman", serif;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s,
+                filter 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+
+            filter: brightness(1.12);
+        }
+
+
+        /* Anmelden */
+
+        .login-button {
+            background:
+                linear-gradient(
+                    #c79b48,
+                    #8f6b32
+                );
+
+            color: white;
+
+            border: 1px solid #e1bd6b;
+        }
+
+
+        /* Registrieren */
+
+        .register-button {
+            background: rgba(20, 16, 12, 0.85);
+
+            color: #d6ad52;
+
+            border: 1px solid #b88a3b;
+        }
+
+
+        /* Discord */
+
+        .discord-button {
+            margin-top: 16px;
+
+            background:
+                linear-gradient(
+                    #4b3c68,
+                    #302642
+                );
+
+            color: white;
+
+            border: 1px solid #9a82c4;
+
+            min-width: 230px;
+        }
+
+
+        /* =========================
+           FOOTER
+           ========================= */
+
+        .footer {
+            margin-top: 28px;
+
+            text-align: center;
+
+            color: #8f8475;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           HANDY
+           ========================= */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 15px 10px;
+
+                background-attachment: scroll;
+            }
+
+            .container {
+                padding: 25px 18px;
+
+                border-radius: 14px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+
+                letter-spacing: 2px;
+            }
+
+            .header p {
+                font-size: 15px;
+            }
+
+            .willkommen h2 {
+                font-size: 23px;
+            }
+
+            .services {
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 10px;
+            }
+
+            .service {
+                padding: 17px 9px;
+            }
+
+            .service-icon {
+                font-size: 26px;
+            }
+
+            .service h3 {
+                font-size: 15px;
+            }
+
+            .service p {
+                font-size: 12px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .discord-button {
+                width: 100%;
+            }
+        }
+
+
+        /* =========================
+           KLEINE HANDYS
+           ========================= */
+
+        @media (max-width: 380px) {
+
+            .container {
+                padding: 22px 14px;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
+
+            .services {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
 </head>
 
 <body>
 
-    <main>
-        <h1>Ehrenmarkt</h1>
-        <p>Die mittelalterliche Minecraft-Community</p>
+    <main class="container">
 
-        <button onclick="location.href='HTML/login.html'">
-            Anmelden
-        </button>
 
-        <button onclick="location.href='HTML/registrieren.html'">
-            Registrieren
-        </button>
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <h1>Ehrenmarkt</h1>
+
+            <p>
+                Die mittelalterliche Minecraft-Community
+            </p>
+
+        </header>
+
+
+        <div class="linie"></div>
+
+
+        <!-- WILLKOMMEN -->
+
+        <section class="willkommen">
+
+            <h2>
+                Willkommen im Ehrenmarkt
+            </h2>
+
+            <p>
+                Gemeinsam bauen, handeln und Projekte
+                verwirklichen. Der Ehrenmarkt verbindet
+                Spieler, Baumeister und Händler zu einer
+                starken Minecraft-Community.
+            </p>
+
+        </section>
+
+
+        <!-- SERVICES -->
+
+        <section class="services">
+
+
+            <div class="service">
+
+                <div class="service-icon">
+                    🏗️
+                </div>
+
+                <h3>
+                    Bauaufträge
+                </h3>
+
+                <p>
+                    Gebäude und Projekte planen
+                    und gemeinsam verwirklichen.
+                </p>
+
+            </div>
+
+
+            <div class="service">
+
+                <div class="service-icon">
+                    📦
+                </div>
+
+                <h3>
+                    Materialbestellungen
+                </h3>
+
+                <p>
+                    Benötigte Materialien bequem
+                    bestellen.
+                </p>
+
+            </div>
+
+
+            <div class="service">
+
+                <div class="service-icon">
+                    🚚
+                </div>
+
+                <h3>
+                    Logistik
+                </h3>
+
+                <p>
+                    Materialien zuverlässig
+                    transportieren und liefern.
+                </p>
+
+            </div>
+
+
+            <div class="service">
+
+                <div class="service-icon">
+                    ⚙️
+                </div>
+
+                <h3>
+                    Redstone
+                </h3>
+
+                <p>
+                    Technische Anlagen, Farmen
+                    und Redstone-Projekte.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- MITGLIEDER -->
+
+        <section class="mitglied">
+
+            <h2>
+                Neue Mitglieder gesucht
+            </h2>
+
+            <p>
+                Du möchtest Teil unserer Gemeinschaft
+                werden? Komm zu uns und baue gemeinsam
+                mit anderen Spielern etwas Großes auf.
+            </p>
+
+
+            <a
+                class="button discord-button"
+                href="https://discord.gg/opsucht"
+                target="_blank"
+                rel="noopener"
+            >
+                ⚔️ OPSUCHT Discord beitreten
+            </a>
+
+        </section>
+
+
+        <!-- LOGIN BUTTONS -->
+
+        <div class="buttons">
+
+            <a
+                class="button login-button"
+                href="HTML/login.html"
+            >
+                ⚜ Anmelden
+            </a>
+
+
+            <a
+                class="button register-button"
+                href="HTML/registrieren.html"
+            >
+                ⚜ Registrieren
+            </a>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            Ehrenmarkt · Falkenstein
+
+        </footer>
+
+
     </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
-    <script src="auth.js"></script>
 
 </body>
 </html>
