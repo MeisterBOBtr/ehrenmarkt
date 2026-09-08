@@ -1158,7 +1158,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 0,
 
             material_procurement:
-                false,
+    document.getElementById("materialProvider").value === "falkenstein",
 
             material_surcharge_percent:
                 15,
