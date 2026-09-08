@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Logistik-Auftrag</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #f3e5c0;
+
+            background-image:
+
+                linear-gradient(
+                    rgba(10, 7, 4, 0.42),
+                    rgba(10, 7, 4, 0.58)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/Hintergrund.png");
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-attachment: fixed;
+
+        }
+
+
+        /* =================================
+           HAUPTBEREICH
+        ================================= */
+
+        .page {
+
+            width: 100%;
+
+            max-width: 1050px;
+
+            margin: 0 auto;
+
+            padding: 25px 15px 50px;
+
+        }
+
+
+        /* =================================
+           HEADER
+        ================================= */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .header h1 {
+
+            font-size:
+                clamp(
+                    28px,
+                    6vw,
+                    48px
+                );
+
+            color: #e6bd62;
+
+            text-shadow:
+
+                0 2px 4px #000,
+
+                0 0 12px
+                rgba(0, 0, 0, 0.8);
+
+            letter-spacing: 2px;
+
+        }
+
+
+        .header p {
+
+            margin-top: 8px;
+
+            color: #eadbb8;
+
+            font-size: 16px;
+
+        }
+
+
+        /* =================================
+           KARTEN
+        ================================= */
+
+        .card {
+
+            background:
+
+                linear-gradient(
+                    rgba(25, 19, 13, 0.94),
+                    rgba(15, 11, 8, 0.96)
+                );
+
+            border: 1px solid #a77b35;
+
+            border-radius: 12px;
+
+            box-shadow:
+
+                0 5px 20px
+                rgba(0, 0, 0, 0.65),
+
+                inset 0 0 20px
+                rgba(0, 0, 0, 0.35);
+
+            padding: 22px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            color: #e6bd62;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            border-bottom:
+                1px solid #765526;
+
+            padding-bottom: 12px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        /* =================================
+           FORMULAR-GRID
+        ================================= */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 17px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        label {
+
+            color: #d9bd7d;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+        }
+
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            background:
+                rgba(8, 6, 4, 0.92);
+
+            color: #f2e4c1;
+
+            border:
+                1px solid #765526;
+
+            border-radius: 7px;
+
+            padding: 12px 13px;
+
+            font-family: inherit;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition: 0.2s;
+
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color: #d3a94f;
+
+            box-shadow:
+                0 0 8px
+                rgba(211, 169, 79, 0.25);
+
+        }
+
+
+        textarea {
+
+            min-height: 110px;
+
+            resize: vertical;
+
+        }
+
+
+        /* =================================
+           ICON-BEREICH
+        ================================= */
+
+        .input-icon {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+        }
+
+
+        .input-icon img {
+
+            width: 32px;
+
+            height: 32px;
+
+            object-fit: contain;
+
+            flex-shrink: 0;
+
+            image-rendering: pixelated;
+
+            filter:
+                drop-shadow(
+                    0 2px 2px
+                    rgba(0, 0, 0, 0.8)
+                );
+
+        }
+
+
+        /* =================================
+           MOBILE GRUNDLAYOUT
+        ================================= */
+
+        @media (max-width: 700px) {
+
+            body {
+
+                background-attachment: scroll;
+
+            }
+
+
+            .page {
+
+                padding:
+                    15px
+                    10px
+                    35px;
+
+            }
+
+
+            .card {
+
+                padding: 16px;
+
+                border-radius: 10px;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .header h1 {
+
+                font-size: 30px;
+
+            }
+
+
+            .header p {
+
+                font-size: 14px;
+
+            }
+
+
+            .card-title {
+
+                font-size: 19px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="page">
+
+
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <h1>
+                LOGISTIK-AUFTRAG
+            </h1>
+
+            <p>
+                Ehrenmarkt · Falkenstein
+            </p>
+
+        </header>
+
+              <!-- =========================
+             AUFTRAGGEBER
+        ========================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                <span>⚒</span>
+                <span>Auftraggeber</span>
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group full">
+
+                    <label for="customerName">
+                        Minecraft-Name / Kundenname
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/name_tag.png"
+                            alt="Kundenname"
+                        >
+
+                        <input
+                            id="customerName"
+                            type="text"
+                            placeholder="Dein Minecraft-Name"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TRANSPORTSTRECKE
+        ========================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                <span>🧭</span>
+                <span>Transportstrecke</span>
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- STARTPUNKT -->
+
+                <div class="form-group">
+
+                    <label for="startPoint">
+                        Startpunkt
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/compass.png"
+                            alt="Startpunkt"
+                        >
+
+                        <input
+                            id="startPoint"
+                            type="text"
+                            placeholder="z. B. Lager Falkenstein"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ZIEL -->
+
+                <div class="form-group">
+
+                    <label for="destination">
+                        Ziel
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/map%20%281%29.png"
+                            alt="Ziel"
+                        >
+
+                        <input
+                            id="destination"
+                            type="text"
+                            placeholder="z. B. Baustelle"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- START CITYBUILD -->
+
+                <div class="form-group">
+
+                    <label for="startCitybuild">
+                        Start-CityBuild
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chiseled_resin_bricks-3d.png"
+                            alt="Start-CityBuild"
+                        >
+
+                        <select id="startCitybuild">
+
+                            <option value="">
+                                Bitte auswählen
+                            </option>
+
+                            <option value="CB1">
+                                CB1
+                            </option>
+
+                            <option value="CB2">
+                                CB2
+                            </option>
+
+                            <option value="CB3">
+                                CB3
+                            </option>
+
+                            <option value="CB4">
+                                CB4
+                            </option>
+
+                            <option value="CB5">
+                                CB5
+                            </option>
+
+                            <option value="CB6">
+                                CB6
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ZIEL CITYBUILD -->
+
+                <div class="form-group">
+
+                    <label for="destinationCitybuild">
+                        Ziel-CityBuild
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chiseled_resin_bricks-3d.png"
+                            alt="Ziel-CityBuild"
+                        >
+
+                        <select id="destinationCitybuild">
+
+                            <option value="">
+                                Bitte auswählen
+                            </option>
+
+                            <option value="CB1">
+                                CB1
+                            </option>
+
+                            <option value="CB2">
+                                CB2
+                            </option>
+
+                            <option value="CB3">
+                                CB3
+                            </option>
+
+                            <option value="CB4">
+                                CB4
+                            </option>
+
+                            <option value="CB5">
+                                CB5
+                            </option>
+
+                            <option value="CB6">
+                                CB6
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+              <!-- =========================
+             TRANSPORTDETAILS
+        ========================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                <span>📦</span>
+                <span>Transportdetails</span>
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <!-- KISTENANZAHL -->
+
+                <div class="form-group">
+
+                    <label for="crateCount">
+                        Kistenanzahl
+                    </label>
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chest.png"
+                            alt="Kisten"
+                        >
+
+                        <input
+                            id="crateCount"
+                            type="number"
+                            min="1"
+                            value="1"
+                            placeholder="Anzahl der Kisten"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- SORTIERUNG -->
+
+                <div class="form-group">
+
+                    <label>
+                        Sortierung
+                    </label>
+
+                    <div class="choice-group">
+
+                        <div class="choice">
+
+                            <input
+                                type="radio"
+                                name="sorting"
+                                id="sortingNo"
+                                value="false"
+                                checked
+                            >
+
+                            <label for="sortingNo">
+                                Nein
+                            </label>
+
+                        </div>
+
+
+                        <div class="choice">
+
+                            <input
+                                type="radio"
+                                name="sorting"
+                                id="sortingYes"
+                                value="true"
+                            >
+
+                            <label for="sortingYes">
+                                Ja
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     LIEFERART
+                ========================== -->
+
+                <div class="form-group full">
+
+                    <label>
+                        Lieferart
+                    </label>
+
+
+                    <div class="delivery-options">
+
+
+                        <!-- PLOT → PLOT -->
+
+                        <div class="delivery-option">
+
+                            <input
+                                type="radio"
+                                name="deliveryType"
+                                id="plotPlot"
+                                value="plot"
+                                checked
+                            >
+
+                            <label for="plotPlot">
+
+                                <img
+                                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/hopper_minecart.png"
+                                    alt="Plot zu Plot"
+                                >
+
+                                <span>
+                                    Plot → Plot
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- CB → CB -->
+
+                        <div class="delivery-option">
+
+                            <input
+                                type="radio"
+                                name="deliveryType"
+                                id="cbCb"
+                                value="cb"
+                            >
+
+                            <label for="cbCb">
+
+                                <img
+                                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/command_block_minecart.png"
+                                    alt="CB zu CB"
+                                >
+
+                                <span>
+                                    CB → CB
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     EXPRESS
+                ========================== -->
+
+                <div class="form-group">
+
+                    <label>
+                        Express-Auftrag
+                    </label>
+
+
+                    <div class="choice-group">
+
+
+                        <div class="choice">
+
+                            <input
+                                type="radio"
+                                name="express"
+                                id="expressNo"
+                                value="false"
+                                checked
+                            >
+
+                            <label for="expressNo">
+                                Nein
+                            </label>
+
+                        </div>
+
+
+                        <div class="choice">
+
+                            <input
+                                type="radio"
+                                name="express"
+                                id="expressYes"
+                                value="true"
+                            >
+
+                            <label for="expressYes">
+                                Ja
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     ZUSATZMITARBEITER
+                ========================== -->
+
+                <div class="form-group">
+
+                    <label for="extraWorkers">
+                        Zusätzliche Mitarbeiter
+                    </label>
+
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/name_tag.png"
+                            alt="Zusätzliche Mitarbeiter"
+                        >
+
+                        <input
+                            id="extraWorkers"
+                            type="number"
+                            min="0"
+                            value="0"
+                            placeholder="Anzahl"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     BESCHREIBUNG
+                ========================== -->
+
+                <div class="form-group full">
+
+                    <label for="description">
+                        Beschreibung
+                    </label>
+
+
+                    <div class="input-icon">
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/knowledge_book.png"
+                            alt="Beschreibung"
+                        >
+
+                        <textarea
+                            id="description"
+                            placeholder="Weitere Informationen zum Logistik-Auftrag..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+              <!-- =========================
+             PREISÜBERSICHT
+        ========================== -->
+
+        <section class="card price-card">
+
+            <div class="card-title">
+
+                <img
+                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/emerald.png"
+                    alt="Preis"
+                    style="
+                        width:32px;
+                        height:32px;
+                        object-fit:contain;
+                        image-rendering:pixelated;
+                    "
+                >
+
+                <span>
+                    Preisübersicht
+                </span>
+
+            </div>
+
+
+            <!-- GRUNDPREIS -->
+
+            <div class="price-row">
+
+                <span class="price-name">
+                    Grundpreis
+                </span>
+
+                <span
+                    class="price-value"
+                    id="basePrice"
+                >
+                    5.000 $
+                </span>
+
+            </div>
+
+
+            <!-- SORTIERUNG -->
+
+            <div class="price-row">
+
+                <span class="price-name">
+                    Sortierung
+                </span>
+
+                <span
+                    class="price-value"
+                    id="sortingPrice"
+                >
+                    0 $
+                </span>
+
+            </div>
+
+
+            <!-- LIEFERUNG -->
+
+            <div class="price-row">
+
+                <span class="price-name">
+                    Lieferart
+                </span>
+
+                <span
+                    class="price-value"
+                    id="deliveryPrice"
+                >
+                    1.000 $
+                </span>
+
+            </div>
+
+
+            <!-- EXPRESS -->
+
+            <div class="price-row">
+
+                <span class="price-name">
+                    Express
+                </span>
+
+                <span
+                    class="price-value"
+                    id="expressPrice"
+                >
+                    0 $
+                </span>
+
+            </div>
+
+
+            <!-- ZUSATZMITARBEITER -->
+
+            <div class="price-row">
+
+                <span class="price-name">
+                    Zusätzliche Mitarbeiter
+                </span>
+
+                <span
+                    class="price-value"
+                    id="workersPrice"
+                >
+                    0 $
+                </span>
+
+            </div>
+
+
+            <!-- GESAMTPREIS -->
+
+            <div class="price-row total-row">
+
+                <span class="price-name">
+                    Gesamtpreis
+                </span>
+
+                <span
+                    class="price-value"
+                    id="totalPrice"
+                >
+                    6.000 $
+                </span>
+
+            </div>
+
+
+            <!-- =========================
+                 ZAHLUNGEN
+            ========================== -->
+
+            <div class="payment-grid">
+
+
+                <!-- ANZAHLUNG -->
+
+                <div class="payment-box">
+
+                    <img
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/gold_ingot.png"
+                        alt="Anzahlung"
+                    >
+
+                    <div>
+
+                        <div class="payment-label">
+                            25 % Anzahlung
+                        </div>
+
+                        <div
+                            class="payment-value"
+                            id="deposit"
+                        >
+                            1.500 $
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESTZAHLUNG -->
+
+                <div class="payment-box">
+
+                    <img
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/diamond.png"
+                        alt="Restzahlung"
+                    >
+
+                    <div>
+
+                        <div class="payment-label">
+                            75 % Restzahlung
+                        </div>
+
+                        <div
+                            class="payment-value"
+                            id="remainingPayment"
+                        >
+                            4.500 $
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- HINWEIS -->
+
+            <div class="notice">
+
+                Die Preise werden automatisch anhand
+                der gewählten Auftragsoptionen berechnet.
+                Die Anzahlung beträgt 25 % des Gesamtpreises.
+
+            </div>
+
+        </section>
+
+              <!-- =========================
+             AUFTRAG ERSTELLEN
+        ========================== -->
+
+        <section class="card">
+
+            <button
+                id="createOrderButton"
+                class="submit-button"
+                type="button"
+            >
+                Logistik-Auftrag erstellen
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             FOOTER
+        ========================== -->
+
+        <div class="footer">
+
+            Ehrenmarkt · Falkenstein
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script src="../JS/logistikauftrag.js"></script>
+
+
+</body>
+
+</html>
