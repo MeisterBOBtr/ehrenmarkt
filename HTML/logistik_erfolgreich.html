@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Logistik-Auftrag erfolgreich</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #f5e6c8;
+            background:
+                linear-gradient(
+                    rgba(10, 8, 6, 0.72),
+                    rgba(10, 8, 6, 0.82)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/Hintergrund.png")
+                center / cover fixed no-repeat;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 25px 15px 40px;
+        }
+
+        .header {
+            max-width: 850px;
+            margin: 0 auto 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d4af37;
+            font-size: 32px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 5px #000;
+        }
+
+        .header p {
+            color: #d8c7a5;
+            font-size: 16px;
+        }
+
+        .success-card {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 30px 22px;
+            background: rgba(20, 16, 11, 0.90);
+            border: 2px solid #b9973e;
+            border-radius: 14px;
+            box-shadow:
+                0 0 20px rgba(0, 0, 0, 0.7),
+                inset 0 0 20px rgba(212, 175, 55, 0.06);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 58px;
+            margin-bottom: 15px;
+        }
+
+        .success-title {
+            color: #d4af37;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .success-text {
+            color: #ddd0b5;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(8, 7, 5, 0.65);
+            border: 1px solid #806b32;
+            border-radius: 10px;
+        }
+
+        .section h2 {
+            color: #d4af37;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+              .info-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(185, 151, 62, 0.35);
+            text-align: left;
+        }
+
+        .info-box:last-child {
+            border-bottom: none;
+        }
+
+        .info-box span {
+            color: #cdbd9d;
+        }
+
+        .info-box strong {
+            color: #d4af37;
+            font-size: 17px;
+            text-align: right;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .main-button,
+        .secondary-button {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .main-button {
+            background: #b9973e;
+            color: #17130d;
+            border: 1px solid #d4af37;
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #806b32;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 27px;
+            }
+
+            .success-card {
+                padding: 25px 16px;
+            }
+
+            .success-title {
+                font-size: 24px;
+            }
+
+            .info-box {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .info-box strong {
+                text-align: left;
+            }
+        }
+      
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="header">
+        <h1>EHRENMARKT</h1>
+        <p>Logistik-Auftrag</p>
+    </header>
+
+    <main class="success-card">
+
+        <div class="success-icon">✓</div>
+
+        <h2 class="success-title">
+            Auftrag erfolgreich erstellt
+        </h2>
+
+        <p class="success-text">
+            Dein Logistik-Auftrag wurde erfolgreich übermittelt
+            und im Ehrenmarkt-System gespeichert.
+        </p>
+
+              <section class="section">
+            <h2>Auftragsübersicht</h2>
+
+            <div class="info-box">
+                <span>Auftragsnummer</span>
+                <strong id="orderNumber">Wird geladen...</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Gesamtpreis</span>
+                <strong id="totalPrice">0 $</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Anzahlung (25 %)</span>
+                <strong id="deposit">0 $</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Restzahlung (75 %)</span>
+                <strong id="remainingPayment">0 $</strong>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Wie geht es weiter?</h2>
+
+            <p class="success-text">
+                Der Auftrag wurde erfolgreich gespeichert.
+                Die Bearbeitung erfolgt durch das Ehrenmarkt-Team.
+            </p>
+        </section>
+
+        <div class="button-container">
+            <button
+                type="button"
+                class="main-button"
+                onclick="window.location.href='kundenbereich.html'"
+            >
+                Zum Kundenbereich
+            </button>
+
+            <button
+                type="button"
+                class="secondary-button"
+                onclick="window.location.href='startseite.html'"
+            >
+                Zur Startseite
+            </button>
+        </div>
+
+          </main>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const orderNumber = sessionStorage.getItem(
+            "logistik_order_number"
+        );
+
+        const totalPrice = sessionStorage.getItem(
+            "logistik_order_price"
+        );
+
+        const deposit = sessionStorage.getItem(
+            "logistik_order_deposit"
+        );
+
+        const remainingPayment = sessionStorage.getItem(
+            "logistik_order_remaining"
+        );
+
+        document.getElementById("orderNumber").textContent =
+            orderNumber || "Nicht verfügbar";
+
+        document.getElementById("totalPrice").textContent =
+            formatPrice(totalPrice);
+
+        document.getElementById("deposit").textContent =
+            formatPrice(deposit);
+
+        document.getElementById("remainingPayment").textContent =
+            formatPrice(remainingPayment);
+    });
+
+    function formatPrice(value) {
+        const number = Number(value);
+
+        if (!Number.isFinite(number)) {
+            return "0 $";
+        }
+
+        return number.toLocaleString("de-DE") + " $";
+    }
+</script>
+
+</body>
+</html>
