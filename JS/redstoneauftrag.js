@@ -1725,8 +1725,8 @@ async function erstelleRedstoneAuftrag() {
 
                 // Auftrag zurücksetzen, falls die Materialpositionen
                 // nicht gespeichert werden konnten.
-                await supabase
-                    .from(SUPABASE_TABLE_ORDERS)
+                await supabaseClient
+    .from(SUPABASE_TABLE_ORDERS)
                     .delete()
                     .eq("id", gespeicherterAuftrag.id);
 
@@ -1735,11 +1735,29 @@ async function erstelleRedstoneAuftrag() {
         }
 
         // Erfolgreich
-        alert(
-            "Dein Redstone-Auftrag wurde erfolgreich erstellt.\n\n" +
-            "Auftragsnummer: " +
-            gespeicherterAuftrag.order_number
-        );
+        // Daten für die Erfolgsseite speichern
+sessionStorage.setItem(
+    "redstone_order_number",
+    gespeicherterAuftrag.order_number
+);
+
+sessionStorage.setItem(
+    "redstone_order_price",
+    String(auftrag.total_price)
+);
+
+sessionStorage.setItem(
+    "redstone_order_deposit",
+    String(auftrag.deposit_amount)
+);
+
+sessionStorage.setItem(
+    "redstone_order_remaining",
+    String(auftrag.remaining_amount)
+);
+
+// Zur Redstone-Erfolgsseite
+window.location.href = "../HTML/redstone_erfolgreich.html";
 
         // Zur Startseite zurück
         window.location.href = "../HTML/startseite.html";
