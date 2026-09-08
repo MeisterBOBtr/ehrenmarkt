@@ -318,6 +318,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const terraformingProzent =
             leseProzent(terraformingLevel);
 
+        const prioritaetProzent =
+    priority.value === "schnell"
+        ? 10
+        : priority.value === "express"
+            ? 25
+            : 0;
+
 
         const innenPreis =
             grundpreis *
@@ -344,10 +351,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return (
-            innenPreis +
-            aussenPreis +
-            beleuchtungPreis +
-            terraformingPreis
+    innenPreis +
+    aussenPreis +
+    beleuchtungPreis +
+    terraformingPreis +
+    (grundpreis * prioritaetProzent / 100)
         );
     }
 
