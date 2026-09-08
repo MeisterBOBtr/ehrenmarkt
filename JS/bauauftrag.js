@@ -270,24 +270,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // PROZENTWERTE AUSLESEN
     // ==========================================
 
-    function leseProzent(feld) {
+    function leseProzent(field) {
 
-        if (!feld) {
-            return 0;
-        }
-
-
-        const wert =
-    parseFloat(field.value);
-
-
-        if (Number.isNaN(wert)) {
-            return 0;
-        }
-
-
-        return wert;
+    if (!field) {
+        return 0;
     }
+
+    switch (field.value) {
+
+        case "nein":
+            return 0;
+
+        case "leicht":
+            return 5;
+
+        case "mittel":
+            return 10;
+
+        case "komplett":
+            return 15;
+
+        default:
+            return 0;
+    }
+}
 
 
     // ==========================================
