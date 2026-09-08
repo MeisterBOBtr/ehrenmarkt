@@ -1826,15 +1826,11 @@ async function erstelleRedstoneAuftrag() {
 
         // Eindeutige Auftragsnummer
 
-        const orderNumber =
-            "RS-" +
-            Date.now().toString() +
-            "-" +
-            Math.random()
-                .toString(36)
-                .substring(2, 7)
-                .toUpperCase();
+        const zufallszahl =
+    Math.floor(Math.random() * 9000) + 1000;
 
+const orderNumber =
+    "EM-RED-" + zufallszahl;
 
         // Daten für redstone_orders
 
