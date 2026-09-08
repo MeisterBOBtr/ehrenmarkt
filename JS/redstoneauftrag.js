@@ -315,8 +315,15 @@ function holeAuswahl(name) {
 
 function berechneGrundpreis() {
 
-    let grundpreis =
-        GRUND_PREISE.grundstueck;
+    const mergeAnzahl =
+    Number(
+        document.querySelector(
+            'input[name="plot_count"]'
+        )?.value || 1
+    );
+
+let grundpreis =
+    GRUND_PREISE.grundstueck * mergeAnzahl;
 
 
     // --------------------------------------
@@ -398,25 +405,56 @@ function berechneGrundpreis() {
     // Sonderarbeiten
     // --------------------------------------
 
-    const sonderarbeiten =
-        document.querySelectorAll(
-            'input[name="sonderarbeiten"]:checked'
-        );
+    const sonderarbeiten = {
 
-    sonderarbeiten.forEach(option => {
+    bestehende_installation:
+        document.getElementById(
+            "special_existing_installation"
+        )?.checked || false,
 
-        const wert = option.value;
+    bestehende_anlage:
+        document.getElementById(
+            "special_existing_conversion"
+        )?.checked || false,
+
+    fremde_reparatur:
+        document.getElementById(
+            "special_foreign_repair"
+        )?.checked || false,
+
+    kompaktbauweise:
+        document.getElementById(
+            "special_compact_build"
+        )?.checked || false,
+
+    verdecktes_redstone:
+        document.getElementById(
+            "special_hidden_redstone"
+        )?.checked || false,
+
+    schwieriger_zugang:
+        document.getElementById(
+            "special_difficult_access"
+        )?.checked || false
+
+};
+
+
+Object.entries(sonderarbeiten).forEach(
+    ([name, ausgewählt]) => {
 
         if (
-            GRUND_PREISE.sonderarbeiten[wert] !== undefined
+            ausgewählt &&
+            GRUND_PREISE.sonderarbeiten[name] !== undefined
         ) {
 
             grundpreis +=
-                GRUND_PREISE.sonderarbeiten[wert];
+                GRUND_PREISE.sonderarbeiten[name];
 
         }
 
-    });
+    }
+);
 
 
     // --------------------------------------
@@ -452,7 +490,7 @@ function berechneGrundpreis() {
 function berechneDringlichkeit(grundpreis) {
 
     const dringlichkeit =
-        holeAuswahl("dringlichkeit");
+    holeAuswahl("urgency");
 
     if (!dringlichkeit) {
         return 0;
@@ -482,9 +520,9 @@ function berechneDringlichkeit(grundpreis) {
 function berechneWochenende(zwischenpreis) {
 
     const wochenende =
-        document.querySelector(
-            'input[name="wochenende"]:checked'
-        );
+    document.querySelector(
+        'input[name="weekend"]:checked'
+    );
 
     // Keine Auswahl oder "Nein"
     if (!wochenende) {
