@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const wert =
-            Number(feld.value);
+    parseFloat(field.value);
 
 
         if (Number.isNaN(wert)) {
