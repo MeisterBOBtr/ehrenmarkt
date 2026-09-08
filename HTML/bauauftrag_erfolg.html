@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Bauauftrag erfolgreich</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Georgia, "Times New Roman", serif;
+            color: #f3ead2;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.72),
+                    rgba(0, 0, 0, 0.82)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/Erfolg.png")
+                center center / cover fixed no-repeat;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* ==========================================
+           NAVIGATION
+           ========================================== */
+
+        .navigation {
+
+            width: 100%;
+
+            min-height: 90px;
+
+            background:
+                linear-gradient(
+                    rgba(10, 8, 6, 0.82),
+                    rgba(10, 8, 6, 0.92)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Navigation.png")
+                center / cover no-repeat;
+
+            border-bottom: 2px solid #b89552;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+
+        .navigation-title {
+
+            color: #d4b36a;
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            letter-spacing: 2px;
+
+            text-align: center;
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+
+        /* ==========================================
+           HAUPTBEREICH
+           ========================================== */
+
+        .main {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            margin: auto;
+
+            padding: 40px 20px;
+        }
+
+
+        .success-card {
+
+            background:
+                rgba(10, 10, 10, 0.88);
+
+            border: 1px solid #b89552;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.65);
+
+            padding: 40px 30px;
+
+            text-align: center;
+        }
+
+
+        /* ==========================================
+           ERFOLG
+           ========================================== */
+
+        .success-icon {
+
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 20px;
+
+            border: 2px solid #b89552;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 42px;
+
+            color: #d4b36a;
+
+            background:
+                rgba(184, 149, 82, 0.12);
+
+            box-shadow:
+                0 0 25px rgba(184, 149, 82, 0.18);
+        }
+
+
+        h1 {
+
+            margin: 0 0 12px;
+
+            color: #d4b36a;
+
+            font-size: 32px;
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+
+        .success-text {
+
+            color: #d8d0bf;
+
+            font-size: 17px;
+
+            line-height: 1.6;
+
+            margin-bottom: 30px;
+        }
+
+              /* ==========================================
+           AUFTRAGSDATEN
+           ========================================== */
+
+        .order-box {
+
+            margin: 25px 0;
+
+            padding: 20px;
+
+            background:
+                rgba(0, 0, 0, 0.45);
+
+            border: 1px solid rgba(184, 149, 82, 0.55);
+
+            border-radius: 10px;
+        }
+
+
+        .order-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 13px 0;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+        }
+
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .order-label {
+
+            color: #aaa;
+
+            text-align: left;
+        }
+
+
+        .order-value {
+
+            color: #f3ead2;
+
+            font-weight: bold;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+
+        .order-number {
+
+            color: #d4b36a;
+
+            font-size: 15px;
+        }
+
+
+        .price {
+
+            color: #d4b36a;
+
+            font-size: 18px;
+        }
+
+
+        /* ==========================================
+           HINWEIS
+           ========================================== */
+
+        .notice {
+
+            margin-top: 25px;
+
+            padding: 18px;
+
+            background:
+                rgba(184, 149, 82, 0.08);
+
+            border-left:
+                3px solid #b89552;
+
+            text-align: left;
+
+            border-radius: 6px;
+        }
+
+
+        .notice-title {
+
+            color: #d4b36a;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+
+        .notice-text {
+
+            color: #c9c1b0;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ==========================================
+           BUTTONS
+           ========================================== */
+
+        .buttons {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+
+            gap: 14px;
+
+            margin-top: 30px;
+        }
+
+
+        .button {
+
+            display: inline-block;
+
+            min-width: 190px;
+
+            padding: 14px 20px;
+
+            border-radius: 8px;
+
+            border: 1px solid #b89552;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #5b4725,
+                    #382b16
+                );
+
+            color: #f3ead2;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .button:hover {
+
+            transform: translateY(-2px);
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #745b30,
+                    #49371b
+                );
+
+            box-shadow:
+                0 6px 18px rgba(0, 0, 0, 0.45);
+        }
+
+
+        .button-secondary {
+
+            background:
+                rgba(0, 0, 0, 0.45);
+        }
+
+
+        .button-secondary:hover {
+
+            background:
+                rgba(184, 149, 82, 0.15);
+      }
+
+              /* ==========================================
+           FOOTER
+           ========================================== */
+
+        footer {
+
+            margin-top: auto;
+
+            padding: 20px;
+
+            text-align: center;
+
+            color: #8f8879;
+
+            font-size: 13px;
+
+            border-top:
+                1px solid rgba(184, 149, 82, 0.25);
+
+            background:
+                rgba(0, 0, 0, 0.65);
+        }
+
+
+        /* ==========================================
+           MOBILE
+           ========================================== */
+
+        @media (max-width: 600px) {
+
+            .navigation {
+                min-height: 75px;
+                padding: 15px;
+            }
+
+
+            .navigation-title {
+                font-size: 22px;
+                letter-spacing: 1px;
+            }
+
+
+            .main {
+                padding: 25px 12px;
+            }
+
+
+            .success-card {
+                padding: 30px 18px;
+            }
+
+
+            h1 {
+                font-size: 26px;
+            }
+
+
+            .success-text {
+                font-size: 15px;
+            }
+
+
+            .order-row {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 5px;
+            }
+
+
+            .order-value {
+                text-align: left;
+            }
+
+
+            .button {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         NAVIGATION
+         ========================================== -->
+
+    <nav class="navigation">
+
+        <div class="navigation-title">
+            EHRENMARKT
+        </div>
+
+    </nav>
+
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
+    <main class="main">
+
+        <section class="success-card">
+
+
+            <!-- ERFOLGSICON -->
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <!-- ÜBERSCHRIFT -->
+
+            <h1>
+                Bauauftrag erfolgreich erstellt
+            </h1>
+
+
+            <p class="success-text">
+
+                Dein Bauauftrag wurde erfolgreich
+                an den Ehrenmarkt übermittelt.
+
+                <br>
+
+                Ein Bauleiter wird sich nun um deinen
+                Auftrag kümmern.
+
+            </p>
+
+
+            <!-- ======================================
+                 AUFTRAGSDATEN
+                 ====================================== -->
+
+            <div class="order-box">
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Auftragsnummer
+                    </span>
+
+                    <span
+                        class="order-value order-number"
+                        id="orderNumber"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Vorläufiger Preis
+                    </span>
+
+                    <span
+                        class="order-value price"
+                        id="provisionalPrice"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Anzahlung (25 %)
+                    </span>
+
+                    <span
+                        class="order-value price"
+                        id="deposit"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Restzahlung
+                    </span>
+
+                    <span
+                        class="order-value price"
+                        id="remainingPayment"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+            </div>
+
+                      <!-- ======================================
+                 HINWEIS
+                 ====================================== -->
+
+            <div class="notice">
+
+                <div class="notice-title">
+                    Wichtiger Hinweis
+                </div>
+
+                <div class="notice-text">
+
+                    Der angezeigte Preis ist zunächst ein
+                    <strong>Grundpreis bzw. vorläufiger Preis</strong>.
+
+                    <br><br>
+
+                    Die tatsächlich benötigten Materialien
+                    und deren Mengen werden später durch
+                    den Bauleiter festgelegt.
+
+                    <br><br>
+
+                    Wenn die Materialien durch Falkenstein
+                    bereitgestellt werden, wird auf den
+                    Materialwert zusätzlich der vereinbarte
+                    Beschaffungszuschlag von 15 % berechnet.
+
+                    <br><br>
+
+                    Der endgültige Rechnungsbetrag wird nach
+                    Abschluss des Bauauftrags festgelegt.
+
+                </div>
+
+            </div>
+
+
+            <!-- ======================================
+                 BUTTONS
+                 ====================================== -->
+
+            <div class="buttons">
+
+                <a
+                    class="button"
+                    href="startseite.html"
+                >
+                    Zur Startseite
+                </a>
+
+                <a
+                    class="button button-secondary"
+                    href="kundenbereich.html"
+                >
+                    Zum Kundenbereich
+                </a>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+    <footer>
+
+        Ehrenmarkt –
+        Bauaufträge für den Falkenstein-Clan
+
+    </footer>
+
+
+    <!-- ==========================================
+         DATEN AUS SESSIONSTORAGE LADEN
+         ========================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                const orderNumber =
+                    sessionStorage.getItem(
+                        "ehrenmarkt_bauauftrag"
+                    );
+
+                const provisionalPrice =
+                    sessionStorage.getItem(
+                        "ehrenmarkt_bauauftrag_preis"
+                    );
+
+                const deposit =
+                    sessionStorage.getItem(
+                        "ehrenmarkt_bauauftrag_anzahlung"
+                    );
+
+
+                const orderNumberElement =
+                    document.getElementById(
+                        "orderNumber"
+                    );
+
+                const provisionalPriceElement =
+                    document.getElementById(
+                        "provisionalPrice"
+                    );
+
+                const depositElement =
+                    document.getElementById(
+                        "deposit"
+                    );
+
+                const remainingElement =
+                    document.getElementById(
+                        "remainingPayment"
+                    );
+
+
+                /* ==================================
+                   AUFTRAGSNUMMER
+                   ================================== */
+
+                if (orderNumber) {
+
+                    orderNumberElement.textContent =
+                        orderNumber;
+
+                } else {
+
+                    orderNumberElement.textContent =
+                        "Nicht verfügbar";
+
+                }
+
+
+                /* ==================================
+                   PREIS FORMATIEREN
+                   ================================== */
+
+                function euro(value) {
+
+                    const nummer =
+                        Number(value);
+
+                    if (
+                        Number.isNaN(nummer)
+                    ) {
+
+                        return "Nicht verfügbar";
+
+                    }
+
+
+                    return new Intl.NumberFormat(
+                        "de-DE",
+                        {
+                            style: "currency",
+                            currency: "EUR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 2
+                        }
+                    ).format(nummer);
+
+                }
+
+
+                /* ==================================
+                   VORLÄUFIGER PREIS
+                   ================================== */
+
+                if (provisionalPrice) {
+
+                    provisionalPriceElement.textContent =
+                        euro(provisionalPrice);
+
+                } else {
+
+                    provisionalPriceElement.textContent =
+                        "Nicht verfügbar";
+
+                }
+
+
+                /* ==================================
+                   ANZAHLUNG
+                   ================================== */
+
+                if (deposit) {
+
+                    depositElement.textContent =
+                        euro(deposit);
+
+                } else {
+
+                    depositElement.textContent =
+                        "Nicht verfügbar";
+
+                }
+
+
+                /* ==================================
+                   RESTZAHLUNG
+                   ================================== */
+
+                if (
+                    provisionalPrice &&
+                    deposit
+                ) {
+
+                    const preis =
+                        Number(provisionalPrice);
+
+                    const anzahlung =
+                        Number(deposit);
+
+                    const rest =
+                        preis - anzahlung;
+
+                    remainingElement.textContent =
+                        euro(rest);
+
+                } else {
+
+                    remainingElement.textContent =
+                        "Nicht verfügbar";
+
+                }
+
+            }
+
+        );
+
+    </script>
+
+
+</body>
+
+</html>
