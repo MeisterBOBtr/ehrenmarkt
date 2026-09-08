@@ -318,12 +318,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const terraformingProzent =
             leseProzent(terraformingLevel);
 
-        const prioritaetProzent =
-    priority.value === "schnell"
-        ? 10
-        : priority.value === "express"
-            ? 25
-            : 0;
+        const prioritaet =
+    document.getElementById("priority");
+
+let prioritaetProzent = 0;
+
+if (prioritaet) {
+    if (prioritaet.value === "schnell") {
+        prioritaetProzent = 10;
+    }
+
+    if (prioritaet.value === "express") {
+        prioritaetProzent = 25;
+    }
+}
 
 
         const innenPreis =
