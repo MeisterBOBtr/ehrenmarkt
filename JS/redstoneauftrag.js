@@ -1588,78 +1588,290 @@ function aktualisiereGesamtpreis() {
 }
 
 // ============================================================
-// TEIL 10 – AUFTRAG IN SUPABASE SPEICHERN
+// TEIL 10 – AUFTRAG ERSTELLEN UND SPEICHERN
+// ============================================================
+
+function pruefeRedstoneFormular() {
+
+    const minecraftName = element("minecraft_name")?.value.trim();
+    const titel = element("auftragstitel")?.value.trim();
+    const beschreibung = element("beschreibung")?.value.trim();
+
+    if (!minecraftName) {
+        alert("Bitte gib deinen Minecraft-Namen ein.");
+        return false;
+    }
+
+    if (!titel) {
+        alert("Bitte gib einen Auftragstitel ein.");
+        return false;
+    }
+
+    if (!beschreibung) {
+        alert("Bitte beschreibe deinen Auftrag.");
+        return false;
+    }
+
+    if (!radioWert("planung")) {
+        alert("Bitte wähle eine Planungsstufe.");
+        return false;
+    }
+
+    if (!radioWert("komplexitaet")) {
+        alert("Bitte wähle die Komplexität.");
+        return false;
+    }
+
+    if (!radioWert("anlage")) {
+        alert("Bitte wähle die Größe der Redstone-Anlage.");
+        return false;
+    }
+
+    if (!radioWert("redstone_bau")) {
+        alert("Bitte wähle die Redstone-Bauart.");
+        return false;
+    }
+
+    if (!radioWert("extension_type")) {
+        alert("Bitte wähle eine Erweiterung.");
+        return false;
+    }
+
+    if (!radioWert("urgency_type")) {
+        alert("Bitte wähle die Dringlichkeit.");
+        return false;
+    }
+
+    if (!radioWert("weekend_work")) {
+        alert("Bitte wähle die Wochenendarbeit.");
+        return false;
+    }
+
+    if (!radioWert("guarantee_months")) {
+        alert("Bitte wähle die Garantie.");
+        return false;
+    }
+
+    return true;
+}
+
+
+// ============================================================
+// AUFTRAGSDATEN SAMMELN
+// ============================================================
+
+function sammleRedstoneAuftragsdaten(user) {
+
+    const preis =
+        berechneGesamtpreis();
+
+    return {
+
+        user_id: user.id,
+
+        customer_name:
+            user.email || "Ehrenmarkt-Kunde",
+
+        minecraft_name:
+            element("minecraft_name")?.value.trim() || "",
+
+        title:
+            element("auftragstitel")?.value.trim() || "",
+
+        description:
+            element("beschreibung")?.value.trim() || "",
+
+        plot_count:
+            Math.max(
+                1,
+                Number(element("plot_count")?.value) || 1
+            ),
+
+        planning_type:
+            radioWert("planung"),
+
+        complexity:
+            radioWert("komplexitaet"),
+
+        plant_size:
+            radioWert("anlage"),
+
+        redstone_build_type:
+            radioWert("redstone_bau"),
+
+        special_existing_installation:
+            checkboxAktiv("special_existing_installation"),
+
+        special_existing_conversion:
+            checkboxAktiv("special_existing_conversion"),
+
+        special_foreign_repair:
+            checkboxAktiv("special_foreign_repair"),
+
+        special_compact_build:
+            checkboxAktiv("special_compact_build"),
+
+        special_hidden_redstone:
+            checkboxAktiv("special_hidden_redstone"),
+
+        special_difficult_access:
+            checkboxAktiv("special_difficult_access"),
+
+        extension_type:
+            radioWert("extension_type"),
+
+        urgency_type:
+            radioWert("urgency_type"),
+
+        weekend_work:
+            radioWert("weekend_work") === "true",
+
+        guarantee_months:
+            Number(radioWert("guarantee_months")) || 0,
+
+        total_price:
+            preis.gesamtpreis,
+
+        deposit_amount:
+            preis.anzahlung,
+
+        remaining_amount:
+            preis.restbetrag,
+
+        materialien:
+            sammleMaterialien()
+
+    };
+}
+
+
+// ============================================================
+// AUFTRAG IN SUPABASE SPEICHERN
 // ============================================================
 
 async function erstelleRedstoneAuftrag() {
 
     if (!pruefeSupabase()) {
-        alert("Die Verbindung zu Supabase ist nicht verfügbar.");
+
+        alert(
+            "Die Verbindung zu Supabase ist nicht verfügbar."
+        );
+
         return;
     }
+
 
     if (!pruefeRedstoneFormular()) {
         return;
     }
 
-    const button = element("auftragAbsenden");
+
+    const button =
+        element("auftragAbsenden");
+
 
     if (button) {
+
         button.disabled = true;
-        button.textContent = "Auftrag wird erstellt...";
+
+        button.textContent =
+            "Auftrag wird erstellt...";
     }
+
 
     try {
 
-        // Angemeldeten Benutzer abrufen
+        // Angemeldeten Benutzer holen
+
         const {
             data: userData,
             error: userError
-        } = await supabase.auth.getUser();
+        } =
+            await supabaseClient.auth.getUser();
+
 
         if (userError) {
             throw userError;
         }
 
-        const user = userData?.user;
+
+        const user =
+            userData?.user;
+
 
         if (!user) {
-            alert("Du musst angemeldet sein, um einen Auftrag zu erstellen.");
+
+            alert(
+                "Du musst angemeldet sein, " +
+                "um einen Auftrag zu erstellen."
+            );
+
             return;
         }
 
-        // Aktuelle Preise noch einmal vollständig berechnen
+
+        // Preise noch einmal vollständig berechnen
+
         berechneMaterialpreis();
-        berechneGesamtpreis();
+
+        const preis =
+            berechneGesamtpreis();
+
 
         // Auftragsdaten sammeln
-        const auftrag = sammleRedstoneAuftragsdaten(user);
 
-        /*
-         * Auftragsnummer:
-         * Es wird eine eindeutige technische Nummer erzeugt.
-         */
+        const auftrag =
+            sammleRedstoneAuftragsdaten(user);
+
+
+        // Eindeutige Auftragsnummer
+
         const orderNumber =
             "RS-" +
             Date.now().toString() +
             "-" +
-            Math.random().toString(36).substring(2, 7).toUpperCase();
+            Math.random()
+                .toString(36)
+                .substring(2, 7)
+                .toUpperCase();
 
-        // Daten für redstone_orders vorbereiten
+
+        // Daten für redstone_orders
+
         const orderData = {
-            order_number: orderNumber,
-            user_id: auftrag.user_id,
-            customer_name: auftrag.customer_name,
-            minecraft_name: auftrag.minecraft_name,
-            title: auftrag.title,
-            description: auftrag.description,
 
-            plot_count: auftrag.plot_count,
-            planning_type: auftrag.planning_type,
-            complexity: auftrag.complexity,
+            order_number:
+                orderNumber,
 
-            plant_size: auftrag.plant_size,
-            redstone_build_type: auftrag.redstone_build_type,
+            user_id:
+                auftrag.user_id,
+
+            customer_name:
+                auftrag.customer_name,
+
+            minecraft_name:
+                auftrag.minecraft_name,
+
+            title:
+                auftrag.title,
+
+            description:
+                auftrag.description,
+
+            plot_count:
+                auftrag.plot_count,
+
+            planning_type:
+                auftrag.planning_type,
+
+            complexity:
+                auftrag.complexity,
+
+            plant_size:
+                auftrag.plant_size,
+
+            redstone_build_type:
+                auftrag.redstone_build_type,
 
             special_existing_installation:
                 auftrag.special_existing_installation,
@@ -1679,88 +1891,130 @@ async function erstelleRedstoneAuftrag() {
             special_difficult_access:
                 auftrag.special_difficult_access,
 
-            extension_type: auftrag.extension_type,
-            urgency_type: auftrag.urgency_type,
-            weekend_work: auftrag.weekend_work,
-            guarantee_months: auftrag.guarantee_months,
+            extension_type:
+                auftrag.extension_type,
 
-            total_price: auftrag.total_price,
-            deposit_amount: auftrag.deposit_amount,
-            remaining_amount: auftrag.remaining_amount
+            urgency_type:
+                auftrag.urgency_type,
+
+            weekend_work:
+                auftrag.weekend_work,
+
+            guarantee_months:
+                auftrag.guarantee_months,
+
+            total_price:
+                preis.gesamtpreis,
+
+            deposit_amount:
+                preis.anzahlung,
+
+            remaining_amount:
+                preis.restbetrag
+
         };
 
+
         // Auftrag speichern
+
         const {
             data: gespeicherterAuftrag,
             error: orderError
-        } = await supabase
-            .from(SUPABASE_TABLE_ORDERS)
-            .insert(orderData)
-            .select("id, order_number")
-            .single();
+        } =
+            await supabaseClient
+                .from(SUPABASE_TABLE_ORDERS)
+                .insert(orderData)
+                .select("id, order_number")
+                .single();
+
 
         if (orderError) {
             throw orderError;
         }
 
+
         // Materialien speichern
-        const materialien = auftrag.materialien;
+
+        const materialien =
+            auftrag.materialien;
+
 
         if (materialien.length > 0) {
 
-            const materialDaten = materialien.map((material) => ({
-                order_id: gespeicherterAuftrag.id,
-                item_id: material.item_id,
-                quantity: material.quantity,
-                price_per_piece: material.price_per_piece
-            }));
+            const materialDaten =
+                materialien.map((material) => ({
+
+                    order_id:
+                        gespeicherterAuftrag.id,
+
+                    item_id:
+                        material.item_id,
+
+                    quantity:
+                        material.quantity,
+
+                    price_per_piece:
+                        material.price_per_piece
+
+                }));
+
 
             const {
                 error: materialError
-            } = await supabase
-                .from(SUPABASE_TABLE_ORDER_ITEMS)
-                .insert(materialDaten);
+            } =
+                await supabaseClient
+                    .from(
+                        SUPABASE_TABLE_ORDER_ITEMS
+                    )
+                    .insert(materialDaten);
+
 
             if (materialError) {
 
-                // Auftrag zurücksetzen, falls die Materialpositionen
-                // nicht gespeichert werden konnten.
+                // Auftrag wieder löschen,
+                // wenn Materialien nicht gespeichert wurden
+
                 await supabaseClient
-    .from(SUPABASE_TABLE_ORDERS)
+                    .from(SUPABASE_TABLE_ORDERS)
                     .delete()
-                    .eq("id", gespeicherterAuftrag.id);
+                    .eq(
+                        "id",
+                        gespeicherterAuftrag.id
+                    );
 
                 throw materialError;
             }
         }
 
-        // Erfolgreich
-        // Daten für die Erfolgsseite speichern
-sessionStorage.setItem(
-    "redstone_order_number",
-    gespeicherterAuftrag.order_number
-);
 
-sessionStorage.setItem(
-    "redstone_order_price",
-    String(auftrag.total_price)
-);
+        // Daten für Erfolgsseite speichern
 
-sessionStorage.setItem(
-    "redstone_order_deposit",
-    String(auftrag.deposit_amount)
-);
+        sessionStorage.setItem(
+            "redstone_order_number",
+            gespeicherterAuftrag.order_number
+        );
 
-sessionStorage.setItem(
-    "redstone_order_remaining",
-    String(auftrag.remaining_amount)
-);
+        sessionStorage.setItem(
+            "redstone_order_price",
+            String(preis.gesamtpreis)
+        );
 
-// Zur Redstone-Erfolgsseite
-window.location.href = "../HTML/redstone_erfolgreich.html";
+        sessionStorage.setItem(
+            "redstone_order_deposit",
+            String(preis.anzahlung)
+        );
 
-        // Zur Startseite zurück
-        window.location.href = "../HTML/startseite.html";
+        sessionStorage.setItem(
+            "redstone_order_remaining",
+            String(preis.restbetrag)
+        );
+
+
+        // Zur Erfolgsseite
+
+        window.location.href =
+            "../HTML/redstone_erfolgreich.html";
+
 
     } catch (fehler) {
 
@@ -1769,18 +2023,25 @@ window.location.href = "../HTML/redstone_erfolgreich.html";
             fehler
         );
 
+
         alert(
             "Der Auftrag konnte nicht erstellt werden.\n\n" +
             "Bitte versuche es erneut."
         );
 
+
     } finally {
 
         if (button) {
+
             button.disabled = false;
-            button.textContent = "Redstone-Auftrag erstellen";
+
+            button.textContent =
+                "Redstone-Auftrag erstellen";
         }
+
     }
+
 }
 
 
@@ -1790,26 +2051,43 @@ window.location.href = "../HTML/redstone_erfolgreich.html";
 
 function initialisiereAuftragAbsenden() {
 
-    const button = element("auftragAbsenden");
+    const button =
+        element("auftragAbsenden");
+
 
     if (!button) {
+
         console.error(
             "Der Button #auftragAbsenden wurde nicht gefunden."
         );
+
         return;
     }
 
-    button.addEventListener("click", (event) => {
-        event.preventDefault();
-        erstelleRedstoneAuftrag();
-    });
+
+    button.addEventListener(
+        "click",
+        (event) => {
+
+            event.preventDefault();
+
+            erstelleRedstoneAuftrag();
+
+        }
+    );
+
 }
 
 
 // ============================================================
-// ABSENDEN NACH DEM LADEN DER SEITE AKTIVIEREN
+// SEITE GELADEN
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    initialisiereAuftragAbsenden();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initialisiereAuftragAbsenden();
+
+    }
+);
