@@ -1650,6 +1650,85 @@
 
   </section>
 
+        <!-- PREISÜBERSICHT -->
+    <section class="bereich">
+
+        <h2>Preisübersicht</h2>
+
+        <div class="preisbox">
+
+            <div class="preiszeile">
+                <span>Grundpreis</span>
+                <span id="preisGrundpreis">0 $</span>
+            </div>
+
+            <div class="preiszeile">
+                <span>Redstone-Materialien</span>
+                <span id="preisMaterial">0 $</span>
+            </div>
+
+            <div class="preiszeile">
+                <span>Dringlichkeit</span>
+                <span id="preisDringlichkeit">0 $</span>
+            </div>
+
+            <div class="preiszeile">
+                <span>Wochenendarbeit</span>
+                <span id="preisWochenende">0 $</span>
+            </div>
+
+            <div class="preiszeile">
+                <span>Garantie</span>
+                <span id="preisGarantie">0 $</span>
+            </div>
+
+            <div class="preiszeile gesamt">
+                <span>Gesamtpreis</span>
+                <span id="gesamtPreis">0 $</span>
+            </div>
+
+        </div>
+
+
+        <div class="zahlung">
+
+            <div class="preiszeile">
+                <span>Anzahlung (25 %)</span>
+                <strong id="anzahlung">0 $</strong>
+            </div>
+
+            <div class="preiszeile">
+                <span>Restbetrag (75 %)</span>
+                <strong id="restbetrag">0 $</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AUFTRAG ABSENDEN -->
+
+    <section class="bereich">
+
+        <h2>Auftrag abschließen</h2>
+
+        <div class="hinweis">
+            Prüfe bitte alle Angaben und die Preisübersicht,
+            bevor du den Auftrag verbindlich erstellst.
+        </div>
+
+        <br>
+
+        <button
+            type="button"
+            class="absenden"
+            id="auftragAbsenden">
+            Redstone-Auftrag erstellen
+        </button>
+
+    </section>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../supabase.js"></script>
 <script src="../JS/redstoneauftrag.js"></script>
