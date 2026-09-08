@@ -252,7 +252,7 @@ function setzeStartwerte() {
 
 function pruefeSupabase() {
 
-    if (typeof supabase === "undefined") {
+    if (typeof supabaseClient === "undefined") {
 
         console.error(
             "Supabase wurde nicht geladen."
@@ -280,8 +280,8 @@ async function ladeRedstonePreise() {
         const {
             data,
             error
-        } = await supabase
-            .from(SUPABASE_TABLE_PRICES)
+        } = await supabaseClient
+    .from(SUPABASE_TABLE_PRICES)
             .select("id, name, price")
             .order("id", {
                 ascending: true
