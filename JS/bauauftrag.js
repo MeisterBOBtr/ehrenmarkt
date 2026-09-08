@@ -518,15 +518,12 @@ if (prioritaet) {
     // ==========================================
 
     [
-        interiorLevel,
-        exteriorLevel,
-        lightingLevel,
-        terraformingLevel
-    ].forEach((feld) => {
-
-        if (!feld) {
-            return;
-        }
+    interiorLevel,
+    exteriorLevel,
+    lightingLevel,
+    terraformingLevel,
+    priority
+].forEach((feld) => {
 
 
         feld.addEventListener(
