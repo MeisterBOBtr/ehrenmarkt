@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Bauauftrag</title>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
+    <script src="../supabase.js"></script>
+
+    <script
+        src="../JS/bauauftrag.js"
+        defer>
+    </script>
+
+    <style>
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F0D675;
+            --gold-dark: #8F7420;
+
+            --red: #8B1E1E;
+            --red-dark: #571313;
+            --red-light: #B93636;
+
+            --dark: #101010;
+            --dark-2: #181818;
+            --dark-3: #222222;
+            --dark-4: #2C2C2C;
+
+            --text: #F3EAD5;
+            --muted: #B9AA8B;
+
+            --border: #55493C;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            color: var(--text);
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #303030 0%,
+                    #171717 45%,
+                    #090909 100%
+                );
+        }
+
+
+        /* ==========================================
+           NAVIGATION
+        ========================================== */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 10px 18px;
+
+            background:
+                linear-gradient(
+                    rgba(20, 12, 8, .86),
+                    rgba(20, 12, 8, .94)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Navigation.png")
+                center / cover no-repeat;
+
+            border-bottom: 3px solid var(--gold);
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.65);
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            white-space: nowrap;
+        }
+
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--gold-light);
+
+            font-size: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    var(--red),
+                    var(--red-dark)
+                );
+
+            border: 1px solid var(--gold);
+
+            border-radius: 6px;
+
+            box-shadow:
+                0 3px 8px rgba(0,0,0,.5);
+        }
+
+
+        .brand-text {
+            color: var(--gold-light);
+
+            font-size: 17px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 2px 4px black;
+        }
+
+
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+
+            justify-content: flex-end;
+
+            gap: 6px;
+        }
+
+
+        .nav-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 8px 12px;
+
+            color: #EEEEEE;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #423027,
+                    #291A13
+                );
+
+            border: 1px solid #654634;
+            border-bottom: 3px solid #160D09;
+
+            border-radius: 6px;
+
+            transition: .15s ease;
+        }
+
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+
+            border-color: var(--gold);
+        }
+
+
+        .nav-button.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #A32626,
+                    #701616
+                );
+
+            border-color: var(--gold);
+        }
+
+
+        /* ==========================================
+           HERO
+        ========================================== */
+
+        .hero {
+            position: relative;
+
+            min-height: 330px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 55px 20px;
+
+            background:
+                linear-gradient(
+                    rgba(10,10,10,.40),
+                    rgba(10,10,10,.82)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/Hintergrund.png")
+                center / cover no-repeat;
+
+            border-bottom: 3px solid var(--red);
+
+            box-shadow:
+                inset 0 -30px 50px rgba(0,0,0,.45);
+        }
+
+
+        .hero-content {
+            width: min(900px, 100%);
+
+            text-align: center;
+        }
+
+
+        .hero h1 {
+            margin: 0;
+
+            color: white;
+
+            font-size:
+                clamp(38px, 8vw, 68px);
+
+            font-weight: 900;
+
+            text-shadow:
+                0 4px 0 #3A1111,
+                0 8px 15px rgba(0,0,0,.9);
+        }
+
+
+        .hero-line {
+            width: 190px;
+            height: 4px;
+
+            margin: 16px auto;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    var(--gold),
+                    transparent
+                );
+        }
+
+
+        .hero p {
+            max-width: 720px;
+
+            margin: 0 auto;
+
+            color: #E8DCC2;
+
+            font-size: 16px;
+            line-height: 1.6;
+
+            text-shadow:
+                0 2px 5px black;
+        }
+
+
+        /* ==========================================
+           HAUPTBEREICH
+        ========================================== */
+
+        .container {
+            width: min(
+                1050px,
+                calc(100% - 24px)
+            );
+
+            margin: 30px auto 60px;
+        }
+
+
+        /* ==========================================
+           KARTEN
+        ========================================== */
+
+        .section {
+            position: relative;
+
+            margin-bottom: 22px;
+
+            padding: 25px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(48,48,48,.97),
+                    rgba(27,27,27,.97)
+                );
+
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--gold);
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 8px 22px rgba(0,0,0,.45),
+                inset 0 1px rgba(255,255,255,.04);
+        }
+
+
+        .section::before {
+            content: "";
+
+            position: absolute;
+
+            top: 8px;
+            left: 9px;
+            right: 9px;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(212,175,55,.30),
+                    transparent
+                );
+        }
+
+
+        .section-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+
+            flex-shrink: 0;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 3px 4px rgba(0,0,0,.7)
+                );
+        }
+
+
+        .section-title h2 {
+            margin: 0;
+
+            color: var(--gold-light);
+
+            font-size: 23px;
+
+            text-shadow:
+                0 2px 4px black;
+        }
+
+
+        .section-description {
+            margin: 0 0 20px;
+
+            color: var(--muted);
+
+            line-height: 1.6;
+        }
+
+
+        /* ==========================================
+           FORMULAR
+        ========================================== */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .form-group > label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #E8DCC2;
+
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+
+            padding: 12px 13px;
+
+            color: #F5EEDC;
+
+            font-family: inherit;
+            font-size: 15px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #242424,
+                    #191919
+                );
+
+            border: 1px solid #51483D;
+
+            border-radius: 7px;
+
+            outline: none;
+
+            transition:
+                border-color .15s ease,
+                box-shadow .15s ease;
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(212,175,55,.12);
+        }
+
+
+        .form-group textarea {
+            min-height: 120px;
+
+            resize: vertical;
+
+            line-height: 1.55;
+        }
+
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #817866;
+        }
+
+
+        .form-group select option {
+            background: #222;
+
+            color: white;
+        }
+
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .form-grid-3 {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+        }
+
+
+        .sub-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+
+        .hint {
+            margin: 10px 0 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==========================================
+           INFOBOX
+        ========================================== */
+
+        .info-box {
+            margin: 16px 0;
+
+            padding: 15px;
+
+            background:
+                rgba(212,175,55,.06);
+
+            border: 1px solid #5A503F;
+
+            border-left: 4px solid var(--gold);
+
+            border-radius: 8px;
+
+            line-height: 1.6;
+        }
+
+
+        .info-box strong {
+            color: var(--gold-light);
+        }
+
+
+        .info-box p {
+            margin: 6px 0;
+
+            color: #C8BDA8;
+        }
+
+
+        /* ==========================================
+           PREISBOX
+        ========================================== */
+
+        .price-box {
+            margin-top: 10px;
+
+            padding: 20px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #38251A,
+                    #21140E
+                );
+
+            border: 1px solid #654634;
+
+            border-left: 4px solid var(--gold);
+
+            border-radius: 8px;
+        }
+
+
+        .price-box > p {
+            margin: 0 0 8px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+
+        .price-main {
+            margin-bottom: 18px;
+
+            color: var(--gold-light);
+
+            font-size: 32px;
+            font-weight: 900;
+
+            text-shadow:
+                0 2px 5px black;
+        }
+
+
+        .price-row {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 10px 0;
+
+            border-top: 1px solid
+                rgba(255,255,255,.08);
+        }
+
+
+        .price-row strong {
+            color: #E8DCC2;
+        }
+
+
+        .price-row span {
+            color: var(--gold-light);
+
+            font-weight: 800;
+        }
+
+
+        /* ==========================================
+           ABSENDEN
+        ========================================== */
+
+        .submit-area {
+            text-align: center;
+
+            border-top-color: var(--red);
+        }
+
+
+        .submit-button {
+            width: 100%;
+
+            max-width: 500px;
+
+            padding: 15px 20px;
+
+            color: white;
+
+            font-size: 17px;
+            font-weight: 900;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #A32626,
+                    #681414
+                );
+
+            border: 1px solid var(--gold);
+
+            border-bottom: 4px solid #390909;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            transition: .15s ease;
+        }
+
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 15px
+                rgba(0,0,0,.45);
+        }
+
+
+        .submit-button:disabled {
+            opacity: .55;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        /* ==========================================
+           FOOTER
+        ========================================== */
+
+        .footer {
+            padding: 35px 20px;
+
+            text-align: center;
+
+            background:
+                #0B0B0B;
+
+            border-top: 2px solid var(--gold);
+        }
+
+
+        .footer-title {
+            color: var(--gold-light);
+
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+
+        .footer p {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 800px) {
+
+            .topbar {
+                flex-direction: column;
+
+                align-items: stretch;
+
+                padding: 9px 10px;
+            }
+
+
+            .brand {
+                justify-content: center;
+            }
+
+
+            .nav-buttons {
+                justify-content: center;
+            }
+
+
+            .nav-button {
+                flex: 1 1 auto;
+
+                min-width: 90px;
+
+                font-size: 12px;
+
+                padding: 8px;
+            }
+
+
+            .hero {
+                min-height: 270px;
+
+                padding: 45px 15px;
+            }
+
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+
+            .hero p {
+                font-size: 14px;
+            }
+
+
+            .container {
+                width:
+                    calc(100% - 16px);
+
+                margin-top: 18px;
+            }
+
+
+            .section {
+                padding: 19px 15px;
+
+                margin-bottom: 18px;
+            }
+
+
+            .form-grid,
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+
+                gap: 14px;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .brand-mark {
+                width: 38px;
+                height: 38px;
+
+                font-size: 19px;
+            }
+
+
+            .brand-text {
+                font-size: 14px;
+            }
+
+
+            .nav-button {
+                min-width: 0;
+
+                font-size: 11px;
+            }
+
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+
+            .section-title h2 {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         NAVIGATION
+    ========================================== -->
+
+    <nav class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                ⚔
+            </div>
+
+            <span class="brand-text">
+                EHRENMARKT
+            </span>
+
+        </div>
+
+
+        <div class="nav-buttons">
+
+            <a
+                href="startseite.html"
+                class="nav-button"
+            >
+                Startseite
+            </a>
+
+
+            <a
+                href="bauauftrag.html"
+                class="nav-button active"
+            >
+                Bauauftrag
+            </a>
+
+
+            <a
+                href="materialauftrag.html"
+                class="nav-button"
+            >
+                Material
+            </a>
+
+
+            <a
+                href="logistikauftrag.html"
+                class="nav-button"
+            >
+                Logistik
+            </a>
+
+
+            <a
+                href="redstoneauftrag.html"
+                class="nav-button"
+            >
+                Redstone
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ==========================================
+         HERO
+    ========================================== -->
+
+    <header class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+                Bauauftrag
+            </h1>
+
+            <div class="hero-line"></div>
+
+            <p>
+                Plane dein Bauprojekt für den
+                Falkenstein-Clan und übermittle
+                uns deine Wünsche.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==========================================
+         FORMULAR
+    ========================================== -->
+
+    <main class="container">
+
+        <form
+            id="bauauftragForm"
+            novalidate
+        >
+
+
+            <!-- =====================================
+                 EINLEITUNG
+            ===================================== -->
+
+            <section class="section">
+
+                <div class="section-title">
+
+                    <img
+                        class="section-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/book.png"
+                        alt="Bauauftrag"
+                    >
+
+                    <h2>
+                        Dein Bauprojekt
+                    </h2>
+
+                </div>
+
+
+                <p class="section-description">
+                    Fülle die Angaben zu deinem
+                    gewünschten Bauprojekt möglichst
+                    vollständig aus.
+                </p>
+
+
+                <div class="info-box">
+
+                    <strong>
+                        📜 Wichtig
+                    </strong>
+
+                    <p>
+                        Der angezeigte Preis ist zunächst
+                        nur ein <strong>Grundpreis bzw.
+                        vorläufiger Preis</strong>.
+                    </p>
+
+                    <p>
+                        Der Bauleiter ermittelt später
+                        den tatsächlichen Materialbedarf
+                        und die endgültigen Materialkosten.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+     1. DEINE ANGABEN
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/writable_book.png"
+            alt="Angaben"
+        >
+
+        <h2>
+            Deine Angaben
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Gib an, unter welchem Minecraft-Namen
+        du den Auftrag erstellst und wie wir
+        dich erreichen können.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="minecraftName">
+            🎮 Minecraft-Name
+        </label>
+
+        <input
+            type="text"
+            id="minecraftName"
+            name="minecraftName"
+            placeholder="Dein Minecraft-Name"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-grid">
+
+        <div class="form-group">
+
+            <label for="contactType">
+                📞 Kontaktmöglichkeit
+            </label>
+
+            <select
+                id="contactType"
+                name="contactType"
+                required
+            >
+
+                <option value="">
+                    Bitte auswählen
+                </option>
+
+                <option value="discord">
+                    Discord
+                </option>
+
+                <option value="minecraft">
+                    Minecraft
+                </option>
+
+                <option value="beides">
+                    Discord & Minecraft
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="contactValue">
+                👤 Kontaktangabe
+            </label>
+
+            <input
+                type="text"
+                id="contactValue"
+                name="contactValue"
+                placeholder="z. B. Discord-Name"
+                required
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     2. GEBÄUDE & BAUGRÖSSE
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/tuff_bricks-3d.png"
+            alt="Gebäude"
+        >
+
+        <h2>
+            Gebäude & Baugröße
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Was soll gebaut werden und welche Größe
+        soll dein Projekt haben?
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="buildingType">
+            🏠 Gebäudeart
+        </label>
+
+        <select
+            id="buildingType"
+            name="buildingType"
+            required
+        >
+
+            <option value="">
+                Bitte auswählen
+            </option>
+
+            <option value="haus">
+                Haus
+            </option>
+
+            <option value="villa">
+                Villa
+            </option>
+
+            <option value="lager">
+                Lager
+            </option>
+
+            <option value="farm">
+                Farm
+            </option>
+
+            <option value="laden">
+                Laden
+            </option>
+
+            <option value="werkstatt">
+                Werkstatt
+            </option>
+
+            <option value="burg">
+                Burg
+            </option>
+
+            <option value="turm">
+                Turm
+            </option>
+
+            <option value="mauer">
+                Stadtmauer
+            </option>
+
+            <option value="bruecke">
+                Brücke
+            </option>
+
+            <option value="strasse">
+                Straße
+            </option>
+
+            <option value="terraforming">
+                Terraforming
+            </option>
+
+            <option value="sonstiges">
+                Sonstiges
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>
+            📐 Merge-Größe
+        </label>
+
+
+        <div class="form-grid">
+
+            <div>
+
+                <label
+                    class="sub-label"
+                    for="mergeWidth"
+                >
+                    Merge-Breite
+                </label>
+
+                <input
+                    type="number"
+                    id="mergeWidth"
+                    name="mergeWidth"
+                    min="1"
+                    required
+                    placeholder="z. B. 2"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    class="sub-label"
+                    for="mergeHeight"
+                >
+                    Merge-Höhe
+                </label>
+
+                <input
+                    type="number"
+                    id="mergeHeight"
+                    name="mergeHeight"
+                    min="1"
+                    required
+                    placeholder="z. B. 5"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>
+            📏 Gebäudegröße
+        </label>
+
+
+        <div class="form-grid-3">
+
+            <div>
+
+                <label
+                    class="sub-label"
+                    for="buildingLength"
+                >
+                    Länge
+                </label>
+
+                <input
+                    type="number"
+                    id="buildingLength"
+                    name="buildingLength"
+                    min="1"
+                    placeholder="z. B. 30"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    class="sub-label"
+                    for="buildingWidth"
+                >
+                    Breite
+                </label>
+
+                <input
+                    type="number"
+                    id="buildingWidth"
+                    name="buildingWidth"
+                    min="1"
+                    placeholder="z. B. 20"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label
+                    class="sub-label"
+                    for="buildingHeight"
+                >
+                    Höhe
+                </label>
+
+                <input
+                    type="number"
+                    id="buildingHeight"
+                    name="buildingHeight"
+                    min="1"
+                    placeholder="z. B. 25"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="buildingFloors">
+            🏢 Anzahl der Etagen
+        </label>
+
+        <input
+            type="number"
+            id="buildingFloors"
+            name="buildingFloors"
+            min="1"
+            placeholder="z. B. 3"
+        >
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     3. GESTALTUNG
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/bricks-3d.png"
+            alt="Gestaltung"
+        >
+
+        <h2>
+            Gestaltung
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Beschreibe den gewünschten Stil und
+        die wichtigsten Gestaltungselemente.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="buildingStyle">
+            🏰 Baustil
+        </label>
+
+        <select
+            id="buildingStyle"
+            name="buildingStyle"
+            required
+        >
+
+            <option value="">
+                Bitte auswählen
+            </option>
+
+            <option value="mittelalter">
+                Mittelalter
+            </option>
+
+            <option value="modern">
+                Modern
+            </option>
+
+            <option value="rustikal">
+                Rustikal
+            </option>
+
+            <option value="fantasy">
+                Fantasy
+            </option>
+
+            <option value="japanisch">
+                Japanisch
+            </option>
+
+            <option value="orientalisch">
+                Orientalisch
+            </option>
+
+            <option value="viktorianisch">
+                Viktorianisch
+            </option>
+
+            <option value="steampunk">
+                Steampunk
+            </option>
+
+            <option value="unterirdisch">
+                Unterirdisch
+            </option>
+
+            <option value="individuell">
+                Individuell
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="blockPalette">
+            🎨 Blockpalette
+        </label>
+
+        <select
+            id="blockPalette"
+            name="blockPalette"
+        >
+
+            <option value="hell">
+                Hell
+            </option>
+
+            <option value="dunkel">
+                Dunkel
+            </option>
+
+            <option value="gemischt">
+                Gemischt
+            </option>
+
+            <option value="individuell">
+                Individuell
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="specialBlocks">
+            🧱 Besondere Blöcke oder Wünsche
+        </label>
+
+        <textarea
+            id="specialBlocks"
+            name="specialBlocks"
+            rows="4"
+            placeholder="z. B. Quarzsäulen, Kupferdach, Laternen, Banner..."
+        ></textarea>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     4. MATERIALBEREITSTELLUNG
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/barrel-3d.png"
+            alt="Materialien"
+        >
+
+        <h2>
+            Materialbereitstellung
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Entscheide bereits bei der Auftragserstellung,
+        wer die benötigten Materialien bereitstellt.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="materialProvider">
+            📦 Wer stellt die Materialien bereit?
+        </label>
+
+        <select
+            id="materialProvider"
+            name="materialProvider"
+            required
+        >
+
+            <option value="">
+                Bitte auswählen
+            </option>
+
+            <option value="kunde">
+                Ich stelle die Materialien selbst bereit
+            </option>
+
+            <option value="falkenstein">
+                Falkenstein stellt die Materialien bereit
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>
+            📋 Wichtig zur Materialabrechnung
+        </strong>
+
+        <p>
+            Der Bauleiter ermittelt später den
+            tatsächlichen Materialbedarf und trägt
+            die verwendeten Mengen ein.
+        </p>
+
+        <p>
+            Wenn du die Materialien selbst bereitstellst,
+            fällt kein Beschaffungszuschlag an.
+        </p>
+
+        <p>
+            Wenn Falkenstein die Materialien bereitstellt,
+            werden die Materialkosten am Ende des Auftrags
+            berechnet. Auf den Materialwert kommen
+            zusätzlich <strong>15 % Beschaffungszuschlag</strong>.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     5. BAUUMFANG
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/white_bed-3d.png"
+            alt="Bauumfang"
+        >
+
+        <h2>
+            Bauumfang
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Welche zusätzlichen Arbeiten sollen
+        beim Projekt übernommen werden?
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="interiorLevel">
+            🛋️ Innenausbau
+        </label>
+
+        <select
+            id="interiorLevel"
+            name="interiorLevel"
+        >
+
+            <option value="nein">
+                Nein – 0 %
+            </option>
+
+            <option value="leicht">
+                Leicht – 5 %
+            </option>
+
+            <option value="mittel">
+                Mittel – 10 %
+            </option>
+
+            <option value="komplett">
+                Komplett – 15 %
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="exteriorLevel">
+            🌳 Außenbau
+        </label>
+
+        <select
+            id="exteriorLevel"
+            name="exteriorLevel"
+        >
+
+            <option value="nein">
+                Nein – 0 %
+            </option>
+
+            <option value="leicht">
+                Leicht – 5 %
+            </option>
+
+            <option value="mittel">
+                Mittel – 10 %
+            </option>
+
+            <option value="komplett">
+                Komplett – 15 %
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="lightingLevel">
+            💡 Beleuchtung
+        </label>
+
+        <select
+            id="lightingLevel"
+            name="lightingLevel"
+        >
+
+            <option value="nein">
+                Nein – 0 %
+            </option>
+
+            <option value="leicht">
+                Leicht – 5 %
+            </option>
+
+            <option value="mittel">
+                Mittel – 10 %
+            </option>
+
+            <option value="komplett">
+                Komplett – 15 %
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="terraformingLevel">
+            ⛰️ Terraforming
+        </label>
+
+        <select
+            id="terraformingLevel"
+            name="terraformingLevel"
+        >
+
+            <option value="nein">
+                Nein – 0 %
+            </option>
+
+            <option value="leicht">
+                Leicht – 5 %
+            </option>
+
+            <option value="mittel">
+                Mittel – 10 %
+            </option>
+
+            <option value="komplett">
+                Komplett – 15 %
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="planningDescription">
+            📐 Planung / zusätzliche Informationen
+        </label>
+
+        <textarea
+            id="planningDescription"
+            name="planningDescription"
+            rows="5"
+            placeholder="Weitere Informationen zur Planung..."
+        ></textarea>
+
+    </div>
+
+</section>
+
+         <!-- =====================================
+     6. PLANUNG & BESCHREIBUNG
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/writable_book.png"
+            alt="Planung"
+        >
+
+        <h2>
+            Planung & Beschreibung
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Beschreibe dein Bauprojekt möglichst genau,
+        damit der Bauleiter deine Wünsche nachvollziehen kann.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="description">
+            📝 Beschreibung des Bauprojekts
+        </label>
+
+        <textarea
+            id="description"
+            name="description"
+            rows="7"
+            placeholder="Beschreibe dein Bauprojekt möglichst genau..."
+            required
+        ></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="specialRequests">
+            ✨ Besondere Wünsche
+        </label>
+
+        <textarea
+            id="specialRequests"
+            name="specialRequests"
+            rows="5"
+            placeholder="z. B. besondere Räume, Türme, Keller, Geheimräume oder andere Wünsche..."
+        ></textarea>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     7. STANDORT & REFERENZBILD
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/map.png"
+            alt="Standort"
+        >
+
+        <h2>
+            Standort & Referenzbild
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Gib an, wo das Projekt gebaut werden soll.
+        Ein Referenzbild kannst du optional hinzufügen.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="location">
+            📍 Bauort
+        </label>
+
+        <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="z. B. CityBuild 2 /p h MeisterBOBtr oder Koordinaten"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="referenceImage">
+            🖼️ Referenzbild
+        </label>
+
+        <input
+            type="file"
+            id="referenceImage"
+            name="referenceImage"
+            accept="image/*"
+        >
+
+        <p class="hint">
+            Optional: Lade ein Bild oder einen Screenshot
+            hoch, der ungefähr zeigt, wie dein Bauprojekt
+            aussehen soll.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     8. PRIORITÄT
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/gold_ingot.png"
+            alt="Priorität"
+        >
+
+        <h2>
+            Priorität
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Wähle aus, wie dein Bauauftrag bearbeitet
+        werden soll.
+    </p>
+
+
+    <div class="form-group">
+
+        <label for="priority">
+            ⚡ Bearbeitung
+        </label>
+
+        <select
+            id="priority"
+            name="priority"
+        >
+
+            <option value="normal">
+                Normal – Standard-Bearbeitung
+            </option>
+
+            <option value="schnell">
+                Schnell – +10 %
+            </option>
+
+            <option value="express">
+                Express – +25 %
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>
+            ℹ️ Hinweis zur Priorität
+        </strong>
+
+        <p>
+            Die Priorität beeinflusst den Baupreis.
+            Die tatsächliche Bearbeitungszeit kann
+            abhängig von der Auslastung variieren.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     9. PREISÜBERSICHT
+===================================== -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/gold_ingot.png"
+            alt="Preis"
+        >
+
+        <h2>
+            Preisübersicht
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Der hier angezeigte Betrag ist der aktuelle
+        vorläufige Preis für deinen Bauauftrag.
+    </p>
+
+
+    <div class="price-box">
+
+        <p>
+            Vorläufiger Gesamtpreis
+        </p>
+
+
+        <div
+            id="provisionalPrice"
+            class="price-main"
+        >
+            0 $
+        </div>
+
+
+        <div class="price-row">
+
+            <strong>
+                🧱 Bauflächen
+            </strong>
+
+            <span id="plotCount">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="price-row">
+
+            <strong>
+                🏗️ Grundpreis
+            </strong>
+
+            <span id="basePrice">
+                0 $
+            </span>
+
+        </div>
+
+
+        <div class="price-row">
+
+            <strong>
+                ⚒️ Zusatzleistungen
+            </strong>
+
+            <span id="addonPrice">
+                0 $
+            </span>
+
+        </div>
+
+
+        <div class="price-row">
+
+            <strong>
+                💰 Anzahlung (25 %)
+            </strong>
+
+            <span id="deposit">
+                0 $
+            </span>
+
+        </div>
+
+
+        <div class="price-row">
+
+            <strong>
+                💵 Restzahlung
+            </strong>
+
+            <span id="remainingPayment">
+                0 $
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>
+            📜 Wichtiger Hinweis
+        </strong>
+
+        <p>
+            Der angezeigte Betrag ist zunächst nur
+            ein <strong>Grundpreis / vorläufiger Preis</strong>.
+        </p>
+
+        <p>
+            Die endgültigen Materialkosten werden
+            später durch den Bauleiter anhand des
+            tatsächlichen Materialverbrauchs ermittelt.
+        </p>
+
+        <p>
+            Wenn Falkenstein die Materialien bereitstellt,
+            werden auf den Materialwert zusätzlich
+            <strong>15 % Beschaffungszuschlag</strong>
+            berechnet.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     10. AUFTRAG EINREICHEN
+===================================== -->
+
+<section class="section submit-area">
+
+    <div class="section-title">
+
+        <img
+            class="section-icon"
+            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/anvil-3d.png"
+            alt="Bauauftrag einreichen"
+        >
+
+        <h2>
+            Auftrag einreichen
+        </h2>
+
+    </div>
+
+
+    <p class="section-description">
+        Überprüfe deine Angaben und reiche anschließend
+        deinen Bauauftrag beim Falkenstein-Clan ein.
+    </p>
+
+
+    <button
+        id="createOrder"
+        class="submit-button"
+        type="submit"
+    >
+        📜 Bauauftrag erstellen
+    </button>
+
+</section>
+
+
+        </form>
+
+    </main>
+
+
+    <!-- =====================================
+         FOOTER
+    ===================================== -->
+
+    <footer class="footer">
+
+        <div class="footer-title">
+            EHRENMARKT
+        </div>
+
+        <p>
+            Die mittelalterliche Minecraft-Community
+        </p>
+
+        <p>
+            Bauaufträge für den Falkenstein-Clan
+        </p>
+
+        <p>
+            © 2026 Ehrenmarkt
+        </p>
+
+    </footer>
+
+</body>
+
+          </html>
+
+          <!-- =====================================
+     ENDE DES BAUAUFTRAGS
+===================================== -->
+
+        </form>
+
+    </main>
+
+
+    <!-- =====================================
+         EHRENMARKT FOOTER
+    ===================================== -->
+
+    <footer class="footer">
+
+        <div class="footer-title">
+            EHRENMARKT
+        </div>
+
+        <p>
+            Die mittelalterliche Minecraft-Community
+        </p>
+
+        <p>
+            Bauaufträge für den Falkenstein-Clan
+        </p>
+
+        <p>
+            © 2026 Ehrenmarkt
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>
