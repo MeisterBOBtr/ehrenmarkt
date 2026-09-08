@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // GRUNDWERTE
     // ==========================================
 
-    const GRUNDPREIS_PRO_PLOT = 750000;
+    const GRUNDPREIS_PRO_PLOT = 500000;
     const ANZAHLUNG_PROZENT = 25;
 
 
