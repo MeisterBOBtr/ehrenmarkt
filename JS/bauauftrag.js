@@ -302,70 +302,105 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function berechneAddonPreis() {
 
-        const grundpreis =
-            berechneGrundpreis();
+    const grundpreis =
+        berechneGrundpreis();
 
 
-        const innenProzent =
-            leseProzent(interiorLevel);
+    const innenProzent =
+        leseProzent(interiorLevel);
 
-        const aussenProzent =
-            leseProzent(exteriorLevel);
+    const aussenProzent =
+        leseProzent(exteriorLevel);
 
-        const beleuchtungProzent =
-            leseProzent(lightingLevel);
+    const beleuchtungProzent =
+        leseProzent(lightingLevel);
 
-        const terraformingProzent =
-            leseProzent(terraformingLevel);
+    const terraformingProzent =
+        leseProzent(terraformingLevel);
 
-        const prioritaet =
-    document.getElementById("priority");
 
-let prioritaetProzent = 0;
+    // ==========================================
+    // ZUSATZLEISTUNGEN
+    // ==========================================
 
-if (prioritaet) {
-    if (prioritaet.value === "schnell") {
-        prioritaetProzent = 10;
+    const innenPreis =
+        grundpreis *
+        innenProzent /
+        100;
+
+
+    const aussenPreis =
+        grundpreis *
+        aussenProzent /
+        100;
+
+
+    const beleuchtungPreis =
+        grundpreis *
+        beleuchtungProzent /
+        100;
+
+
+    const terraformingPreis =
+        grundpreis *
+        terraformingProzent /
+        100;
+
+
+    // ==========================================
+    // ZWISCHENPREIS
+    // ==========================================
+
+    const zwischenpreis =
+        grundpreis +
+        innenPreis +
+        aussenPreis +
+        beleuchtungPreis +
+        terraformingPreis;
+
+
+    // ==========================================
+    // PRIORITÄT
+    // ==========================================
+
+    const prioritaet =
+        document.getElementById("priority");
+
+    let prioritaetProzent = 0;
+
+    if (prioritaet) {
+
+        if (prioritaet.value === "schnell") {
+            prioritaetProzent = 10;
+        }
+
+        if (prioritaet.value === "express") {
+            prioritaetProzent = 25;
+        }
     }
 
-    if (prioritaet.value === "express") {
-        prioritaetProzent = 25;
-    }
+
+    // Priorität wird auf den gesamten
+    // Zwischenpreis gerechnet.
+
+    const prioritaetPreis =
+        zwischenpreis *
+        prioritaetProzent /
+        100;
+
+
+    // ==========================================
+    // ALLE ZUSCHLÄGE
+    // ==========================================
+
+    return (
+        innenPreis +
+        aussenPreis +
+        beleuchtungPreis +
+        terraformingPreis +
+        prioritaetPreis
+    );
 }
-
-
-        const innenPreis =
-            grundpreis *
-            innenProzent /
-            100;
-
-
-        const aussenPreis =
-            grundpreis *
-            aussenProzent /
-            100;
-
-
-        const beleuchtungPreis =
-            grundpreis *
-            beleuchtungProzent /
-            100;
-
-
-        const terraformingPreis =
-            grundpreis *
-            terraformingProzent /
-            100;
-
-
-        return (
-    innenPreis +
-    aussenPreis +
-    beleuchtungPreis +
-    terraformingPreis +
-    (grundpreis * prioritaetProzent / 100)
-        );
-    }
 
 
     // ==========================================
