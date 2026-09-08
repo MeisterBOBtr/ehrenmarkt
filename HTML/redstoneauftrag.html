@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Redstone-Auftrag | Ehrenmarkt</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #f1e5c8;
+
+            background:
+                linear-gradient(
+                    rgba(15, 10, 7, 0.78),
+                    rgba(15, 10, 7, 0.88)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/Hintergrund.png")
+                center / cover fixed;
+        }
+
+        .seite {
+            width: min(1100px, 94%);
+            margin: 0 auto;
+
+            padding:
+                25px
+                0
+                50px;
+        }
+
+        header {
+            text-align: center;
+
+            padding:
+                25px
+                15px;
+
+            margin-bottom: 25px;
+
+            background:
+                rgba(25, 17, 12, 0.94);
+
+            border:
+                2px solid #b8944f;
+
+            box-shadow:
+                0 0 20px
+                rgba(0, 0, 0, 0.65);
+        }
+
+        header h1 {
+            margin: 0;
+
+            color: #d5ad5b;
+
+            font-size:
+                clamp(
+                    28px,
+                    6vw,
+                    48px
+                );
+        }
+
+        header p {
+            margin:
+                8px
+                0
+                0;
+
+            color: #d7c49d;
+
+            font-size: 16px;
+        }
+
+        .bereich {
+            background:
+                rgba(24, 16, 11, 0.95);
+
+            border:
+                1px solid #8f713d;
+
+            margin-bottom: 20px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.45);
+        }
+
+        .bereich h2 {
+            margin-top: 0;
+
+            padding-bottom: 10px;
+
+            border-bottom:
+                1px solid #806537;
+
+            color: #d5ad5b;
+
+            font-size: 22px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #e6d3a9;
+
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+
+            padding: 12px;
+
+            border:
+                1px solid #806537;
+
+            background: #17100c;
+
+            color: #f3e6c5;
+
+            font-family: inherit;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #c7a35a;
+        }
+
+        textarea {
+            min-height: 130px;
+
+            resize: vertical;
+        }
+
+        .feld {
+            margin-bottom: 18px;
+        }
+
+        .auswahl {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(180px, 1fr)
+                );
+
+            gap: 10px;
+        }
+
+        .auswahl label {
+            margin: 0;
+        }
+
+        .auswahl label span {
+            display: block;
+
+            padding: 13px;
+
+            border:
+                1px solid #725a35;
+
+            background: #19110c;
+
+            cursor: pointer;
+
+            text-align: center;
+
+            transition: 0.15s;
+        }
+
+        .auswahl input {
+            display: none;
+        }
+
+        .auswahl input:checked + span {
+            border-color: #c7a35a;
+
+            background: #302314;
+
+            color: #f2c96b;
+
+            box-shadow:
+                inset 0 0 0 1px
+                #8f713d;
+        }
+
+        .checkboxen {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px, 1fr)
+                );
+
+            gap: 10px;
+        }
+
+        .checkbox {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 12px;
+
+            border:
+                1px solid #725a35;
+
+            background: #19110c;
+
+            cursor: pointer;
+        }
+
+        .checkbox input {
+            width: 18px;
+            height: 18px;
+
+            accent-color: #b8944f;
+        }
+
+        .materialien {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(230px, 1fr)
+                );
+
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            min-height: 82px;
+
+            padding: 10px;
+
+            background: #18100c;
+
+            border:
+                1px solid #725a35;
+        }
+
+        .item img {
+            width: 48px;
+            height: 48px;
+
+            object-fit: contain;
+
+            flex-shrink: 0;
+
+            image-rendering: pixelated;
+        }
+
+        .item-info {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .item-name {
+            color: #ead7ad;
+
+            font-weight: bold;
+
+            font-size: 14px;
+        }
+
+        .item-price {
+            margin-top: 4px;
+
+            color: #bca87e;
+
+            font-size: 12px;
+        }
+
+        .menge {
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+        }
+
+        .menge button {
+            width: 30px;
+            height: 30px;
+
+            padding: 0;
+
+            border:
+                1px solid #8f713d;
+
+            background: #291d12;
+
+            color: #e4bf6a;
+
+            font-size: 20px;
+
+            cursor: pointer;
+        }
+
+        .menge button:active {
+            transform: scale(0.95);
+        }
+
+        .menge-zahl {
+            min-width: 32px;
+
+            text-align: center;
+
+            color: #fff0c9;
+
+            font-weight: bold;
+        }
+
+        .preisbox {
+            display: grid;
+
+            gap: 8px;
+        }
+
+        .preiszeile {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 10px 0;
+
+            border-bottom:
+                1px solid #4c3b24;
+        }
+
+        .preiszeile:last-child {
+            border-bottom: 0;
+        }
+
+        .preiszeile span:first-child {
+            color: #d6c29a;
+        }
+
+        .preiszeile span:last-child {
+            color: #f0d27d;
+
+            font-weight: bold;
+
+            text-align: right;
+        }
+
+        .gesamt {
+            margin-top: 10px;
+
+            padding-top: 15px;
+
+            border-top:
+                2px solid #a27e3f;
+
+            font-size: 21px;
+        }
+
+        .zahlung {
+            margin-top: 10px;
+
+            padding: 15px;
+
+            background: #21170e;
+
+            border:
+                1px solid #725a35;
+        }
+
+        .zahlung strong {
+            color: #f0d27d;
+        }
+
+        .hinweis {
+            padding: 13px;
+
+            margin-top: 15px;
+
+            background:
+                rgba(
+                    111,
+                    79,
+                    29,
+                    0.18
+                );
+
+            border-left:
+                3px solid #b8944f;
+
+            color: #cdbb98;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .absenden {
+            width: 100%;
+
+            padding: 16px;
+
+            border:
+                2px solid #b8944f;
+
+            background:
+                linear-gradient(
+                    #705326,
+                    #493517
+                );
+
+            color: #fff0c9;
+
+            font-family: inherit;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.4);
+        }
+
+        .absenden:hover {
+            background:
+                linear-gradient(
+                    #80602d,
+                    #57411e
+                );
+        }
+
+        .absenden:disabled {
+            opacity: 0.6;
+
+            cursor: wait;
+        }
+
+        @media (max-width: 600px) {
+
+            .seite {
+                width: 96%;
+
+                padding-top: 12px;
+            }
+
+            .bereich {
+                padding: 15px;
+            }
+
+            .materialien {
+                grid-template-columns: 1fr;
+            }
+
+            .auswahl {
+                grid-template-columns: 1fr;
+            }
+
+            .checkboxen {
+                grid-template-columns: 1fr;
+            }
+
+            .item {
+                min-height: 75px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="seite">
+
+    <header>
+
+        <h1>⚙ Redstone-Auftrag</h1>
+
+        <p>
+            Ehrenmarkt – Professionelle Redstone-Bauaufträge
+        </p>
+
+    </header>
+
+      <!-- AUFTRAGSDATEN -->
+    <section class="bereich">
+
+        <h2>Auftragsdaten</h2>
+
+        <div class="feld">
+
+            <label for="minecraft_name">
+                Minecraft-Name
+            </label>
+
+            <input
+                type="text"
+                id="minecraft_name"
+                name="minecraft_name"
+                placeholder="Dein Minecraft-Name"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="feld">
+
+            <label for="auftragstitel">
+                Auftragstitel
+            </label>
+
+            <input
+                type="text"
+                id="auftragstitel"
+                name="title"
+                placeholder="z. B. Automatische Farm"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="feld">
+
+            <label for="beschreibung">
+                Beschreibung
+            </label>
+
+            <textarea
+                id="beschreibung"
+                name="description"
+                placeholder="Beschreibe möglichst genau, was gebaut werden soll."
+            ></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- GRUNDSTÜCK -->
+    <section class="bereich">
+
+        <h2>Grundstück / Merge</h2>
+
+        <div class="feld">
+
+            <label for="plot_count">
+                Anzahl Grundstücke / Merges
+            </label>
+
+            <input
+                type="number"
+                id="plot_count"
+                name="plot_count"
+                min="1"
+                value="1"
+            >
+
+            <div class="hinweis">
+                Ein Merge kostet 300.000 $.
+            </div>
+
+        </div>
+
+    </section>
+
+      <!-- PLANUNG -->
+    <section class="bereich">
+
+        <h2>Planung</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="planung"
+                    value="einfach"
+                >
+
+                <span>
+                    Einfach<br>
+                    5.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="planung"
+                    value="normal"
+                    checked
+                >
+
+                <span>
+                    Normal<br>
+                    10.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="planung"
+                    value="komplex"
+                >
+
+                <span>
+                    Komplex<br>
+                    20.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="planung"
+                    value="sehr_komplex"
+                >
+
+                <span>
+                    Sehr komplex<br>
+                    30.000 $
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- KOMPLEXITÄT -->
+    <section class="bereich">
+
+        <h2>Komplexität</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="komplexitaet"
+                    value="einfach"
+                >
+
+                <span>
+                    Einfach<br>
+                    2.500 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="komplexitaet"
+                    value="normal"
+                    checked
+                >
+
+                <span>
+                    Normal<br>
+                    12.500 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="komplexitaet"
+                    value="komplex"
+                >
+
+                <span>
+                    Komplex<br>
+                    25.000 $
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+      <!-- ANLAGE -->
+    <section class="bereich">
+
+        <h2>Größe der Redstone-Anlage</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="anlage"
+                    value="klein"
+                >
+
+                <span>
+                    Klein<br>
+                    75.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="anlage"
+                    value="mittel"
+                    checked
+                >
+
+                <span>
+                    Mittel<br>
+                    150.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="anlage"
+                    value="gross"
+                >
+
+                <span>
+                    Groß<br>
+                    300.000 $
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- REDSTONE-BAU -->
+    <section class="bereich">
+
+        <h2>Redstone-Bau</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="redstone_bau"
+                    value="einfach"
+                    checked
+                >
+
+                <span>
+                    Einfach<br>
+                    +0 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="redstone_bau"
+                    value="normal"
+                >
+
+                <span>
+                    Normal<br>
+                    +10 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="redstone_bau"
+                    value="komplex"
+                >
+
+                <span>
+                    Komplex<br>
+                    +20 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="redstone_bau"
+                    value="sehr_komplex"
+                >
+
+                <span>
+                    Sehr komplex<br>
+                    +25 %
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+      <!-- SONDERARBEITEN -->
+    <section class="bereich">
+
+        <h2>Sonderarbeiten</h2>
+
+        <div class="checkboxen">
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_existing_installation"
+                >
+
+                <span>
+                    Bestehende Installation
+                    – 20.000 $
+                </span>
+
+            </label>
+
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_existing_conversion"
+                >
+
+                <span>
+                    Bestehende Anlage umbauen
+                    – 30.000 $
+                </span>
+
+            </label>
+
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_foreign_repair"
+                >
+
+                <span>
+                    Fremde Anlage reparieren
+                    – 50.000 $
+                </span>
+
+            </label>
+
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_compact_build"
+                >
+
+                <span>
+                    Kompaktbauweise
+                    – 30.000 $
+                </span>
+
+            </label>
+
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_hidden_redstone"
+                >
+
+                <span>
+                    Verdecktes Redstone
+                    – 30.000 $
+                </span>
+
+            </label>
+
+
+            <label class="checkbox">
+
+                <input
+                    type="checkbox"
+                    name="special_difficult_access"
+                >
+
+                <span>
+                    Schwieriger Zugang
+                    – 40.000 $
+                </span>
+
+            </label>
+
+        </div>
+
+    </section>
+
+      <!-- ERWEITERUNG -->
+    <section class="bereich">
+
+        <h2>Erweiterung</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="extension_type"
+                    value="keine"
+                    checked
+                >
+
+                <span>
+                    Keine<br>
+                    0 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="extension_type"
+                    value="klein"
+                >
+
+                <span>
+                    Klein<br>
+                    250.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="extension_type"
+                    value="mittel"
+                >
+
+                <span>
+                    Mittel<br>
+                    500.000 $
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="extension_type"
+                    value="gross"
+                >
+
+                <span>
+                    Groß<br>
+                    1.000.000 $
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- DRINGLICHKEIT -->
+    <section class="bereich">
+
+        <h2>Dringlichkeit</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="urgency_type"
+                    value="normal"
+                    checked
+                >
+
+                <span>
+                    Normal<br>
+                    +0 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="urgency_type"
+                    value="express"
+                >
+
+                <span>
+                    Express<br>
+                    +50 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="urgency_type"
+                    value="notfall"
+                >
+
+                <span>
+                    Notfall<br>
+                    +75 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="urgency_type"
+                    value="sofort"
+                >
+
+                <span>
+                    Sofort<br>
+                    +100 %
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+      <!-- WOCHENENDARBEIT -->
+    <section class="bereich">
+
+        <h2>Wochenendarbeit</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="weekend_work"
+                    value="false"
+                    checked
+                >
+
+                <span>
+                    Nein<br>
+                    +0 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="weekend_work"
+                    value="true"
+                >
+
+                <span>
+                    Ja<br>
+                    +25 %
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- GARANTIE -->
+    <section class="bereich">
+
+        <h2>Garantie</h2>
+
+        <div class="auswahl">
+
+            <label>
+                <input
+                    type="radio"
+                    name="guarantee_months"
+                    value="0"
+                    checked
+                >
+
+                <span>
+                    Keine Garantie<br>
+                    +0 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="guarantee_months"
+                    value="1"
+                >
+
+                <span>
+                    1 Monat<br>
+                    +5 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="guarantee_months"
+                    value="2"
+                >
+
+                <span>
+                    2 Monate<br>
+                    +10 %
+                </span>
+            </label>
+
+
+            <label>
+                <input
+                    type="radio"
+                    name="guarantee_months"
+                    value="3"
+                >
+
+                <span>
+                    3 Monate<br>
+                    +15 %
+                </span>
+            </label>
+
+        </div>
+
+    </section>
+
+      <!-- REDSTONE-MATERIALIEN – TEIL 1 -->
+    <section class="bereich">
+
+        <h2>Redstone-Materialien</h2>
+
+        <div class="materialien">
+
+            <div class="item" data-item-name="Redstone">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/redstone.png" alt="Redstone">
+                <div class="item-info">
+                    <div class="item-name">Redstone</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Redstone-Block">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/redstone_block.png" alt="Redstone-Block">
+                <div class="item-info">
+                    <div class="item-name">Redstone-Block</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Redstone-Fackel">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/redstone_torch.png" alt="Redstone-Fackel">
+                <div class="item-info">
+                    <div class="item-name">Redstone-Fackel</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Redstone-Lampe">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/redstone_lamp.png" alt="Redstone-Lampe">
+                <div class="item-info">
+                    <div class="item-name">Redstone-Lampe</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Redstone-Verstärker">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/repeater.png" alt="Redstone-Verstärker">
+                <div class="item-info">
+                    <div class="item-name">Redstone-Verstärker</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Redstone-Komparator">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/comparator.png" alt="Redstone-Komparator">
+                <div class="item-info">
+                    <div class="item-name">Redstone-Komparator</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Beobachter">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/observer.png" alt="Beobachter">
+                <div class="item-info">
+                    <div class="item-name">Beobachter</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Kolben">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/piston.png" alt="Kolben">
+                <div class="item-info">
+                    <div class="item-name">Kolben</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Klebriger Kolben">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/sticky_piston.png" alt="Klebriger Kolben">
+                <div class="item-info">
+                    <div class="item-name">Klebriger Kolben</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Werfer">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/dropper.png" alt="Werfer">
+                <div class="item-info">
+                    <div class="item-name">Werfer</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Spender">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/dispenser.png" alt="Spender">
+                <div class="item-info">
+                    <div class="item-name">Spender</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Trichter">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/hopper.png" alt="Trichter">
+                <div class="item-info">
+                    <div class="item-name">Trichter</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Trichterlore">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/hopper_minecart.png" alt="Trichterlore">
+                <div class="item-info">
+                    <div class="item-name">Trichterlore</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Notenblock">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/note_block.png" alt="Notenblock">
+                <div class="item-info">
+                    <div class="item-name">Notenblock</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Zielblock">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/target.png" alt="Zielblock">
+                <div class="item-info">
+                    <div class="item-name">Zielblock</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Hebel">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/lever.png" alt="Hebel">
+                <div class="item-info">
+                    <div class="item-name">Hebel</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+                                                         </div>
+
+                      <div class="item" data-item-name="Fadenspannhaken">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/tripwire_hook.png" alt="Fadenspannhaken">
+                <div class="item-info">
+                    <div class="item-name">Fadenspannhaken</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Aktivierungsschiene">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/activator_rail.png" alt="Aktivierungsschiene">
+                <div class="item-info">
+                    <div class="item-name">Aktivierungsschiene</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Detektorschiene">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/detector_rail.png" alt="Detektorschiene">
+                <div class="item-info">
+                    <div class="item-name">Detektorschiene</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Fichtenknopf">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/spruce_button.png" alt="Fichtenknopf">
+                <div class="item-info">
+                    <div class="item-name">Fichtenknopf</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Fichtendruckplatte">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/spruce_pressure_plate.png" alt="Fichtendruckplatte">
+                <div class="item-info">
+                    <div class="item-name">Fichtendruckplatte</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Steinknopf">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/stone_button.png" alt="Steinknopf">
+                <div class="item-info">
+                    <div class="item-name">Steinknopf</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Steindruckplatte">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/stone_pressure_plate.png" alt="Steindruckplatte">
+                <div class="item-info">
+                    <div class="item-name">Steindruckplatte</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Wirrknopf">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/warped_button.png" alt="Wirrknopf">
+                <div class="item-info">
+                    <div class="item-name">Wirrknopf</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Wirrdruckplatte">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/warped_pressure_plate.png" alt="Wirrdruckplatte">
+                <div class="item-info">
+                    <div class="item-name">Wirrdruckplatte</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Schwere gewichtete Druckplatte (Eisen)">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/heavy_weighted_pressure_plate.png" alt="Schwere gewichtete Druckplatte">
+                <div class="item-info">
+                    <div class="item-name">Schwere gewichtete Druckplatte</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Leichte gewichtete Druckplatte (Gold)">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/light_weighted_pressure_plate.png" alt="Leichte gewichtete Druckplatte">
+                <div class="item-info">
+                    <div class="item-name">Leichte gewichtete Druckplatte</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Tageslichtsensor">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/daylight_detector.png" alt="Tageslichtsensor">
+                <div class="item-info">
+                    <div class="item-name">Tageslichtsensor</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Sculk-Sensor">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/sculk_sensor.png" alt="Sculk-Sensor">
+                <div class="item-info">
+                    <div class="item-name">Sculk-Sensor</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Kalibrierter Sculk-Sensor">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/calibrated_sculk_sensor.png" alt="Kalibrierter Sculk-Sensor">
+                <div class="item-info">
+                    <div class="item-name">Kalibrierter Sculk-Sensor</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Antriebsschiene">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/powered_rail_3d.png" alt="Antriebsschiene">
+                <div class="item-info">
+                    <div class="item-name">Antriebsschiene</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+
+            <div class="item" data-item-name="Schiene">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/rail_3d.png" alt="Schiene">
+                <div class="item-info">
+                    <div class="item-name">Schiene</div>
+                    <div class="item-price">Wird geladen...</div>
+                </div>
+                <div class="menge">
+                    <button type="button" class="minus">−</button>
+                    <span class="menge-zahl">0</span>
+                    <button type="button" class="plus">+</button>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+  // ============================================================
+// TEIL 10 – AUFTRAG SPEICHERN & ERFOLGSSEITE
+// ============================================================
+
+async function erstelleRedstoneAuftrag() {
+
+    if (!pruefeSupabase()) {
+        alert("Die Verbindung zu Supabase ist nicht verfügbar.");
+        return;
+    }
+
+    if (!pruefeRedstoneFormular()) {
+        return;
+    }
+
+    const button = element("auftragAbsenden");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Auftrag wird erstellt...";
+    }
+
+    try {
+
+        // Angemeldeten Benutzer abrufen
+        const {
+            data: userData,
+            error: userError
+        } = await supabase.auth.getUser();
+
+        if (userError) {
+            throw userError;
+        }
+
+        const user = userData?.user;
+
+        if (!user) {
+            alert(
+                "Du musst angemeldet sein, " +
+                "um einen Auftrag zu erstellen."
+            );
+            return;
+        }
+
+
+        // Preise vor dem Speichern noch einmal berechnen
+        berechneMaterialpreis();
+        berechneGesamtpreis();
+
+
+        // Auftragsdaten sammeln
+        const auftrag =
+            sammleRedstoneAuftragsdaten(user);
+
+
+        // Eindeutige Auftragsnummer erzeugen
+        const orderNumber =
+            "RS-" +
+            Date.now().toString() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 7)
+                .toUpperCase();
+
+
+        // ====================================================
+        // REDSTONE ORDER
+        // ====================================================
+
+        const orderData = {
+
+            order_number: orderNumber,
+
+            user_id: auftrag.user_id,
+
+            customer_name:
+                auftrag.customer_name,
+
+            minecraft_name:
+                auftrag.minecraft_name,
+
+            title:
+                auftrag.title,
+
+            description:
+                auftrag.description,
+
+            plot_count:
+                auftrag.plot_count,
+
+            planning_type:
+                auftrag.planning_type,
+
+            complexity:
+                auftrag.complexity,
+
+            plant_size:
+                auftrag.plant_size,
+
+            redstone_build_type:
+                auftrag.redstone_build_type,
+
+
+            // Sonderarbeiten
+            special_existing_installation:
+                auftrag.special_existing_installation,
+
+            special_existing_conversion:
+                auftrag.special_existing_conversion,
+
+            special_foreign_repair:
+                auftrag.special_foreign_repair,
+
+            special_compact_build:
+                auftrag.special_compact_build,
+
+            special_hidden_redstone:
+                auftrag.special_hidden_redstone,
+
+            special_difficult_access:
+                auftrag.special_difficult_access,
+
+
+            // Weitere Optionen
+            extension_type:
+                auftrag.extension_type,
+
+            urgency_type:
+                auftrag.urgency_type,
+
+            weekend_work:
+                auftrag.weekend_work,
+
+            guarantee_months:
+                auftrag.guarantee_months,
+
+
+            // Preise
+            total_price:
+                auftrag.total_price,
+
+            deposit_amount:
+                auftrag.deposit_amount,
+
+            remaining_amount:
+                auftrag.remaining_amount
+        };
+
+
+        // Auftrag in redstone_orders speichern
+        const {
+            data: gespeicherterAuftrag,
+            error: orderError
+        } = await supabase
+            .from(SUPABASE_TABLE_ORDERS)
+            .insert(orderData)
+            .select("id, order_number")
+            .single();
+
+
+        if (orderError) {
+            throw orderError;
+        }
+
+
+        // ====================================================
+        // MATERIALIEN
+        // ====================================================
+
+        const materialien =
+            auftrag.materialien;
+
+
+        if (materialien.length > 0) {
+
+            const materialDaten =
+                materialien.map((material) => ({
+
+                    order_id:
+                        gespeicherterAuftrag.id,
+
+                    item_id:
+                        material.item_id,
+
+                    quantity:
+                        material.quantity,
+
+                    price_per_piece:
+                        material.price_per_piece
+
+                }));
+
+
+            const {
+                error: materialError
+            } = await supabase
+                .from(SUPABASE_TABLE_ORDER_ITEMS)
+                .insert(materialDaten);
+
+
+            if (materialError) {
+
+                // Auftrag wieder löschen,
+                // wenn die Materialien nicht gespeichert
+                // werden konnten.
+                await supabase
+                    .from(SUPABASE_TABLE_ORDERS)
+                    .delete()
+                    .eq(
+                        "id",
+                        gespeicherterAuftrag.id
+                    );
+
+                throw materialError;
+            }
+        }
+
+
+        // ====================================================
+        // ERFOLG
+        // ====================================================
+
+        // Auftragsnummer für die Erfolgsseite speichern
+        sessionStorage.setItem(
+            "redstone_order_number",
+            gespeicherterAuftrag.order_number
+        );
+
+
+        // Zur Erfolgsseite
+        window.location.href =
+            "../HTML/redstone_erfolgreich.html";
+
+
+    } catch (fehler) {
+
+        console.error(
+            "Fehler beim Erstellen des Redstone-Auftrags:",
+            fehler
+        );
+
+        alert(
+            "Der Auftrag konnte nicht erstellt werden.\n\n" +
+            "Bitte versuche es erneut."
+        );
+
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.textContent =
+                "Redstone-Auftrag erstellen";
+        }
+    }
+}
+
+
+// ============================================================
+// BUTTON INITIALISIEREN
+// ============================================================
+
+function initialisiereAuftragAbsenden() {
+
+    const button =
+        element("auftragAbsenden");
+
+
+    if (!button) {
+
+        console.error(
+            "Der Button #auftragAbsenden wurde nicht gefunden."
+        );
+
+        return;
+    }
+
+
+    button.addEventListener(
+        "click",
+        (event) => {
+
+            event.preventDefault();
+
+            erstelleRedstoneAuftrag();
+        }
+    );
+}
+
+
+// ============================================================
+// SEITE GELADEN
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initialisiereAuftragAbsenden();
+
+    }
+);
