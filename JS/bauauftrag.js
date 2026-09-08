@@ -1143,8 +1143,11 @@ if (prioritaet) {
                 ) || "normal",
 
             priority_percent:
-                0,
-
+    priority?.value === "schnell"
+        ? 10
+        : priority?.value === "express"
+            ? 25
+            : 0,
 
             // ==========================================
             // PREISE
