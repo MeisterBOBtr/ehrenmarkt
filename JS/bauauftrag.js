@@ -596,18 +596,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function erstelleAuftragsnummer() {
 
-        const zeit =
-            Date.now();
+    const zufall =
+        Math.floor(
+            1000 +
+            Math.random() * 9000
+        );
 
-        const zufall =
-            Math.floor(
-                1000 +
-                Math.random() * 9000
-            );
-
-        return `EM-BAU-${zeit}-${zufall}`;
-    }
-
+    return `EM-BAU-${zufall}`;
+}
 
     // ==========================================
     // REFERENZBILD HOCHLADEN
