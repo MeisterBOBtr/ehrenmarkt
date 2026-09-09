@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Logistikauftrag Details</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #f1dfb0;
+        }
+
+        body {
+            background:
+                linear-gradient(
+                    rgba(18, 10, 6, 0.78),
+                    rgba(18, 10, 6, 0.90)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/LED.png")
+                center center / cover fixed no-repeat;
+
+            background-color: #17100b;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(24, 14, 9, 0.96);
+            border-bottom: 2px solid #b88932;
+
+            box-shadow:
+                0 4px 18px rgba(0, 0, 0, 0.65);
+
+            padding: 11px 12px;
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+        .logo {
+            color: #d7aa4a;
+            font-size: 19px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .back-button {
+            display: inline-block;
+
+            padding: 8px 11px;
+
+            color: #f1dfb0;
+            text-decoration: none;
+
+            background: rgba(92, 57, 25, 0.85);
+            border: 1px solid #a87929;
+            border-radius: 6px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .back-button:active {
+            background: #8b6220;
+        }
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        nav {
+            max-width: 900px;
+            margin: 9px auto 0;
+
+            display: flex;
+            gap: 6px;
+
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        nav a {
+            flex: 0 0 auto;
+
+            padding: 8px 10px;
+
+            color: #d9c08a;
+            text-decoration: none;
+
+            background: rgba(38, 23, 14, 0.90);
+            border: 1px solid #65471f;
+            border-radius: 5px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        nav a.active {
+            background: #8d631f;
+            color: #fff0c4;
+            border-color: #d1a545;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            width: 100%;
+            max-width: 900px;
+
+            margin: 20px auto;
+            padding: 0 12px 40px;
+        }
+
+        /* =========================
+           TITLE
+        ========================= */
+
+        .title-box {
+            padding: 18px 14px;
+
+            text-align: center;
+
+            background: rgba(24, 14, 9, 0.90);
+            border: 1px solid #9a7028;
+            border-radius: 8px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.50);
+        }
+
+        .title-box h1 {
+            margin: 0 0 7px;
+
+            color: #e0b34f;
+
+            font-size: 25px;
+
+            text-shadow:
+                0 2px 4px #000;
+        }
+
+        .title-box p {
+            margin: 0;
+
+            color: #cdbb92;
+            font-size: 13px;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            margin-top: 14px;
+            padding: 15px;
+
+            background: rgba(28, 17, 10, 0.93);
+            border: 1px solid #79541f;
+            border-radius: 8px;
+
+            box-shadow:
+                0 7px 20px rgba(0, 0, 0, 0.48);
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+
+            padding-bottom: 8px;
+
+            color: #dcae46;
+
+            font-size: 17px;
+
+            border-bottom: 1px solid #65471f;
+        }
+
+        /* =========================
+           INFO GRID
+        ========================= */
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 9px;
+        }
+
+        .info-item {
+            padding: 10px;
+
+            background: rgba(10, 7, 4, 0.62);
+
+            border: 1px solid #5f431d;
+            border-radius: 5px;
+        }
+
+        .info-label {
+            margin-bottom: 4px;
+
+            color: #927b50;
+
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: #ead39b;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            word-break: break-word;
+        }
+
+        /* =========================
+           ORDER NUMBER
+        ========================= */
+
+        .order-number {
+            margin-top: 12px;
+            padding: 12px;
+
+            text-align: center;
+
+            background: rgba(100, 68, 25, 0.38);
+
+            border: 1px solid #a87929;
+            border-radius: 6px;
+        }
+
+        .order-number-label {
+            color: #9d875c;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .order-number-value {
+            color: #edc45f;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            letter-spacing: 1px;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            background: rgba(90, 62, 22, 0.8);
+
+            border: 1px solid #a87929;
+            border-radius: 5px;
+
+            color: #f0cf78;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           LOGISTIK DETAILS
+        ========================= */
+
+        .route-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding: 13px;
+
+            background: rgba(9, 6, 4, 0.70);
+
+            border: 1px solid #60441d;
+            border-radius: 6px;
+        }
+
+        .route-location {
+            width: 42%;
+            text-align: center;
+        }
+
+        .route-label {
+            margin-bottom: 5px;
+
+            color: #927b50;
+
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .route-value {
+            color: #ecd294;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            word-break: break-word;
+        }
+
+        .route-arrow {
+            color: #d1a545;
+
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           BADGES
+        ========================= */
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .badge {
+            padding: 7px 9px;
+
+            background: rgba(75, 49, 20, 0.65);
+
+            border: 1px solid #765421;
+            border-radius: 5px;
+
+            color: #d9c18b;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           NOTES
+        ========================= */
+
+        .notes {
+            min-height: 80px;
+
+            padding: 12px;
+
+            background: rgba(9, 6, 4, 0.70);
+
+            border: 1px solid #60441d;
+            border-radius: 6px;
+
+            color: #d7c398;
+
+            font-size: 13px;
+            line-height: 1.5;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* =========================
+           PRICE
+        ========================= */
+
+        .price-box {
+            padding: 12px;
+
+            background: rgba(9, 6, 4, 0.72);
+
+            border: 1px solid #60441d;
+            border-radius: 6px;
+        }
+
+        .price-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 8px 0;
+
+            border-bottom: 1px solid rgba(130, 94, 38, 0.35);
+
+            font-size: 13px;
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+        }
+
+        .price-name {
+            color: #cdbb91;
+        }
+
+        .price-value {
+            color: #efd18a;
+
+            font-weight: bold;
+
+            text-align: right;
+        }
+
+        .price-total {
+            margin-top: 4px;
+            padding-top: 11px;
+
+            border-top: 1px solid #9a7028;
+
+            font-size: 16px;
+        }
+
+        .price-total .price-name {
+            color: #e0bd69;
+            font-weight: bold;
+        }
+
+        .price-total .price-value {
+            color: #f2cc65;
+            font-size: 17px;
+        }
+
+        /* =========================
+           PAYMENT
+        ========================= */
+
+        .payment-box {
+            margin-top: 10px;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 9px;
+        }
+
+        .payment-item {
+            padding: 10px;
+
+            background: rgba(72, 45, 20, 0.40);
+
+            border: 1px solid #67491e;
+            border-radius: 5px;
+        }
+
+        .payment-label {
+            color: #927b50;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .payment-value {
+            color: #e9cc87;
+
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           INFO BOX
+        ========================= */
+
+        .info-box {
+            margin-top: 11px;
+
+            padding: 11px 12px;
+
+            background: rgba(72, 45, 20, 0.42);
+
+            border-left: 3px solid #b88932;
+
+            color: #d6c49a;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-area {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            margin-top: 16px;
+        }
+
+        .button {
+            display: block;
+
+            width: 100%;
+
+            padding: 13px 10px;
+
+            text-align: center;
+            text-decoration: none;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .back-button-large {
+            background: rgba(55, 34, 18, 0.90);
+
+            color: #d7c28e;
+
+            border: 1px solid #72511f;
+        }
+
+        .accept-button {
+            background: linear-gradient(
+                #b98931,
+                #79551e
+            );
+
+            color: #fff0c7;
+
+            border: 1px solid #d2a849;
+
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.45);
+        }
+
+        .accept-button:active {
+            background: #694a1a;
+            transform: translateY(1px);
+        }
+
+        .accept-button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        #errorMessage {
+            display: none;
+
+            margin-top: 13px;
+
+            padding: 11px;
+
+            background: rgba(100, 20, 15, 0.65);
+
+            border: 1px solid #9b3e2f;
+            border-radius: 5px;
+
+            color: #ffd1c8;
+
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        #loadingMessage {
+            padding: 18px;
+
+            text-align: center;
+
+            color: #cbb583;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            padding: 18px 10px 30px;
+
+            text-align: center;
+
+            color: #8f7951;
+
+            font-size: 11px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 650px) {
+
+            header {
+                padding: 9px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .back-button {
+                padding: 7px 9px;
+                font-size: 11px;
+            }
+
+            nav {
+                margin-top: 7px;
+            }
+
+            nav a {
+                padding: 7px 9px;
+                font-size: 11px;
+            }
+
+            main {
+                margin-top: 14px;
+
+                padding-left: 9px;
+                padding-right: 9px;
+            }
+
+            .title-box {
+                padding: 15px 11px;
+            }
+
+            .title-box h1 {
+                font-size: 21px;
+            }
+
+            .card {
+                padding: 12px;
+            }
+
+            .card h2 {
+                font-size: 16px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-box {
+                grid-template-columns: 1fr;
+            }
+
+            .button-area {
+                grid-template-columns: 1fr;
+            }
+
+            .route-box {
+                flex-direction: column;
+            }
+
+            .route-location {
+                width: 100%;
+            }
+
+            .route-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="header-inner">
+
+        <div class="logo">
+            EHRENMARKT
+        </div>
+
+        <a
+            href="mitarbeiter.html"
+            class="back-button"
+        >
+            ← Mitarbeiterbereich
+        </a>
+
+    </div>
+
+
+    <nav>
+
+        <a href="index.html">
+            Startseite
+        </a>
+
+        <a href="bauauftrag.html">
+            Bauauftrag
+        </a>
+
+        <a href="materialauftrag.html">
+            Material
+        </a>
+
+        <a
+            href="logistikauftrag.html"
+            class="active"
+        >
+            Logistik
+        </a>
+
+        <a href="redstoneauftrag.html">
+            Redstone
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main>
+
+    <!-- TITEL -->
+
+    <section class="title-box">
+
+        <h1>
+            Logistikauftrag – Details
+        </h1>
+
+        <p>
+            Auftrag prüfen und anschließend übernehmen
+        </p>
+
+    </section>
+
+
+    <!-- LOADING -->
+
+    <section
+        class="card"
+        id="loadingSection"
+    >
+
+        <div id="loadingMessage">
+            Auftragsdaten werden geladen...
+        </div>
+
+    </section>
+
+
+    <!-- AUFTRAG -->
+
+    <div id="orderContent" style="display: none;">
+
+        <!-- AUFTRAGSINFORMATIONEN -->
+
+        <section class="card">
+
+            <h2>
+                Auftraginformationen
+            </h2>
+
+
+            <div class="order-number">
+
+                <div class="order-number-label">
+                    Auftragsnummer
+                </div>
+
+                <div
+                    class="order-number-value"
+                    id="orderNumber"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Auftraggeber
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="customerName"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Minecraft-Name
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="minecraftName"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Auftragsdatum
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="orderDate"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Status
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="orderStatus"
+                    >
+                        <span class="status">
+                            —
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Bearbeiter
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="employeeName"
+                    >
+                        Noch nicht übernommen
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Anzahl Kisten
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="crateCount"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- LOGISTIK -->
+
+        <section class="card">
+
+            <h2>
+                Logistik
+            </h2>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Auftragsart
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="transportType"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Lieferung
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="deliveryType"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="route-box">
+
+                <div class="route-location">
+
+                    <div class="route-label">
+                        Start
+                    </div>
+
+                    <div
+                        class="route-value"
+                        id="startLocation"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="route-arrow">
+                    →
+                </div>
+
+
+                <div class="route-location">
+
+                    <div class="route-label">
+                        Ziel
+                    </div>
+
+                    <div
+                        class="route-value"
+                        id="destination"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="badge-list"
+                style="margin-top: 11px;"
+            >
+
+                <div
+                    class="badge"
+                    id="sortingBadge"
+                >
+                    Sortierung: —
+                </div>
+
+                                <div
+                    class="badge"
+                    id="expressBadge"
+                >
+                    Express: —
+                </div>
+
+                <div
+                    class="badge"
+                    id="workerBadge"
+                >
+                    Mitarbeiter: —
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- NOTIZEN -->
+
+        <section class="card">
+
+            <h2>
+                Anmerkungen
+            </h2>
+
+            <div
+                class="notes"
+                id="notes"
+            >
+                Keine Anmerkungen vorhanden.
+            </div>
+
+        </section>
+
+
+        <!-- PREIS -->
+
+        <section class="card">
+
+            <h2>
+                Preisübersicht
+            </h2>
+
+            <div class="price-box">
+
+                <div class="price-row">
+
+                    <span class="price-name">
+                        Kisten
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="cratePrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-name">
+                        Zuschläge
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="extraPrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row price-total">
+
+                    <span class="price-name">
+                        Gesamtpreis
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="totalPrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="payment-box">
+
+                <div class="payment-item">
+
+                    <div class="payment-label">
+                        Anzahlung · 25 %
+                    </div>
+
+                    <div
+                        class="payment-value"
+                        id="depositPrice"
+                    >
+                        0 $
+                    </div>
+
+                </div>
+
+
+                <div class="payment-item">
+
+                    <div class="payment-label">
+                        Restzahlung · 75 %
+                    </div>
+
+                    <div
+                        class="payment-value"
+                        id="remainingPrice"
+                    >
+                        0 $
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                Die Preisübersicht dient der Kontrolle des Auftrags.
+                Der Auftrag wird erst durch einen Mitarbeiter
+                übernommen und bearbeitet.
+
+            </div>
+
+        </section>
+
+
+        <!-- AKTIONEN -->
+
+        <section class="card">
+
+            <h2>
+                Auftrag übernehmen
+            </h2>
+
+            <div class="info-box">
+
+                Mit „Auftrag übernehmen“ wird dieser Auftrag dir
+                als Bearbeiter zugewiesen und der Status auf
+                <strong>„In Bearbeitung“</strong> gesetzt.
+
+            </div>
+
+
+            <div class="button-area">
+
+                <a
+                    href="mitarbeiter.html"
+                    class="button back-button-large"
+                >
+                    ← Zurück
+                </a>
+
+
+                <button
+                    type="button"
+                    class="button accept-button"
+                    id="acceptOrderButton"
+                >
+                    ✓ Auftrag übernehmen
+                </button>
+
+            </div>
+
+
+            <div id="errorMessage"></div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<footer>
+    Ehrenmarkt · Logistik
+</footer>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../supabase.js"></script>
+
+<script src="../JS/logistik_details.js"></script>
+
+
+</body>
+</html>
