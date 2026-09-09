@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Materialbestellung – Ehrenmarkt</title>
+
+    <script src="../supabase.js"></script>
+
+    <style>
+
+        /* =====================================================
+           EHRENMARKT DESIGN
+        ===================================================== */
+
+        :root {
+            --gold: #c89b3c;
+            --gold-light: #e2bf63;
+            --gold-dark: #8f6b27;
+
+            --red: #8b2926;
+            --red-dark: #551613;
+
+            --glass: rgba(16, 10, 7, 0.78);
+            --glass-light: rgba(28, 19, 13, 0.72);
+
+            --border: rgba(200, 155, 60, 0.45);
+            --border-strong: rgba(200, 155, 60, 0.72);
+
+            --text: #eee2c2;
+            --text-soft: #c5b99d;
+            --text-muted: #9b917d;
+
+            --shadow:
+                0 12px 35px rgba(0, 0, 0, 0.55);
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: var(--text);
+
+            background:
+
+                linear-gradient(
+                    rgba(0, 0, 0, 0.48),
+                    rgba(0, 0, 0, 0.70)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Materialien.png")
+
+                center top / cover fixed no-repeat;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+
+            z-index: 1000;
+
+            background:
+                rgba(13, 8, 6, 0.92);
+
+            border-bottom:
+                2px solid rgba(200, 155, 60, 0.65);
+
+            box-shadow:
+                0 5px 18px rgba(0, 0, 0, 0.65);
+
+            backdrop-filter:
+                blur(5px);
+        }
+
+
+        .topbar-inner {
+            width:
+                min(1200px, 96%);
+
+            min-height:
+                64px;
+
+            margin:
+                0 auto;
+
+            padding:
+                8px 4px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                12px;
+        }
+
+
+        .brand {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                9px;
+
+            color:
+                var(--gold-light);
+
+            text-decoration:
+                none;
+
+            font-size:
+                15px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                0.8px;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .brand-icon {
+            width:
+                37px;
+
+            height:
+                37px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                6px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #8d2825,
+                    #4e1513
+                );
+
+            border:
+                1px solid var(--gold);
+
+            color:
+                var(--gold-light);
+
+            font-size:
+                17px;
+
+            box-shadow:
+                inset 0 0 10px rgba(0,0,0,0.45);
+        }
+
+
+        .nav-buttons {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                5px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .nav-button {
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-height:
+                34px;
+
+            padding:
+                8px 11px;
+
+            border-radius:
+                5px;
+
+            border:
+                1px solid rgba(200,155,60,0.22);
+
+            background:
+                rgba(54, 38, 27, 0.72);
+
+            color:
+                #ddd0ae;
+
+            text-decoration:
+                none;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .nav-button:hover {
+            border-color:
+                var(--gold);
+
+            color:
+                #fff0b0;
+        }
+
+
+        .nav-button.active {
+            background:
+                linear-gradient(
+                    180deg,
+                    #8d302c,
+                    #5d1917
+                );
+
+            border-color:
+                var(--gold);
+
+            color:
+                #fff0b0;
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            position:
+                relative;
+
+            min-height:
+                300px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            text-align:
+                center;
+
+            overflow:
+                hidden;
+
+            background:
+
+                linear-gradient(
+                    rgba(20, 10, 5, 0.38),
+                    rgba(20, 10, 5, 0.78)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Materialien.png")
+
+                center / cover no-repeat;
+
+            border-bottom:
+                1px solid rgba(200,155,60,0.55);
+        }
+
+
+        .hero::after {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    transparent 20%,
+                    rgba(0,0,0,0.32) 100%
+                );
+
+            pointer-events:
+                none;
+        }
+
+
+        .hero-content {
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            width:
+                min(850px, 92%);
+
+            padding:
+                45px 15px;
+        }
+
+
+        .hero-title {
+            margin:
+                0;
+
+            color:
+                #f0d58b;
+
+            font-size:
+                clamp(32px, 7vw, 52px);
+
+            line-height:
+                1.1;
+
+            text-shadow:
+                0 4px 12px rgba(0,0,0,0.9);
+        }
+
+
+        .hero-line {
+            width:
+                100px;
+
+            height:
+                2px;
+
+            margin:
+                17px auto;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    var(--gold),
+                    transparent
+                );
+        }
+
+
+        .hero-text {
+            max-width:
+                680px;
+
+            margin:
+                0 auto;
+
+            color:
+                #d8cdb2;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.6;
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+
+        /* =====================================================
+           HAUPTBEREICH
+        ===================================================== */
+
+        .container {
+            width:
+                min(900px, 94%);
+
+            margin:
+                0 auto;
+
+            padding:
+                24px 0 50px;
+        }
+
+
+        /* =====================================================
+           KARTEN
+        ===================================================== */
+
+        .card {
+            position:
+                relative;
+
+            margin-bottom:
+                18px;
+
+            padding:
+                19px;
+
+            border-radius:
+                10px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(29,19,13,0.86),
+                    rgba(12,9,7,0.82)
+                );
+
+            border:
+                1px solid var(--border);
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(3px);
+
+            overflow:
+                hidden;
+        }
+
+
+        .card::before {
+            content:
+                "";
+
+            position:
+                absolute;
+
+            left:
+                0;
+
+            right:
+                0;
+
+            top:
+                0;
+
+            height:
+                2px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(200,155,60,0.75),
+                    transparent
+                );
+        }
+
+
+        .card.red::before {
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #9b302d,
+                    transparent
+                );
+        }
+
+
+        /* =====================================================
+           ÜBERSCHRIFTEN
+        ===================================================== */
+
+        .section-title {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                9px;
+
+            margin:
+                0 0 7px;
+
+            color:
+                var(--gold-light);
+
+            font-size:
+                21px;
+
+            font-weight:
+                bold;
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+
+        .section-icon {
+            font-size:
+                20px;
+
+            line-height:
+                1;
+        }
+
+
+        .section-description {
+            margin:
+                0 0 18px;
+
+            color:
+                var(--text-soft);
+
+            font-size:
+                13px;
+
+            line-height:
+                1.55;
+        }
+
+
+        /* =====================================================
+           FORMULAR
+        ===================================================== */
+
+        .field {
+            margin-bottom:
+                15px;
+        }
+
+
+        label {
+            display:
+                block;
+
+            margin:
+                0 0 6px;
+
+            color:
+                #d8c9a7;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+        }
+
+
+        input,
+        select,
+        textarea {
+            width:
+                100%;
+
+            padding:
+                11px 12px;
+
+            border:
+                1px solid rgba(200,155,60,0.24);
+
+            border-radius:
+                6px;
+
+            background:
+                rgba(18,14,11,0.88);
+
+            color:
+                #eee2c2;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size:
+                13px;
+
+            outline:
+                none;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        input::placeholder,
+        textarea::placeholder {
+            color:
+                #716958;
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color:
+                var(--gold);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(200,155,60,0.10);
+        }
+
+
+        input[readonly] {
+            color:
+                var(--gold-light);
+
+            background:
+                rgba(12,10,8,0.92);
+        }
+
+
+        textarea {
+            min-height:
+                110px;
+
+            resize:
+                vertical;
+        }
+
+
+        /* =====================================================
+           MENGE
+        ===================================================== */
+
+        .amount-row {
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 145px;
+
+            gap:
+                8px;
+        }
+
+
+        .helper {
+            margin-top:
+                6px;
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                11px;
+
+            line-height:
+                1.45;
+        }
+
+
+        /* =====================================================
+           PREIS
+        ===================================================== */
+
+        .price-grid {
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                9px;
+
+            margin-top:
+                15px;
+        }
+
+
+        .price-box {
+            padding:
+                13px;
+
+            border:
+                1px solid rgba(200,155,60,0.22);
+
+            border-radius:
+                7px;
+
+            background:
+                rgba(8,7,5,0.58);
+        }
+
+
+        .price-label {
+            margin-bottom:
+                5px;
+
+            color:
+                #938975;
+
+            font-size:
+                11px;
+        }
+
+
+        .price-value {
+            color:
+                #e4c45f;
+
+            font-size:
+                19px;
+
+            font-weight:
+                bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         NAVIGATION
+    ===================================================== -->
+
+    <nav class="topbar">
+
+        <div class="topbar-inner">
+
+
+            <a
+                href="startseite.html"
+                class="brand"
+            >
+
+                <span class="brand-icon">
+                    ⚒
+                </span>
+
+                <span>
+                    EHRENMARKT
+                </span>
+
+            </a>
+
+
+            <div class="nav-buttons">
+
+
+                <a
+                    href="startseite.html"
+                    class="nav-button"
+                >
+                    Startseite
+                </a>
+
+
+                <a
+                    href="bauauftrag.html"
+                    class="nav-button"
+                >
+                    Bauauftrag
+                </a>
+
+
+                <a
+                    href="materialauftrag.html"
+                    class="nav-button active"
+                >
+                    Material
+                </a>
+
+
+                <a
+                    href="logistikauftrag.html"
+                    class="nav-button"
+                >
+                    Logistik
+                </a>
+
+
+                <a
+                    href="redstoneauftrag.html"
+                    class="nav-button"
+                >
+                    Redstone
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================================
+         HERO
+    ===================================================== -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+
+            <h1 class="hero-title">
+                Materialbestellung
+            </h1>
+
+
+            <div class="hero-line"></div>
+
+
+            <p class="hero-text">
+
+                Bestelle die benötigten Materialien
+                für dein Projekt beim Ehrenmarkt.
+
+                Preise und Mengen werden automatisch
+                anhand der aktuellen Preisliste berechnet.
+
+            </p>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HAUPTBEREICH
+    ===================================================== -->
+
+    <main class="container">
+
+
+        <!-- =================================================
+             MATERIAL AUSWÄHLEN
+        ================================================= -->
+
+        <section class="card">
+
+
+            <h2 class="section-title">
+
+                <span class="section-icon">
+                    🧱
+                </span>
+
+                Material auswählen
+
+            </h2>
+
+
+            <p class="section-description">
+
+                Wähle zuerst eine Kategorie und anschließend
+                das gewünschte Material aus.
+
+            </p>
+
+
+            <form id="materialForm">
+
+
+                <!-- KATEGORIE -->
+
+                <div class="field">
+
+                    <label for="category">
+                        Kategorie
+                    </label>
+
+
+                    <select
+                        id="category"
+                        required
+                    >
+
+                        <option value="">
+                            Kategorie auswählen...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- MATERIAL SUCHEN -->
+
+                <div class="field">
+
+                    <label for="materialSearch">
+                        Material suchen
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="materialSearch"
+                        placeholder="Material suchen..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- MATERIAL -->
+
+                <div class="field">
+
+                    <label for="material">
+                        Material
+                    </label>
+
+
+                    <select
+                        id="material"
+                        required
+                    >
+
+                        <option value="">
+                            Material auswählen...
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- MENGE -->
+
+                <div class="field">
+
+                    <label for="amount">
+                        Menge
+                    </label>
+
+
+                    <div class="amount-row">
+
+
+                        <input
+                            type="number"
+                            id="amount"
+                            min="1"
+                            step="1"
+                            value="1"
+                            required
+                        >
+
+
+                        <select id="amountUnit">
+
+                            <option value="stack">
+                                Stack(s)
+                            </option>
+
+                            <option value="piece">
+                                Stück
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                    <div class="helper">
+
+                        1 Stack = 64 Stück.
+                        Der Preis wird automatisch
+                        anhand des Stückpreises berechnet.
+
+                    </div>
+
+                </div>
+
+
+                                <!-- PREISÜBERSICHT -->
+
+                <section
+                    id="enchantmentSection"
+                >
+
+                    <div class="enchantment-title">
+                        ✨ Verzauberung
+                    </div>
+
+                    <p class="enchantment-description">
+                        Das ausgewählte Item kann zusätzlich
+                        verzaubert werden.
+                    </p>
+
+
+                    <div class="enchantment-warning">
+
+                        <strong>
+                            Wichtiger Hinweis zur Verzauberung
+                        </strong>
+
+                        <br><br>
+
+                        Die benötigten
+                        <strong>
+                            Verzauberungsbücher
+                        </strong>
+                        müssen vom Kunden
+                        <strong>
+                            vorher selbst gekauft und bereitgestellt
+                        </strong>
+                        werden.
+
+                        <br><br>
+
+                        Die Verzauberungsbücher sind
+                        <strong>
+                            nicht im Aufpreis enthalten.
+                        </strong>
+
+                        <br><br>
+
+                        Die Verzauberung kostet zusätzlich
+                        <strong>
+                            30.000 $ pro Item.
+                        </strong>
+
+                    </div>
+
+
+                    <div class="enchantment-options">
+
+
+                        <div class="enchantment-option">
+
+                            <input
+                                type="radio"
+                                id="enchantmentNone"
+                                name="enchantmentMode"
+                                value="none"
+                                checked
+                            >
+
+                            <label for="enchantmentNone">
+                                Keine Verzauberung
+                            </label>
+
+                        </div>
+
+
+                        <div class="enchantment-option">
+
+                            <input
+                                type="radio"
+                                id="enchantmentBooks"
+                                name="enchantmentMode"
+                                value="books"
+                            >
+
+                            <label for="enchantmentBooks">
+                                Verzauberungsbücher bereitstellen
+                            </label>
+
+                        </div>
+
+
+                        <div class="enchantment-option">
+
+                            <input
+                                type="radio"
+                                id="enchantmentApply"
+                                name="enchantmentMode"
+                                value="apply"
+                            >
+
+                            <label for="enchantmentApply">
+                                Verzauberung auf Item anwenden
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- VERZAUBERUNG ANWENDEN -->
+
+                    <div
+                        id="enchantmentApplyArea"
+                    >
+
+                        <div class="field">
+
+                            <label for="enchantmentEquipment">
+                                Item
+                            </label>
+
+                            <select
+                                id="enchantmentEquipment"
+                            >
+
+                                <option value="">
+                                    Item auswählen...
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="enchantmentList">
+                                Verzauberung
+                            </label>
+
+                            <select
+                                id="enchantmentList"
+                            >
+
+                                <option value="">
+                                    Verzauberung auswählen...
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- VERZAUBERUNGS-HINWEIS -->
+
+                <div class="notice">
+
+                    <strong>
+                        Verzauberungsbücher:
+                    </strong>
+
+                    Die benötigten Bücher müssen vor Beginn
+                    der Verzauberung vom Kunden gekauft und
+                    bereitgestellt werden.
+
+                    <br><br>
+
+                    <strong>
+                        Verzauberung:
+                    </strong>
+
+                    Zusätzlich
+                    <strong>
+                        30.000 $ pro verzaubertem Item.
+                    </strong>
+
+                </div>
+
+
+                <!-- ARTIKEL HINZUFÜGEN -->
+
+                <button
+                    type="button"
+                    id="addButton"
+                    class="add-button"
+                >
+                    Artikel zum Auftrag hinzufügen
+                </button>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             WARENKORB
+        ================================================= -->
+
+        <section class="card">
+
+            <h2 class="section-title">
+
+                <span class="section-icon">
+                    🛒
+                </span>
+
+                Dein Auftrag
+
+            </h2>
+
+
+            <p class="section-description">
+
+                Hier werden alle ausgewählten Materialien
+                gesammelt.
+
+            </p>
+
+
+            <div class="table-container">
+
+                <table id="cartTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Material
+                            </th>
+
+                            <th>
+                                Menge
+                            </th>
+
+                            <th>
+                                Preis
+                            </th>
+
+                            <th>
+                                Verzauberung
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
+                            <th>
+                                Aktion
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="cart-total">
+
+                <span class="cart-total-label">
+                    Gesamtsumme
+                </span>
+
+
+                <span
+                    id="cartTotal"
+                    class="cart-total-value"
+                >
+                    0 $
+                </span>
+
+            </div>
+
+        </section>
+
+              <!-- ZUSÄTZLICHE HINWEISE -->
+        <section class="card">
+            <h2 class="section-title">
+                <span class="section-icon">📝</span>
+                Zusätzliche Hinweise
+            </h2>
+
+            <p class="section-description">
+                Falls du besondere Wünsche oder Informationen
+                zu deinem Auftrag hast, kannst du diese hier angeben.
+            </p>
+
+            <div class="field">
+                <label for="note">
+                    Hinweise zum Auftrag
+                </label>
+
+                <textarea
+                    id="note"
+                    name="note"
+                    rows="5"
+                    placeholder="Zum Beispiel: besondere Wünsche, Abholhinweise oder weitere Informationen..."
+                ></textarea>
+            </div>
+        </section>
+
+
+        <!-- AUFTRAG ABSENDEN -->
+        <section class="card submit-card">
+            <h2 class="section-title">
+                <span class="section-icon">📦</span>
+                Auftrag abschließen
+            </h2>
+
+            <p class="section-description">
+                Überprüfe deinen Auftrag und sende ihn anschließend
+                verbindlich an den Ehrenmarkt.
+            </p>
+
+            <div class="submit-info">
+                <div class="submit-info-row">
+                    <span>Auftragssumme</span>
+                    <strong id="submitTotal">0 $</strong>
+                </div>
+
+                <div class="submit-info-row">
+                    <span>Anzahlung (25 %)</span>
+                    <strong id="submitDeposit">0 $</strong>
+                </div>
+
+                <div class="submit-info-row">
+                    <span>Restbetrag (75 %)</span>
+                    <strong id="submitRemaining">0 $</strong>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                id="submitButton"
+                class="submit-button"
+            >
+                Auftrag verbindlich absenden
+            </button>
+
+            <p class="submit-hint">
+                Mit dem Absenden wird dein Auftrag erstellt.
+                Anschließend wirst du automatisch zur
+                Erfolgsseite weitergeleitet.
+            </p>
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <strong>Ehrenmarkt</strong>
+            <span>Materialbestellung</span>
+        </div>
+    </footer>
+
+
+    <!-- MATERIALAUFTRAG JS -->
+    <script src="../JS/materialauftrag.js"></script>
+
+</body>
+</html>
