@@ -1,3 +1,4 @@
+alert("LOGIN-JS WIRD GELADEN");
 /* ============================================
    EHRENMARKT – LOGIN
    JS/login.js
