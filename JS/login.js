@@ -196,43 +196,44 @@ async function loginUser(
    PROFILE LADEN
    ============================================ */
 
-async function loadProfile(
-    userId
-) {
+async function saveProfile(user, username, minecraftName) {
+    const client = getSupabaseClient();
 
-    const client =
-        getSupabaseClient();
+    if (!client) {
+        throw new Error("Supabase-Client wurde nicht gefunden.");
+    }
 
+    const existingProfile = await loadProfile(user.id);
 
-    const {
-        data,
-        error
-    } =
-        await client
+    if (!existingProfile) {
+        const { error } = await client
             .from("profiles")
-            .select(`
-                id,
-                username,
-                minecraft_name,
-                user_type,
-                rang,
-                rolle
-            `)
-            .eq(
-                "id",
-                userId
-            )
-            .maybeSingle();
+            .insert({
+                id: user.id,
+                username: username,
+                minecraft_name: minecraftName,
+                user_type: "kunde"
+            });
 
+        if (error) {
+            throw error;
+        }
+
+        return;
+    }
+
+    const { error } = await client
+        .from("profiles")
+        .update({
+            username: username,
+            minecraft_name: minecraftName
+        })
+        .eq("id", user.id);
 
     if (error) {
         throw error;
     }
-
-
-    return data;
 }
-
 /* ============================================
    PROFIL SPEICHERN / AKTUALISIEREN
    ============================================ */
