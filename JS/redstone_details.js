@@ -1,10 +1,13 @@
 /* =========================================================
    EHRENMARKT – REDSTONE DETAILS
    JS/redstone_details.js
+
    TEIL 1 / 3
+   Auftrag laden + Grunddaten + Preislogik
    ========================================================= */
 
 "use strict";
+
 
 /* =========================================================
    GLOBALE VARIABLEN
@@ -15,24 +18,142 @@ let currentEmployee = null;
 let currentOrder = null;
 
 let redstoneMaterials = [];
+let redstonePrices = [];
+
 let selectedMaterialId = null;
 
 
 /* =========================================================
-   SUPABASE
+   SUPABASE-TABELLEN
    ========================================================= */
 
-const supabaseClient = window.supabaseClient;
+const SUPABASE_TABLE_PRICES =
+    "redstone_prices";
+
+const SUPABASE_TABLE_ORDERS =
+    "redstone_orders";
+
+const SUPABASE_TABLE_ORDER_ITEMS =
+    "redstone_order_items";
+
+const SUPABASE_TABLE_EMPLOYEES =
+    "employees";
 
 
 /* =========================================================
-   TABELLEN
+   PREISE – ORIGINAL REDSTONEAUFTRAG
    ========================================================= */
 
-const SUPABASE_TABLE_PRICES = "redstone_prices";
-const SUPABASE_TABLE_ORDERS = "redstone_orders";
-const SUPABASE_TABLE_ORDER_ITEMS = "redstone_order_items";
-const SUPABASE_TABLE_EMPLOYEES = "employees";
+const GRUNDSTUECK_PREIS = 300000;
+
+
+/* Planung */
+
+const PLANUNG_PREISE = {
+    einfach: 5000,
+    normal: 10000,
+    komplex: 20000,
+    sehr_komplex: 30000
+};
+
+
+/* Komplexität */
+
+const KOMPLEXITAET_PREISE = {
+    einfach: 2500,
+    normal: 12500,
+    komplex: 25000
+};
+
+
+/* Anlage */
+
+const ANLAGE_PREISE = {
+    klein: 75000,
+    mittel: 150000,
+    gross: 300000
+};
+
+
+/* Redstone-Bau */
+
+const REDSTONE_BAU_PROZENTE = {
+    einfach: 0,
+    normal: 10,
+    komplex: 20,
+    sehr_komplex: 25
+};
+
+
+/* Sonderarbeiten */
+
+const SONDERARBEITEN_PREISE = {
+
+    special_existing_installation:
+        20000,
+
+    special_existing_conversion:
+        30000,
+
+    special_foreign_repair:
+        50000,
+
+    special_compact_build:
+        30000,
+
+    special_hidden_redstone:
+        30000,
+
+    special_difficult_access:
+        40000
+};
+
+
+/* Erweiterung */
+
+const ERWEITERUNG_PREISE = {
+
+    keine: 0,
+
+    klein: 250000,
+
+    mittel: 500000,
+
+    gross: 1000000
+};
+
+
+/* Dringlichkeit */
+
+const DRINGLICHKEIT_PROZENTE = {
+
+    normal: 0,
+
+    express: 50,
+
+    notfall: 75,
+
+    sofort: 100
+};
+
+
+/* Wochenende */
+
+const WOCHENENDE_PROZENT = 25;
+
+
+/* Garantie */
+
+const GARANTIE_PROZENTE = {
+
+    0: 0,
+
+    1: 5,
+
+    2: 10,
+
+    3: 15
+};
 
 
 /* =========================================================
@@ -40,40 +161,50 @@ const SUPABASE_TABLE_EMPLOYEES = "employees";
    ========================================================= */
 
 function element(id) {
+
     return document.getElementById(id);
 }
 
 
 function setText(id, value) {
 
-    const el = element(id);
+    const feld = element(id);
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    el.textContent =
+    if (
         value === null ||
         value === undefined ||
         value === ""
-            ? "—"
-            : String(value);
+    ) {
+
+        feld.textContent = "—";
+
+        return;
+    }
+
+    feld.textContent = String(value);
 }
 
 
 function number(value) {
 
-    const result = Number(value);
+    const zahl = Number(value);
 
-    return Number.isFinite(result)
-        ? result
-        : 0;
+    if (!Number.isFinite(zahl)) {
+        return 0;
+    }
+
+    return zahl;
 }
 
 
 function formatPreis(value) {
 
-    return number(value).toLocaleString("de-DE") + " $";
+    return number(value)
+        .toLocaleString("de-DE") + " $";
 }
 
 
@@ -83,112 +214,188 @@ function formatDatum(value) {
         return "—";
     }
 
-    const datum = new Date(value);
+    const datum =
+        new Date(value);
 
-    if (Number.isNaN(datum.getTime())) {
+    if (
+        Number.isNaN(
+            datum.getTime()
+        )
+    ) {
+
         return "—";
     }
 
-    return datum.toLocaleString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+    return datum.toLocaleString(
+        "de-DE",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
 }
 
 
 function showError(message) {
 
-    const el = element("errorMessage");
+    const feld =
+        element("errorMessage");
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    el.textContent = message;
-    el.style.display = "block";
+    feld.textContent = message;
+
+    feld.style.display = "block";
 }
 
 
 function hideError() {
 
-    const el = element("errorMessage");
+    const feld =
+        element("errorMessage");
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    el.textContent = "";
-    el.style.display = "none";
+    feld.textContent = "";
+
+    feld.style.display = "none";
 }
 
 
 function showSuccess(message) {
 
-    const el = element("successMessage");
+    const feld =
+        element("successMessage");
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    el.textContent = message;
-    el.style.display = "block";
+    feld.textContent = message;
+
+    feld.style.display = "block";
 }
 
 
 function hideSuccess() {
 
-    const el = element("successMessage");
+    const feld =
+        element("successMessage");
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    el.textContent = "";
-    el.style.display = "none";
+    feld.textContent = "";
+
+    feld.style.display = "none";
 }
 
 
 /* =========================================================
-   URL PARAMETER
+   HTML SICHER AUSGEBEN
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* =========================================================
+   URL-PARAMETER
    ========================================================= */
 
 function getOrderParameter() {
 
     const params =
-        new URLSearchParams(window.location.search);
+        new URLSearchParams(
+            window.location.search
+        );
 
     return {
-        id: params.get("id"),
-        order: params.get("order")
+
+        id:
+            params.get("id"),
+
+        order:
+            params.get("order")
     };
 }
 
 
 /* =========================================================
-   AUTHENTIFIZIERUNG
+   SUPABASE PRÜFEN
+   ========================================================= */
+
+function pruefeSupabase() {
+
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
+
+        console.error(
+            "Supabase wurde nicht geladen."
+        );
+
+        showError(
+            "Supabase wurde nicht geladen."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================================================
+   BENUTZER LADEN
    ========================================================= */
 
 async function loadUser() {
 
-    if (!supabaseClient) {
-        throw new Error(
-            "Supabase wurde nicht geladen."
-        );
+    if (!pruefeSupabase()) {
+        return null;
     }
 
     const {
         data,
         error
-    } = await supabaseClient.auth.getUser();
+    } =
+        await supabaseClient.auth.getUser();
+
 
     if (error) {
         throw error;
     }
 
-    if (!data || !data.user) {
+
+    if (
+        !data ||
+        !data.user
+    ) {
 
         window.location.href =
             "login.html";
@@ -196,7 +403,9 @@ async function loadUser() {
         return null;
     }
 
-    currentUser = data.user;
+
+    currentUser =
+        data.user;
 
     return currentUser;
 }
@@ -211,23 +420,34 @@ async function loadEmployee() {
     const {
         data,
         error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_EMPLOYEES)
-        .select("*")
-        .eq("user_id", currentUser.id)
-        .maybeSingle();
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_EMPLOYEES
+            )
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .maybeSingle();
+
 
     if (error) {
         throw error;
     }
 
+
     if (!data) {
+
         throw new Error(
             "Für dein Konto wurde kein Mitarbeitereintrag gefunden."
         );
     }
 
-    currentEmployee = data;
+
+    currentEmployee =
+        data;
 
     return data;
 }
@@ -242,10 +462,14 @@ async function loadOrder() {
     const parameter =
         getOrderParameter();
 
+
     let query =
         supabaseClient
-            .from(SUPABASE_TABLE_ORDERS)
+            .from(
+                SUPABASE_TABLE_ORDERS
+            )
             .select("*");
+
 
     if (parameter.id) {
 
@@ -266,38 +490,50 @@ async function loadOrder() {
     } else {
 
         throw new Error(
-            "Keine Auftragsnummer angegeben."
+            "Keine Redstone-Auftragsnummer angegeben."
         );
     }
+
 
     const {
         data,
         error
-    } = await query.maybeSingle();
+    } =
+        await query.maybeSingle();
+
 
     if (error) {
         throw error;
     }
 
+
     if (!data) {
+
         throw new Error(
             "Der Redstone-Auftrag wurde nicht gefunden."
         );
     }
 
-    currentOrder = data;
+
+    currentOrder =
+        data;
+
 
     return data;
 }
 
 
 /* =========================================================
-   AUFTRAG ANZEIGEN
+   AUFTRAGSDATEN ANZEIGEN
    ========================================================= */
 
 function renderOrder() {
 
-    const order = currentOrder;
+    const order =
+        currentOrder;
+
+
+    /* Auftrag */
 
     setText(
         "orderNumber",
@@ -326,13 +562,21 @@ function renderOrder() {
 
     setText(
         "orderDate",
-        formatDatum(order.created_at)
+        formatDatum(
+            order.created_at
+        )
     );
+
+
+    /* Beschreibung */
 
     setText(
         "description",
         order.description
     );
+
+
+    /* Planung */
 
     setText(
         "plotCount",
@@ -359,6 +603,42 @@ function renderOrder() {
         order.redstone_build_type
     );
 
+
+    /* Sonderarbeiten */
+
+    renderSpecial(
+        "specialExistingInstallation",
+        order.special_existing_installation
+    );
+
+    renderSpecial(
+        "specialExistingConversion",
+        order.special_existing_conversion
+    );
+
+    renderSpecial(
+        "specialForeignRepair",
+        order.special_foreign_repair
+    );
+
+    renderSpecial(
+        "specialCompactBuild",
+        order.special_compact_build
+    );
+
+    renderSpecial(
+        "specialHiddenRedstone",
+        order.special_hidden_redstone
+    );
+
+    renderSpecial(
+        "specialDifficultAccess",
+        order.special_difficult_access
+    );
+
+
+    /* Weitere Optionen */
+
     setText(
         "extensionType",
         order.extension_type
@@ -382,42 +662,9 @@ function renderOrder() {
     );
 
 
-    renderSpecialWork(
-        "specialExistingInstallation",
-        order.special_existing_installation
-    );
-
-    renderSpecialWork(
-        "specialExistingConversion",
-        order.special_existing_conversion
-    );
-
-    renderSpecialWork(
-        "specialForeignRepair",
-        order.special_foreign_repair
-    );
-
-    renderSpecialWork(
-        "specialCompactBuild",
-        order.special_compact_build
-    );
-
-    renderSpecialWork(
-        "specialHiddenRedstone",
-        order.special_hidden_redstone
-    );
-
-    renderSpecialWork(
-        "specialDifficultAccess",
-        order.special_difficult_access
-    );
-
-
-    renderEmployeeName();
+    renderEmployee();
 
     renderMaterialProvider();
-
-    renderPrices();
 
     renderProgress();
 
@@ -426,45 +673,55 @@ function renderOrder() {
 
 
 /* =========================================================
-   SONDERARBEIT ANZEIGEN
+   SONDERARBEITEN
    ========================================================= */
 
-function renderSpecialWork(
+function renderSpecial(
     id,
     value
 ) {
 
-    const el = element(id);
+    const feld =
+        element(id);
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    const active =
+
+    const aktiv =
         value === true ||
         value === "true" ||
         value === 1 ||
-        value === "1" ||
-        value === "Ja";
+        value === "1";
 
-    if (active) {
 
-        el.classList.add("active");
+    if (aktiv) {
+
+        feld.classList.add(
+            "active"
+        );
 
     } else {
 
-        el.classList.remove("active");
+        feld.classList.remove(
+            "active"
+        );
     }
 }
 
 
 /* =========================================================
-   MITARBEITERNAME
+   BEARBEITER ANZEIGEN
    ========================================================= */
 
-function renderEmployeeName() {
+function renderEmployee() {
 
-    if (!currentOrder.employee_id) {
+    const employeeId =
+        currentOrder.assigned_employee_id;
+
+
+    if (!employeeId) {
 
         setText(
             "employeeName",
@@ -474,23 +731,26 @@ function renderEmployeeName() {
         return;
     }
 
+
     if (
-        currentEmployee &&
-        currentOrder.employee_id ===
-        currentEmployee.user_id
+        currentUser &&
+        employeeId ===
+        currentUser.id
     ) {
 
         setText(
             "employeeName",
-            currentEmployee.name
+            currentEmployee?.name ||
+            "Du"
         );
 
         return;
     }
 
+
     setText(
         "employeeName",
-        "Bereits von einem Mitarbeiter übernommen"
+        "Bereits einem Mitarbeiter zugewiesen"
     );
 }
 
@@ -501,43 +761,225 @@ function renderEmployeeName() {
 
 function renderMaterialProvider() {
 
-    /*
-       Der Redstone-Auftrag besitzt keine eigene
-       Materialbereitstellungs-Auswahl wie der Bauauftrag.
-
-       Deshalb wird hier nur angezeigt, wenn das Feld
-       vorhanden ist.
-    */
-
-    const el =
+    const feld =
         element("materialProvider");
 
-    if (!el) {
+    if (!feld) {
         return;
     }
 
-    if (
-        currentOrder.material_provider !==
-        undefined &&
-        currentOrder.material_provider !== null
-    ) {
 
-        setText(
-            "materialProvider",
-            currentOrder.material_provider
-        );
+    /*
+     * Der aktuelle Redstoneauftrag besitzt
+     * kein eigenes Material-Provider-Feld.
+     *
+     * Materialien werden direkt über
+     * redstone_order_items verwaltet.
+     */
 
-    } else {
-
-        setText(
-            "materialProvider",
-            "Materialien werden über den Redstone-Auftrag erfasst"
-        );
-    }
+    feld.textContent =
+        "Redstone-Materialien";
 }
 
+
 /* =========================================================
-   MATERIALIEN LADEN
+   GRUNDPREIS BERECHNEN
+   ========================================================= */
+
+function berechneGrundpreisAusAuftrag() {
+
+    const order =
+        currentOrder;
+
+
+    if (!order) {
+        return 0;
+    }
+
+
+    /* Grundstück / Merge */
+
+    const plotCount =
+        Math.max(
+            1,
+            number(
+                order.plot_count
+            )
+        );
+
+
+    const grundstueck =
+        plotCount *
+        GRUNDSTUECK_PREIS;
+
+
+    /* Planung */
+
+    const planungPreis =
+        PLANUNG_PREISE[
+            order.planning_type
+        ] || 0;
+
+
+    /* Komplexität */
+
+    const komplexitaetPreis =
+        KOMPLEXITAET_PREISE[
+            order.complexity
+        ] || 0;
+
+
+    /* Anlage */
+
+    const anlagePreis =
+        ANLAGE_PREISE[
+            order.plant_size
+        ] || 0;
+
+
+    /* Redstone-Bau */
+
+    const redstoneBauProzent =
+        REDSTONE_BAU_PROZENTE[
+            order.redstone_build_type
+        ] || 0;
+
+
+    /* Sonderarbeiten */
+
+    let sonderarbeitenPreis =
+        0;
+
+
+    Object.entries(
+        SONDERARBEITEN_PREISE
+    ).forEach(
+        ([name, preis]) => {
+
+            if (
+                order[name] === true
+            ) {
+
+                sonderarbeitenPreis +=
+                    number(preis);
+            }
+        }
+    );
+
+
+    /* Erweiterung */
+
+    const erweiterungPreis =
+        ERWEITERUNG_PREISE[
+            order.extension_type
+        ] || 0;
+
+
+    /* Grundbestandteile */
+
+    let grundpreis =
+        grundstueck +
+        planungPreis +
+        komplexitaetPreis +
+        anlagePreis +
+        sonderarbeitenPreis +
+        erweiterungPreis;
+
+
+    /* Redstone-Bau-Aufschlag */
+
+    const redstoneBauAufschlag =
+        grundpreis *
+        (
+            redstoneBauProzent /
+            100
+        );
+
+
+    grundpreis +=
+        redstoneBauAufschlag;
+
+
+    return Math.round(
+        grundpreis
+    );
+}
+
+
+/* =========================================================
+   DRINGLICHKEIT BERECHNEN
+   ========================================================= */
+
+function berechneDringlichkeitAusAuftrag(
+    grundpreis
+) {
+
+    const prozent =
+        DRINGLICHKEIT_PROZENTE[
+            currentOrder?.urgency_type
+        ] || 0;
+
+
+    return Math.round(
+        number(grundpreis) *
+        (
+            prozent /
+            100
+        )
+    );
+   }
+
+/* =========================================================
+   EHRENMARKT – REDSTONE DETAILS
+   JS/redstone_details.js
+
+   TEIL 2 / 3
+   Materialien laden + Hinzufügen + Bearbeiten + Löschen
+   ========================================================= */
+
+
+/* =========================================================
+   REDSTONE-PREISE LADEN
+   Quelle: redstone_prices
+   ========================================================= */
+
+async function loadRedstonePrices() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_PRICES
+            )
+            .select(
+                "id, name, price"
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    redstonePrices =
+        data || [];
+
+
+    return redstonePrices;
+}
+
+
+/* =========================================================
+   MATERIALIEN DES AUFTRAGS LADEN
+   Quelle: redstone_order_items
    ========================================================= */
 
 async function loadRedstoneMaterials() {
@@ -546,165 +988,164 @@ async function loadRedstoneMaterials() {
         return;
     }
 
+
     const {
         data,
         error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_ORDER_ITEMS)
-        .select(`
-            id,
-            order_id,
-            item_id,
-            quantity,
-            price_per_piece
-        `)
-        .eq(
-            "order_id",
-            currentOrder.id
-        )
-        .order(
-            "id",
-            {
-                ascending: true
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_ORDER_ITEMS
+            )
+            .select(
+                "id, order_id, item_id, quantity, price_per_piece"
+            )
+            .eq(
+                "order_id",
+                currentOrder.id
+            )
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    const materialRows =
+        data || [];
+
+
+    /*
+     * Zu jeder Position den Namen
+     * aus redstone_prices suchen.
+     */
+
+    redstoneMaterials =
+        materialRows.map(
+            position => {
+
+                const preisEintrag =
+                    redstonePrices.find(
+                        item =>
+                            String(item.id) ===
+                            String(position.item_id)
+                    );
+
+
+                return {
+
+                    id:
+                        position.id,
+
+                    order_id:
+                        position.order_id,
+
+                    item_id:
+                        position.item_id,
+
+                    quantity:
+                        number(
+                            position.quantity
+                        ),
+
+                    price_per_piece:
+                        number(
+                            position.price_per_piece
+                        ),
+
+                    item_name:
+                        preisEintrag
+                            ? preisEintrag.name
+                            : "Unbekanntes Material"
+                };
             }
         );
 
-    if (error) {
-        throw error;
-    }
-
-    redstoneMaterials = data || [];
-
-    await loadMaterialNames();
 
     renderMaterials();
 
-    renderPrices();
+    renderMaterialPrice();
 }
 
 
 /* =========================================================
-   MATERIALNAMEN UND PREISE LADEN
-   Quelle: redstone_prices
+   MATERIALAUSWAHL AUFBAUEN
    ========================================================= */
 
-async function loadMaterialNames() {
-
-    if (!redstoneMaterials.length) {
-        return;
-    }
-
-    const ids =
-        redstoneMaterials
-            .map(item => item.item_id)
-            .filter(id => id !== null);
-
-    if (!ids.length) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_PRICES)
-        .select("id, name, price")
-        .in("id", ids);
-
-    if (error) {
-        throw error;
-    }
-
-    const priceMap = {};
-
-    (data || []).forEach(item => {
-
-        priceMap[String(item.id)] = item;
-
-    });
-
-
-    redstoneMaterials =
-        redstoneMaterials.map(item => {
-
-            const artikel =
-                priceMap[String(item.item_id)];
-
-            return {
-                ...item,
-
-                item_name:
-                    artikel
-                        ? artikel.name
-                        : "Unbekanntes Material",
-
-                current_price:
-                    artikel
-                        ? number(artikel.price)
-                        : number(item.price_per_piece)
-            };
-
-        });
-}
-
-
-/* =========================================================
-   MATERIALAUSWAHL LADEN
-   ========================================================= */
-
-async function loadMaterialOptions() {
+function renderMaterialOptions() {
 
     const select =
         element("materialSelect");
+
 
     if (!select) {
         return;
     }
 
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_PRICES)
-        .select("id, name, price")
-        .order(
-            "name",
-            {
-                ascending: true
-            }
-        );
-
-    if (error) {
-        throw error;
-    }
 
     select.innerHTML =
-        '<option value="">Material auswählen</option>';
+        "";
 
-    (data || []).forEach(item => {
 
-        const option =
-            document.createElement("option");
+    const firstOption =
+        document.createElement(
+            "option"
+        );
 
-        option.value =
-            item.id;
 
-        option.textContent =
-            `${item.name} – ${formatPreis(item.price)}`;
+    firstOption.value =
+        "";
 
-        option.dataset.price =
-            item.price;
+    firstOption.textContent =
+        "Material auswählen";
 
-        option.dataset.name =
-            item.name;
 
-        select.appendChild(option);
-    });
+    select.appendChild(
+        firstOption
+    );
+
+
+    redstonePrices.forEach(
+        material => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                material.id;
+
+
+            option.textContent =
+                `${material.name} – ${formatPreis(material.price)}`;
+
+
+            option.dataset.price =
+                material.price;
+
+
+            option.dataset.name =
+                material.name;
+
+
+            select.appendChild(
+                option
+            );
+        }
+    );
 }
 
 
 /* =========================================================
-   MATERIALIEN DARSTELLEN
+   MATERIALIEN ANZEIGEN
    ========================================================= */
 
 function renderMaterials() {
@@ -712,17 +1153,25 @@ function renderMaterials() {
     const container =
         element("materialsList");
 
+
     if (!container) {
         return;
     }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
-    if (!redstoneMaterials.length) {
+    if (
+        redstoneMaterials.length === 0
+    ) {
 
         const row =
-            document.createElement("tr");
+            document.createElement(
+                "tr"
+            );
+
 
         row.innerHTML = `
             <td
@@ -733,67 +1182,95 @@ function renderMaterials() {
             </td>
         `;
 
-        container.appendChild(row);
+
+        container.appendChild(
+            row
+        );
+
 
         return;
     }
 
 
-    redstoneMaterials.forEach(material => {
+    redstoneMaterials.forEach(
+        material => {
 
-        const row =
-            document.createElement("tr");
-
-        const menge =
-            number(material.quantity);
-
-        const preis =
-            number(material.price_per_piece);
-
-        const gesamt =
-            menge * preis;
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
 
-        row.innerHTML = `
-            <td>
-                ${escapeHtml(material.item_name)}
-            </td>
+            const menge =
+                number(
+                    material.quantity
+                );
 
-            <td>
-                ${menge.toLocaleString("de-DE")}
-            </td>
 
-            <td>
-                ${formatPreis(preis)}
-            </td>
+            const einzelpreis =
+                number(
+                    material.price_per_piece
+                );
 
-            <td>
-                ${formatPreis(gesamt)}
-            </td>
 
-            <td>
+            const gesamtpreis =
+                menge *
+                einzelpreis;
 
-                <button
-                    type="button"
-                    class="btn-save"
-                    data-edit-material="${material.id}"
-                >
-                    Bearbeiten
-                </button>
 
-                <button
-                    type="button"
-                    class="btn-delete"
-                    data-delete-material="${material.id}"
-                >
-                    Löschen
-                </button>
+            row.innerHTML = `
 
-            </td>
-        `;
+                <td>
+                    ${escapeHtml(
+                        material.item_name
+                    )}
+                </td>
 
-        container.appendChild(row);
-    });
+                <td>
+                    ${menge.toLocaleString(
+                        "de-DE"
+                    )}
+                </td>
+
+                <td>
+                    ${formatPreis(
+                        einzelpreis
+                    )}
+                </td>
+
+                <td>
+                    ${formatPreis(
+                        gesamtpreis
+                    )}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn-save"
+                        data-edit-material="${material.id}"
+                    >
+                        Bearbeiten
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-delete"
+                        data-delete-material="${material.id}"
+                    >
+                        Löschen
+                    </button>
+
+                </td>
+            `;
+
+
+            container.appendChild(
+                row
+            );
+        }
+    );
 
 
     attachMaterialActions();
@@ -801,73 +1278,78 @@ function renderMaterials() {
 
 
 /* =========================================================
-   HTML SICHER AUSGEBEN
-   ========================================================= */
-
-function escapeHtml(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-/* =========================================================
-   MATERIAL-AKTIONEN
+   MATERIAL-AKTIONEN VERBINDEN
    ========================================================= */
 
 function attachMaterialActions() {
+
 
     document
         .querySelectorAll(
             "[data-edit-material]"
         )
-        .forEach(button => {
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    const id =
-                        button.dataset.editMaterial;
-
-                    editMaterial(id);
-                }
-            );
-
-        });
+                        editMaterial(
+                            button.dataset.editMaterial
+                        );
+                    }
+                );
+            }
+        );
 
 
     document
         .querySelectorAll(
             "[data-delete-material]"
         )
-        .forEach(button => {
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    const id =
-                        button.dataset.deleteMaterial;
-
-                    deleteMaterial(id);
-                }
-            );
-
-        });
+                        deleteMaterial(
+                            button.dataset.deleteMaterial
+                        );
+                    }
+                );
+            }
+        );
 }
 
 
 /* =========================================================
-   MATERIAL EDITOR ÖFFNEN
+   PRÜFEN, OB AKTUELLER BEARBEITER
+   ========================================================= */
+
+function isCurrentBearbeiter() {
+
+    if (
+        !currentUser ||
+        !currentOrder
+    ) {
+
+        return false;
+    }
+
+
+    return String(
+        currentOrder.assigned_employee_id
+    ) === String(
+        currentUser.id
+    );
+}
+
+
+/* =========================================================
+   MATERIAL-EDITOR ÖFFNEN
    ========================================================= */
 
 function openMaterialEditor() {
@@ -875,23 +1357,30 @@ function openMaterialEditor() {
     const editor =
         element("materialEditor");
 
+
     if (!editor) {
         return;
     }
 
-    editor.classList.add("visible");
 
-    const addButton =
-        element("addMaterialButton");
+    editor.style.display =
+        "block";
 
-    if (addButton) {
-        addButton.style.display = "none";
+
+    const hint =
+        element("materialEditorHint");
+
+
+    if (hint) {
+
+        hint.textContent =
+            "Material auswählen und Menge eingeben.";
     }
 }
 
 
 /* =========================================================
-   MATERIAL EDITOR SCHLIESSEN
+   MATERIAL-EDITOR SCHLIESSEN
    ========================================================= */
 
 function closeMaterialEditor() {
@@ -899,42 +1388,46 @@ function closeMaterialEditor() {
     const editor =
         element("materialEditor");
 
+
     if (editor) {
-        editor.classList.remove("visible");
+
+        editor.style.display =
+            "none";
     }
 
 
-    const addButton =
-        element("addMaterialButton");
-
-    if (addButton) {
-        addButton.style.display = "";
-    }
-
-
-    selectedMaterialId = null;
+    selectedMaterialId =
+        null;
 
 
     const select =
         element("materialSelect");
 
+
     if (select) {
-        select.value = "";
+
+        select.value =
+            "";
     }
 
 
     const quantity =
         element("materialQuantity");
 
+
     if (quantity) {
-        quantity.value = "1";
+
+        quantity.value =
+            "1";
     }
 
 
     const saveButton =
         element("saveMaterialButton");
 
+
     if (saveButton) {
+
         saveButton.textContent =
             "Material speichern";
     }
@@ -947,10 +1440,12 @@ function closeMaterialEditor() {
 
 function editMaterial(id) {
 
-    if (!isCurrentEmployee()) {
+    if (
+        !isCurrentBearbeiter()
+    ) {
 
         showError(
-            "Nur der Bearbeiter dieses Auftrags kann Materialien bearbeiten."
+            "Nur der Bearbeiter kann Materialien bearbeiten."
         );
 
         return;
@@ -960,8 +1455,10 @@ function editMaterial(id) {
     const material =
         redstoneMaterials.find(
             item =>
-                String(item.id) === String(id)
+                String(item.id) ===
+                String(id)
         );
+
 
     if (!material) {
 
@@ -980,16 +1477,22 @@ function editMaterial(id) {
     const select =
         element("materialSelect");
 
+
     if (select) {
+
         select.value =
-            material.item_id;
+            String(
+                material.item_id
+            );
     }
 
 
     const quantity =
         element("materialQuantity");
 
+
     if (quantity) {
+
         quantity.value =
             material.quantity;
     }
@@ -997,6 +1500,7 @@ function editMaterial(id) {
 
     const saveButton =
         element("saveMaterialButton");
+
 
     if (saveButton) {
 
@@ -1008,6 +1512,7 @@ function editMaterial(id) {
     openMaterialEditor();
 
     hideError();
+
     hideSuccess();
 }
 
@@ -1018,10 +1523,12 @@ function editMaterial(id) {
 
 async function deleteMaterial(id) {
 
-    if (!isCurrentEmployee()) {
+    if (
+        !isCurrentBearbeiter()
+    ) {
 
         showError(
-            "Nur der Bearbeiter dieses Auftrags kann Materialien löschen."
+            "Nur der Bearbeiter kann Materialien löschen."
         );
 
         return;
@@ -1031,18 +1538,26 @@ async function deleteMaterial(id) {
     const material =
         redstoneMaterials.find(
             item =>
-                String(item.id) === String(id)
+                String(item.id) ===
+                String(id)
         );
 
+
     if (!material) {
+
+        showError(
+            "Das Material wurde nicht gefunden."
+        );
+
         return;
     }
 
 
     const bestaetigt =
         window.confirm(
-            `Soll "${material.item_name}" wirklich gelöscht werden?`
+            `"${material.item_name}" wirklich löschen?`
         );
+
 
     if (!bestaetigt) {
         return;
@@ -1050,30 +1565,35 @@ async function deleteMaterial(id) {
 
 
     hideError();
+
     hideSuccess();
 
 
     const {
         error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_ORDER_ITEMS)
-        .delete()
-        .eq(
-            "id",
-            material.id
-        )
-        .eq(
-            "order_id",
-            currentOrder.id
-        );
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_ORDER_ITEMS
+            )
+            .delete()
+            .eq(
+                "id",
+                material.id
+            )
+            .eq(
+                "order_id",
+                currentOrder.id
+            );
 
 
     if (error) {
 
         console.error(
-            "Material konnte nicht gelöscht werden:",
+            "Fehler beim Löschen:",
             error
         );
+
 
         showError(
             "Das Material konnte nicht gelöscht werden."
@@ -1085,7 +1605,8 @@ async function deleteMaterial(id) {
 
     await loadRedstoneMaterials();
 
-    await recalculateOrderPrice();
+    await recalculateRedstonePrice();
+
 
     showSuccess(
         "Material wurde gelöscht."
@@ -1099,10 +1620,12 @@ async function deleteMaterial(id) {
 
 async function saveMaterial() {
 
-    if (!isCurrentEmployee()) {
+    if (
+        !isCurrentBearbeiter()
+    ) {
 
         showError(
-            "Nur der Bearbeiter dieses Auftrags kann Materialien ändern."
+            "Nur der Bearbeiter kann Materialien ändern."
         );
 
         return;
@@ -1112,26 +1635,40 @@ async function saveMaterial() {
     const select =
         element("materialSelect");
 
+
     const quantityInput =
         element("materialQuantity");
 
 
-    if (!select || !quantityInput) {
+    if (
+        !select ||
+        !quantityInput
+    ) {
+
+        showError(
+            "Materialfelder wurden nicht gefunden."
+        );
+
         return;
     }
 
 
     const itemId =
-        Number(select.value);
+        Number(
+            select.value
+        );
+
 
     const quantity =
-        Number(quantityInput.value);
+        Number(
+            quantityInput.value
+        );
 
 
     if (!itemId) {
 
         showError(
-            "Bitte zuerst ein Material auswählen."
+            "Bitte ein Material auswählen."
         );
 
         return;
@@ -1140,33 +1677,46 @@ async function saveMaterial() {
 
     if (
         !Number.isFinite(quantity) ||
-        quantity <= 0
+        quantity <= 0 ||
+        !Number.isInteger(quantity)
     ) {
 
         showError(
-            "Bitte eine gültige Menge eingeben."
+            "Bitte eine gültige ganze Menge eingeben."
         );
 
         return;
     }
 
 
-    const selectedOption =
-        select.options[
-            select.selectedIndex
-        ];
+    const material =
+        redstonePrices.find(
+            item =>
+                Number(item.id) ===
+                itemId
+        );
+
+
+    if (!material) {
+
+        showError(
+            "Das ausgewählte Material wurde nicht gefunden."
+        );
+
+        return;
+    }
 
 
     const price =
-        Number(
-            selectedOption.dataset.price
-        ) || 0;
+        number(
+            material.price
+        );
 
 
-    if (price <= 0) {
+    if (price < 0) {
 
         showError(
-            "Für dieses Material wurde kein gültiger Preis gefunden."
+            "Der Materialpreis ist ungültig."
         );
 
         return;
@@ -1174,25 +1724,36 @@ async function saveMaterial() {
 
 
     hideError();
+
     hideSuccess();
 
 
-    let error;
+    let error = null;
 
 
-    /* ==========================================
-       BESTEHENDES MATERIAL BEARBEITEN
-       ========================================== */
+    /* =====================================================
+       BESTEHENDE POSITION ÄNDERN
+       ===================================================== */
 
-    if (selectedMaterialId) {
+    if (
+        selectedMaterialId !== null
+    ) {
 
         const result =
             await supabaseClient
-                .from(SUPABASE_TABLE_ORDER_ITEMS)
+                .from(
+                    SUPABASE_TABLE_ORDER_ITEMS
+                )
                 .update({
-                    item_id: itemId,
-                    quantity: quantity,
-                    price_per_piece: price
+
+                    item_id:
+                        itemId,
+
+                    quantity:
+                        quantity,
+
+                    price_per_piece:
+                        price
                 })
                 .eq(
                     "id",
@@ -1203,21 +1764,25 @@ async function saveMaterial() {
                     currentOrder.id
                 );
 
+
         error =
             result.error;
 
-    }
 
-    /* ==========================================
-       NEUES MATERIAL HINZUFÜGEN
-       ========================================== */
+    } else {
 
-    else {
+
+        /* =================================================
+           NEUE POSITION ANLEGEN
+           ================================================= */
 
         const result =
             await supabaseClient
-                .from(SUPABASE_TABLE_ORDER_ITEMS)
+                .from(
+                    SUPABASE_TABLE_ORDER_ITEMS
+                )
                 .insert({
+
                     order_id:
                         currentOrder.id,
 
@@ -1231,6 +1796,7 @@ async function saveMaterial() {
                         price
                 });
 
+
         error =
             result.error;
     }
@@ -1239,9 +1805,10 @@ async function saveMaterial() {
     if (error) {
 
         console.error(
-            "Material konnte nicht gespeichert werden:",
+            "Fehler beim Speichern des Materials:",
             error
         );
+
 
         showError(
             "Das Material konnte nicht gespeichert werden."
@@ -1253,191 +1820,343 @@ async function saveMaterial() {
 
     closeMaterialEditor();
 
+
     await loadRedstoneMaterials();
 
-    await recalculateOrderPrice();
+    await recalculateRedstonePrice();
+
 
     showSuccess(
-        selectedMaterialId
+        selectedMaterialId !== null
             ? "Material wurde geändert."
             : "Material wurde hinzugefügt."
     );
-      }
+}
+
 
 /* =========================================================
-   PREISBERECHNUNG
+   MATERIALKOSTEN BERECHNEN
    ========================================================= */
 
-async function recalculateOrderPrice() {
+function berechneMaterialkosten() {
+
+    return redstoneMaterials.reduce(
+        (
+            summe,
+            material
+        ) => {
+
+            return summe +
+                (
+                    number(
+                        material.quantity
+                    ) *
+                    number(
+                        material.price_per_piece
+                    )
+                );
+
+        },
+        0
+    );
+}
+
+
+/* =========================================================
+   MATERIALPREIS ANZEIGEN
+   ========================================================= */
+
+function renderMaterialPrice() {
+
+    const materialPrice =
+        berechneMaterialkosten();
+
+
+    setText(
+        "materialPrice",
+        formatPreis(
+            materialPrice
+        )
+    );
+
+
+    return materialPrice;
+               }
+
+/* =========================================================
+   EHRENMARKT – REDSTONE DETAILS
+   JS/redstone_details.js
+
+   TEIL 3 / 3
+   Gesamtpreis + Übernahme + Status + Start
+   ========================================================= */
+
+
+/* =========================================================
+   GARANTIEPREIS BERECHNEN
+   ========================================================= */
+
+function berechneGarantiePreis(grundpreis) {
+
+    const monate =
+        number(
+            currentOrder?.guarantee_months
+        );
+
+    const prozent =
+        GARANTIE_PROZENTE[monate] || 0;
+
+    return Math.round(
+        number(grundpreis) *
+        (prozent / 100)
+    );
+}
+
+
+/* =========================================================
+   WOCHENENDPREIS BERECHNEN
+   ========================================================= */
+
+function berechneWochenendPreis(grundpreis) {
+
+    const aktiv =
+        currentOrder?.weekend_work === true ||
+        currentOrder?.weekend_work === "true" ||
+        currentOrder?.weekend_work === 1 ||
+        currentOrder?.weekend_work === "1";
+
+    if (!aktiv) {
+        return 0;
+    }
+
+    return Math.round(
+        number(grundpreis) *
+        (WOCHENENDE_PROZENT / 100)
+    );
+}
+
+
+/* =========================================================
+   GESAMTPREIS BERECHNEN
+   ========================================================= */
+
+function berechneGesamtpreis() {
+
+    if (!currentOrder) {
+        return 0;
+    }
+
+
+    const grundpreis =
+        berechneGrundpreisAusAuftrag();
+
+
+    const materialpreis =
+        berechneMaterialkosten();
+
+
+    /*
+     * Dringlichkeit wird auf den
+     * Grundpreis ohne Materialien angewendet.
+     */
+
+    const dringlichkeitspreis =
+        berechneDringlichkeitAusAuftrag(
+            grundpreis
+        );
+
+
+    /*
+     * Wochenende wird ebenfalls auf
+     * den Grundpreis angewendet.
+     */
+
+    const wochenendpreis =
+        berechneWochenendPreis(
+            grundpreis
+        );
+
+
+    /*
+     * Garantie.
+     */
+
+    const garantiepreis =
+        berechneGarantiePreis(
+            grundpreis
+        );
+
+
+    const gesamtpreis =
+        Math.round(
+            grundpreis +
+            materialpreis +
+            dringlichkeitspreis +
+            wochenendpreis +
+            garantiepreis
+        );
+
+
+    const anzahlung =
+        Math.round(
+            gesamtpreis * 0.25
+        );
+
+
+    const restbetrag =
+        gesamtpreis -
+        anzahlung;
+
+
+    /*
+     * Anzeige.
+     */
+
+    setText(
+        "basePrice",
+        formatPreis(
+            grundpreis
+        )
+    );
+
+
+    setText(
+        "materialPrice",
+        formatPreis(
+            materialpreis
+        )
+    );
+
+
+    setText(
+        "urgencyPrice",
+        formatPreis(
+            dringlichkeitspreis
+        )
+    );
+
+
+    setText(
+        "weekendPrice",
+        formatPreis(
+            wochenendpreis
+        )
+    );
+
+
+    setText(
+        "guaranteePrice",
+        formatPreis(
+            garantiepreis
+        )
+    );
+
+
+    setText(
+        "totalPrice",
+        formatPreis(
+            gesamtpreis
+        )
+    );
+
+
+    setText(
+        "depositAmount",
+        formatPreis(
+            anzahlung
+        )
+    );
+
+
+    setText(
+        "remainingAmount",
+        formatPreis(
+            restbetrag
+        )
+    );
+
+
+    return {
+        grundpreis,
+        materialpreis,
+        dringlichkeitspreis,
+        wochenendpreis,
+        garantiepreis,
+        gesamtpreis,
+        anzahlung,
+        restbetrag
+    };
+}
+
+
+/* =========================================================
+   PREIS NEU BERECHNEN UND SPEICHERN
+   ========================================================= */
+
+async function recalculateRedstonePrice() {
 
     if (!currentOrder) {
         return;
     }
 
 
-    /* ==========================================
-       MATERIALKOSTEN
-       ========================================== */
+    const preise =
+        berechneGesamtpreis();
 
-    let materialPrice = 0;
-
-    redstoneMaterials.forEach(material => {
-
-        const menge =
-            number(material.quantity);
-
-        const preis =
-            number(material.price_per_piece);
-
-        materialPrice +=
-            menge * preis;
-    });
-
-
-    /* ==========================================
-       BESTEHENDE PREISWERTE
-       ========================================== */
-
-    const basePrice =
-        number(
-            currentOrder.base_price ??
-            currentOrder.total_base_price ??
-            currentOrder.total_price
-        );
-
-
-    const urgencyPrice =
-        number(
-            currentOrder.urgency_price
-        );
-
-
-    const weekendPrice =
-        number(
-            currentOrder.weekend_price
-        );
-
-
-    const guaranteePrice =
-        number(
-            currentOrder.guarantee_price
-        );
-
-
-    /* ==========================================
-       GESAMTPREIS
-       ========================================== */
-
-    const totalPrice =
-        basePrice +
-        materialPrice +
-        urgencyPrice +
-        weekendPrice +
-        guaranteePrice;
-
-
-    const deposit =
-        Math.round(
-            totalPrice * 0.25
-        );
-
-
-    const remaining =
-        totalPrice - deposit;
-
-
-    /* ==========================================
-       ANZEIGE
-       ========================================== */
-
-    setText(
-        "basePrice",
-        formatPreis(basePrice)
-    );
-
-    setText(
-        "materialPrice",
-        formatPreis(materialPrice)
-    );
-
-    setText(
-        "urgencyPrice",
-        formatPreis(urgencyPrice)
-    );
-
-    setText(
-        "weekendPrice",
-        formatPreis(weekendPrice)
-    );
-
-    setText(
-        "guaranteePrice",
-        formatPreis(guaranteePrice)
-    );
-
-    setText(
-        "totalPrice",
-        formatPreis(totalPrice)
-    );
-
-    setText(
-        "depositAmount",
-        formatPreis(deposit)
-    );
-
-    setText(
-        "remainingAmount",
-        formatPreis(remaining)
-    );
-
-
-    /* ==========================================
-       PREIS IN DER DATENBANK AKTUALISIEREN
-       ========================================== */
 
     const {
         error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_ORDERS)
-        .update({
-            total_price: totalPrice,
-            deposit_amount: deposit,
-            remaining_amount: remaining
-        })
-        .eq(
-            "id",
-            currentOrder.id
-        );
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_ORDERS
+            )
+            .update({
+
+                total_price:
+                    preise.gesamtpreis,
+
+                deposit_amount:
+                    preise.anzahlung,
+
+                remaining_amount:
+                    preise.restbetrag
+
+            })
+            .eq(
+                "id",
+                currentOrder.id
+            );
 
 
     if (error) {
 
         console.error(
-            "Preis konnte nicht aktualisiert werden:",
+            "Preis konnte nicht gespeichert werden:",
             error
         );
 
-        showError(
-            "Der neue Gesamtpreis konnte nicht gespeichert werden."
-        );
-
-        return;
+        throw error;
     }
 
 
+    /*
+     * Lokales Objekt ebenfalls aktualisieren.
+     */
+
     currentOrder.total_price =
-        totalPrice;
+        preise.gesamtpreis;
 
     currentOrder.deposit_amount =
-        deposit;
+        preise.anzahlung;
 
     currentOrder.remaining_amount =
-        remaining;
+        preise.restbetrag;
 }
 
 
 /* =========================================================
-   PREISE ANZEIGEN
+   PREISANZEIGE BEIM ERSTEN LADEN
    ========================================================= */
 
 function renderPrices() {
@@ -1447,339 +2166,72 @@ function renderPrices() {
     }
 
 
-    const materialPrice =
-        redstoneMaterials.reduce(
-            (sum, material) => {
-
-                return sum +
-                    (
-                        number(material.quantity) *
-                        number(material.price_per_piece)
-                    );
-
-            },
-            0
-        );
-
-
-    const basePrice =
-        number(
-            currentOrder.base_price ??
-            currentOrder.total_base_price ??
-            0
-        );
-
-
-    const urgencyPrice =
-        number(
-            currentOrder.urgency_price
-        );
-
-
-    const weekendPrice =
-        number(
-            currentOrder.weekend_price
-        );
-
-
-    const guaranteePrice =
-        number(
-            currentOrder.guarantee_price
-        );
-
-
-    let totalPrice =
-        number(
-            currentOrder.total_price
-        );
-
-
-    if (!totalPrice) {
-
-        totalPrice =
-            basePrice +
-            materialPrice +
-            urgencyPrice +
-            weekendPrice +
-            guaranteePrice;
-    }
-
-
-    const deposit =
-        currentOrder.deposit_amount !==
-        undefined
-            ? number(
-                currentOrder.deposit_amount
-            )
-            : Math.round(
-                totalPrice * 0.25
-            );
-
-
-    const remaining =
-        currentOrder.remaining_amount !==
-        undefined
-            ? number(
-                currentOrder.remaining_amount
-            )
-            : totalPrice - deposit;
+    const preise =
+        berechneGesamtpreis();
 
 
     setText(
         "basePrice",
-        formatPreis(basePrice)
+        formatPreis(
+            preise.grundpreis
+        )
     );
+
 
     setText(
         "materialPrice",
-        formatPreis(materialPrice)
+        formatPreis(
+            preise.materialpreis
+        )
     );
+
 
     setText(
         "urgencyPrice",
-        formatPreis(urgencyPrice)
+        formatPreis(
+            preise.dringlichkeitspreis
+        )
     );
+
 
     setText(
         "weekendPrice",
-        formatPreis(weekendPrice)
+        formatPreis(
+            preise.wochenendpreis
+        )
     );
+
 
     setText(
         "guaranteePrice",
-        formatPreis(guaranteePrice)
+        formatPreis(
+            preise.garantiepreis
+        )
     );
+
 
     setText(
         "totalPrice",
-        formatPreis(totalPrice)
+        formatPreis(
+            preise.gesamtpreis
+        )
     );
+
 
     setText(
         "depositAmount",
-        formatPreis(deposit)
+        formatPreis(
+            preise.anzahlung
+        )
     );
+
 
     setText(
         "remainingAmount",
-        formatPreis(remaining)
+        formatPreis(
+            preise.restbetrag
+        )
     );
-}
-
-
-/* =========================================================
-   PRÜFEN, OB DIESER MITARBEITER BEARBEITER IST
-   ========================================================= */
-
-function isCurrentEmployee() {
-
-    if (
-        !currentUser ||
-        !currentOrder
-    ) {
-        return false;
-    }
-
-
-    return (
-        currentOrder.employee_id ===
-        currentUser.id
-    );
-}
-
-
-/* =========================================================
-   MATERIALBEREICH AKTIVIEREN / DEAKTIVIEREN
-   ========================================================= */
-
-function updateMaterialEditorState() {
-
-    const addButton =
-        element("addMaterialButton");
-
-    const editor =
-        element("materialEditor");
-
-
-    const isBearbeiter =
-        isCurrentEmployee();
-
-
-    if (addButton) {
-
-        addButton.style.display =
-            isBearbeiter
-                ? ""
-                : "none";
-    }
-
-
-    if (
-        !isBearbeiter &&
-        editor
-    ) {
-
-        editor.classList.remove(
-            "visible"
-        );
-    }
-}
-
-
-/* =========================================================
-   BEARBEITER-STEUERUNG
-   ========================================================= */
-
-function updateEmployeeControls() {
-
-    const button =
-        element("acceptOrderButton");
-
-    const statusText =
-        element("employeeStatusText");
-
-
-    if (!button) {
-        return;
-    }
-
-
-    const status =
-        String(
-            currentOrder?.status || ""
-        );
-
-
-    /* ==========================================
-       AUFTRAG BEREITS VON DIESEM MITARBEITER
-       ========================================== */
-
-    if (
-        isCurrentEmployee()
-    ) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "✓ Auftrag übernommen";
-
-
-        if (statusText) {
-
-            statusText.textContent =
-                "Du bearbeitest diesen Auftrag.";
-        }
-
-
-        updateMaterialEditorState();
-
-        return;
-    }
-
-
-    /* ==========================================
-       AUFTRAG BEREITS VON ANDEREM MITARBEITER
-       ========================================== */
-
-    if (
-        currentOrder.employee_id &&
-        currentOrder.employee_id !==
-        currentUser.id
-    ) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Auftrag bereits übernommen";
-
-
-        if (statusText) {
-
-            statusText.textContent =
-                "Dieser Auftrag wird bereits von einem anderen Mitarbeiter bearbeitet.";
-        }
-
-
-        updateMaterialEditorState();
-
-        return;
-    }
-
-
-    /* ==========================================
-       AUFTRAG NICHT OFFEN
-       ========================================== */
-
-    if (
-        status.toLowerCase() !==
-        "offen"
-    ) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Auftrag nicht verfügbar";
-
-
-        if (statusText) {
-
-            statusText.textContent =
-                "Dieser Auftrag kann aktuell nicht übernommen werden.";
-        }
-
-
-        updateMaterialEditorState();
-
-        return;
-    }
-
-
-    /* ==========================================
-       MITARBEITER NICHT VERFÜGBAR
-       ========================================== */
-
-    if (
-        !currentEmployee ||
-        currentEmployee.is_available !== true
-    ) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Nicht verfügbar";
-
-
-        if (statusText) {
-
-            statusText.textContent =
-                "Du musst als verfügbar eingetragen sein, um einen Auftrag zu übernehmen.";
-        }
-
-
-        updateMaterialEditorState();
-
-        return;
-    }
-
-
-    /* ==========================================
-       AUFTRAG KANN ÜBERNOMMEN WERDEN
-       ========================================== */
-
-    button.disabled = false;
-
-    button.textContent =
-        "✓ Auftrag übernehmen";
-
-
-    if (statusText) {
-
-        statusText.textContent =
-            "Dieser Auftrag kann übernommen werden.";
-    }
-
-
-    updateMaterialEditorState();
 }
 
 
@@ -1813,6 +2265,10 @@ async function acceptOrder() {
     }
 
 
+    /*
+     * Mitarbeiter muss verfügbar sein.
+     */
+
     if (
         currentEmployee.is_available !== true
     ) {
@@ -1825,8 +2281,12 @@ async function acceptOrder() {
     }
 
 
+    /*
+     * Bereits zugewiesen?
+     */
+
     if (
-        currentOrder.employee_id
+        currentOrder.assigned_employee_id
     ) {
 
         showError(
@@ -1839,15 +2299,21 @@ async function acceptOrder() {
 
         await loadRedstoneMaterials();
 
+        renderPrices();
+
         return;
     }
 
 
+    /*
+     * Nur offene Aufträge dürfen
+     * übernommen werden.
+     */
+
     if (
         String(
             currentOrder.status || ""
-        ).toLowerCase() !==
-        "offen"
+        ).toLowerCase() !== "offen"
     ) {
 
         showError(
@@ -1859,7 +2325,9 @@ async function acceptOrder() {
 
 
     const button =
-        element("acceptOrderButton");
+        element(
+            "acceptOrderButton"
+        );
 
 
     if (button) {
@@ -1871,38 +2339,51 @@ async function acceptOrder() {
     }
 
 
+    /*
+     * assigned_employee_id verwenden.
+     *
+     * Gleichzeitig wird geprüft,
+     * dass der Auftrag noch offen und
+     * noch keinem Mitarbeiter zugewiesen ist.
+     */
+
     const {
         data,
         error
-    } = await supabaseClient
-        .from(SUPABASE_TABLE_ORDERS)
-        .update({
-            employee_id:
-                currentUser.id,
+    } =
+        await supabaseClient
+            .from(
+                SUPABASE_TABLE_ORDERS
+            )
+            .update({
 
-            status:
-                "In Bearbeitung"
-        })
-        .eq(
-            "id",
-            currentOrder.id
-        )
-        .is(
-            "employee_id",
-            null
-        )
-        .eq(
-            "status",
-            "Offen"
-        )
-        .select()
-        .maybeSingle();
+                assigned_employee_id:
+                    currentUser.id,
+
+                status:
+                    "In Bearbeitung"
+
+            })
+            .eq(
+                "id",
+                currentOrder.id
+            )
+            .eq(
+                "status",
+                "Offen"
+            )
+            .is(
+                "assigned_employee_id",
+                null
+            )
+            .select()
+            .maybeSingle();
 
 
     if (error) {
 
         console.error(
-            "Auftrag konnte nicht übernommen werden:",
+            "Fehler beim Übernehmen:",
             error
         );
 
@@ -1916,17 +2397,26 @@ async function acceptOrder() {
     }
 
 
+    /*
+     * Keine Zeile geändert:
+     * Auftrag wurde wahrscheinlich
+     * gleichzeitig von jemand anderem übernommen.
+     */
+
     if (!data) {
 
         showError(
-            "Der Auftrag wurde möglicherweise bereits von einem anderen Mitarbeiter übernommen."
+            "Der Auftrag wurde bereits von einem anderen Mitarbeiter übernommen."
         );
+
 
         await loadOrder();
 
         renderOrder();
 
         await loadRedstoneMaterials();
+
+        renderPrices();
 
         return;
     }
@@ -1936,40 +2426,270 @@ async function acceptOrder() {
         data;
 
 
-    showSuccess(
-        "Der Auftrag wurde erfolgreich übernommen."
-    );
-
-
     renderOrder();
 
     await loadRedstoneMaterials();
 
+    renderPrices();
+
     updateEmployeeControls();
+
+
+    showSuccess(
+        "Der Redstone-Auftrag wurde erfolgreich übernommen."
+    );
 }
 
 
 /* =========================================================
-   FORTSCHRITT
+   MITARBEITER-STEUERUNG
+   ========================================================= */
+
+function updateEmployeeControls() {
+
+    const button =
+        element(
+            "acceptOrderButton"
+        );
+
+
+    const statusText =
+        element(
+            "employeeStatusText"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    const assignedId =
+        currentOrder
+            ?.assigned_employee_id;
+
+
+    /*
+     * Dieser Mitarbeiter ist Bearbeiter.
+     */
+
+    if (
+        assignedId &&
+        currentUser &&
+        String(assignedId) ===
+        String(currentUser.id)
+    ) {
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "✓ Auftrag übernommen";
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                "Du bist der Bearbeiter dieses Auftrags.";
+        }
+
+
+        updateMaterialControls();
+
+        return;
+    }
+
+
+    /*
+     * Ein anderer Mitarbeiter ist Bearbeiter.
+     */
+
+    if (
+        assignedId &&
+        (
+            !currentUser ||
+            String(assignedId) !==
+            String(currentUser.id)
+        )
+    ) {
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Auftrag bereits übernommen";
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                "Dieser Auftrag wird bereits von einem anderen Mitarbeiter bearbeitet.";
+        }
+
+
+        updateMaterialControls();
+
+        return;
+    }
+
+
+    /*
+     * Auftrag ist nicht offen.
+     */
+
+    if (
+        String(
+            currentOrder?.status || ""
+        ).toLowerCase() !== "offen"
+    ) {
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Auftrag nicht verfügbar";
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                "Dieser Auftrag kann aktuell nicht übernommen werden.";
+        }
+
+
+        updateMaterialControls();
+
+        return;
+    }
+
+
+    /*
+     * Mitarbeiter nicht verfügbar.
+     */
+
+    if (
+        !currentEmployee ||
+        currentEmployee.is_available !== true
+    ) {
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Nicht verfügbar";
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                "Setze deinen Mitarbeiterstatus auf verfügbar, um Aufträge zu übernehmen.";
+        }
+
+
+        updateMaterialControls();
+
+        return;
+    }
+
+
+    /*
+     * Auftrag kann übernommen werden.
+     */
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "✓ Auftrag übernehmen";
+
+
+    if (statusText) {
+
+        statusText.textContent =
+            "Dieser Auftrag kann übernommen werden.";
+    }
+
+
+    updateMaterialControls();
+}
+
+
+/* =========================================================
+   MATERIAL-STEUERUNG
+   ========================================================= */
+
+function updateMaterialControls() {
+
+    const addButton =
+        element(
+            "addMaterialButton"
+        );
+
+
+    const editor =
+        element(
+            "materialEditor"
+        );
+
+
+    const bearbeiter =
+        isCurrentBearbeiter();
+
+
+    if (addButton) {
+
+        addButton.style.display =
+            bearbeiter
+                ? ""
+                : "none";
+    }
+
+
+    if (!bearbeiter && editor) {
+
+        editor.style.display =
+            "none";
+    }
+}
+
+
+/* =========================================================
+   STATUS-FORTSCHRITT
    ========================================================= */
 
 function renderProgress() {
 
     const steps = [
-        element("progressOpen"),
-        element("progressWorking"),
-        element("progressCompleted"),
-        element("progressPaid")
+
+        element(
+            "progressOpen"
+        ),
+
+        element(
+            "progressWorking"
+        ),
+
+        element(
+            "progressCompleted"
+        ),
+
+        element(
+            "progressPaid"
+        )
     ];
 
 
-    steps.forEach(step => {
+    steps.forEach(
+        step => {
 
-        if (step) {
-            step.classList.remove("active");
+            if (step) {
+
+                step.classList.remove(
+                    "active"
+                );
+            }
         }
-
-    });
+    );
 
 
     const status =
@@ -1978,51 +2698,62 @@ function renderProgress() {
         ).toLowerCase();
 
 
-    let activeCount = 1;
+    let count = 1;
 
 
     if (
-        status.includes("bearbeitung") ||
-        status.includes("bearbeitet")
+        status.includes(
+            "bearbeitung"
+        )
     ) {
 
-        activeCount = 2;
+        count = 2;
 
     } else if (
-        status.includes("abgeschlossen")
+        status.includes(
+            "abgeschlossen"
+        )
     ) {
 
-        activeCount = 3;
+        count = 3;
 
     } else if (
-        status.includes("bezahlt")
+        status.includes(
+            "bezahlt"
+        )
     ) {
 
-        activeCount = 4;
+        count = 4;
     }
 
 
     for (
         let i = 0;
-        i < activeCount;
+        i < count;
         i++
     ) {
 
         if (steps[i]) {
-            steps[i].classList.add("active");
+
+            steps[i].classList.add(
+                "active"
+            );
         }
     }
 }
 
 
 /* =========================================================
-   BUTTON-EVENTS
+   EVENTS
    ========================================================= */
 
 function setupEvents() {
 
     const addButton =
-        element("addMaterialButton");
+        element(
+            "addMaterialButton"
+        );
+
 
     if (addButton) {
 
@@ -2030,7 +2761,9 @@ function setupEvents() {
             "click",
             async () => {
 
-                if (!isCurrentEmployee()) {
+                if (
+                    !isCurrentBearbeiter()
+                ) {
 
                     showError(
                         "Du musst den Auftrag zuerst übernehmen."
@@ -2044,15 +2777,16 @@ function setupEvents() {
                     null;
 
 
-                const saveButton =
+                const select =
                     element(
-                        "saveMaterialButton"
+                        "materialSelect"
                     );
 
-                if (saveButton) {
 
-                    saveButton.textContent =
-                        "Material speichern";
+                if (select) {
+
+                    select.value =
+                        "";
                 }
 
 
@@ -2061,26 +2795,31 @@ function setupEvents() {
                         "materialQuantity"
                     );
 
+
                 if (quantity) {
-                    quantity.value = "1";
+
+                    quantity.value =
+                        "1";
                 }
 
 
-                const select =
+                const saveButton =
                     element(
-                        "materialSelect"
+                        "saveMaterialButton"
                     );
 
-                if (select) {
-                    select.value = "";
+
+                if (saveButton) {
+
+                    saveButton.textContent =
+                        "Material speichern";
                 }
 
-
-                await loadMaterialOptions();
 
                 openMaterialEditor();
 
                 hideError();
+
                 hideSuccess();
             }
         );
@@ -2088,7 +2827,10 @@ function setupEvents() {
 
 
     const saveButton =
-        element("saveMaterialButton");
+        element(
+            "saveMaterialButton"
+        );
+
 
     if (saveButton) {
 
@@ -2100,7 +2842,10 @@ function setupEvents() {
 
 
     const cancelButton =
-        element("cancelMaterialButton");
+        element(
+            "cancelMaterialButton"
+        );
+
 
     if (cancelButton) {
 
@@ -2112,7 +2857,10 @@ function setupEvents() {
 
 
     const acceptButton =
-        element("acceptOrderButton");
+        element(
+            "acceptOrderButton"
+        );
+
 
     if (acceptButton) {
 
@@ -2128,11 +2876,12 @@ function setupEvents() {
    START
    ========================================================= */
 
-async function init() {
+async function initRedstoneDetails() {
 
     try {
 
         hideError();
+
         hideSuccess();
 
 
@@ -2147,13 +2896,38 @@ async function init() {
 
         await loadOrder();
 
-        renderOrder();
+
+        /*
+         * Preise aus redstone_prices laden.
+         */
+
+        await loadRedstonePrices();
 
 
-        await loadMaterialOptions();
+        /*
+         * Materialien des Auftrags laden.
+         */
 
         await loadRedstoneMaterials();
 
+
+        /*
+         * Auftrag darstellen.
+         */
+
+        renderOrder();
+
+
+        /*
+         * Preise darstellen.
+         */
+
+        renderPrices();
+
+
+        /*
+         * Buttons aktivieren.
+         */
 
         setupEvents();
 
@@ -2165,13 +2939,13 @@ async function init() {
     } catch (error) {
 
         console.error(
-            "Fehler beim Laden des Redstone-Auftrags:",
+            "Redstone Details Fehler:",
             error
         );
 
 
         showError(
-            error.message ||
+            error?.message ||
             "Der Redstone-Auftrag konnte nicht geladen werden."
         );
     }
@@ -2184,5 +2958,5 @@ async function init() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    init
+    initRedstoneDetails
 );
