@@ -1,160 +1,217 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Ehrenmarkt – Anmeldung</title>
+
 
     <style>
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
+
+        html,
         body {
-            margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+
+        body {
+
             min-height: 100vh;
 
-            font-family: Georgia, "Times New Roman", serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px 12px;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
             color: #f2e6cf;
 
             background-image:
+
                 linear-gradient(
-                    rgba(8, 6, 5, 0.35),
-                    rgba(8, 6, 5, 0.70)
+                    rgba(8, 6, 5, 0.38),
+                    rgba(8, 6, 5, 0.78)
                 ),
+
                 url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Login.png");
 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 30px 15px;
+            background-attachment: fixed;
         }
 
 
         /* =========================
-           LOGIN-BEREICH
-           ========================= */
+           LOGIN BOX
+        ========================= */
 
         .login-box {
+
             width: 100%;
             max-width: 440px;
 
-            background: rgba(18, 14, 11, 0.94);
+            padding: 30px 25px;
 
-            border: 2px solid #b88a3b;
-            border-radius: 16px;
+            background:
+                rgba(18, 14, 11, 0.95);
 
-            padding: 32px 26px;
+            border:
+                2px solid #b88a3b;
+
+            border-radius: 15px;
 
             box-shadow:
-                0 15px 50px rgba(0, 0, 0, 0.75),
-                inset 0 0 30px rgba(184, 138, 59, 0.08);
+
+                0 15px 50px
+                rgba(0, 0, 0, 0.75),
+
+                inset 0 0 30px
+                rgba(184, 138, 59, 0.08);
         }
 
 
         /* =========================
-           LOGO / ÜBERSCHRIFT
-           ========================= */
+           LOGO
+        ========================= */
 
         .logo {
+
             text-align: center;
         }
 
-        .logo h1 {
-            margin: 0;
 
-            font-size: 40px;
-            letter-spacing: 2px;
+        .logo h1 {
 
             color: #d6ad52;
+
+            font-size: 38px;
+
+            letter-spacing: 2px;
 
             text-shadow:
                 0 2px 6px #000;
         }
 
+
         .logo p {
-            margin: 8px 0 0;
+
+            margin-top: 7px;
 
             color: #c8b99e;
-            font-size: 16px;
+
+            font-size: 15px;
         }
 
 
         .linie {
+
             height: 1px;
 
-            background: #8f6b32;
+            margin: 23px 0;
 
-            margin: 25px 0;
+            background:
+                #8f6b32;
         }
 
 
         /* =========================
            FORMULAR
-           ========================= */
+        ========================= */
 
         .feld {
-            margin-bottom: 20px;
+
+            margin-bottom: 18px;
         }
 
+
         label {
+
             display: block;
 
-            margin-bottom: 8px;
+            margin-bottom: 7px;
 
             color: #d6ad52;
 
+            font-size: 15px;
+
             font-weight: bold;
-            font-size: 16px;
         }
 
+
         input {
+
             width: 100%;
 
-            padding: 15px;
+            padding: 14px;
 
-            background: #0f0c09;
+            background:
+                #0f0c09;
 
             color: white;
 
-            border: 1px solid #6f552d;
-            border-radius: 9px;
+            border:
+                1px solid #6f552d;
+
+            border-radius: 8px;
+
+            outline: none;
 
             font-family: inherit;
+
             font-size: 16px;
         }
 
-        input:focus {
-            outline: none;
 
-            border-color: #d6ad52;
+        input:focus {
+
+            border-color:
+                #d6ad52;
 
             box-shadow:
-                0 0 10px rgba(214, 173, 82, 0.25);
+                0 0 10px
+                rgba(214, 173, 82, 0.25);
         }
 
+
         input::placeholder {
+
             color: #8f8475;
         }
 
 
         /* =========================
-           ANMELDE-BUTTON
-           ========================= */
+           LOGIN BUTTON
+        ========================= */
 
         .login-button {
+
             width: 100%;
 
-            margin-top: 5px;
+            padding: 14px;
 
-            padding: 15px;
+            margin-top: 4px;
 
             background:
                 linear-gradient(
@@ -164,165 +221,210 @@
 
             color: white;
 
-            border: 1px solid #e1bd6b;
-            border-radius: 9px;
+            border:
+                1px solid #e1bd6b;
+
+            border-radius: 8px;
 
             font-family: inherit;
-            font-size: 18px;
+
+            font-size: 17px;
+
             font-weight: bold;
 
             cursor: pointer;
 
             box-shadow:
-                0 4px 10px rgba(0, 0, 0, 0.4);
+                0 4px 10px
+                rgba(0, 0, 0, 0.4);
+
+            transition: 0.2s;
         }
+
 
         .login-button:hover {
-            filter: brightness(1.12);
+
+            filter:
+                brightness(1.12);
         }
 
+
         .login-button:active {
-            transform: scale(0.99);
+
+            transform:
+                scale(0.99);
+        }
+
+
+        .login-button:disabled {
+
+            opacity: 0.65;
+
+            cursor: wait;
         }
 
 
         /* =========================
            MELDUNG
-           ========================= */
+        ========================= */
 
         #meldung {
+
             min-height: 24px;
 
-            margin-top: 16px;
+            margin-top: 15px;
 
             text-align: center;
 
             color: #d9a477;
 
-            font-size: 14px;
+            font-size: 13px;
+
+            line-height: 1.5;
         }
 
 
         /* =========================
            LINKS
-           ========================= */
+        ========================= */
 
         .links {
-            text-align: center;
 
-            margin-top: 22px;
+            margin-top: 20px;
+
+            text-align: center;
         }
+
 
         .links p {
-            margin: 13px 0;
+
+            margin: 12px 0;
         }
 
+
         .links a {
+
             color: #d6ad52;
 
             text-decoration: none;
+
+            font-size: 13px;
         }
 
+
         .links a:hover {
+
             text-decoration: underline;
         }
 
+
         .zurueck {
-            color: #bcae98 !important;
+
+            color:
+                #bcae98 !important;
         }
 
-                /* =========================
+
+        /* =========================
            HANDY
-           ========================= */
+        ========================= */
 
         @media (max-width: 600px) {
 
             body {
-                padding: 18px 12px;
 
-                background-position: center;
-                background-attachment: scroll;
+                padding: 15px 10px;
+
+                background-attachment:
+                    scroll;
             }
+
 
             .login-box {
-                max-width: 100%;
 
-                padding: 26px 20px;
+                padding:
+                    25px 19px;
 
-                border-radius: 14px;
+                border-radius:
+                    13px;
             }
+
 
             .logo h1 {
-                font-size: 32px;
+
+                font-size: 31px;
             }
+
 
             .logo p {
-                font-size: 14px;
+
+                font-size: 13px;
             }
 
+
             input {
-                padding: 14px;
+
+                padding: 13px;
 
                 font-size: 16px;
             }
 
-            .login-button {
-                padding: 14px;
 
-                font-size: 17px;
+            .login-button {
+
+                padding: 13px;
+
+                font-size: 16px;
             }
         }
 
 
         /* =========================
            KLEINE HANDYS
-           ========================= */
+        ========================= */
 
         @media (max-width: 380px) {
 
-            body {
-                padding: 12px 8px;
+            .login-box {
+
+                padding:
+                    22px 15px;
             }
 
-            .login-box {
-                padding: 22px 16px;
-            }
 
             .logo h1 {
-                font-size: 29px;
+
+                font-size: 28px;
             }
+
 
             .linie {
-                margin: 20px 0;
-            }
-        }
 
-
-        /* =========================
-           PC / GROSSER BILDSCHIRM
-           ========================= */
-
-        @media (min-width: 601px) {
-
-            body {
-                padding: 40px;
-            }
-
-            .login-box {
-                max-width: 450px;
+                margin:
+                    19px 0;
             }
         }
 
     </style>
+
 </head>
+
 
 <body>
 
+
     <main class="login-box">
+
+
+        <!-- =========================
+             LOGO
+        ========================= -->
 
         <div class="logo">
 
-            <h1>Ehrenmarkt</h1>
+            <h1>
+                Ehrenmarkt
+            </h1>
 
             <p>
                 Willkommen zurück
@@ -334,7 +436,12 @@
         <div class="linie"></div>
 
 
+        <!-- =========================
+             LOGIN
+        ========================= -->
+
         <form id="loginForm">
+
 
             <div class="feld">
 
@@ -345,7 +452,9 @@
                 <input
                     type="email"
                     id="email"
+                    name="email"
                     placeholder="Deine E-Mail-Adresse"
+                    autocomplete="email"
                     required
                 >
 
@@ -361,7 +470,9 @@
                 <input
                     type="password"
                     id="passwort"
+                    name="password"
                     placeholder="Dein Passwort"
+                    autocomplete="current-password"
                     required
                 >
 
@@ -371,9 +482,11 @@
             <button
                 type="submit"
                 class="login-button"
+                id="loginButton"
             >
                 ⚜ Anmelden ⚜
             </button>
+
 
         </form>
 
@@ -384,36 +497,44 @@
         <div class="links">
 
             <p>
+
                 <a href="#">
                     Passwort vergessen?
                 </a>
+
             </p>
 
 
             <p>
+
                 Noch kein Konto?
 
                 <a href="registrieren.html">
                     Registrieren
                 </a>
+
             </p>
 
 
             <p>
+
                 <a
-                    href="../index.html"
+                    href="startseite.html"
                     class="zurueck"
                 >
                     ← Zurück zum Ehrenmarkt
                 </a>
+
             </p>
 
         </div>
 
+
     </main>
 
-
-    <!-- Supabase -->
+        <!-- =========================
+         SUPABASE
+    ========================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -421,8 +542,6 @@
 
     <script src="../auth.js"></script>
 
-
-    <!-- Login -->
 
     <script>
 
@@ -432,6 +551,13 @@
         const meldung =
             document.getElementById("meldung");
 
+        const loginButton =
+            document.getElementById("loginButton");
+
+
+        /* =========================
+           LOGIN
+        ========================= */
 
         loginForm.addEventListener(
             "submit",
@@ -441,37 +567,243 @@
 
 
                 const email =
-                    document.getElementById("email").value;
+                    document.getElementById(
+                        "email"
+                    ).value.trim();
 
 
                 const passwort =
-                    document.getElementById("passwort").value;
+                    document.getElementById(
+                        "passwort"
+                    ).value;
 
 
-                meldung.textContent =
+                if (!email || !passwort) {
+
+                    meldung.textContent =
+                        "Bitte E-Mail und Passwort eingeben.";
+
+                    return;
+                }
+
+
+                loginButton.disabled = true;
+
+                loginButton.textContent =
                     "Anmeldung läuft...";
 
 
-                const erfolgreich =
-                    await anmelden(
-                        email,
-                        passwort
+                meldung.textContent =
+                    "Anmeldung wird geprüft...";
+
+
+                try {
+
+                    /* =========================
+                       ANMELDEN
+                    ========================= */
+
+                    const erfolgreich =
+                        await anmelden(
+                            email,
+                            passwort
+                        );
+
+
+                    if (!erfolgreich) {
+
+                        meldung.textContent =
+                            "E-Mail oder Passwort ist falsch.";
+
+                        return;
+                    }
+
+
+                    meldung.textContent =
+                        "Anmeldung erfolgreich.";
+
+
+                    /* =========================
+                       AKTUELLEN BENUTZER HOLEN
+                    ========================= */
+
+                    const client =
+                        window.supabaseClient;
+
+
+                    if (!client) {
+
+                        throw new Error(
+                            "Supabase-Client nicht gefunden."
+                        );
+                    }
+
+
+                    const {
+                        data: userData,
+                        error: userError
+                    } =
+                        await client.auth.getUser();
+
+
+                    if (userError) {
+                        throw userError;
+                    }
+
+
+                    const user =
+                        userData?.user;
+
+
+                    if (!user) {
+
+                        throw new Error(
+                            "Benutzer konnte nach der Anmeldung nicht gefunden werden."
+                        );
+                    }
+
+
+                    /* =========================
+                       PROFILES PRÜFEN
+                    ========================= */
+
+                    const {
+                        data: profile,
+                        error: profileError
+                    } =
+                        await client
+                            .from("profiles")
+                            .select(`
+                                id,
+                                username,
+                                minecraft_name,
+                                user_type,
+                                rang,
+                                rolle
+                            `)
+                            .eq(
+                                "id",
+                                user.id
+                            )
+                            .maybeSingle();
+
+
+                    if (profileError) {
+                        throw profileError;
+                    }
+
+
+                    /* =========================
+                       KEIN PROFIL
+                    ========================= */
+
+                    if (!profile) {
+
+                        meldung.textContent =
+                            "Profil muss noch eingerichtet werden.";
+
+                        /*
+                         * Diese Seite erstellen wir
+                         * als nächsten Schritt.
+                         */
+
+                        window.location.href =
+                            "profil_erstellen.html";
+
+                        return;
+                    }
+
+
+                    /* =========================
+                       PROFIL VOLLSTÄNDIG?
+                    ========================= */
+
+                    const username =
+                        profile.username?.trim();
+
+
+                    const minecraftName =
+                        profile.minecraft_name?.trim();
+
+
+                    if (
+                        !username ||
+                        !minecraftName
+                    ) {
+
+                        meldung.textContent =
+                            "Bitte vervollständige zuerst dein Profil.";
+
+                        window.location.href =
+                            "profil_erstellen.html";
+
+                        return;
+                    }
+
+
+                    /* =========================
+                       BEREICH ERMITTELN
+                    ========================= */
+
+                    const rang =
+                        profile.rang || "Kunde";
+
+
+                    const userType =
+                        profile.user_type || "kunde";
+
+
+                    /*
+                     * Mitarbeiter, Leitung und
+                     * Stadtleitung gehen in den
+                     * Mitarbeiterbereich.
+                     */
+
+                    if (
+                        userType === "mitarbeiter" ||
+                        rang === "Mitarbeiter" ||
+                        rang === "Leitung" ||
+                        rang === "Stadtleitung"
+                    ) {
+
+                        window.location.href =
+                            "mitarbeiter.html";
+
+                        return;
+                    }
+
+
+                    /* =========================
+                       KUNDENBEREICH
+                    ========================= */
+
+                    window.location.href =
+                        "kundenbereich.html";
+
+                }
+
+
+                catch (error) {
+
+                    console.error(
+                        "Login-Fehler:",
+                        error
                     );
 
 
-                if (erfolgreich) {
-
                     meldung.textContent =
-                        "Anmeldung erfolgreich!";
+                        "Bei der Anmeldung ist ein Fehler aufgetreten.";
+
+                }
 
 
-                    window.location.href =
-                        "startseite.html";
+                finally {
 
-                } else {
+                    loginButton.disabled =
+                        false;
 
-                    meldung.textContent =
-                        "Anmeldung fehlgeschlagen.";
+                    loginButton.textContent =
+                        "⚜ Anmelden ⚜";
 
                 }
 
@@ -481,4 +813,5 @@
     </script>
 
 </body>
+
 </html>
