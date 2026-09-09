@@ -46,6 +46,7 @@
 
             color: #f2e6cf;
 
+
             background-image:
 
                 linear-gradient(
@@ -56,7 +57,9 @@
                 url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Login.png");
 
             background-size: cover;
+
             background-position: center;
+
             background-repeat: no-repeat;
 
             background-attachment: fixed;
@@ -70,7 +73,8 @@
         .login-box {
 
             width: 100%;
-            max-width: 440px;
+
+            max-width: 450px;
 
             padding: 30px 25px;
 
@@ -99,6 +103,8 @@
         .logo {
 
             text-align: center;
+
+            margin-bottom: 8px;
         }
 
 
@@ -122,10 +128,14 @@
             color: #c8b99e;
 
             font-size: 15px;
+
+            line-height: 1.5;
         }
 
 
         .linie {
+
+            width: 100%;
 
             height: 1px;
 
@@ -142,7 +152,7 @@
 
         .feld {
 
-            margin-bottom: 18px;
+            margin-bottom: 17px;
         }
 
 
@@ -169,7 +179,7 @@
             background:
                 #0f0c09;
 
-            color: white;
+            color: #ffffff;
 
             border:
                 1px solid #6f552d;
@@ -181,6 +191,10 @@
             font-family: inherit;
 
             font-size: 16px;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
         }
 
 
@@ -190,6 +204,7 @@
                 #d6ad52;
 
             box-shadow:
+
                 0 0 10px
                 rgba(214, 173, 82, 0.25);
         }
@@ -197,7 +212,8 @@
 
         input::placeholder {
 
-            color: #8f8475;
+            color:
+                #8f8475;
         }
 
 
@@ -214,12 +230,13 @@
             margin-top: 4px;
 
             background:
+
                 linear-gradient(
                     #c79b48,
                     #8f6b32
                 );
 
-            color: white;
+            color: #ffffff;
 
             border:
                 1px solid #e1bd6b;
@@ -235,10 +252,13 @@
             cursor: pointer;
 
             box-shadow:
+
                 0 4px 10px
                 rgba(0, 0, 0, 0.4);
 
-            transition: 0.2s;
+            transition:
+                filter 0.2s,
+                transform 0.1s;
         }
 
 
@@ -258,9 +278,11 @@
 
         .login-button:disabled {
 
-            opacity: 0.65;
+            opacity: 0.6;
 
             cursor: wait;
+
+            filter: none;
         }
 
 
@@ -276,7 +298,8 @@
 
             text-align: center;
 
-            color: #d9a477;
+            color:
+                #d9a477;
 
             font-size: 13px;
 
@@ -299,12 +322,18 @@
         .links p {
 
             margin: 12px 0;
+
+            color:
+                #bcae98;
+
+            font-size: 13px;
         }
 
 
         .links a {
 
-            color: #d6ad52;
+            color:
+                #d6ad52;
 
             text-decoration: none;
 
@@ -326,6 +355,37 @@
 
 
         /* =========================
+           FEHLER
+        ========================= */
+
+        .fehler {
+
+            display: none;
+
+            margin-bottom: 16px;
+
+            padding: 11px;
+
+            background:
+                rgba(92, 27, 20, 0.75);
+
+            border:
+                1px solid #98493c;
+
+            border-radius: 7px;
+
+            color:
+                #efb1a5;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
            HANDY
         ========================= */
 
@@ -333,7 +393,8 @@
 
             body {
 
-                padding: 15px 10px;
+                padding:
+                    15px 10px;
 
                 background-attachment:
                     scroll;
@@ -341,6 +402,9 @@
 
 
             .login-box {
+
+                max-width:
+                    100%;
 
                 padding:
                     25px 19px;
@@ -352,29 +416,35 @@
 
             .logo h1 {
 
-                font-size: 31px;
+                font-size:
+                    31px;
             }
 
 
             .logo p {
 
-                font-size: 13px;
+                font-size:
+                    13px;
             }
 
 
             input {
 
-                padding: 13px;
+                padding:
+                    13px;
 
-                font-size: 16px;
+                font-size:
+                    16px;
             }
 
 
             .login-button {
 
-                padding: 13px;
+                padding:
+                    13px;
 
-                font-size: 16px;
+                font-size:
+                    16px;
             }
         }
 
@@ -394,7 +464,8 @@
 
             .logo h1 {
 
-                font-size: 28px;
+                font-size:
+                    28px;
             }
 
 
@@ -416,9 +487,7 @@
     <main class="login-box">
 
 
-        <!-- =========================
-             LOGO
-        ========================= -->
+        <!-- LOGO -->
 
         <div class="logo">
 
@@ -427,7 +496,7 @@
             </h1>
 
             <p>
-                Willkommen zurück
+                Anmeldung & Kundenkonto
             </p>
 
         </div>
@@ -436,12 +505,60 @@
         <div class="linie"></div>
 
 
-        <!-- =========================
-             LOGIN
-        ========================= -->
+        <!-- FEHLERMELDUNG -->
+
+        <div
+            id="fehler"
+            class="fehler"
+        ></div>
+
+
+        <!-- LOGIN / PROFIL FORMULAR -->
 
         <form id="loginForm">
 
+
+            <!-- BENUTZERNAME -->
+
+            <div class="feld">
+
+                <label for="username">
+                    Benutzername
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Dein Benutzername"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- MINECRAFT NAME -->
+
+            <div class="feld">
+
+                <label for="minecraftName">
+                    Minecraft-Name
+                </label>
+
+                <input
+                    type="text"
+                    id="minecraftName"
+                    name="minecraft_name"
+                    placeholder="Dein Minecraft-Name"
+                    autocomplete="off"
+                    required
+                >
+
+            </div>
+
+
+            <!-- E-MAIL -->
 
             <div class="feld">
 
@@ -461,6 +578,8 @@
             </div>
 
 
+            <!-- PASSWORT -->
+
             <div class="feld">
 
                 <label for="passwort">
@@ -478,6 +597,7 @@
 
             </div>
 
+                        <!-- ANMELDEN -->
 
             <button
                 type="submit"
@@ -487,12 +607,17 @@
                 ⚜ Anmelden ⚜
             </button>
 
-
         </form>
 
 
+        <!-- STATUSMELDUNG -->
+
         <div id="meldung"></div>
 
+
+        <!-- =========================
+             WEITERE LINKS
+        ========================= -->
 
         <div class="links">
 
@@ -532,7 +657,8 @@
 
     </main>
 
-        <!-- =========================
+
+    <!-- =========================
          SUPABASE
     ========================= -->
 
@@ -540,278 +666,36 @@
 
     <script src="../supabase.js"></script>
 
-    <script src="../auth.js"></script>
 
+    <!-- =========================
+         LOGIN JAVASCRIPT
+         KOMMT SPÄTER ALS
+         SEPARATE DATEI
+    ========================= -->
 
-    <script>
+    <script src="../JS/login.js"></script>
 
-        const loginForm =
-            document.getElementById("loginForm");
-
-        const meldung =
-            document.getElementById("meldung");
-
-        const loginButton =
-            document.getElementById("loginButton");
-
-
-        /* =========================
-           LOGIN
-        ========================= */
-
-        loginForm.addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const email =
-                    document.getElementById(
-                        "email"
-                    ).value.trim();
-
-
-                const passwort =
-                    document.getElementById(
-                        "passwort"
-                    ).value;
-
-
-                if (!email || !passwort) {
-
-                    meldung.textContent =
-                        "Bitte E-Mail und Passwort eingeben.";
-
-                    return;
-                }
-
-
-                loginButton.disabled = true;
-
-                loginButton.textContent =
-                    "Anmeldung läuft...";
-
-
-                meldung.textContent =
-                    "Anmeldung wird geprüft...";
-
-
-                try {
-
-                    /* =========================
-                       ANMELDEN
-                    ========================= */
-
-                    const erfolgreich =
-                        await anmelden(
-                            email,
-                            passwort
-                        );
-
-
-                    if (!erfolgreich) {
-
-                        meldung.textContent =
-                            "E-Mail oder Passwort ist falsch.";
-
-                        return;
-                    }
-
-
-                    meldung.textContent =
-                        "Anmeldung erfolgreich.";
-
-
-                    /* =========================
-                       AKTUELLEN BENUTZER HOLEN
-                    ========================= */
-
-                    const client =
-                        window.supabaseClient;
-
-
-                    if (!client) {
-
-                        throw new Error(
-                            "Supabase-Client nicht gefunden."
-                        );
-                    }
-
-
-                    const {
-                        data: userData,
-                        error: userError
-                    } =
-                        await client.auth.getUser();
-
-
-                    if (userError) {
-                        throw userError;
-                    }
-
-
-                    const user =
-                        userData?.user;
-
-
-                    if (!user) {
-
-                        throw new Error(
-                            "Benutzer konnte nach der Anmeldung nicht gefunden werden."
-                        );
-                    }
-
-
-                    /* =========================
-                       PROFILES PRÜFEN
-                    ========================= */
-
-                    const {
-                        data: profile,
-                        error: profileError
-                    } =
-                        await client
-                            .from("profiles")
-                            .select(`
-                                id,
-                                username,
-                                minecraft_name,
-                                user_type,
-                                rang,
-                                rolle
-                            `)
-                            .eq(
-                                "id",
-                                user.id
-                            )
-                            .maybeSingle();
-
-
-                    if (profileError) {
-                        throw profileError;
-                    }
-
-
-                    /* =========================
-                       KEIN PROFIL
-                    ========================= */
-
-                    if (!profile) {
-
-                        meldung.textContent =
-                            "Profil muss noch eingerichtet werden.";
-
-                        /*
-                         * Diese Seite erstellen wir
-                         * als nächsten Schritt.
-                         */
-
-                        window.location.href =
-                            "profil_erstellen.html";
-
-                        return;
-                    }
-
-
-                    /* =========================
-                       PROFIL VOLLSTÄNDIG?
-                    ========================= */
-
-                    const username =
-                        profile.username?.trim();
-
-
-                    const minecraftName =
-                        profile.minecraft_name?.trim();
-
-
-                    if (
-                        !username ||
-                        !minecraftName
-                    ) {
-
-                        meldung.textContent =
-                            "Bitte vervollständige zuerst dein Profil.";
-
-                        window.location.href =
-                            "profil_erstellen.html";
-
-                        return;
-                    }
-
-
-                    /* =========================
-                       BEREICH ERMITTELN
-                    ========================= */
-
-                    const rang =
-                        profile.rang || "Kunde";
-
-
-                    const userType =
-                        profile.user_type || "kunde";
-
-
-                    /*
-                     * Mitarbeiter, Leitung und
-                     * Stadtleitung gehen in den
-                     * Mitarbeiterbereich.
-                     */
-
-                    if (
-                        userType === "mitarbeiter" ||
-                        rang === "Mitarbeiter" ||
-                        rang === "Leitung" ||
-                        rang === "Stadtleitung"
-                    ) {
-
-                        window.location.href =
-                            "mitarbeiter.html";
-
-                        return;
-                    }
-
-
-                    /* =========================
-                       KUNDENBEREICH
-                    ========================= */
-
-                    window.location.href =
-                        "kundenbereich.html";
-
-                }
-
-
-                catch (error) {
-
-                    console.error(
-                        "Login-Fehler:",
-                        error
-                    );
-
-
-                    meldung.textContent =
-                        "Bei der Anmeldung ist ein Fehler aufgetreten.";
-
-                }
-
-
-                finally {
-
-                    loginButton.disabled =
-                        false;
-
-                    loginButton.textContent =
-                        "⚜ Anmelden ⚜";
-
-                }
-
-            }
-        );
-
-    </script>
 
 </body>
 
 </html>
+
+<!--
+    Hinweis:
+
+    Die Anmeldung und das Speichern der Profildaten
+    erfolgt über:
+
+    ../JS/login.js
+
+    Dort wird später:
+    - die bestehende Session geprüft
+    - E-Mail + Passwort angemeldet
+    - der Benutzer in profiles gesucht
+    - username gespeichert
+    - minecraft_name gespeichert
+    - user_type auf "kunde" gesetzt
+    - rang nicht vom Benutzer verändert
+    - rolle nicht vom Benutzer verändert
+    - anschließend zu startseite.html weitergeleitet
+-->
