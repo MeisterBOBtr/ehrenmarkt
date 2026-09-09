@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Materialbestellung – Details | Ehrenmarkt
+    </title>
+
+
+    <style>
+
+        /* =====================================================
+           GRUNDLAGEN
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #eee4cf;
+
+            background:
+
+                linear-gradient(
+                    rgba(20, 12, 7, 0.70),
+                    rgba(20, 12, 7, 0.88)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/MAD.png")
+
+                center center /
+                cover fixed
+                no-repeat;
+
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding: 8px 12px;
+
+            background:
+                rgba(25, 15, 9, 0.96);
+
+            border-bottom:
+                1px solid #76531d;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0, 0, 0, 0.65);
+        }
+
+
+        .logo {
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            min-width: 0;
+        }
+
+
+        .logo-icon {
+
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                rgba(0, 0, 0, 0.35);
+
+            border:
+                1px solid #916821;
+
+            border-radius: 6px;
+
+            font-size: 17px;
+        }
+
+
+        .logo-text {
+
+            color: #d9a441;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            letter-spacing: 0.5px;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .nav {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 4px;
+
+            overflow-x: auto;
+
+            scrollbar-width: none;
+        }
+
+        .nav::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        .nav a {
+
+            flex-shrink: 0;
+
+            padding:
+                7px 9px;
+
+            color: #d8cbb2;
+
+            text-decoration: none;
+
+            background:
+                #392719;
+
+            border:
+                1px solid #5a411d;
+
+            border-radius: 5px;
+
+            font-size: 11px;
+
+            transition:
+                0.15s ease;
+        }
+
+
+        .nav a:hover {
+
+            background:
+                #4a3219;
+
+            color:
+                #f1d078;
+        }
+
+
+        .nav a.active {
+
+            color:
+                #fff0c5;
+
+            background:
+                #79551d;
+
+            border-color:
+                #b98225;
+        }
+
+
+        /* =====================================================
+           HAUPTBEREICH
+        ===================================================== */
+
+        .container {
+
+            width:
+                min(1050px, calc(100% - 20px));
+
+            margin:
+                18px auto 35px;
+        }
+
+
+        /* =====================================================
+           ZURÜCK
+        ===================================================== */
+
+        .back-button {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            padding:
+                9px 13px;
+
+            color:
+                #dfcfb1;
+
+            text-decoration:
+                none;
+
+            background:
+                rgba(31, 19, 11, 0.94);
+
+            border:
+                1px solid #72501c;
+
+            border-radius:
+                5px;
+
+            font-size:
+                13px;
+
+            transition:
+                0.15s ease;
+        }
+
+
+        .back-button:hover {
+
+            color:
+                #ffd56b;
+
+            background:
+                #4a3218;
+
+            border-color:
+                #9d7024;
+        }
+
+
+        /* =====================================================
+           TITEL
+        ===================================================== */
+
+        .page-title {
+
+            margin-top:
+                17px;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        .page-title h1 {
+
+            margin:
+                0 0 5px;
+
+            color:
+                #e4b94f;
+
+            font-size:
+                clamp(23px, 5vw, 32px);
+
+            line-height:
+                1.2;
+
+            text-shadow:
+                1px 1px 2px #000;
+        }
+
+
+        .page-title p {
+
+            margin:
+                0;
+
+            color:
+                #bcae96;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           AUFTRAGSNUMMER
+        ===================================================== */
+
+        .order-number-box {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                10px;
+
+            margin-bottom:
+                15px;
+
+            padding:
+                11px 13px;
+
+            background:
+                rgba(32, 20, 11, 0.94);
+
+            border:
+                1px solid #68491b;
+
+            border-radius:
+                6px;
+        }
+
+
+        .order-number-label {
+
+            color:
+                #a89576;
+
+            font-size:
+                11px;
+        }
+
+
+        .order-number {
+
+            color:
+                #e2b64b;
+
+            font-size:
+                15px;
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =====================================================
+           KARTEN
+        ===================================================== */
+
+        .card {
+
+            margin-bottom:
+                15px;
+
+            background:
+
+                linear-gradient(
+                    rgba(31, 20, 12, 0.95),
+                    rgba(22, 14, 9, 0.96)
+                );
+
+            border:
+                1px solid #5f451e;
+
+            border-radius:
+                6px;
+
+            box-shadow:
+
+                0 4px 14px
+                rgba(0, 0, 0, 0.5),
+
+                inset 0 0 20px
+                rgba(0, 0, 0, 0.2);
+
+            overflow:
+                hidden;
+        }
+
+
+        .card-title {
+
+            padding:
+                12px 14px;
+
+            color:
+                #e1b84d;
+
+            background:
+                rgba(77, 51, 22, 0.38);
+
+            border-bottom:
+                1px solid #513a19;
+
+            font-size:
+                17px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .card-content {
+
+            padding:
+                14px;
+        }
+
+
+        /* =====================================================
+           INFO GRID
+        ===================================================== */
+
+        .info-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                0 22px;
+        }
+
+
+        .info-item {
+
+            padding:
+                8px 0;
+
+            border-bottom:
+                1px solid
+                rgba(126, 91, 35, 0.25);
+        }
+
+
+        .info-label {
+
+            display:
+                block;
+
+            margin-bottom:
+                3px;
+
+            color:
+                #9e8c72;
+
+            font-size:
+                11px;
+        }
+
+
+        .info-value {
+
+            color:
+                #eee3cc;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+
+            word-break:
+                break-word;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+
+            display:
+                inline-block;
+
+            padding:
+                4px 9px;
+
+            border-radius:
+                4px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .status-open {
+
+            color:
+                #211604;
+
+            background:
+                #d8a83e;
+        }
+
+
+        .status-progress {
+
+            color:
+                white;
+
+            background:
+                #497fc1;
+        }
+
+
+        .status-done {
+
+            color:
+                white;
+
+            background:
+                #318451;
+        }
+
+
+        /* =====================================================
+           MATERIALIEN
+        ===================================================== */
+
+        .materials-list {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                7px;
+        }
+
+
+        .material-row {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr auto;
+
+            gap:
+                12px;
+
+            padding:
+                11px;
+
+            background:
+                rgba(14, 9, 6, 0.75);
+
+            border:
+                1px solid
+                rgba(113, 80, 28, 0.45);
+
+            border-radius:
+                5px;
+        }
+
+
+        .material-name {
+
+            color:
+                #ead9b8;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .material-category {
+
+            margin-top:
+                3px;
+
+            color:
+                #8e806c;
+
+            font-size:
+                11px;
+        }
+
+
+        .material-right {
+
+            text-align:
+                right;
+        }
+
+
+        .material-amount {
+
+            color:
+                #dcb04c;
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .material-price {
+
+            margin-top:
+                3px;
+
+            color:
+                #b9aa91;
+
+            font-size:
+                11px;
+        }
+
+
+        .material-loading {
+
+            padding:
+                20px;
+
+            color:
+                #9e907b;
+
+            text-align:
+                center;
+
+            font-size:
+                13px;
+        }
+
+
+                /* =====================================================
+           PREISBEREICH
+        ===================================================== */
+
+        .price-box {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                8px;
+        }
+
+
+        .price-line {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            color:
+                #bcae96;
+
+            font-size:
+                13px;
+        }
+
+
+        .price-line strong {
+
+            color:
+                #e5d5b7;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .price-total {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                15px;
+
+            margin-top:
+                5px;
+
+            padding-top:
+                12px;
+
+            border-top:
+                1px solid #73511e;
+        }
+
+
+        .price-total span {
+
+            color:
+                #e2b849;
+
+            font-size:
+                17px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .price-total strong {
+
+            color:
+                #e2b849;
+
+            font-size:
+                20px;
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+        }
+
+
+        /* =====================================================
+           HINWEISE
+        ===================================================== */
+
+        .note-box {
+
+            min-height:
+                80px;
+
+            padding:
+                12px;
+
+            color:
+                #cbbda4;
+
+            background:
+                rgba(12, 8, 5, 0.72);
+
+            border:
+                1px solid
+                rgba(112, 80, 29, 0.4);
+
+            border-radius:
+                5px;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.6;
+
+            white-space:
+                pre-wrap;
+
+            word-break:
+                break-word;
+        }
+
+
+        .note-empty {
+
+            color:
+                #8f816d;
+
+            font-style:
+                italic;
+        }
+
+
+        /* =====================================================
+           AUFTRAG ZUSAMMENFASSUNG
+        ===================================================== */
+
+        .summary-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                8px;
+        }
+
+
+        .summary-box {
+
+            padding:
+                10px;
+
+            text-align:
+                center;
+
+            background:
+                rgba(13, 8, 5, 0.65);
+
+            border:
+                1px solid
+                rgba(105, 75, 27, 0.4);
+
+            border-radius:
+                5px;
+        }
+
+
+        .summary-label {
+
+            display:
+                block;
+
+            margin-bottom:
+                4px;
+
+            color:
+                #93836c;
+
+            font-size:
+                10px;
+        }
+
+
+        .summary-value {
+
+            color:
+                #e0bd67;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+        }
+
+
+        /* =====================================================
+           AKTIONSBEREICH
+        ===================================================== */
+
+        .actions {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1.5fr;
+
+            gap:
+                9px;
+
+            margin-top:
+                18px;
+        }
+
+
+        .button {
+
+            min-height:
+                48px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                7px;
+
+            border-radius:
+                5px;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+
+            text-decoration:
+                none;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.15s ease;
+        }
+
+
+        .button-back {
+
+            color:
+                #d8c8ac;
+
+            background:
+                rgba(36, 24, 15, 0.94);
+
+            border:
+                1px solid #69501f;
+        }
+
+
+        .button-back:hover {
+
+            color:
+                #f0d17c;
+
+            background:
+                #493118;
+
+            border-color:
+                #8e6522;
+        }
+
+
+        .button-accept {
+
+            color:
+                #fff1c9;
+
+            background:
+
+                linear-gradient(
+                    #b67c21,
+                    #815516
+                );
+
+            border:
+                1px solid #d09a35;
+
+            box-shadow:
+
+                inset 0 1px
+                rgba(255, 225, 147, 0.2),
+
+                0 3px 8px
+                rgba(0, 0, 0, 0.4);
+        }
+
+
+        .button-accept:hover {
+
+            background:
+
+                linear-gradient(
+                    #ca9029,
+                    #95671d
+                );
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .button-accept:disabled {
+
+            opacity:
+                0.55;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+        }
+
+
+        /* =====================================================
+           FEHLER / LADEN
+        ===================================================== */
+
+        .message {
+
+            padding:
+                14px;
+
+            color:
+                #bcae96;
+
+            text-align:
+                center;
+
+            line-height:
+                1.5;
+
+            font-size:
+                13px;
+        }
+
+
+        .message-error {
+
+            color:
+                #e99b8f;
+
+            background:
+                rgba(90, 29, 24, 0.25);
+
+            border:
+                1px solid
+                rgba(174, 66, 54, 0.4);
+
+            border-radius:
+                5px;
+        }
+
+
+        /* =====================================================
+           FOOTER-HINWEIS
+        ===================================================== */
+
+        .footer-hint {
+
+            margin-top:
+                10px;
+
+            color:
+                #8f816d;
+
+            text-align:
+                center;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .header {
+
+                padding:
+                    7px 8px;
+            }
+
+
+            .logo-text {
+
+                font-size:
+                    13px;
+            }
+
+
+            .logo-icon {
+
+                width:
+                    30px;
+
+                height:
+                    30px;
+
+                font-size:
+                    15px;
+            }
+
+
+            .nav {
+
+                max-width:
+                    62%;
+            }
+
+
+            .nav a {
+
+                padding:
+                    6px 7px;
+
+                font-size:
+                    9px;
+            }
+
+
+            .container {
+
+                width:
+                    calc(100% - 14px);
+
+                margin-top:
+                    12px;
+            }
+
+
+            .info-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .summary-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+
+            .actions {
+
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+
+        /* =====================================================
+           KLEINES HANDY
+        ===================================================== */
+
+        @media (max-width: 450px) {
+
+            .header {
+
+                align-items:
+                    center;
+            }
+
+
+            .logo-text {
+
+                font-size:
+                    12px;
+            }
+
+
+            .nav {
+
+                max-width:
+                    58%;
+            }
+
+
+            .nav a {
+
+                padding:
+                    5px 5px;
+
+                font-size:
+                    8px;
+            }
+
+
+            .page-title h1 {
+
+                font-size:
+                    23px;
+            }
+
+
+            .card-title {
+
+                padding:
+                    11px 12px;
+
+                font-size:
+                    15px;
+            }
+
+
+            .card-content {
+
+                padding:
+                    11px;
+            }
+
+
+            .material-row {
+
+                padding:
+                    10px;
+
+                gap:
+                    8px;
+            }
+
+
+            .material-name {
+
+                font-size:
+                    13px;
+            }
+
+
+            .material-amount {
+
+                font-size:
+                    12px;
+            }
+
+
+            .price-total strong {
+
+                font-size:
+                    18px;
+            }
+
+
+            .summary-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🛡️
+            </div>
+
+            <div class="logo-text">
+                EHRENMARKT
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="index.html">
+                Startseite
+            </a>
+
+            <a href="bauauftrag.html">
+                Bauauftrag
+            </a>
+
+            <a
+                href="materialauftrag.html"
+                class="active"
+            >
+                Material
+            </a>
+
+            <a href="logistikauftrag.html">
+                Logistik
+            </a>
+
+            <a href="redstoneauftrag.html">
+                Redstone
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =====================================================
+         HAUPTINHALT
+    ====================================================== -->
+
+    <main class="container">
+
+
+        <a
+            href="mitarbeiter.html"
+            class="back-button"
+        >
+            ← Zurück zum Mitarbeiterbereich
+        </a>
+
+
+        <!-- =================================================
+             TITEL
+        ================================================== -->
+
+        <section class="page-title">
+
+            <h1>
+                Materialbestellung – Details
+            </h1>
+
+            <p>
+                Prüfe hier die vollständigen Angaben
+                zur Materialbestellung, bevor du
+                den Auftrag übernimmst.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             AUFTRAGSNUMMER
+        ================================================== -->
+
+        <div class="order-number-box">
+
+            <span class="order-number-label">
+                Auftragsnummer
+            </span>
+
+            <strong
+                class="order-number"
+                id="orderNumber"
+            >
+                Wird geladen...
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             AUFTRAGSINFORMATIONEN
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                📋 Auftragsinformationen
+            </div>
+
+            <div class="card-content">
+
+                <div class="info-grid">
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Auftragsnummer
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="orderNumberInfo"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Status
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="orderStatus"
+                        >
+                            <span class="status status-open">
+                                Offen
+                            </span>
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Auftraggeber
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="customerName"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Minecraft-Name
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="minecraftName"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Bestelldatum
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="orderDate"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Bearbeiter
+                        </span>
+
+                        <span
+                            class="info-value"
+                            id="employeeName"
+                        >
+                            Noch nicht übernommen
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+              <!-- =================================================
+             BESTELLTE MATERIALIEN
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                📦 Bestellte Materialien
+            </div>
+
+
+            <div class="card-content">
+
+                <div
+                    class="materials-list"
+                    id="materialsList"
+                >
+
+                    <div class="material-loading">
+
+                        Materialien werden geladen...
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             AUFTRAGSÜBERSICHT
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                📊 Auftragsübersicht
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="summary-grid">
+
+
+                    <div class="summary-box">
+
+                        <span class="summary-label">
+                            Positionen
+                        </span>
+
+                        <span
+                            class="summary-value"
+                            id="itemCount"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-box">
+
+                        <span class="summary-label">
+                            Gesamtmenge
+                        </span>
+
+                        <span
+                            class="summary-value"
+                            id="totalQuantity"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-box">
+
+                        <span class="summary-label">
+                            Gesamtpreis
+                        </span>
+
+                        <span
+                            class="summary-value"
+                            id="summaryTotal"
+                        >
+                            0,00 $
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ZUSÄTZLICHE HINWEISE
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                📝 Zusätzliche Hinweise
+            </div>
+
+
+            <div class="card-content">
+
+                <div
+                    class="note-box"
+                    id="customerNote"
+                >
+
+                    <span class="note-empty">
+                        Keine zusätzlichen Hinweise vorhanden.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PREISÜBERSICHT
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-title">
+                💰 Preisübersicht
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="price-box">
+
+
+                    <div class="price-line">
+
+                        <span>
+                            Zwischensumme
+                        </span>
+
+                        <strong id="subtotal">
+                            0,00 $
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-line">
+
+                        <span>
+                            Zusatzkosten
+                        </span>
+
+                        <strong id="extraCosts">
+                            0,00 $
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-line">
+
+                        <span>
+                            Rabatt
+                        </span>
+
+                        <strong id="discount">
+                            0,00 $
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-total">
+
+                        <span>
+                            Gesamtpreis
+                        </span>
+
+                        <strong id="totalPrice">
+                            0,00 $
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FEHLERMELDUNG
+        ================================================== -->
+
+        <div
+            id="errorMessage"
+            class="message message-error"
+            style="display: none;"
+        >
+        </div>
+
+
+        <!-- =================================================
+             AKTIONEN
+        ================================================== -->
+
+        <div class="actions">
+
+
+            <a
+                href="mitarbeiter.html"
+                class="button button-back"
+            >
+                ← Zurück
+            </a>
+
+
+            <button
+                type="button"
+                class="button button-accept"
+                id="acceptOrderButton"
+            >
+                ✓ Auftrag übernehmen
+            </button>
+
+
+        </div>
+
+
+        <!-- =================================================
+             HINWEIS
+        ================================================== -->
+
+        <div class="footer-hint">
+
+            Prüfe alle Angaben sorgfältig,
+            bevor du den Auftrag übernimmst.
+
+            Nach der Übernahme erscheint der Auftrag
+            unter „Meine Aufträge“.
+
+        </div>
+
+
+        
+    </main>
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+
+
+    <script src="../supabase.js"></script>
+
+
+    <!-- =====================================================
+         DETAIL-JAVASCRIPT
+    ====================================================== -->
+
+    <script src="../JS/material_details.js"></script>
+
+
+</body>
+
+</html>
