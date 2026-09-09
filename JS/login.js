@@ -29,6 +29,7 @@ function getSupabaseClient() {
    ============================================ */
 
 function getElement(id) {
+
     return document.getElementById(id);
 }
 
@@ -79,18 +80,16 @@ function setLoading(isLoading) {
 
     if (!button) return;
 
-    button.disabled =
-        isLoading;
+    button.disabled = isLoading;
 
-    button.textContent =
-        isLoading
-            ? "Anmeldung läuft..."
-            : "⚜ Anmelden ⚜";
+    button.textContent = isLoading
+        ? "Anmeldung läuft..."
+        : "⚜ Anmelden ⚜";
 }
 
 
 /* ============================================
-   AKTUELLE SESSION PRÜFEN
+   BESTEHENDE SESSION PRÜFEN
    ============================================ */
 
 async function checkExistingSession() {
@@ -99,9 +98,8 @@ async function checkExistingSession() {
         getSupabaseClient();
 
     if (!client) {
-        return;
+        return false;
     }
-
 
     const {
         data,
@@ -117,15 +115,9 @@ async function checkExistingSession() {
             error
         );
 
-        return;
+        return false;
     }
 
-
-    /*
-     * Benutzer ist bereits angemeldet.
-     * Deshalb muss er nicht erneut
-     * das Login-Formular ausfüllen.
-     */
 
     if (data?.session?.user) {
 
@@ -191,51 +183,53 @@ async function loginUser(
     return data.user;
 }
 
-
 /* ============================================
-   PROFILE LADEN
+   PROFIL LADEN
    ============================================ */
 
-async function saveProfile(user, username, minecraftName) {
-    const client = getSupabaseClient();
+async function loadProfile(userId) {
+
+    const client =
+        getSupabaseClient();
+
 
     if (!client) {
-        throw new Error("Supabase-Client wurde nicht gefunden.");
+
+        throw new Error(
+            "Supabase ist nicht verfügbar."
+        );
     }
 
-    const existingProfile = await loadProfile(user.id);
 
-    if (!existingProfile) {
-        const { error } = await client
+    const {
+        data,
+        error
+    } =
+        await client
             .from("profiles")
-            .insert({
-                id: user.id,
-                username: username,
-                minecraft_name: minecraftName,
-                user_type: "kunde"
-            });
+            .select(`
+                id,
+                username,
+                minecraft_name,
+                user_type,
+                rang,
+                rolle
+            `)
+            .eq("id", userId)
+            .maybeSingle();
 
-        if (error) {
-            throw error;
-        }
-
-        return;
-    }
-
-    const { error } = await client
-        .from("profiles")
-        .update({
-            username: username,
-            minecraft_name: minecraftName
-        })
-        .eq("id", user.id);
 
     if (error) {
         throw error;
     }
+
+
+    return data;
 }
+
+
 /* ============================================
-   PROFIL SPEICHERN / AKTUALISIEREN
+   PROFIL SPEICHERN
    ============================================ */
 
 async function saveProfile(
@@ -248,10 +242,13 @@ async function saveProfile(
         getSupabaseClient();
 
 
-    /*
-     * Zuerst prüfen wir, ob bereits
-     * ein Profil vorhanden ist.
-     */
+    if (!client) {
+
+        throw new Error(
+            "Supabase ist nicht verfügbar."
+        );
+    }
+
 
     const existingProfile =
         await loadProfile(user.id);
@@ -272,14 +269,11 @@ async function saveProfile(
 
                     id: user.id,
 
-                    username:
-                        username,
+                    username: username,
 
-                    minecraft_name:
-                        minecraftName,
+                    minecraft_name: minecraftName,
 
-                    user_type:
-                        "kunde"
+                    user_type: "kunde"
 
                 });
 
@@ -297,14 +291,6 @@ async function saveProfile(
        BESTEHENDES PROFIL
        ========================================= */
 
-    /*
-     * Nur normale Kundendaten werden
-     * aktualisiert.
-     *
-     * rang und rolle werden absichtlich
-     * NICHT mitgeschickt.
-     */
-
     const {
         error
     } =
@@ -312,11 +298,9 @@ async function saveProfile(
             .from("profiles")
             .update({
 
-                username:
-                    username,
+                username: username,
 
-                minecraft_name:
-                    minecraftName
+                minecraft_name: minecraftName
 
             })
             .eq(
@@ -361,10 +345,15 @@ function getLoginData() {
 
 
     return {
+
         username,
+
         minecraftName,
+
         email,
+
         password
+
     };
 }
 
@@ -400,11 +389,10 @@ function validateLoginData(data) {
 
 
     return null;
-}
-
+                   }
 
 /* ============================================
-   PROFIL NACH LOGIN PRÜFEN
+   PROFIL NACH LOGIN VERARBEITEN
    ============================================ */
 
 async function processProfile(
@@ -430,17 +418,8 @@ async function processProfile(
     );
 
 
-    /*
-     * Kurz warten, damit die Meldung
-     * sichtbar ist.
-     */
-
-    await new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                400
-            )
+    await new Promise(resolve =>
+        setTimeout(resolve, 400)
     );
 
 
@@ -448,6 +427,7 @@ async function processProfile(
         "startseite.html"
     );
 }
+
 
 /* ============================================
    LOGIN-FORMULAR
@@ -467,8 +447,8 @@ async function handleLogin(event) {
     try {
 
         /* =====================================
-           EINGABEN
-        ===================================== */
+           FORMULARDATEN
+           ===================================== */
 
         const data =
             getLoginData();
@@ -490,7 +470,7 @@ async function handleLogin(event) {
 
         /* =====================================
            BENUTZER ANMELDEN
-        ===================================== */
+           ===================================== */
 
         setMessage(
             "Anmeldung wird geprüft..."
@@ -506,7 +486,7 @@ async function handleLogin(event) {
 
         /* =====================================
            PROFIL SPEICHERN
-        ===================================== */
+           ===================================== */
 
         await processProfile(
             user,
@@ -527,52 +507,51 @@ async function handleLogin(event) {
             "Bei der Anmeldung ist ein Fehler aufgetreten.";
 
 
-        /*
-         * Verständlichere Meldungen
-         */
+        const errorText =
+            error?.message?.toLowerCase() || "";
+
 
         if (
-            error?.message
-                ?.toLowerCase()
-                .includes("invalid login credentials")
+            errorText.includes(
+                "invalid login credentials"
+            )
         ) {
 
             message =
                 "E-Mail oder Passwort ist falsch.";
 
+
         } else if (
-            error?.message
-                ?.toLowerCase()
-                .includes("email not confirmed")
+            errorText.includes(
+                "email not confirmed"
+            )
         ) {
 
             message =
                 "Bitte bestätige zuerst deine E-Mail-Adresse.";
 
+
         } else if (
-            error?.message
-                ?.toLowerCase()
-                .includes("duplicate")
+            errorText.includes(
+                "duplicate"
+            )
         ) {
 
             message =
                 "Für diesen Benutzer existiert bereits ein Profil.";
 
-        } else if (
-            error?.message
-        ) {
+
+        } else if (error?.message) {
 
             message =
                 error.message;
         }
 
 
-        showError(
-            message
-        );
-
+        showError(message);
 
         setMessage("");
+
 
     } finally {
 
@@ -587,11 +566,7 @@ async function handleLogin(event) {
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function() {
-
-        /*
-         * Supabase Client holen
-         */
+    async function () {
 
         supabaseClient =
             getSupabaseClient();
@@ -607,10 +582,9 @@ document.addEventListener(
         }
 
 
-        /*
-         * Prüfen, ob der Benutzer
-         * bereits angemeldet ist.
-         */
+        /* =====================================
+           BESTEHENDE SESSION PRÜFEN
+           ===================================== */
 
         const alreadyLoggedIn =
             await checkExistingSession();
@@ -621,9 +595,9 @@ document.addEventListener(
         }
 
 
-        /*
-         * Login-Formular aktivieren
-         */
+        /* =====================================
+           LOGIN-FORMULAR AKTIVIEREN
+           ===================================== */
 
         const loginForm =
             getElement("loginForm");
@@ -635,7 +609,12 @@ document.addEventListener(
                 "submit",
                 handleLogin
             );
-        }
 
+        } else {
+
+            showError(
+                "Das Anmeldeformular wurde nicht gefunden."
+            );
+        }
     }
 );
