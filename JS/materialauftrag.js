@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const supabase = supabaseClient;
+    const supabase = window.supabaseClient;
     // ============================================================
     // FORMULARELEMENTE
     // ============================================================
