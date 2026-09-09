@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Materialbestellung erfolgreich – Ehrenmarkt</title>
+
+    <link rel="stylesheet" href="../style.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            background:
+                linear-gradient(
+                    rgba(8, 8, 8, 0.86),
+                    rgba(8, 8, 8, 0.94)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Materialien.png")
+                center / cover fixed no-repeat;
+            color: #eee;
+        }
+
+
+        /* ======================================================
+           NAVIGATION
+        ====================================================== */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 14px 24px;
+
+            background: rgba(10, 10, 10, 0.94);
+            border-bottom: 1px solid #9b742d;
+
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-logo {
+            color: #d4af55;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            padding: 8px 12px;
+
+            color: #ddd;
+            text-decoration: none;
+
+            border-radius: 6px;
+
+            transition:
+                background 0.2s,
+                color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(155, 116, 45, 0.2);
+        }
+
+
+        /* ======================================================
+           HAUPTBEREICH
+        ====================================================== */
+
+        main {
+            width: min(900px, 94%);
+            margin: 70px auto;
+        }
+
+
+        /* ======================================================
+           ERFOLGSKARTE
+        ====================================================== */
+
+        .success-card {
+            padding: 42px 30px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(25, 25, 25, 0.96),
+                    rgba(12, 12, 12, 0.96)
+                );
+
+            border: 1px solid #9b742d;
+            border-radius: 12px;
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.55),
+                inset 0 0 25px rgba(155, 116, 45, 0.05);
+        }
+
+
+        /* ======================================================
+           ICON
+        ====================================================== */
+
+        .success-icon {
+            width: 82px;
+            height: 82px;
+
+            margin: 0 auto 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid #9b742d;
+            border-radius: 50%;
+
+            background: rgba(155, 116, 45, 0.12);
+
+            color: #d4af55;
+
+            font-size: 42px;
+        }
+
+
+        /* ======================================================
+           TITEL
+        ====================================================== */
+
+        h1 {
+            margin: 0 0 12px;
+
+            color: #d4af55;
+
+            font-size: clamp(28px, 5vw, 42px);
+
+            text-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .subtitle {
+            margin: 0 auto 32px;
+
+            max-width: 650px;
+
+            color: #bbb;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            line-height: 1.6;
+        }
+
+
+        /* ======================================================
+           AUFTRAGSDATEN
+        ====================================================== */
+
+        .order-box {
+            max-width: 650px;
+
+            margin: 0 auto 30px;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            border: 1px solid #4f3b1c;
+            border-radius: 8px;
+        }
+
+        .order-row {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 13px 0;
+
+            border-bottom: 1px solid rgba(155, 116, 45, 0.2);
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-label {
+            color: #aaa;
+            text-align: left;
+        }
+
+        .order-value {
+            color: #f0d27a;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .order-number {
+            color: #fff;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+
+        /* ======================================================
+           ZAHLUNGSINFO
+        ====================================================== */
+
+        .payment-box {
+            max-width: 650px;
+
+            margin: 0 auto 30px;
+
+            padding: 20px;
+
+            background:
+                rgba(120, 20, 20, 0.10);
+
+            border: 1px solid #6e2929;
+            border-radius: 8px;
+        }
+
+        .payment-title {
+            margin-bottom: 14px;
+
+            color: #d4af55;
+
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .payment-text {
+            margin: 0;
+
+            color: #bbb;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            line-height: 1.6;
+        }
+
+
+        /* ======================================================
+           BUTTONS
+        ====================================================== */
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-block;
+
+            padding: 13px 22px;
+
+            color: #fff;
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #722020,
+                    #4b1515
+                );
+
+            border: 1px solid #a05a3c;
+            border-radius: 7px;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-weight: bold;
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .button-secondary {
+            background:
+                rgba(30, 30, 30, 0.9);
+
+            border-color: #765c2b;
+        }
+
+
+        /* ======================================================
+           FOOTER
+        ====================================================== */
+
+        .footer {
+            padding: 25px;
+
+            text-align: center;
+
+            color: #777;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            border-top: 1px solid rgba(155, 116, 45, 0.25);
+        }
+
+
+        /* ======================================================
+           MOBILE
+        ====================================================== */
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-links {
+                width: 100%;
+            }
+
+            .nav-links a {
+                padding: 7px 9px;
+                font-size: 14px;
+            }
+
+            main {
+                margin: 35px auto;
+            }
+
+            .success-card {
+                padding: 32px 18px;
+            }
+
+            .order-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .order-value {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- ======================================================
+         NAVIGATION
+    ====================================================== -->
+
+    <nav class="navbar">
+
+        <div class="nav-logo">
+            EHRENMARKT
+        </div>
+
+        <div class="nav-links">
+
+            <a href="../index.html">
+                Startseite
+            </a>
+
+            <a href="bauauftrag.html">
+                Bauauftrag
+            </a>
+
+            <a href="materialauftrag.html">
+                Material
+            </a>
+
+            <a href="logistikauftrag.html">
+                Logistik
+            </a>
+
+            <a href="redstoneauftrag.html">
+                Redstone
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ======================================================
+         HAUPTINHALT
+    ====================================================== -->
+
+    <main>
+
+        <section class="success-card">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <h1>
+                Auftrag erfolgreich
+            </h1>
+
+
+            <p class="subtitle">
+                Deine Materialbestellung wurde erfolgreich
+                an den Ehrenmarkt übermittelt.
+            </p>
+
+
+            <!-- AUFTRAGSDATEN -->
+
+            <div class="order-box">
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Auftragsnummer
+                    </span>
+
+                    <span
+                        id="orderNumber"
+                        class="order-value order-number"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Minecraft-Name
+                    </span>
+
+                    <span
+                        id="minecraftName"
+                        class="order-value"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Auftragssumme
+                    </span>
+
+                    <span
+                        id="orderPrice"
+                        class="order-value"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Anzahlung (25 %)
+                    </span>
+
+                    <span
+                        id="orderDeposit"
+                        class="order-value"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+
+                <div class="order-row">
+
+                    <span class="order-label">
+                        Restbetrag (75 %)
+                    </span>
+
+                    <span
+                        id="orderRemaining"
+                        class="order-value"
+                    >
+                        Wird geladen...
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ZAHLUNGSINFO -->
+
+            <div class="payment-box">
+
+                <div class="payment-title">
+                    Anzahlung
+                </div>
+
+                <p class="payment-text">
+                    Für die Bearbeitung des Auftrags ist eine
+                    Anzahlung von <strong>25 %</strong> erforderlich.
+                    Der verbleibende Betrag von <strong>75 %</strong>
+                    wird anschließend fällig.
+                </p>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="actions">
+
+                <a
+                    href="../index.html"
+                    class="button"
+                >
+                    Zur Startseite
+                </a>
+
+                <a
+                    href="materialauftrag.html"
+                    class="button button-secondary"
+                >
+                    Neue Bestellung
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ======================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        © Ehrenmarkt
+
+    </footer>
+
+
+    <!-- ======================================================
+         ERFOLGSDATEN LADEN
+    ====================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                const orderNumber =
+                    sessionStorage.getItem(
+                        "material_order_number"
+                    );
+
+                const orderPrice =
+                    sessionStorage.getItem(
+                        "material_order_price"
+                    );
+
+                const orderDeposit =
+                    sessionStorage.getItem(
+                        "material_order_deposit"
+                    );
+
+                const orderRemaining =
+                    sessionStorage.getItem(
+                        "material_order_remaining"
+                    );
+
+                const minecraftName =
+                    sessionStorage.getItem(
+                        "material_order_minecraft_name"
+                    );
+
+
+                function money(value) {
+
+                    return Number(
+                        value || 0
+                    ).toLocaleString(
+                        "de-DE",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    ) + " $";
+
+                }
+
+
+                document.getElementById(
+                    "orderNumber"
+                ).textContent =
+                    orderNumber ||
+                    "Nicht verfügbar";
+
+
+                document.getElementById(
+                    "minecraftName"
+                ).textContent =
+                    minecraftName ||
+                    "Nicht verfügbar";
+
+
+                document.getElementById(
+                    "orderPrice"
+                ).textContent =
+                    money(orderPrice);
+
+
+                document.getElementById(
+                    "orderDeposit"
+                ).textContent =
+                    money(orderDeposit);
+
+
+                document.getElementById(
+                    "orderRemaining"
+                ).textContent =
+                    money(orderRemaining);
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
