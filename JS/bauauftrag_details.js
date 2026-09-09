@@ -919,9 +919,13 @@ function renderConsumedMaterials() {
 
     if (!materials.length) {
         container.innerHTML = `
-            <div class="empty-state">
-                Noch keine Materialien eingetragen.
-            </div>
+            <tr>
+                <td colspan="4">
+                    <div class="material-empty">
+                        Noch keine Materialien eingetragen.
+                    </div>
+                </td>
+            </tr>
         `;
         return;
     }
@@ -933,30 +937,35 @@ function renderConsumedMaterials() {
         const total = quantity * price;
 
         return `
-            <div class="material-row">
+            <tr>
+                <td>
+                    ${escapeHtml(material.name)}
+                </td>
 
-                <div class="material-info">
-                    <strong>${escapeHtml(material.name)}</strong>
+                <td>
+                    ${quantity}
+                </td>
 
-                    <span>
-                        ${quantity} × ${formatMoney(price)} $
-                    </span>
-                </div>
+                <td>
+                    ${formatMoney(price)} $
+                </td>
 
-                <div class="material-total">
-                    ${formatMoney(total)} $
-                </div>
+                <td>
+                    <strong>
+                        ${formatMoney(total)} $
+                    </strong>
 
-                <button
-                    type="button"
-                    class="material-remove"
-                    onclick="removeConsumedMaterial(${index})"
-                >
-                    ✕
-                </button>
-
-            </div>
+                    <button
+                        type="button"
+                        class="material-remove"
+                        onclick="removeConsumedMaterial(${index})"
+                    >
+                        ✕
+                    </button>
+                </td>
+            </tr>
         `;
+
     }).join("");
 }
 
