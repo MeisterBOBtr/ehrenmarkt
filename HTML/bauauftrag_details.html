@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Bauauftrag Details</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            color: #ead8aa;
+
+            background:
+                linear-gradient(
+                    rgba(12, 8, 5, 0.72),
+                    rgba(12, 8, 5, 0.88)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/BAU.png")
+                center center / cover fixed no-repeat;
+
+            background-color: #100b07;
+        }
+
+
+        /* ==========================================
+           HEADER
+        ========================================== */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 12px 25px;
+
+            background: rgba(10, 7, 5, 0.94);
+
+            border-bottom: 1px solid #b88932;
+
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.75);
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            min-width: 240px;
+        }
+
+
+        .brand-mark {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #e5b94f;
+
+            font-size: 30px;
+
+            border: 1px solid #b88932;
+
+            border-radius: 6px;
+
+            background:
+                rgba(70, 45, 17, 0.55);
+        }
+
+
+        .brand-title {
+            color: #e7b94e;
+
+            font-size: 25px;
+            font-weight: bold;
+
+            letter-spacing: 2px;
+        }
+
+
+        .brand-subtitle {
+            margin-top: 2px;
+
+            color: #b99a5d;
+
+            font-size: 10px;
+
+            letter-spacing: 1px;
+        }
+
+
+        .nav-buttons {
+            display: flex;
+            gap: 7px;
+
+            overflow-x: auto;
+        }
+
+
+        .nav-button {
+            padding: 9px 13px;
+
+            color: #e6ce95;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            background:
+                rgba(42, 27, 13, 0.92);
+
+            border: 1px solid #74531f;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+        }
+
+
+        .nav-button.active {
+            color: #fff0c6;
+
+            background:
+                linear-gradient(
+                    #9e3827,
+                    #722519
+                );
+
+            border-color: #c68d2e;
+        }
+
+
+        /* ==========================================
+           MAIN
+        ========================================== */
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+            padding: 25px 18px 50px;
+        }
+
+
+        /* ==========================================
+           BACK
+        ========================================== */
+
+        .back-button {
+            display: inline-block;
+
+            margin-bottom: 18px;
+
+            padding: 10px 17px;
+
+            color: #f2d68f;
+
+            text-decoration: none;
+
+            background:
+                rgba(20, 13, 7, 0.90);
+
+            border: 1px solid #c28d2e;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+        }
+
+
+        /* ==========================================
+           TITLE
+        ========================================== */
+
+        .hero {
+            margin-bottom: 20px;
+
+            text-align: center;
+
+            padding: 20px;
+
+            background:
+                rgba(13, 9, 6, 0.78);
+
+            border: 1px solid #9f7226;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.55);
+        }
+
+
+        .hero h1 {
+            margin: 0;
+
+            color: #edc45d;
+
+            font-size: 34px;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+
+        .hero p {
+            margin: 8px 0 0;
+
+            color: #c9af77;
+
+            font-size: 13px;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* ==========================================
+           GRID
+        ========================================== */
+
+        .details-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 16px;
+        }
+
+
+        /* ==========================================
+           CARD
+        ========================================== */
+
+        .card {
+            background:
+                linear-gradient(
+                    rgba(19, 13, 8, 0.92),
+                    rgba(12, 9, 6, 0.94)
+                );
+
+            border: 1px solid #9d7126;
+
+            border-radius: 7px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 7px 22px rgba(0, 0, 0, 0.55);
+        }
+
+
+        .card-title {
+            padding: 12px 15px;
+
+            color: #e7bd55;
+
+            font-size: 19px;
+            font-weight: bold;
+
+            background:
+                rgba(42, 28, 14, 0.85);
+
+            border-bottom: 1px solid #79551e;
+        }
+
+
+        .card-content {
+            padding: 13px 15px;
+        }
+
+
+        /* ==========================================
+           INFORMATION
+        ========================================== */
+
+        .info-row {
+            display: grid;
+
+            grid-template-columns:
+                42% 58%;
+
+            padding: 7px 0;
+
+            border-bottom:
+                1px solid rgba(130, 93, 34, 0.28);
+        }
+
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .info-label {
+            color: #9d8657;
+
+            font-size: 13px;
+        }
+
+
+        .info-value {
+            color: #e9d49f;
+
+            font-size: 14px;
+
+            word-break: break-word;
+        }
+
+
+        /* ==========================================
+           STATUS
+        ========================================== */
+
+        .status {
+            display: inline-block;
+
+            padding: 4px 9px;
+
+            color: #fff1c7;
+
+            background:
+                #93651d;
+
+            border: 1px solid #c3943c;
+
+            border-radius: 5px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        /* ==========================================
+           PLOT / GEBÄUDE
+        ========================================== */
+
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+
+
+        /* ==========================================
+           LEISTUNGSUMFANG
+        ========================================== */
+
+        .description {
+            color: #d8c28e;
+
+            line-height: 1.55;
+
+            font-size: 13px;
+
+            white-space: pre-wrap;
+        }
+
+
+        /* ==========================================
+           REFERENZBILD
+        ========================================== */
+
+        .reference-image {
+            width: 100%;
+
+            max-height: 400px;
+
+            object-fit: cover;
+
+            display: block;
+
+            border: 1px solid #79551e;
+
+            border-radius: 5px;
+        }
+
+
+        .reference-placeholder {
+            min-height: 150px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #8f7951;
+
+            background:
+                rgba(5, 4, 3, 0.65);
+
+            border:
+                1px dashed #73511d;
+
+            border-radius: 5px;
+
+            font-size: 13px;
+        }
+
+
+        /* ==========================================
+           PREIS
+        ========================================== */
+
+        .price-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 9px 0;
+
+            border-bottom:
+                1px solid rgba(130, 93, 34, 0.30);
+
+            font-size: 14px;
+        }
+
+
+        .price-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .price-label {
+            color: #cdb987;
+        }
+
+
+        .price-value {
+            color: #ecd18a;
+
+            font-weight: bold;
+
+            text-align: right;
+        }
+
+
+        .price-total {
+            margin-top: 5px;
+
+            padding: 13px 0;
+
+            border-top:
+                1px solid #9b7028;
+
+            font-size: 17px;
+        }
+
+
+        .price-total .price-label,
+        .price-total .price-value {
+            color: #f0c958;
+        }
+
+
+        /* ==========================================
+           MATERIALIEN
+        ========================================== */
+
+        .material-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+        }
+
+
+        .material-table th {
+            padding: 9px 7px;
+
+            color: #c9a95e;
+
+            text-align: left;
+
+            background:
+                rgba(52, 34, 16, 0.75);
+
+            border-bottom:
+                1px solid #8c6421;
+        }
+
+
+        .material-table td {
+            padding: 9px 7px;
+
+            color: #dcc694;
+
+            border-bottom:
+                1px solid rgba(130, 93, 34, 0.25);
+        }
+
+
+        .material-empty {
+            padding: 18px;
+
+            text-align: center;
+
+            color: #8f7951;
+
+            font-size: 13px;
+        }
+
+
+        /* ==========================================
+           MATERIAL HINWEIS
+        ========================================== */
+
+        .material-info {
+            margin-top: 12px;
+
+            padding: 11px 13px;
+
+            color: #cdb98a;
+
+            background:
+                rgba(78, 53, 21, 0.32);
+
+            border-left:
+                3px solid #b88932;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==========================================
+           ANMERKUNGEN
+        ========================================== */
+
+        .notes {
+            min-height: 90px;
+
+            padding: 12px;
+
+            color: #d8c594;
+
+            background:
+                rgba(5, 4, 3, 0.65);
+
+            border:
+                1px solid #60451d;
+
+            border-radius: 5px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            white-space: pre-wrap;
+        }
+
+              /* ==========================================
+           STATUSVERLAUF
+        ========================================== */
+
+        .progress {
+            display: flex;
+
+            justify-content: space-between;
+
+            position: relative;
+
+            margin-top: 10px;
+        }
+
+
+        .progress-line {
+            position: absolute;
+
+            top: 15px;
+            left: 10%;
+            right: 10%;
+
+            height: 2px;
+
+            background: #57401e;
+
+            z-index: 0;
+        }
+
+
+        .progress-step {
+            position: relative;
+
+            z-index: 1;
+
+            width: 25%;
+
+            text-align: center;
+        }
+
+
+        .progress-circle {
+            width: 30px;
+            height: 30px;
+
+            margin: 0 auto 6px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #bba06a;
+
+            background:
+                #211a12;
+
+            border:
+                1px solid #60491f;
+
+            border-radius: 50%;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+
+        .progress-step.active .progress-circle {
+            color: #fff0b9;
+
+            background:
+                #a8751e;
+
+            border-color:
+                #e0b34b;
+        }
+
+
+        .progress-label {
+            color: #9c875a;
+
+            font-size: 11px;
+        }
+
+
+        .progress-step.active .progress-label {
+            color: #e2c477;
+        }
+
+
+        /* ==========================================
+           HINWEIS
+        ========================================== */
+
+        .notice {
+            margin-top: 16px;
+
+            padding: 15px 17px;
+
+            color: #d7c89f;
+
+            background:
+                rgba(13, 24, 27, 0.78);
+
+            border:
+                1px solid #b88932;
+
+            border-radius: 6px;
+
+            font-size: 13px;
+
+            line-height: 1.55;
+        }
+
+
+        .notice strong {
+            color: #f0ca64;
+        }
+
+
+        /* ==========================================
+           AKTION
+        ========================================== */
+
+        .action-card {
+            margin-top: 16px;
+
+            text-align: center;
+
+            padding: 18px;
+
+            background:
+                rgba(18, 12, 7, 0.94);
+
+            border:
+                1px solid #b88932;
+
+            border-radius: 7px;
+        }
+
+
+        .action-button {
+            display: inline-block;
+
+            padding: 13px 25px;
+
+            color: #fff0c4;
+
+            background:
+                linear-gradient(
+                    #bd8a2f,
+                    #79551e
+                );
+
+            border:
+                1px solid #dfb44f;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+
+        .action-button:hover {
+            filter: brightness(1.1);
+        }
+
+
+        /* ==========================================
+           FOOTER
+        ========================================== */
+
+        footer {
+            padding: 25px 10px 35px;
+
+            text-align: center;
+
+            color: #806c47;
+
+            font-size: 11px;
+
+            letter-spacing: 1px;
+        }
+
+
+        .footer-title {
+            color: #c79c3d;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 750px) {
+
+            .topbar {
+                flex-direction: column;
+
+                align-items: stretch;
+
+                padding: 10px;
+            }
+
+
+            .brand {
+                min-width: 0;
+            }
+
+
+            .brand-title {
+                font-size: 20px;
+            }
+
+
+            .nav-buttons {
+                width: 100%;
+            }
+
+
+            .nav-button {
+                font-size: 11px;
+
+                padding: 8px 10px;
+            }
+
+
+            .container {
+                padding:
+                    15px 9px 35px;
+            }
+
+
+            .hero {
+                padding: 16px 10px;
+            }
+
+
+            .hero h1 {
+                font-size: 25px;
+            }
+
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .wide-card {
+                grid-column: auto;
+            }
+
+
+            .info-row {
+                grid-template-columns:
+                    1fr;
+
+                gap: 3px;
+            }
+
+
+            .info-label {
+                font-size: 11px;
+            }
+
+
+            .info-value {
+                font-size: 13px;
+            }
+
+
+            .material-table {
+                font-size: 11px;
+            }
+
+
+            .material-table th,
+            .material-table td {
+                padding: 7px 4px;
+            }
+
+
+            .price-row {
+                font-size: 13px;
+            }
+
+
+            .progress-label {
+                font-size: 9px;
+            }
+
+
+            .action-button {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<nav class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            ⚒
+        </div>
+
+        <div>
+
+            <div class="brand-title">
+                EHRENMARKT
+            </div>
+
+            <div class="brand-subtitle">
+                BAUEN FÜR EINE STÄRKERE ZUKUNFT
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="nav-buttons">
+
+        <a
+            href="index.html"
+            class="nav-button"
+        >
+            Startseite
+        </a>
+
+        <a
+            href="bauauftrag.html"
+            class="nav-button active"
+        >
+            Bauauftrag
+        </a>
+
+        <a
+            href="materialauftrag.html"
+            class="nav-button"
+        >
+            Material
+        </a>
+
+        <a
+            href="logistikauftrag.html"
+            class="nav-button"
+        >
+            Logistik
+        </a>
+
+        <a
+            href="redstoneauftrag.html"
+            class="nav-button"
+        >
+            Redstone
+        </a>
+
+        <a
+            href="mitarbeiter.html"
+            class="nav-button"
+        >
+            Mitarbeiter
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<main class="container">
+
+
+    <a
+        href="mitarbeiter.html"
+        class="back-button"
+    >
+        ← Mitarbeiterbereich
+    </a>
+
+
+    <!-- ======================================
+         TITEL
+    ======================================= -->
+
+    <section class="hero">
+
+        <h1>
+            BAUAUFTRAG – DETAILS
+        </h1>
+
+        <p>
+            ÜBERPRÜFE HIER DIE DETAILS DEINES BAUAUFTRAGS
+        </p>
+
+    </section>
+
+
+
+    <div class="details-grid">
+
+
+        <!-- ======================================
+             AUFTRAGSINFORMATIONEN
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Auftragsinformationen
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Auftragsnummer
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="orderNumber"
+                    >
+                        EM-BAU-0001
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Status
+                    </div>
+
+                    <div class="info-value">
+
+                        <span
+                            class="status"
+                            id="orderStatus"
+                        >
+                            Offen
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Auftragsdatum
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="orderDate"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Auftraggeber
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="customerName"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Minecraft-Name
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="minecraftName"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Kontakt
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="contact"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Standort
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="location"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Priorität
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="priority"
+                    >
+                        Normal
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             PLOT & GEBÄUDE
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Plot & Gebäude
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Plotgröße
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="plotSize"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Plot-Anzahl
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="plotCount"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Gebäudeart
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="buildingType"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Gebäudemaße
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="buildingDimensions"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Etagen
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="buildingFloors"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Baustil
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="buildingStyle"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Blockpalette
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="blockPalette"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Sonderblöcke
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="specialBlocks"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             LEISTUNGSUMFANG
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Leistungsumfang
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Innenausbau
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="interiorLevel"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Außenbereich
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="exteriorLevel"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Beleuchtung
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="lightingLevel"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Terraforming
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="terraformingLevel"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div style="margin-top: 14px;">
+
+                    <div class="info-label">
+                        Beschreibung
+                    </div>
+
+                    <div
+                        class="description"
+                        id="description"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div style="margin-top: 14px;">
+
+                    <div class="info-label">
+                        Besondere Wünsche
+                    </div>
+
+                    <div
+                        class="description"
+                        id="specialRequests"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             REFERENZBILD
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Referenzbild
+            </div>
+
+
+            <div class="card-content">
+
+                <div
+                    id="referenceContainer"
+                >
+
+                    <div class="reference-placeholder">
+                        Kein Referenzbild vorhanden.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+              <!-- ======================================
+             PREISÜBERSICHT
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Preisübersicht
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Plot-Anzahl
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="pricePlotCount"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Grundpreis
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="basePrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Zusatzleistungen
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="addonPrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Materialkosten
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="materialCost"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Beschaffungszuschlag
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="materialSurcharge"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row price-total">
+
+                    <span class="price-label">
+                        Endgültiger Gesamtpreis
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="finalPrice"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Anzahlung (25 %)
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="deposit"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+
+                <div class="price-row">
+
+                    <span class="price-label">
+                        Restzahlung (75 %)
+                    </span>
+
+                    <span
+                        class="price-value"
+                        id="remainingPayment"
+                    >
+                        0 $
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             MATERIALBEREITSTELLUNG
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Materialbereitstellung
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Wer stellt die Materialien?
+                    </div>
+
+                    <div
+                        class="info-value"
+                        id="materialProvider"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="material-info">
+
+                    Die tatsächlichen Materialkosten werden
+                    nach der Bearbeitung anhand des
+                    tatsächlichen Verbrauchs ermittelt.
+
+                    Wenn Falkenstein die Materialien beschafft,
+                    werden zusätzlich <strong>15 %</strong>
+                    Beschaffungszuschlag berechnet.
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             VERBRAUCHTE MATERIALIEN
+        ======================================= -->
+
+        <section class="card wide-card">
+
+            <div class="card-title">
+                Verbrauchte Materialien
+            </div>
+
+
+            <div class="card-content">
+
+                <table class="material-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Material
+                            </th>
+
+                            <th>
+                                Menge
+                            </th>
+
+                            <th>
+                                Preis / Stück
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="materialsList">
+
+                        <tr>
+
+                            <td colspan="4">
+
+                                <div class="material-empty">
+                                    Noch keine Materialien eingetragen.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="material-info">
+
+                    Der Bearbeiter kann hier später die
+                    tatsächlich verbrauchten Materialien
+                    hinzufügen.
+
+                    Die Materialkosten werden automatisch
+                    zum Auftragspreis hinzugefügt.
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             ANMERKUNGEN
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Anmerkungen des Auftraggebers
+            </div>
+
+
+            <div class="card-content">
+
+                <div
+                    class="notes"
+                    id="notes"
+                >
+                    Keine Anmerkungen vorhanden.
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ======================================
+             STATUS
+        ======================================= -->
+
+        <section class="card">
+
+            <div class="card-title">
+                Auftragsstatus
+            </div>
+
+
+            <div class="card-content">
+
+                <div class="progress">
+
+                    <div class="progress-line"></div>
+
+
+                    <div class="progress-step active">
+
+                        <div class="progress-circle">
+                            1
+                        </div>
+
+                        <div class="progress-label">
+                            Offen
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-step">
+
+                        <div class="progress-circle">
+                            2
+                        </div>
+
+                        <div class="progress-label">
+                            In Bearbeitung
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-step">
+
+                        <div class="progress-circle">
+                            3
+                        </div>
+
+                        <div class="progress-label">
+                            Prüfung
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-step">
+
+                        <div class="progress-circle">
+                            4
+                        </div>
+
+                        <div class="progress-label">
+                            Abgeschlossen
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- ======================================
+         HINWEIS
+    ======================================= -->
+
+    <div class="notice">
+
+        <strong>ℹ Hinweis</strong><br><br>
+
+        Dies ist die Vorschau des Bauauftrags.
+        Der zunächst angezeigte Preis ist der
+        vorläufige Grundpreis.
+
+        Die endgültigen Materialkosten werden nach
+        der Bearbeitung anhand des tatsächlichen
+        Materialverbrauchs ergänzt.
+
+        Bei Materialbereitstellung durch Falkenstein
+        wird zusätzlich der festgelegte
+        Beschaffungszuschlag berücksichtigt.
+
+    </div>
+
+
+
+    <!-- ======================================
+         AKTION
+    ======================================= -->
+
+    <section class="action-card">
+
+        <div style="
+            color:#d6bd82;
+            margin-bottom:12px;
+            font-size:13px;
+        ">
+
+            Auftrag prüfen und anschließend übernehmen.
+
+        </div>
+
+
+        <button
+            type="button"
+            class="action-button"
+            id="acceptOrderButton"
+        >
+            ✓ Auftrag übernehmen
+        </button>
+
+
+        <div
+            id="errorMessage"
+            style="
+                display:none;
+                margin-top:12px;
+                padding:10px;
+                color:#ffd0c7;
+                background:rgba(100,20,15,.65);
+                border:1px solid #9b3e2f;
+                border-radius:5px;
+                font-size:12px;
+            "
+        ></div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+    <div class="footer-title">
+        EHRENMARKT
+    </div>
+
+    <div>
+        BAUEN FÜR EINE STÄRKERE ZUKUNFT
+    </div>
+
+    <div style="margin-top:7px;">
+        © 2026 Ehrenmarkt
+    </div>
+
+</footer>
+
+
+
+<!-- ==========================================
+     SUPABASE
+========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../supabase.js"></script>
+
+<script src="../JS/bauauftrag_details.js"></script>
+
+
+</body>
+</html>
