@@ -1,1491 +1,1819 @@
-/*
- * EHRENMARKT
- * Mitarbeiterbereich
- *
- * Datei:
- * JS/mitarbeiterbereich.js
- */
+// ============================================================
+// EHRENMARKT – MITARBEITERBEREICH
+// Teil 1/4 – Anmeldung & Zugriffskontrolle
+// ============================================================
 
-(function () {
-    "use strict";
+const supabaseClient = window.supabaseClient;
 
-    let supabase = null;
-    let aktuellerUser = null;
-    let mitarbeiter = null;
-    let profil = null;
+// Erlaubte Ränge für den Mitarbeiterbereich
+const ERLAUBTE_MITARBEITER_RAEGE = [
+    "Mitarbeiter",
+    "Leitung",
+    "Stadtleitung"
+];
 
-    const ids = {
-        fehler: "fehler",
-
-        abmeldenButton: "abmeldenButton",
-
-        mitarbeiterBegruessung: "mitarbeiterBegruessung",
-        mitarbeiterUsername: "mitarbeiterUsername",
-        mitarbeiterMinecraft: "mitarbeiterMinecraft",
-        mitarbeiterRang: "mitarbeiterRang",
-        mitarbeiterRolle: "mitarbeiterRolle",
-
-        statusAnzeige: "statusAnzeige",
-        statusPunkt: "statusPunkt",
-        statusText: "statusText",
-        statusButton: "statusButton",
-
-        verfuegbarButton: "verfuegbarButton",
-        nichtVerfuegbarButton: "nichtVerfuegbarButton",
-
-        arbeitszeitAnzeige: "arbeitszeitAnzeige",
-
-        auftraegeGesamt: "auftraegeGesamt",
-        auftraegeOffen: "auftraegeOffen",
-        auftraegeBearbeitung: "auftraegeBearbeitung",
-
-        meineAuftraege: "meineAuftraege",
-
-        offeneVerstaerkung: "offeneVerstaerkung",
-
-        benachrichtigungen: "benachrichtigungen"
-    };
+let aktuellerUser = null;
+let aktuellesProfil = null;
+let aktuellerMitarbeiter = null;
 
 
-    /*
-     * DOM-HILFSFUNKTIONEN
-     */
+// ============================================================
+// HILFSFUNKTIONEN
+// ============================================================
 
-    function element(id) {
-        return document.getElementById(id);
+function element(id) {
+    return document.getElementById(id);
+}
+
+
+function setText(id, text) {
+    const el = element(id);
+
+    if (el) {
+        el.textContent = text ?? "";
+    }
+}
+
+
+function anzeigen(id) {
+    const el = element(id);
+
+    if (el) {
+        el.style.display = "";
+    }
+}
+
+
+function verstecken(id) {
+    const el = element(id);
+
+    if (el) {
+        el.style.display = "none";
+    }
+}
+
+
+function zeigeFehler(text) {
+    const fehler = element("fehler");
+
+    if (!fehler) {
+        return;
     }
 
+    fehler.textContent = text;
+    fehler.style.display = "block";
+}
 
-    function text(id, wert) {
-        const el = element(id);
 
-        if (el) {
-            el.textContent = wert ?? "—";
-        }
+function versteckeFehler() {
+    const fehler = element("fehler");
+
+    if (fehler) {
+        fehler.style.display = "none";
+        fehler.textContent = "";
+    }
+}
+
+
+// ============================================================
+// GASTBEREICH / KEIN ZUGRIFF
+// ============================================================
+
+function zeigeGastbereich(text = "Du bist aktuell nicht angemeldet.") {
+
+    const gastBereich = element("gastBereich");
+    const mitarbeiterBereich = element("mitarbeiterBereich");
+    const abmeldenButton = element("abmeldenButton");
+
+    if (mitarbeiterBereich) {
+        mitarbeiterBereich.style.display = "none";
     }
 
+    if (gastBereich) {
+        gastBereich.style.display = "block";
 
-    function zeigenFehler(nachricht) {
-        const el = element(ids.fehler);
+        const paragraph = gastBereich.querySelector("p");
 
-        if (!el) {
-            console.error(nachricht);
-            return;
-        }
-
-        el.textContent = nachricht;
-        el.style.display = "block";
-    }
-
-
-    function versteckenFehler() {
-        const el = element(ids.fehler);
-
-        if (el) {
-            el.textContent = "";
-            el.style.display = "none";
-        }
-    }
-
-
-    function htmlEscapen(wert) {
-        if (wert === null || wert === undefined) {
-            return "";
-        }
-
-        return String(wert)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-
-    /*
-     * LADEZUSTAND
-     */
-
-    function ladeText(id, nachricht = "Wird geladen...") {
-        const el = element(id);
-
-        if (el) {
-            el.innerHTML = `
-                <div class="laden">
-                    ${htmlEscapen(nachricht)}
-                </div>
-            `;
+        if (paragraph) {
+            paragraph.textContent = text;
         }
     }
 
+    if (abmeldenButton) {
+        abmeldenButton.style.display = "none";
+    }
+}
 
-    /*
-     * SUPABASE ERMITTELN
-     */
 
-    function holeSupabaseClient() {
-        if (window.supabaseClient) {
-            return window.supabaseClient;
-        }
+// ============================================================
+// ZUGRIFF VERWEIGERT
+// ============================================================
 
-        if (window.supabase && typeof window.supabase.createClient === "function") {
-            console.warn(
-                "supabaseClient wurde nicht gefunden. " +
-                "Es wird kein neuer Client erzeugt."
-            );
-        }
+function zeigeKeinZugriff() {
 
-        return null;
+    const gastBereich = element("gastBereich");
+    const mitarbeiterBereich = element("mitarbeiterBereich");
+    const abmeldenButton = element("abmeldenButton");
+
+    if (mitarbeiterBereich) {
+        mitarbeiterBereich.style.display = "none";
     }
 
+    if (gastBereich) {
+        gastBereich.style.display = "block";
 
-    /*
-     * INITIALISIERUNG
-     */
+        gastBereich.innerHTML = `
+            <h2>Kein Zugriff</h2>
 
-    async function initialisieren() {
+            <p>
+                Dein Rang besitzt keinen Zugriff auf den Mitarbeiterbereich.
+            </p>
 
-        try {
-            versteckenFehler();
+            <p>
+                Zugriff haben nur Mitarbeiter, Leitung und Stadtleitung.
+            </p>
 
-            supabase = holeSupabaseClient();
-
-            if (!supabase) {
-                zeigenFehler(
-                    "Die Supabase-Verbindung konnte nicht geladen werden."
-                );
-                return;
-            }
-
-            const {
-                data,
-                error
-            } = await supabase.auth.getSession();
-
-            if (error) {
-                console.error("Session-Fehler:", error);
-
-                zeigenFehler(
-                    "Die Anmeldung konnte nicht geprüft werden."
-                );
-
-                return;
-            }
-
-            if (!data || !data.session || !data.session.user) {
-                zeigenFehler(
-                    "Du bist nicht angemeldet. Bitte melde dich zuerst an."
-                );
-
-                setTimeout(function () {
-                    window.location.href = "registrieren.html";
-                }, 1200);
-
-                return;
-            }
-
-            aktuellerUser = data.session.user;
-
-            await ladeMitarbeiterbereich();
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler beim Initialisieren des Mitarbeiterbereichs:",
-                fehler
-            );
-
-            zeigenFehler(
-                "Der Mitarbeiterbereich konnte nicht geladen werden."
-            );
-        }
+            <a href="kundenbereich.html" class="button">
+                Zum Kundenbereich
+            </a>
+        `;
     }
 
+    if (abmeldenButton) {
+        abmeldenButton.style.display = "none";
+    }
+}
 
-    /*
-     * MITARBEITERBEREICH LADEN
-     */
 
-    async function ladeMitarbeiterbereich() {
+// ============================================================
+// MITARBEITERBEREICH ANZEIGEN
+// ============================================================
 
-        if (!aktuellerUser) {
-            return;
-        }
+function zeigeMitarbeiterbereich() {
 
-        await Promise.allSettled([
-            ladeProfil(),
-            ladeMitarbeiter(),
-            ladeVerstaerkung(),
-            ladeAuftraege(),
-            ladeBenachrichtigungen()
-        ]);
+    const gastBereich = element("gastBereich");
+    const mitarbeiterBereich = element("mitarbeiterBereich");
+    const abmeldenButton = element("abmeldenButton");
 
-        aktualisiereAnsicht();
+    if (gastBereich) {
+        gastBereich.style.display = "none";
     }
 
-
-    /*
-     * PROFIL LADEN
-     */
-
-    async function ladeProfil() {
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabase
-                .from("profiles")
-                .select("*")
-                .eq("id", aktuellerUser.id)
-                .maybeSingle();
-
-            if (error) {
-                console.error(
-                    "Profil konnte nicht geladen werden:",
-                    error
-                );
-                return;
-            }
-
-            profil = data;
-
-        } catch (fehler) {
-
-            console.error(
-                "Profil-Ladefehler:",
-                fehler
-            );
-        }
-                     }
-
-     /*
-     * MITARBEITERDATEN LADEN
-     */
-
-    async function ladeMitarbeiter() {
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabase
-                .from("employees")
-                .select("*")
-                .eq("user_id", aktuellerUser.id)
-                .maybeSingle();
-
-            if (error) {
-                console.error(
-                    "Mitarbeiterdaten konnten nicht geladen werden:",
-                    error
-                );
-
-                return;
-            }
-
-            mitarbeiter = data;
-
-            if (!mitarbeiter) {
-                console.warn(
-                    "Für den angemeldeten Benutzer wurde kein Mitarbeiterdatensatz gefunden."
-                );
-
-                zeigenFehler(
-                    "Für dein Konto wurde noch kein Mitarbeiterdatensatz gefunden."
-                );
-
-                return;
-            }
-
-        } catch (fehler) {
-
-            console.error(
-                "Mitarbeiter-Ladefehler:",
-                fehler
-            );
-        }
+    if (mitarbeiterBereich) {
+        mitarbeiterBereich.style.display = "block";
     }
 
+    if (abmeldenButton) {
+        abmeldenButton.style.display = "";
+    }
+}
 
-    /*
-     * ANSICHT AKTUALISIEREN
-     */
 
-    function aktualisiereAnsicht() {
+// ============================================================
+// PROFIL LADEN UND RANG PRÜFEN
+// ============================================================
 
-        if (profil) {
-            aktualisiereProfil();
-        }
+async function pruefeMitarbeiterZugriff(user) {
 
-        if (mitarbeiter) {
-            aktualisiereMitarbeiterstatus();
-            aktualisiereVerfuegbarkeit();
-            aktualisiereArbeitszeit();
-        }
+    if (!user) {
+        zeigeGastbereich();
+        return false;
     }
 
+    aktuellerUser = user;
 
-    /*
-     * PROFIL ANZEIGEN
-     */
+    const { data: profil, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    function aktualisiereProfil() {
+    if (error) {
 
-        const username =
-            profil.username ||
-            profil.benutzername ||
-            aktuellerUser.user_metadata?.username ||
-            aktuellerUser.email?.split("@")[0] ||
-            "Mitarbeiter";
+        console.error("Profil konnte nicht geladen werden:", error);
 
-        const minecraft =
-            profil.minecraft_username ||
-            profil.minecraft_name ||
-            profil.minecraft ||
-            profil.mc_name ||
-            "Nicht hinterlegt";
-
-        const rang =
-            profil.rang ||
-            profil.role ||
-            profil.user_type ||
-            "Mitarbeiter";
-
-        const rolle =
-            profil.rolle ||
-            profil.role ||
-            "Mitarbeiter";
-
-
-        text(
-            ids.mitarbeiterBegruessung,
-            username
+        zeigeFehler(
+            "Dein Profil konnte nicht geladen werden."
         );
 
-        text(
-            ids.mitarbeiterUsername,
-            username
+        zeigeGastbereich(
+            "Dein Profil konnte nicht geladen werden."
         );
 
-        text(
-            ids.mitarbeiterMinecraft,
-            minecraft
+        return false;
+    }
+
+    if (!profil) {
+
+        zeigeFehler(
+            "Für dein Konto wurde kein Profil gefunden."
         );
 
-        text(
-            ids.mitarbeiterRang,
+        zeigeGastbereich(
+            "Für dein Konto wurde kein Profil gefunden."
+        );
+
+        return false;
+    }
+
+    aktuellesProfil = profil;
+
+    const rang = String(profil.rang || "").trim();
+
+    console.log("Angemeldeter Rang:", rang);
+
+    // --------------------------------------------------------
+    // WICHTIG:
+    // Nur diese drei Ränge dürfen hinein.
+    // --------------------------------------------------------
+
+    if (!ERLAUBTE_MITARBEITER_RAEGE.includes(rang)) {
+
+        console.log(
+            "Zugriff verweigert. Rang:",
             rang
         );
 
-        text(
-            ids.mitarbeiterRolle,
-            rolle
+        versteckeFehler();
+        zeigeKeinZugriff();
+
+        return false;
+    }
+
+    // Rang ist erlaubt
+    versteckeFehler();
+    zeigeMitarbeiterbereich();
+
+    // Mitarbeiterdaten erst jetzt laden
+    await ladeMitarbeiterbereich(user, profil);
+
+    return true;
+}
+
+
+// ============================================================
+// INITIALISIERUNG
+// ============================================================
+
+async function initialisieren() {
+
+    versteckeFehler();
+
+    const ladebereich = element("ladebereich");
+
+    if (ladebereich) {
+        ladebereich.style.display = "block";
+    }
+
+    if (!supabaseClient) {
+
+        zeigeFehler(
+            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
+        );
+
+        if (ladebereich) {
+            ladebereich.style.display = "none";
+        }
+
+        return;
+    }
+
+    try {
+
+        const sessionPromise =
+            supabaseClient.auth.getSession();
+
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(
+                    new Error(
+                        "Zeitüberschreitung beim Laden der Anmeldung."
+                    )
+                );
+            }, 10000);
+        });
+
+        const result = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+        ]);
+
+        const session = result?.data?.session;
+
+        if (!session || !session.user) {
+
+            if (ladebereich) {
+                ladebereich.style.display = "none";
+            }
+
+            zeigeGastbereich();
+
+            return;
+        }
+
+        await pruefeMitarbeiterZugriff(session.user);
+
+    } catch (error) {
+
+        console.error(
+            "Fehler bei der Initialisierung:",
+            error
+        );
+
+        zeigeFehler(
+            "Der Mitarbeiterbereich konnte nicht geladen werden."
+        );
+
+        zeigeGastbereich(
+            "Die Anmeldung konnte nicht überprüft werden."
+        );
+
+    } finally {
+
+        if (ladebereich) {
+            ladebereich.style.display = "none";
+        }
+    }
+}
+
+
+// ============================================================
+// ABMELDEN
+// ============================================================
+
+async function abmelden() {
+
+    try {
+
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+        if (error) {
+            throw error;
+        }
+
+        window.location.href = "registrieren.html";
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Abmelden:",
+            error
+        );
+
+        zeigeFehler(
+            "Du konntest nicht abgemeldet werden."
+        );
+    }
+}
+
+
+// ============================================================
+// AUTH-ÄNDERUNGEN
+// ============================================================
+
+function registriereAuthListener() {
+
+    supabaseClient.auth.onAuthStateChange(
+        async (event, session) => {
+
+            console.log(
+                "Auth-Änderung:",
+                event
+            );
+
+            if (event === "SIGNED_OUT") {
+
+                aktuellerUser = null;
+                aktuellesProfil = null;
+                aktuellerMitarbeiter = null;
+
+                zeigeGastbereich();
+
+                return;
+            }
+
+            if (
+                event === "SIGNED_IN" &&
+                session?.user
+            ) {
+
+                await pruefeMitarbeiterZugriff(
+                    session.user
+                );
+            }
+        }
+    );
+}
+
+
+// ============================================================
+// BUTTON VERBINDEN
+// ============================================================
+
+function verbindeAbmeldenButton() {
+
+    const button = element("abmeldenButton");
+
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener(
+        "click",
+        abmelden
+    );
+}
+
+
+// ============================================================
+// START
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        verbindeAbmeldenButton();
+
+        registriereAuthListener();
+
+        await initialisieren();
+    }
+);
+
+// ============================================================
+// MITARBEITERBEREICH LADEN
+// Teil 2/4 – Profil & Mitarbeiterdaten
+// ============================================================
+
+async function ladeMitarbeiterbereich(user, profil) {
+
+    // --------------------------------------------------------
+    // Profil anzeigen
+    // --------------------------------------------------------
+
+    const username =
+        profil.username ||
+        user.user_metadata?.username ||
+        "Unbekannt";
+
+    const minecraftName =
+        profil.minecraft_name ||
+        profil.minecraft ||
+        user.user_metadata?.minecraft_name ||
+        "Nicht hinterlegt";
+
+    const email =
+        user.email ||
+        profil.email ||
+        "Keine E-Mail";
+
+    const rang =
+        profil.rang ||
+        "Mitarbeiter";
+
+    const rolle =
+        profil.rolle ||
+        "Keine Rolle hinterlegt";
+
+
+    // --------------------------------------------------------
+    // Begrüßung
+    // --------------------------------------------------------
+
+    setText(
+        "mitarbeiterBegruessung",
+        `Willkommen zurück, ${username}!`
+    );
+
+
+    // --------------------------------------------------------
+    // Profilfelder
+    // --------------------------------------------------------
+
+    setText(
+        "mitarbeiterUsername",
+        username
+    );
+
+    setText(
+        "mitarbeiterMinecraft",
+        minecraftName
+    );
+
+    setText(
+        "mitarbeiterEmail",
+        email
+    );
+
+    setText(
+        "mitarbeiterRang",
+        rang
+    );
+
+    setText(
+        "mitarbeiterRolle",
+        rolle
+    );
+
+
+    // --------------------------------------------------------
+    // Mitarbeiter-Datensatz aus employees laden
+    // --------------------------------------------------------
+
+    try {
+
+        const {
+            data: mitarbeiter,
+            error
+        } = await supabaseClient
+            .from("employees")
+            .select("*")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Mitarbeiterdaten konnten nicht geladen werden:",
+                error
+            );
+
+            // Der Rang ist bereits autorisiert.
+            // Deshalb wird der komplette Bereich nicht gesperrt.
+            aktuellerMitarbeiter = null;
+
+        } else {
+
+            aktuellerMitarbeiter = mitarbeiter;
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Laden des Mitarbeiter-Datensatzes:",
+            error
+        );
+
+        aktuellerMitarbeiter = null;
+    }
+
+
+    // --------------------------------------------------------
+    // Mitarbeiterdaten verarbeiten
+    // --------------------------------------------------------
+
+    if (aktuellerMitarbeiter) {
+
+        aktualisiereMitarbeiterAnzeige(
+            aktuellerMitarbeiter
+        );
+
+    } else {
+
+        // Falls noch kein employees-Datensatz existiert
+        setText(
+            "statusText",
+            "Mitarbeiterdaten nicht vollständig hinterlegt"
+        );
+
+        setText(
+            "arbeitszeitAnzeige",
+            "0 Std. 0 Min."
         );
     }
 
 
-    /*
-     * MITARBEITERSTATUS ANZEIGEN
-     */
+    // --------------------------------------------------------
+    // Weitere Bereiche laden
+    // --------------------------------------------------------
 
-    function aktualisiereMitarbeiterstatus() {
-
-        const aktiv =
-            mitarbeiter.is_active === true;
-
-        const punkt =
-            element(ids.statusPunkt);
-
-        const statusText =
-            element(ids.statusText);
-
-        const button =
-            element(ids.statusButton);
+    await Promise.allSettled([
+        ladeEigeneAuftraege(user),
+        ladeOffeneVerstaerkung(),
+        ladeBenachrichtigungen()
+    ]);
+}
 
 
-        if (statusText) {
+// ============================================================
+// MITARBEITER-ANZEIGE AKTUALISIEREN
+// ============================================================
 
-            statusText.textContent =
-                aktiv
-                    ? "Aktiv"
-                    : "Inaktiv";
+function aktualisiereMitarbeiterAnzeige(mitarbeiter) {
+
+    // --------------------------------------------------------
+    // Aktiv / Inaktiv
+    // --------------------------------------------------------
+
+    const aktiv =
+        mitarbeiter.is_active === true;
+
+    const statusPunkt =
+        element("statusPunkt");
+
+    const statusText =
+        element("statusText");
+
+    if (statusPunkt) {
+
+        statusPunkt.style.display = "inline-block";
+
+        if (aktiv) {
+            statusPunkt.textContent = "●";
+            statusPunkt.title = "Aktiv";
+        } else {
+            statusPunkt.textContent = "●";
+            statusPunkt.title = "Inaktiv";
+        }
+    }
+
+    if (statusText) {
+
+        statusText.textContent =
+            aktiv
+                ? "Aktiv"
+                : "Inaktiv";
+    }
+
+
+    // --------------------------------------------------------
+    // Status-Button
+    // --------------------------------------------------------
+
+    const statusButton =
+        element("statusButton");
+
+    if (statusButton) {
+
+        statusButton.textContent =
+            aktiv
+                ? "Auf Inaktiv setzen"
+                : "Auf Aktiv setzen";
+
+        statusButton.disabled = false;
+    }
+
+
+    // --------------------------------------------------------
+    // Verfügbarkeit
+    // --------------------------------------------------------
+
+    const verfuegbar =
+        mitarbeiter.is_available === true;
+
+    const verfuegbarButton =
+        element("verfuegbarButton");
+
+    const nichtVerfuegbarButton =
+        element("nichtVerfuegbarButton");
+
+
+    if (verfuegbarButton) {
+        verfuegbarButton.disabled =
+            verfuegbar;
+    }
+
+    if (nichtVerfuegbarButton) {
+        nichtVerfuegbarButton.disabled =
+            !verfuegbar;
+    }
+
+
+    // --------------------------------------------------------
+    // Arbeitszeit
+    // --------------------------------------------------------
+
+    const minuten =
+        Number(
+            mitarbeiter.total_work_minutes || 0
+        );
+
+    setText(
+        "arbeitszeitAnzeige",
+        formatiereArbeitszeit(minuten)
+    );
+}
+
+
+// ============================================================
+// ARBEITSZEIT FORMATIEREN
+// ============================================================
+
+function formatiereArbeitszeit(minuten) {
+
+    minuten = Number(minuten);
+
+    if (!Number.isFinite(minuten) || minuten < 0) {
+        minuten = 0;
+    }
+
+    minuten = Math.floor(minuten);
+
+    const stunden =
+        Math.floor(minuten / 60);
+
+    const restMinuten =
+        minuten % 60;
+
+    return `${stunden} Std. ${restMinuten} Min.`;
+}
+
+
+// ============================================================
+// STATUS-ANZEIGE AKTUALISIEREN
+// ============================================================
+
+function aktualisiereStatusAnzeige() {
+
+    if (!aktuellerMitarbeiter) {
+        return;
+    }
+
+    aktualisiereMitarbeiterAnzeige(
+        aktuellerMitarbeiter
+    );
+}
+
+
+// ============================================================
+// EIGENE AUFTRÄGE
+// ============================================================
+
+async function ladeEigeneAuftraege(user) {
+
+    const container =
+        element("meineAuftraege");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        "<p>Aufträge werden geladen...</p>";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("build_order_workers")
+            .select("*")
+            .eq("employee_id", user.id);
+
+
+        if (error) {
+
+            console.error(
+                "Eigene Aufträge konnten nicht geladen werden:",
+                error
+            );
+
+            container.innerHTML =
+                "<p>Aktuell konnten keine Aufträge geladen werden.</p>";
+
+            setText(
+                "auftraegeGesamt",
+                "0"
+            );
+
+            setText(
+                "auftraegeOffen",
+                "0"
+            );
+
+            setText(
+                "auftraegeBearbeitung",
+                "0"
+            );
+
+            setText(
+                "auftraegeAbgeschlossen",
+                "0"
+            );
+
+            return;
         }
 
 
-        if (punkt) {
+        const auftraege =
+            Array.isArray(data)
+                ? data
+                : [];
 
-            if (aktiv) {
 
-                punkt.style.background = "#4caf50";
-                punkt.style.boxShadow =
-                    "0 0 10px rgba(76, 175, 80, 0.55)";
+        // ----------------------------------------------------
+        // Zähler
+        // ----------------------------------------------------
 
-            } else {
+        setText(
+            "auftraegeGesamt",
+            auftraege.length
+        );
 
-                punkt.style.background = "#777";
-                punkt.style.boxShadow =
-                    "0 0 10px rgba(255, 255, 255, 0.15)";
-            }
+
+        const offen =
+            auftraege.filter(
+                auftrag =>
+                    normalisiereStatus(
+                        auftrag.status
+                    ) === "offen"
+            ).length;
+
+
+        const bearbeitung =
+            auftraege.filter(
+                auftrag =>
+                    [
+                        "in bearbeitung",
+                        "bearbeitung",
+                        "laufend",
+                        "aktiv"
+                    ].includes(
+                        normalisiereStatus(
+                            auftrag.status
+                        )
+                    )
+            ).length;
+
+
+        const abgeschlossen =
+            auftraege.filter(
+                auftrag =>
+                    [
+                        "abgeschlossen",
+                        "fertig",
+                        "erledigt"
+                    ].includes(
+                        normalisiereStatus(
+                            auftrag.status
+                        )
+                    )
+            ).length;
+
+
+        setText(
+            "auftraegeOffen",
+            offen
+        );
+
+        setText(
+            "auftraegeBearbeitung",
+            bearbeitung
+        );
+
+        setText(
+            "auftraegeAbgeschlossen",
+            abgeschlossen
+        );
+
+
+        // ----------------------------------------------------
+        // Aufträge anzeigen
+        // ----------------------------------------------------
+
+        if (auftraege.length === 0) {
+
+            container.innerHTML =
+                "<p>Du hast aktuell keine zugewiesenen Aufträge.</p>";
+
+            return;
         }
+
+
+        container.innerHTML =
+            auftraege
+                .slice(0, 10)
+                .map(
+                    (auftrag, index) =>
+                        erstelleAuftragsElement(
+                            auftrag,
+                            index
+                        )
+                )
+                .join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Laden der eigenen Aufträge:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Beim Laden der Aufträge ist ein Fehler aufgetreten.</p>";
+    }
+}
+
+
+// ============================================================
+// STATUS NORMALISIEREN
+// ============================================================
+
+function normalisiereStatus(status) {
+
+    return String(
+        status || ""
+    )
+        .trim()
+        .toLowerCase();
+}
+
+
+// ============================================================
+// EINEN AUFTRAG DARSTELLEN
+// ============================================================
+
+function erstelleAuftragsElement(auftrag, index) {
+
+    const status =
+        auftrag.status ||
+        "Offen";
+
+    const orderId =
+        auftrag.order_id ||
+        auftrag.build_order_id ||
+        auftrag.id ||
+        (index + 1);
+
+
+    return `
+        <div class="karte"
+             style="margin-bottom:10px; padding:14px;">
+
+            <strong>
+                Auftrag #${escapeHtml(orderId)}
+            </strong>
+
+            <p style="margin:8px 0 0;">
+                Status:
+                <strong>
+                    ${escapeHtml(status)}
+                </strong>
+            </p>
+
+        </div>
+    `;
+}
+
+
+// ============================================================
+// HTML SICHER AUSGEBEN
+// ============================================================
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// ============================================================
+// EHRENMARKT – MITARBEITERBEREICH
+// Teil 3/4 – Status & Verfügbarkeit
+// ============================================================
+
+
+// ============================================================
+// STATUS AKTIV / INAKTIV UMSCHALTEN
+// ============================================================
+
+async function statusUmschalten() {
+
+    if (!aktuellerUser) {
+        return;
+    }
+
+    if (!aktuellerMitarbeiter) {
+
+        zeigeFehler(
+            "Für dein Konto wurden keine Mitarbeiterdaten gefunden."
+        );
+
+        return;
+    }
+
+
+    const button =
+        element("statusButton");
+
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Wird gespeichert...";
+    }
+
+
+    try {
+
+        const neuerStatus =
+            !(
+                aktuellerMitarbeiter.is_active === true
+            );
+
+
+        const updateDaten = {
+            is_active: neuerStatus
+        };
+
+
+        // ----------------------------------------------------
+        // Wenn Mitarbeiter auf INAKTIV gesetzt wird,
+        // wird er gleichzeitig als nicht verfügbar gesetzt.
+        // ----------------------------------------------------
+
+        if (!neuerStatus) {
+            updateDaten.is_available = false;
+        }
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("employees")
+            .update(updateDaten)
+            .eq("user_id", aktuellerUser.id)
+            .select("*")
+            .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (data) {
+            aktuellerMitarbeiter = data;
+        } else {
+
+            // Falls Supabase wegen RLS keine Zeile zurückgibt,
+            // Anzeige trotzdem nicht einfach falsch ändern.
+            throw new Error(
+                "Die Mitarbeiterdaten konnten nicht aktualisiert werden."
+            );
+        }
+
+
+        aktualisiereMitarbeiterAnzeige(
+            aktuellerMitarbeiter
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Ändern des Mitarbeiterstatus:",
+            error
+        );
+
+        zeigeFehler(
+            "Der Mitarbeiterstatus konnte nicht geändert werden."
+        );
 
 
         if (button) {
+            button.disabled = false;
 
             button.textContent =
-                aktiv
+                aktuellerMitarbeiter.is_active === true
                     ? "Auf Inaktiv setzen"
                     : "Auf Aktiv setzen";
         }
     }
+}
 
 
-    /*
-     * VERFÜGBARKEIT ANZEIGEN
-     */
+// ============================================================
+// VERFÜGBAR SETZEN
+// ============================================================
 
-    function aktualisiereVerfuegbarkeit() {
+async function aufVerfuegbarSetzen() {
 
-        const verfuegbar =
-            mitarbeiter.is_available === true;
-
-        const verfuegbarButton =
-            element(ids.verfuegbarButton);
-
-        const nichtVerfuegbarButton =
-            element(ids.nichtVerfuegbarButton);
-
-
-        if (verfuegbarButton) {
-
-            if (verfuegbar) {
-
-                verfuegbarButton.classList.add("gold");
-
-            } else {
-
-                verfuegbarButton.classList.remove("gold");
-            }
-        }
-
-
-        if (nichtVerfuegbarButton) {
-
-            if (!verfuegbar) {
-
-                nichtVerfuegbarButton.classList.add("gold");
-
-            } else {
-
-                nichtVerfuegbarButton.classList.remove("gold");
-            }
-        }
+    if (!aktuellerUser) {
+        return;
     }
 
+    if (!aktuellerMitarbeiter) {
 
-    /*
-     * ARBEITSZEIT ANZEIGEN
-     */
-
-    function aktualisiereArbeitszeit() {
-
-        const minuten =
-            Number(mitarbeiter.total_work_minutes) || 0;
-
-        const stunden =
-            Math.floor(minuten / 60);
-
-        const restMinuten =
-            minuten % 60;
-
-
-        const stundenText =
-            String(stunden);
-
-        const minutenText =
-            String(restMinuten).padStart(2, "0");
-
-
-        text(
-            ids.arbeitszeitAnzeige,
-            `${stundenText}:${minutenText}`
-        );
-    }
-
-
-    /*
-     * STATUS ÄNDERN
-     */
-
-    async function statusAendern() {
-
-        if (!mitarbeiter || !mitarbeiter.id) {
-            zeigenFehler(
-                "Dein Mitarbeiterdatensatz wurde nicht gefunden."
-            );
-            return;
-        }
-
-
-        const neuerStatus =
-            mitarbeiter.is_active !== true;
-
-
-        const button =
-            element(ids.statusButton);
-
-
-        if (button) {
-            button.disabled = true;
-            button.textContent = "Speichert...";
-        }
-
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabase
-                .from("employees")
-                .update({
-                    is_active: neuerStatus
-                })
-                .eq("id", mitarbeiter.id)
-                .select()
-                .maybeSingle();
-
-
-            if (error) {
-
-                console.error(
-                    "Status konnte nicht geändert werden:",
-                    error
-                );
-
-                zeigenFehler(
-                    "Der Mitarbeiterstatus konnte nicht geändert werden."
-                );
-
-                return;
-            }
-
-
-            if (data) {
-                mitarbeiter = data;
-            } else {
-                mitarbeiter.is_active = neuerStatus;
-            }
-
-
-            versteckenFehler();
-
-            aktualisiereMitarbeiterstatus();
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler beim Ändern des Mitarbeiterstatus:",
-                fehler
-            );
-
-            zeigenFehler(
-                "Beim Ändern des Mitarbeiterstatus ist ein Fehler aufgetreten."
-            );
-
-        } finally {
-
-            if (button) {
-                button.disabled = false;
-            }
-        }
-    }
-
-
-    /*
-     * VERFÜGBARKEIT ÄNDERN
-     */
-
-    async function setzeVerfuegbarkeit(verfuegbar) {
-
-        if (!mitarbeiter || !mitarbeiter.id) {
-            zeigenFehler(
-                "Dein Mitarbeiterdatensatz wurde nicht gefunden."
-            );
-            return;
-        }
-
-
-        const verfuegbarButton =
-            element(ids.verfuegbarButton);
-
-        const nichtVerfuegbarButton =
-            element(ids.nichtVerfuegbarButton);
-
-
-        if (verfuegbarButton) {
-            verfuegbarButton.disabled = true;
-        }
-
-        if (nichtVerfuegbarButton) {
-            nichtVerfuegbarButton.disabled = true;
-        }
-
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabase
-                .from("employees")
-                .update({
-                    is_available: verfuegbar
-                })
-                .eq("id", mitarbeiter.id)
-                .select()
-                .maybeSingle();
-
-
-            if (error) {
-
-                console.error(
-                    "Verfügbarkeit konnte nicht geändert werden:",
-                    error
-                );
-
-                zeigenFehler(
-                    "Die Verfügbarkeit konnte nicht geändert werden."
-                );
-
-                return;
-            }
-
-
-            if (data) {
-                mitarbeiter = data;
-            } else {
-                mitarbeiter.is_available = verfuegbar;
-            }
-
-
-            versteckenFehler();
-
-            aktualisiereVerfuegbarkeit();
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler bei der Verfügbarkeit:",
-                fehler
-            );
-
-            zeigenFehler(
-                "Beim Ändern der Verfügbarkeit ist ein Fehler aufgetreten."
-            );
-
-        } finally {
-
-            if (verfuegbarButton) {
-                verfuegbarButton.disabled = false;
-            }
-
-            if (nichtVerfuegbarButton) {
-                nichtVerfuegbarButton.disabled = false;
-            }
-        }
-          }
-
-     /*
-     * AUFTRÄGE LADEN
-     *
-     * Hinweis:
-     * Die verschiedenen Auftragstabellen werden getrennt geladen.
-     * Ein Fehler bei einer Tabelle blockiert die anderen Bereiche nicht.
-     */
-
-    async function ladeAuftraege() {
-
-        const container = element(ids.meineAuftraege);
-
-        if (!container) {
-            return;
-        }
-
-        ladeText(
-            ids.meineAuftraege,
-            "Aufträge werden geladen..."
+        zeigeFehler(
+            "Für dein Konto wurden keine Mitarbeiterdaten gefunden."
         );
 
-        try {
-
-            /*
-             * Zuerst die dem Mitarbeiter zugewiesenen
-             * Bauaufträge über build_order_workers laden.
-             */
-
-            let bauauftraege = [];
-
-            try {
-
-                const {
-                    data,
-                    error
-                } = await supabase
-                    .from("build_order_workers")
-                    .select("*")
-                    .eq("employee_id", aktuellerUser.id);
-
-                if (error) {
-
-                    console.warn(
-                        "Bauaufträge konnten nicht geladen werden:",
-                        error
-                    );
-
-                } else {
-
-                    bauauftraege = data || [];
-                }
-
-            } catch (fehler) {
-
-                console.warn(
-                    "Fehler bei den Bauaufträgen:",
-                    fehler
-                );
-            }
-
-
-            /*
-             * Falls keine Bauaufträge vorhanden sind,
-             * zeigen wir zunächst einen leeren Zustand.
-             *
-             * Weitere Auftragstypen können später ergänzt werden,
-             * sobald deren genaue Mitarbeiter-Zuweisung feststeht.
-             */
-
-            if (bauauftraege.length === 0) {
-
-                container.innerHTML = `
-                    <div class="leer">
-                        Dir sind aktuell keine Aufträge zugewiesen.
-                    </div>
-                `;
-
-                text(ids.auftraegeGesamt, "0");
-                text(ids.auftraegeOffen, "0");
-                text(ids.auftraegeBearbeitung, "0");
-
-                return;
-            }
-
-
-            /*
-             * STATISTIK
-             */
-
-            let gesamt = bauauftraege.length;
-            let offen = 0;
-            let bearbeitung = 0;
-
-
-            bauauftraege.forEach(function (auftrag) {
-
-                const status =
-                    String(
-                        auftrag.status ||
-                        ""
-                    ).toLowerCase();
-
-
-                if (
-                    status.includes("offen") ||
-                    status.includes("neu")
-                ) {
-
-                    offen++;
-
-                } else if (
-                    status.includes("bearbeitung") ||
-                    status.includes("laufend") ||
-                    status.includes("aktiv")
-                ) {
-
-                    bearbeitung++;
-                }
-
-            });
-
-
-            text(
-                ids.auftraegeGesamt,
-                gesamt
-            );
-
-            text(
-                ids.auftraegeOffen,
-                offen
-            );
-
-            text(
-                ids.auftraegeBearbeitung,
-                bearbeitung
-            );
-
-
-            /*
-             * AUFTRÄGE DARSTELLEN
-             */
-
-            container.innerHTML = "";
-
-
-            bauauftraege.forEach(function (auftrag) {
-
-                const titel =
-                    auftrag.title ||
-                    auftrag.titel ||
-                    auftrag.name ||
-                    "Bauauftrag";
-
-
-                const status =
-                    auftrag.status ||
-                    "Offen";
-
-
-                const auftragId =
-                    auftrag.order_id ||
-                    auftrag.build_order_id ||
-                    auftrag.id ||
-                    "—";
-
-
-                const eintrag =
-                    document.createElement("div");
-
-                eintrag.className = "auftrag";
-
-
-                eintrag.innerHTML = `
-                    <div class="auftrag-kopf">
-
-                        <div>
-                            <div class="auftrag-titel">
-                                ${htmlEscapen(titel)}
-                            </div>
-
-                            <div class="auftrag-typ">
-                                Bauauftrag · Auftrag #${htmlEscapen(auftragId)}
-                            </div>
-                        </div>
-
-                        <div class="auftrag-status">
-                            ${htmlEscapen(status)}
-                        </div>
-
-                    </div>
-
-                    <div class="auftrag-info">
-                        <span>
-                            Zugewiesen
-                        </span>
-                    </div>
-                `;
-
-
-                container.appendChild(eintrag);
-            });
-
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler beim Laden der Aufträge:",
-                fehler
-            );
-
-            container.innerHTML = `
-                <div class="leer">
-                    Die Aufträge konnten momentan nicht geladen werden.
-                </div>
-            `;
-        }
+        return;
     }
 
 
-    /*
-     * OFFENE VERSTÄRKUNG LADEN
-     */
+    // Inaktiv kann nicht verfügbar sein
+    if (
+        aktuellerMitarbeiter.is_active !== true
+    ) {
 
-    async function ladeVerstaerkung() {
-
-        const container =
-            element(ids.offeneVerstaerkung);
-
-        if (!container) {
-            return;
-        }
-
-
-        ladeText(
-            ids.offeneVerstaerkung,
-            "Verstärkungsanfragen werden geladen..."
+        zeigeFehler(
+            "Du musst zuerst deinen Mitarbeiterstatus auf Aktiv setzen."
         );
 
-
-        try {
-
-            const {
-                data,
-                error
-            } = await supabase
-                .from("employee_help_requests")
-                .select("*")
-                .eq("status", "Offen")
-                .is("helper_id", null)
-                .order("created_at", {
-                    ascending: false
-                });
-
-
-            if (error) {
-
-                console.error(
-                    "Verstärkungsanfragen konnten nicht geladen werden:",
-                    error
-                );
-
-                container.innerHTML = `
-                    <div class="leer">
-                        Verstärkungsanfragen konnten nicht geladen werden.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            const anfragen = data || [];
-
-
-            if (anfragen.length === 0) {
-
-                container.innerHTML = `
-                    <div class="leer">
-                        Aktuell wird keine Verstärkung gesucht.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            container.innerHTML = "";
-
-
-            anfragen.forEach(function (anfrage) {
-
-                const typ =
-                    anfrage.order_type ||
-                    "Auftrag";
-
-
-                const auftragId =
-                    anfrage.order_id ||
-                    "—";
-
-
-                const kommentar =
-                    anfrage.comment ||
-                    "Keine weiteren Informationen.";
-
-
-                const eintrag =
-                    document.createElement("div");
-
-                eintrag.className = "verstaerkung";
-
-
-                eintrag.innerHTML = `
-                    <div class="verstaerkung-info">
-
-                        <div class="verstaerkung-titel">
-                            Verstärkung gesucht
-                        </div>
-
-                        <div class="verstaerkung-details">
-                            Auftragstyp:
-                            ${htmlEscapen(typ)}
-                            <br>
-                            Auftrag:
-                            #${htmlEscapen(auftragId)}
-                            <br>
-                            ${htmlEscapen(kommentar)}
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        class="button gold"
-                        data-verstaerkung-id="${htmlEscapen(anfrage.id)}">
-                        Helfen
-                    </button>
-                `;
-
-
-                const helfenButton =
-                    eintrag.querySelector("button");
-
-
-                if (helfenButton) {
-
-                    helfenButton.addEventListener(
-                        "click",
-                        function () {
-
-                            uebernehmeVerstaerkung(
-                                anfrage.id
-                            );
-
-                        }
-                    );
-                }
-
-
-                container.appendChild(eintrag);
-            });
-
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler beim Laden der Verstärkung:",
-                fehler
-            );
-
-            container.innerHTML = `
-                <div class="leer">
-                    Verstärkungsanfragen konnten nicht geladen werden.
-                </div>
-            `;
-        }
+        return;
     }
 
 
-    /*
-     * VERSTÄRKUNG ÜBERNEHMEN
-     */
-
-    async function uebernehmeVerstaerkung(anfrageId) {
-
-        if (!anfrageId || !aktuellerUser) {
-            return;
-        }
+    const button =
+        element("verfuegbarButton");
 
 
-        try {
-
-            const {
-                error
-            } = await supabase
-                .from("employee_help_requests")
-                .update({
-                    helper_id: aktuellerUser.id
-                })
-                .eq("id", anfrageId)
-                .eq("status", "Offen")
-                .is("helper_id", null);
-
-
-            if (error) {
-
-                console.error(
-                    "Verstärkung konnte nicht übernommen werden:",
-                    error
-                );
-
-                zeigenFehler(
-                    "Die Verstärkungsanfrage konnte nicht übernommen werden."
-                );
-
-                return;
-            }
-
-
-            versteckenFehler();
-
-            await ladeVerstaerkung();
-
-        } catch (fehler) {
-
-            console.error(
-                "Fehler beim Übernehmen der Verstärkung:",
-                fehler
-            );
-
-            zeigenFehler(
-                "Beim Übernehmen der Verstärkung ist ein Fehler aufgetreten."
-            );
-        }
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Wird gespeichert...";
     }
 
 
-    /*
-     * BENACHRICHTIGUNGEN
-     *
-     * Für den aktuellen Stand gibt es noch keine eigene
-     * Benachrichtigungstabelle im bekannten Datenbankschema.
-     * Deshalb wird hier ein sauberer leerer Zustand angezeigt.
-     */
-
-    async function ladeBenachrichtigungen() {
-
-        const container =
-            element(ids.benachrichtigungen);
-
-        if (!container) {
-            return;
-        }
-
-
-        container.innerHTML = `
-            <div class="leer">
-                Keine neuen Benachrichtigungen.
-            </div>
-        `;
-                     }
-
-     /*
-     * LOGOUT
-     */
-
-    async function abmelden() {
-
-        if (!supabase) {
-            window.location.href = "registrieren.html";
-            return;
-        }
-
-        const button =
-            element(ids.abmeldenButton);
-
-        if (button) {
-            button.disabled = true;
-            button.textContent = "Abmelden...";
-        }
-
-        try {
-
-            const {
-                error
-            } = await supabase.auth.signOut({
-                scope: "local"
-            });
-
-            if (error) {
-
-                console.error(
-                    "Abmelden fehlgeschlagen:",
-                    error
-                );
-
-                zeigenFehler(
-                    "Das Abmelden ist fehlgeschlagen."
-                );
-
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = "Abmelden";
-                }
-
-                return;
-            }
-
-            /*
-             * Nur die aktuelle Sitzung wird beendet.
-             * Danach zurück zur gemeinsamen Login-/Registrierungsseite.
-             */
-
-            window.location.href = "registrieren.html";
-
-        } catch (fehler) {
-
-            console.error(
-                "Logout-Fehler:",
-                fehler
-            );
-
-            zeigenFehler(
-                "Beim Abmelden ist ein Fehler aufgetreten."
-            );
-
-            if (button) {
-                button.disabled = false;
-                button.textContent = "Abmelden";
-            }
-        }
-    }
-
-
-    /*
-     * AUTH-ÄNDERUNGEN ÜBERWACHEN
-     */
-
-    function registriereAuthListener() {
-
-        if (!supabase) {
-            return;
-        }
+    try {
 
         const {
-            data
-        } = supabase.auth.onAuthStateChange(
-            function (event, session) {
+            data,
+            error
+        } = await supabaseClient
+            .from("employees")
+            .update({
+                is_available: true
+            })
+            .eq("user_id", aktuellerUser.id)
+            .select("*")
+            .maybeSingle();
 
-                if (event === "SIGNED_OUT") {
 
-                    window.location.href =
-                        "registrieren.html";
+        if (error) {
+            throw error;
+        }
 
-                    return;
-                }
 
-                if (
-                    event === "SIGNED_IN" &&
-                    session &&
-                    session.user
-                ) {
+        if (!data) {
+            throw new Error(
+                "Die Verfügbarkeit konnte nicht gespeichert werden."
+            );
+        }
 
-                    aktuellerUser =
-                        session.user;
 
-                    ladeMitarbeiterbereich();
-                }
-            }
+        aktuellerMitarbeiter = data;
+
+        aktualisiereVerfuegbarkeitsAnzeige();
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Setzen der Verfügbarkeit:",
+            error
         );
 
-        /*
-         * Die Subscription bleibt aktiv,
-         * solange die Seite geöffnet ist.
-         */
+        zeigeFehler(
+            "Die Verfügbarkeit konnte nicht geändert werden."
+        );
 
-        window.ehrenmarktAuthSubscription =
-            data?.subscription || null;
+        aktualisiereVerfuegbarkeitsAnzeige();
+    }
+}
+
+
+// ============================================================
+// NICHT VERFÜGBAR SETZEN
+// ============================================================
+
+async function aufNichtVerfuegbarSetzen() {
+
+    if (!aktuellerUser) {
+        return;
+    }
+
+    if (!aktuellerMitarbeiter) {
+
+        zeigeFehler(
+            "Für dein Konto wurden keine Mitarbeiterdaten gefunden."
+        );
+
+        return;
     }
 
 
-    /*
-     * BUTTONS VERBINDEN
-     */
-
-    function registriereEvents() {
-
-        const abmeldenButton =
-            element(ids.abmeldenButton);
-
-        const statusButton =
-            element(ids.statusButton);
-
-        const verfuegbarButton =
-            element(ids.verfuegbarButton);
-
-        const nichtVerfuegbarButton =
-            element(ids.nichtVerfuegbarButton);
+    const button =
+        element("nichtVerfuegbarButton");
 
 
-        /*
-         * ABMELDEN
-         */
-
-        if (abmeldenButton) {
-
-            abmeldenButton.addEventListener(
-                "click",
-                abmelden
-            );
-        }
-
-
-        /*
-         * AKTIV / INAKTIV
-         */
-
-        if (statusButton) {
-
-            statusButton.addEventListener(
-                "click",
-                statusAendern
-            );
-        }
-
-
-        /*
-         * VERFÜGBAR
-         */
-
-        if (verfuegbarButton) {
-
-            verfuegbarButton.addEventListener(
-                "click",
-                function () {
-
-                    setzeVerfuegbarkeit(true);
-
-                }
-            );
-        }
-
-
-        /*
-         * NICHT VERFÜGBAR
-         */
-
-        if (nichtVerfuegbarButton) {
-
-            nichtVerfuegbarButton.addEventListener(
-                "click",
-                function () {
-
-                    setzeVerfuegbarkeit(false);
-
-                }
-            );
-        }
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Wird gespeichert...";
     }
 
 
-    /*
-     * AUTOMATISCHE AKTUALISIERUNG
-     */
+    try {
 
-    let aktualisierungsTimer = null;
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("employees")
+            .update({
+                is_available: false
+            })
+            .eq("user_id", aktuellerUser.id)
+            .select("*")
+            .maybeSingle();
 
 
-    function starteAutomatischeAktualisierung() {
+        if (error) {
+            throw error;
+        }
 
-        if (aktualisierungsTimer) {
-            clearInterval(
-                aktualisierungsTimer
+
+        if (!data) {
+            throw new Error(
+                "Die Verfügbarkeit konnte nicht gespeichert werden."
             );
         }
 
 
-        /*
-         * Alle 60 Sekunden aktualisieren.
-         */
+        aktuellerMitarbeiter = data;
 
-        aktualisierungsTimer =
-            setInterval(
-                async function () {
+        aktualisiereVerfuegbarkeitsAnzeige();
 
-                    if (!aktuellerUser) {
-                        return;
-                    }
 
-                    try {
+    } catch (error) {
 
-                        await Promise.allSettled([
-                            ladeMitarbeiter(),
-                            ladeAuftraege(),
-                            ladeVerstaerkung(),
-                            ladeBenachrichtigungen()
-                        ]);
+        console.error(
+            "Fehler beim Entfernen der Verfügbarkeit:",
+            error
+        );
 
-                        aktualisiereAnsicht();
+        zeigeFehler(
+            "Die Verfügbarkeit konnte nicht geändert werden."
+        );
 
-                    } catch (fehler) {
+        aktualisiereVerfuegbarkeitsAnzeige();
+    }
+}
 
-                        console.warn(
-                            "Automatische Aktualisierung fehlgeschlagen:",
-                            fehler
+
+// ============================================================
+// VERFÜGBARKEIT ANZEIGEN
+// ============================================================
+
+function aktualisiereVerfuegbarkeitsAnzeige() {
+
+    if (!aktuellerMitarbeiter) {
+        return;
+    }
+
+
+    const verfuegbar =
+        aktuellerMitarbeiter.is_available === true;
+
+    const aktiv =
+        aktuellerMitarbeiter.is_active === true;
+
+
+    const verfuegbarButton =
+        element("verfuegbarButton");
+
+    const nichtVerfuegbarButton =
+        element("nichtVerfuegbarButton");
+
+
+    if (verfuegbarButton) {
+
+        verfuegbarButton.disabled =
+            verfuegbar || !aktiv;
+
+        verfuegbarButton.textContent =
+            verfuegbar
+                ? "✓ Verfügbar"
+                : "Verfügbar";
+    }
+
+
+    if (nichtVerfuegbarButton) {
+
+        nichtVerfuegbarButton.disabled =
+            !verfuegbar;
+
+        nichtVerfuegbarButton.textContent =
+            "Nicht verfügbar";
+    }
+}
+
+
+// ============================================================
+// BUTTONS VERBINDEN
+// ============================================================
+
+function verbindeMitarbeiterButtons() {
+
+    const statusButton =
+        element("statusButton");
+
+    const verfuegbarButton =
+        element("verfuegbarButton");
+
+    const nichtVerfuegbarButton =
+        element("nichtVerfuegbarButton");
+
+
+    // --------------------------------------------------------
+    // Aktiv / Inaktiv
+    // --------------------------------------------------------
+
+    if (statusButton) {
+
+        statusButton.addEventListener(
+            "click",
+            statusUmschalten
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // Verfügbar
+    // --------------------------------------------------------
+
+    if (verfuegbarButton) {
+
+        verfuegbarButton.addEventListener(
+            "click",
+            aufVerfuegbarSetzen
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // Nicht verfügbar
+    // --------------------------------------------------------
+
+    if (nichtVerfuegbarButton) {
+
+        nichtVerfuegbarButton.addEventListener(
+            "click",
+            aufNichtVerfuegbarSetzen
+        );
+    }
+}
+
+
+// ============================================================
+// BUTTONS NACH DOM-LADEN VERBINDEN
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        verbindeMitarbeiterButtons();
+
+    }
+);
+
+// ============================================================
+// EHRENMARKT – MITARBEITERBEREICH
+// Teil 4/4 – Verstärkung, Benachrichtigungen & Aktualisierung
+// ============================================================
+
+
+// ============================================================
+// OFFENE VERSTÄRKUNG LADEN
+// ============================================================
+
+async function ladeOffeneVerstaerkung() {
+
+    const container =
+        element("offeneVerstaerkung");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        "<p>Verstärkungsanfragen werden geladen...</p>";
+
+
+    if (!aktuellerUser) {
+
+        container.innerHTML =
+            "<p>Keine Anmeldung vorhanden.</p>";
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("employee_help_requests")
+            .select("*")
+            .eq("status", "Offen")
+            .is("helper_id", null)
+            .neq("employee_id", aktuellerUser.id)
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Verstärkungsanfragen konnten nicht geladen werden:",
+                error
+            );
+
+            container.innerHTML =
+                "<p>Aktuell konnten keine Verstärkungsanfragen geladen werden.</p>";
+
+            return;
+        }
+
+
+        const anfragen =
+            Array.isArray(data)
+                ? data
+                : [];
+
+
+        if (anfragen.length === 0) {
+
+            container.innerHTML = `
+                <p>
+                    Aktuell wird keine Verstärkung gesucht.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            anfragen
+                .slice(0, 10)
+                .map(
+                    anfrage =>
+                        erstelleVerstaerkungsElement(
+                            anfrage
+                        )
+                )
+                .join("");
+
+
+        // Buttons nach dem Erstellen verbinden
+        container
+            .querySelectorAll(
+                "[data-verstaerkung-id]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const id =
+                            button.dataset.verstaerkungId;
+
+                        uebernehmeVerstaerkung(
+                            id,
+                            button
                         );
                     }
+                );
+            });
 
-                },
-                60000
-            );
+
+    } catch (error) {
+
+        console.error(
+            "Fehler bei den Verstärkungsanfragen:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Beim Laden der Verstärkungsanfragen ist ein Fehler aufgetreten.</p>";
+    }
+}
+
+
+// ============================================================
+// VERSTÄRKUNGS-ELEMENT ERSTELLEN
+// ============================================================
+
+function erstelleVerstaerkungsElement(anfrage) {
+
+    const id =
+        anfrage.id;
+
+    const auftragstyp =
+        anfrage.order_type ||
+        "Auftrag";
+
+    const auftragsId =
+        anfrage.order_id ||
+        "Nicht angegeben";
+
+    const kommentar =
+        anfrage.comment ||
+        "Keine zusätzlichen Informationen.";
+
+    const belohnung =
+        Number(
+            anfrage.reward_share || 0
+        );
+
+
+    let belohnungsText =
+        "Keine Vergütung angegeben.";
+
+    if (
+        Number.isFinite(belohnung) &&
+        belohnung > 0
+    ) {
+
+        belohnungsText =
+            `Vergütungsanteil: ${belohnung}%`;
     }
 
 
-    /*
-     * SEITE VERLASSEN
-     */
+    return `
+        <div class="karte"
+             style="margin-bottom:10px; padding:14px;">
 
-    window.addEventListener(
-        "beforeunload",
-        function () {
+            <h3 style="margin-top:0;">
+                Verstärkung gesucht
+            </h3>
 
-            if (aktualisierungsTimer) {
+            <p>
+                <strong>Auftrag:</strong>
+                ${escapeHtml(auftragstyp)}
+            </p>
 
-                clearInterval(
-                    aktualisierungsTimer
-                );
+            <p>
+                <strong>Auftrags-ID:</strong>
+                ${escapeHtml(auftragsId)}
+            </p>
 
-                aktualisierungsTimer = null;
-            }
+            <p>
+                <strong>Information:</strong>
+                ${escapeHtml(kommentar)}
+            </p>
+
+            <p>
+                <strong>${escapeHtml(belohnungsText)}</strong>
+            </p>
+
+            <button
+                type="button"
+                class="button"
+                data-verstaerkung-id="${escapeHtml(id)}">
+                Ich helfe
+            </button>
+
+        </div>
+    `;
+}
 
 
-            if (
-                window.ehrenmarktAuthSubscription &&
-                typeof window.ehrenmarktAuthSubscription.unsubscribe ===
-                    "function"
-            ) {
+// ============================================================
+// VERSTÄRKUNGSANFRAGE ÜBERNEHMEN
+// ============================================================
 
-                window.ehrenmarktAuthSubscription.unsubscribe();
+async function uebernehmeVerstaerkung(
+    anfrageId,
+    button
+) {
 
-                window.ehrenmarktAuthSubscription = null;
-            }
+    if (!aktuellerUser) {
+        return;
+    }
+
+
+    if (button) {
+
+        button.disabled = true;
+        button.textContent =
+            "Wird übernommen...";
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("employee_help_requests")
+            .update({
+                helper_id: aktuellerUser.id,
+                status: "Angenommen"
+            })
+            .eq("id", anfrageId)
+            .eq("status", "Offen")
+            .is("helper_id", null)
+            .select("*")
+            .maybeSingle();
+
+
+        if (error) {
+            throw error;
         }
-    );
 
 
-    /*
-     * START
-     */
+        if (!data) {
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
-
-            registriereEvents();
-
-            supabase =
-                holeSupabaseClient();
-
-            if (!supabase) {
-
-                zeigenFehler(
-                    "Die Supabase-Verbindung konnte nicht geladen werden."
-                );
-
-                return;
-            }
-
-
-            registriereAuthListener();
-
-            initialisieren();
-
-            starteAutomatischeAktualisierung();
+            throw new Error(
+                "Die Verstärkungsanfrage wurde bereits übernommen oder ist nicht mehr verfügbar."
+            );
         }
-    );
 
 
-    /*
-     * OPTIONALE GLOBALE FUNKTIONEN
-     *
-     * Können später von anderen Ehrenmarkt-Seiten
-     * verwendet werden.
-     */
+        await ladeOffeneVerstaerkung();
 
-    window.ehrenmarktMitarbeiterbereich = {
-        aktualisieren: ladeMitarbeiterbereich,
-        abmelden: abmelden
-    };
 
-})();
+        // Eigene Aufträge ebenfalls aktualisieren
+        await ladeEigeneAuftraege(
+            aktuellerUser
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Übernehmen der Verstärkung:",
+            error
+        );
+
+        zeigeFehler(
+            "Die Verstärkungsanfrage konnte nicht übernommen werden."
+        );
+
+
+        if (button) {
+
+            button.disabled = false;
+            button.textContent =
+                "Ich helfe";
+        }
+    }
+}
+
+
+// ============================================================
+// BENACHRICHTIGUNGEN
+// ============================================================
+
+async function ladeBenachrichtigungen() {
+
+    const container =
+        element("benachrichtigungen");
+
+    if (!container) {
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // Im aktuellen Datenmodell ist noch keine eigene
+    // Benachrichtigungstabelle vorhanden.
+    // Deshalb keine erfundenen Nachrichten anzeigen.
+    // --------------------------------------------------------
+
+    container.innerHTML = `
+        <p>
+            Aktuell liegen keine neuen Benachrichtigungen vor.
+        </p>
+    `;
+}
+
+
+// ============================================================
+// GESAMTEN MITARBEITERBEREICH AKTUALISIEREN
+// ============================================================
+
+async function aktualisiereMitarbeiterbereich() {
+
+    if (!aktuellerUser) {
+        return;
+    }
+
+
+    try {
+
+        await Promise.allSettled([
+            ladeEigeneAuftraege(
+                aktuellerUser
+            ),
+
+            ladeOffeneVerstaerkung(),
+
+            ladeBenachrichtigungen()
+        ]);
+
+
+        // Mitarbeiterdaten erneut laden
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("employees")
+            .select("*")
+            .eq("user_id", aktuellerUser.id)
+            .maybeSingle();
+
+
+        if (!error && data) {
+
+            aktuellerMitarbeiter = data;
+
+            aktualisiereMitarbeiterAnzeige(
+                data
+            );
+
+            aktualisiereVerfuegbarkeitsAnzeige();
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Aktualisieren:",
+            error
+        );
+    }
+}
+
+
+// ============================================================
+// ÖFFENTLICHE AKTUALISIERUNGSFUNKTION
+// ============================================================
+
+window.ehrenmarktMitarbeiterAktualisieren =
+    aktualisiereMitarbeiterbereich;
+
+
+// ============================================================
+// ÖFFENTLICHE ABMELDEFUNKTION
+// ============================================================
+
+window.ehrenmarktMitarbeiterAbmelden =
+    abmelden;
+
+
+// ============================================================
+// AUTOMATISCHE AKTUALISIERUNG
+// ============================================================
+
+// Alle 60 Sekunden neue Auftrags- und
+// Verstärkungsinformationen laden.
+
+let mitarbeiterAktualisierungsTimer = null;
+
+
+function starteAutomatischeAktualisierung() {
+
+    if (mitarbeiterAktualisierungsTimer) {
+
+        clearInterval(
+            mitarbeiterAktualisierungsTimer
+        );
+    }
+
+
+    mitarbeiterAktualisierungsTimer =
+        setInterval(
+            () => {
+
+                if (aktuellerUser) {
+
+                    aktualisiereMitarbeiterbereich();
+                }
+
+            },
+            60000
+        );
+}
+
+
+// ============================================================
+// AUTOMATISCHE AKTUALISIERUNG STARTEN
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        starteAutomatischeAktualisierung();
+
+    }
+);
