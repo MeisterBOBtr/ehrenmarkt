@@ -1,359 +1,1253 @@
-/* =========================================================
-   EHRENMARKT – KUNDENBEREICH
-   JS/kundenbereich.js
+<!DOCTYPE html>
+<html lang="de">
 
-   TEIL 1 / 5
-   Grundaufbau + Session
-========================================================= */
+<head>
 
-"use strict";
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-/* =========================================================
-   GLOBALE VARIABLEN
-========================================================= */
-
-let supabase = null;
-
-let aktuellerBenutzer = null;
-let aktuellesProfil = null;
-
-let alleAuftraege = [];
+    <title>Ehrenmarkt – Kundenbereich</title>
 
 
-/* =========================================================
-   AUFTRAGSTYPEN
-========================================================= */
+    <!-- =====================================================
+         GRUND-DESIGN
+    ====================================================== -->
 
-const AUFTRAGSTYPEN = {
-    MATERIAL: "Material",
-    BAU: "Bau",
-    REDSTONE: "Redstone",
-    LOGISTIK: "Logistik"
-};
+    <style>
 
-
-/* =========================================================
-   HILFSFUNKTIONEN
-========================================================= */
-
-function element(id) {
-
-    return document.getElementById(id);
-
-}
-
-
-/* =========================================================
-   GELD FORMATIEREN
-========================================================= */
-
-function formatPreis(wert) {
-
-    const zahl = Number(wert) || 0;
-
-    return (
-        zahl.toLocaleString("de-DE") +
-        " $"
-    );
-
-}
-
-
-/* =========================================================
-   DATUM FORMATIEREN
-========================================================= */
-
-function formatDatum(datum) {
-
-    if (!datum) {
-        return "–";
-    }
-
-    const wert = new Date(datum);
-
-    if (Number.isNaN(wert.getTime())) {
-        return "–";
-    }
-
-    return wert.toLocaleDateString(
-        "de-DE",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
+        * {
+            box-sizing: border-box;
         }
-    );
-
-}
 
 
-/* =========================================================
-   SUPABASE HOLEN
-========================================================= */
-
-function holeSupabase() {
-
-    if (
-        typeof window !== "undefined" &&
-        window.supabaseClient
-    ) {
-
-        return window.supabaseClient;
-
-    }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
 
 
-    if (
-        typeof supabaseClient !== "undefined"
-    ) {
+        body {
 
-        return supabaseClient;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-    }
+            background-image:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.58),
+                    rgba(0, 0, 0, 0.72)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Kunde.png");
 
+            background-size: cover;
 
-    console.error(
-        "Ehrenmarkt: Supabase-Client wurde nicht gefunden."
-    );
+            background-position:
+                center;
 
-    return null;
+            background-attachment:
+                fixed;
 
-}
+            background-repeat:
+                no-repeat;
 
+            color: #ffffff;
 
-/* =========================================================
-   STATUS NORMALISIEREN
-========================================================= */
-
-function normalisiereStatus(status) {
-
-    if (!status) {
-        return "unbekannt";
-    }
-
-    return String(status)
-        .trim()
-        .toLowerCase();
-
-}
-
-
-/* =========================================================
-   STATUS ANZEIGEN
-========================================================= */
-
-function statusText(status) {
-
-    const normal =
-        normalisiereStatus(status);
-
-
-    const statusNamen = {
-
-        offen: "Offen",
-
-        "in bearbeitung":
-            "In Bearbeitung",
-
-        bearbeitung:
-            "In Bearbeitung",
-
-        abgeschlossen:
-            "Abgeschlossen",
-
-        erledigt:
-            "Abgeschlossen",
-
-        storniert:
-            "Storniert",
-
-        abgebrochen:
-            "Abgebrochen"
-
-    };
-
-
-    return (
-        statusNamen[normal] ||
-        status ||
-        "Unbekannt"
-    );
-
-}
-
-
-/* =========================================================
-   SEITE STARTEN
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        supabase = holeSupabase();
-
-
-        if (!supabase) {
-
-            zeigeFehler(
-                "Die Verbindung zum Kundenbereich konnte nicht hergestellt werden."
-            );
-
-            return;
+            min-height: 100vh;
 
         }
 
 
-        await pruefeAnmeldung();
+        /* =================================================
+           HAUPTCONTAINER
+        ================================================= */
 
-    }
-);
+        .seite {
 
+            width: 100%;
 
-/* =========================================================
-   ANMELDUNG / SESSION PRÜFEN
-========================================================= */
+            max-width: 1100px;
 
-async function pruefeAnmeldung() {
+            margin: 0 auto;
 
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .auth
-                .getSession();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        const session =
-            data?.session;
-
-
-        /* -----------------------------------------------------
-           NICHT ANGEMELDET
-        ----------------------------------------------------- */
-
-        if (!session?.user) {
-
-            aktuellerBenutzer = null;
-            aktuellesProfil = null;
-
-            zeigeGastBereich();
-
-            return;
+            padding:
+                18px 14px 40px;
 
         }
 
 
-        /* -----------------------------------------------------
-           ANGEMELDET
-        ----------------------------------------------------- */
+        /* =================================================
+           KARTEN
+        ================================================= */
 
-        aktuellerBenutzer =
-            session.user;
+        .karte {
+
+            background:
+                rgba(15, 12, 10, 0.88);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.55);
+
+            border-radius:
+                12px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.45);
+
+            padding:
+                18px;
+
+            margin-bottom:
+                16px;
+
+        }
 
 
-        await ladeKundenbereich();
+        /* =================================================
+           GOLDENE ÜBERSCHRIFTEN
+        ================================================= */
 
-    } catch (fehler) {
+        h1,
+        h2,
+        h3 {
 
-        console.error(
-            "Fehler beim Prüfen der Anmeldung:",
-            fehler
-        );
+            margin-top: 0;
+
+            color:
+                #d7ad52;
+
+        }
 
 
-        zeigeFehler(
-            "Der Kundenbereich konnte nicht geladen werden."
-        );
+        h1 {
+
+            font-size:
+                26px;
+
+        }
+
+
+        h2 {
+
+            font-size:
+                20px;
+
+        }
+
+
+        h3 {
+
+            font-size:
+                17px;
+
+        }
+
+
+        p {
+
+            line-height:
+                1.5;
+
+        }
+
+
+        /* =================================================
+           BUTTONS
+        ================================================= */
+
+        button,
+        .button {
+
+            display:
+                inline-block;
+
+            border:
+                1px solid
+                #a97b27;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #6f1d1d,
+                    #431010
+                );
+
+            color:
+                #ffffff;
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            text-decoration:
+                none;
+
+            font-weight:
+                bold;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        button:hover,
+        .button:hover {
+
+            filter:
+                brightness(1.18);
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        button:disabled {
+
+            opacity:
+                0.5;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+
+        }
+
+
+        /* =================================================
+           LADEBEREICH
+        ================================================= */
+
+        #ladebereich {
+
+            text-align:
+                center;
+
+            color:
+                #d7ad52;
+
+            padding:
+                20px;
+
+        }
+
+
+        /* =================================================
+           FEHLER
+        ================================================= */
+
+        #fehler {
+
+            display:
+                none;
+
+            background:
+                rgba(120, 20, 20, 0.9);
+
+            border:
+                1px solid
+                #d64b4b;
+
+            border-radius:
+                8px;
+
+            padding:
+                12px;
+
+            margin-bottom:
+                15px;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="seite">
+
+       <!-- =====================================================
+         KOPFBEREICH
+    ====================================================== -->
+
+    <div class="karte">
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:12px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <div>
+
+                <h1>
+                    Ehrenmarkt
+                </h1>
+
+                <p
+                    style="
+                        margin:0;
+                        color:#c8c8c8;
+                    "
+                >
+                    Kundenbereich
+                </p>
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:8px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <a
+                    href="startseite.html"
+                    class="button"
+                >
+                    ← Startseite
+                </a>
+
+
+                <button
+                    type="button"
+                    id="abmeldenButton"
+                >
+                    Abmelden
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FEHLERMELDUNG
+    ====================================================== -->
+
+    <div
+        id="fehler"
+    ></div>
+
+
+    <!-- =====================================================
+         LADEBEREICH
+    ====================================================== -->
+
+    <div
+        id="ladebereich"
+        class="karte"
+    >
+
+        Kundenbereich wird geladen...
+
+    </div>
+
+
+    <!-- =====================================================
+         GAST-BEREICH
+    ====================================================== -->
+
+    <div
+        id="gastBereich"
+        class="karte"
+        style="display:none;"
+    >
+
+        <h2>
+            Nicht angemeldet
+        </h2>
+
+        <p>
+            Du bist aktuell nicht angemeldet.
+        </p>
+
+        <a
+            href="login.html"
+            class="button"
+        >
+            Zum Login
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         EINGELOGGTER KUNDENBEREICH
+    ====================================================== -->
+
+    <div
+        id="kundenBereich"
+        style="display:none;"
+    >
+
+               <!-- =================================================
+             BEGRÜSSUNG
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2
+                id="kundenBegruessung"
+            >
+                Willkommen!
+            </h2>
+
+            <p>
+                Hier findest du deine persönlichen Daten
+                und deine Aufträge beim Ehrenmarkt.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             PROFIL
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Mein Profil
+            </h2>
+
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(auto-fit,minmax(220px,1fr));
+                    gap:12px;
+                "
+            >
+
+                <!-- Benutzername -->
+
+                <div>
+
+                    <small
+                        style="color:#aaa;"
+                    >
+                        Benutzername
+                    </small>
+
+                    <div
+                        id="kundenUsername"
+                        style="
+                            margin-top:4px;
+                            font-weight:bold;
+                        "
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- Minecraft -->
+
+                <div>
+
+                    <small
+                        style="color:#aaa;"
+                    >
+                        Minecraft-Name
+                    </small>
+
+                    <div
+                        id="kundenMinecraft"
+                        style="
+                            margin-top:4px;
+                            font-weight:bold;
+                        "
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- E-Mail -->
+
+                <div>
+
+                    <small
+                        style="color:#aaa;"
+                    >
+                        E-Mail
+                    </small>
+
+                    <div
+                        id="kundenEmail"
+                        style="
+                            margin-top:4px;
+                            font-weight:bold;
+                            word-break:break-word;
+                        "
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- Rang -->
+
+                <div>
+
+                    <small
+                        style="color:#aaa;"
+                    >
+                        Rang
+                    </small>
+
+                    <div
+                        id="kundenRang"
+                        style="
+                            margin-top:4px;
+                            font-weight:bold;
+                            color:#d7ad52;
+                        "
+                    >
+                        Kunde
+                    </div>
+
+                </div>
+
+
+                <!-- Rolle -->
+
+                <div>
+
+                    <small
+                        style="color:#aaa;"
+                    >
+                        Rolle
+                    </small>
+
+                    <div
+                        id="kundenRolle"
+                        style="
+                            margin-top:4px;
+                            font-weight:bold;
+                        "
+                    >
+                        Kunde
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SCHNELLZUGRIFFE
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Auftrag erstellen
+            </h2>
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(auto-fit,minmax(200px,1fr));
+                    gap:10px;
+                "
+            >
+
+                <a
+                    href="materialauftrag.html"
+                    class="button"
+                    style="text-align:center;"
+                >
+                    Materialbestellung
+                </a>
+
+
+                <a
+                    href="bauauftrag.html"
+                    class="button"
+                    style="text-align:center;"
+                >
+                    Bauauftrag
+                </a>
+
+
+                <a
+                    href="redstoneauftrag.html"
+                    class="button"
+                    style="text-align:center;"
+                >
+                    Redstone-Auftrag
+                </a>
+
+
+                <a
+                    href="logistikauftrag.html"
+                    class="button"
+                    style="text-align:center;"
+                >
+                    Logistik-Auftrag
+                </a>
+
+            </div>
+
+        </div>
+
+               <!-- =================================================
+             AUFTRAGSÜBERSICHT
+        ================================================== -->
+
+        <div class="karte">
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <h2
+                    style="margin-bottom:0;"
+                >
+                    Meine Aufträge
+                </h2>
+
+
+                <button
+                    type="button"
+                    id="auftraegeAktualisieren"
+                >
+                    Aktualisieren
+                </button>
+
+            </div>
+
+
+            <!-- =============================================
+                 ZAHLEN
+            ============================================== -->
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(4,1fr);
+                    gap:8px;
+                    margin-top:16px;
+                "
+            >
+
+                <div
+                    style="
+                        background:rgba(0,0,0,0.35);
+                        border:1px solid rgba(190,145,55,0.3);
+                        border-radius:8px;
+                        padding:12px;
+                        text-align:center;
+                    "
+                >
+
+                    <div
+                        style="
+                            color:#aaa;
+                            font-size:12px;
+                        "
+                    >
+                        Gesamt
+                    </div>
+
+                    <strong
+                        id="auftragsGesamt"
+                        style="
+                            display:block;
+                            font-size:22px;
+                            color:#d7ad52;
+                            margin-top:4px;
+                        "
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    style="
+                        background:rgba(0,0,0,0.35);
+                        border:1px solid rgba(190,145,55,0.3);
+                        border-radius:8px;
+                        padding:12px;
+                        text-align:center;
+                    "
+                >
+
+                    <div
+                        style="
+                            color:#aaa;
+                            font-size:12px;
+                        "
+                    >
+                        Offen
+                    </div>
+
+                    <strong
+                        id="auftragsOffen"
+                        style="
+                            display:block;
+                            font-size:22px;
+                            color:#d7ad52;
+                            margin-top:4px;
+                        "
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    style="
+                        background:rgba(0,0,0,0.35);
+                        border:1px solid rgba(190,145,55,0.3);
+                        border-radius:8px;
+                        padding:12px;
+                        text-align:center;
+                    "
+                >
+
+                    <div
+                        style="
+                            color:#aaa;
+                            font-size:12px;
+                        "
+                    >
+                        Bearbeitung
+                    </div>
+
+                    <strong
+                        id="auftragsBearbeitung"
+                        style="
+                            display:block;
+                            font-size:22px;
+                            color:#d7ad52;
+                            margin-top:4px;
+                        "
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div
+                    style="
+                        background:rgba(0,0,0,0.35);
+                        border:1px solid rgba(190,145,55,0.3);
+                        border-radius:8px;
+                        padding:12px;
+                        text-align:center;
+                    "
+                >
+
+                    <div
+                        style="
+                            color:#aaa;
+                            font-size:12px;
+                        "
+                    >
+                        Abgeschlossen
+                    </div>
+
+                    <strong
+                        id="auftragsAbgeschlossen"
+                        style="
+                            display:block;
+                            font-size:22px;
+                            color:#d7ad52;
+                            margin-top:4px;
+                        "
+                    >
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             AKTIVE AUFTRÄGE
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Aktive Aufträge
+            </h2>
+
+            <div
+                id="aktiveAuftraege"
+            ></div>
+
+        </div>
+
+               <!-- =================================================
+             OFFENE AUFTRÄGE
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Offene Aufträge
+            </h2>
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Aufträge, die noch nicht von einem
+                Mitarbeiter übernommen wurden.
+            </p>
+
+
+            <div
+                id="offeneAuftraege"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             AUFTRÄGE IN BEARBEITUNG
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                In Bearbeitung
+            </h2>
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Hier erscheinen Aufträge, die aktuell
+                von Ehrenmarkt bearbeitet werden.
+            </p>
+
+
+            <div
+                id="bearbeitungAuftraege"
+            ></div>
+
+        </div>
+
+               <!-- =================================================
+             ABGESCHLOSSENE AUFTRÄGE
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Abgeschlossene Aufträge
+            </h2>
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Hier findest du deine bereits
+                abgeschlossenen Aufträge.
+            </p>
+
+
+            <div
+                id="abgeschlosseneAuftraege"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             HINWEIS
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Informationen
+            </h2>
+
+            <p
+                style="color:#c8c8c8;"
+            >
+                Deine Aufträge werden automatisch mit
+                deinem Kundenkonto verknüpft.
+            </p>
+
+            <p
+                style="color:#aaa;"
+            >
+                Bei Fragen zu einem Auftrag kannst du
+                dich an die Ehrenmarkt-Leitung wenden.
+            </p>
+
+        </div>
+
+
+    </div>
+    <!-- Ende kundenBereich -->
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <div
+        style="
+            text-align:center;
+            color:#888;
+            font-size:12px;
+            padding:10px 0;
+        "
+    >
+
+        Ehrenmarkt Kundenbereich
+
+    </div>
+
+
+</div>
+<!-- Ende seite -->
+
+   <!-- =========================================================
+     RESPONSIVE DESIGN
+========================================================= -->
+
+<style>
+
+    @media (max-width: 700px) {
+
+        .seite {
+
+            padding:
+                10px 9px 30px;
+
+        }
+
+
+        .karte {
+
+            padding:
+                14px;
+
+            border-radius:
+                10px;
+
+        }
+
+
+        h1 {
+
+            font-size:
+                23px;
+
+        }
+
+
+        h2 {
+
+            font-size:
+                18px;
+
+        }
+
+
+        /* ---------------------------------------------
+           AUFTRAGSZAHLEN
+        --------------------------------------------- */
+
+        #auftragsGesamt,
+        #auftragsOffen,
+        #auftragsBearbeitung,
+        #auftragsAbgeschlossen {
+
+            font-size:
+                19px;
+
+        }
+
+
+        /* ---------------------------------------------
+           PROFIL
+        --------------------------------------------- */
+
+        #kundenEmail {
+
+            font-size:
+                13px;
+
+        }
 
     }
 
-}
+
+    @media (max-width: 430px) {
+
+        /* ---------------------------------------------
+           AUFTRAGSZAHLEN AUF HANDY
+        --------------------------------------------- */
+
+        .karte > div[style*="repeat(4,1fr)"] {
+
+            grid-template-columns:
+                repeat(2, 1fr) !important;
+
+        }
 
 
-/* =========================================================
-   GAST-BEREICH
-========================================================= */
+        /* ---------------------------------------------
+           BUTTONS
+        --------------------------------------------- */
 
-function zeigeGastBereich() {
+        button,
+        .button {
 
-    const gast =
-        element("gastBereich");
+            width:
+                100%;
 
-    const kunden =
-        element("kundenBereich");
+            text-align:
+                center;
 
-
-    if (gast) {
-        gast.style.display = "block";
-    }
-
-
-    if (kunden) {
-        kunden.style.display = "none";
-    }
-
-}
-
-
-/* =========================================================
-   KUNDENBEREICH AUSBLENDEN / ANZEIGEN
-========================================================= */
-
-function zeigeKundenBereich() {
-
-    const gast =
-        element("gastBereich");
-
-    const kunden =
-        element("kundenBereich");
-
-
-    if (gast) {
-        gast.style.display = "none";
-    }
-
-
-    if (kunden) {
-        kunden.style.display = "block";
-    }
-
-}
-
-
-/* =========================================================
-   FEHLER
-========================================================= */
-
-function zeigeFehler(nachricht) {
-
-    const fehler =
-        element("fehler");
-
-
-    if (fehler) {
-
-        fehler.textContent =
-            nachricht;
-
-        fehler.style.display =
-            "block";
-
-    } else {
-
-        console.error(
-            nachricht
-        );
+        }
 
     }
 
-}
+
+    /* =====================================================
+       AUFTRAGSKARTEN AUS kundenbereich.js
+    ====================================================== */
+
+    .auftrag-karte {
+
+        background:
+            rgba(0, 0, 0, 0.38);
+
+        border:
+            1px solid
+            rgba(190, 145, 55, 0.35);
+
+        border-radius:
+            9px;
+
+        padding:
+            14px;
+
+        margin-bottom:
+            10px;
+
+    }
+
+
+    .auftrag-karte:last-child {
+
+        margin-bottom:
+            0;
+
+    }
+
+
+    .auftrag-typ {
+
+        color:
+            #d7ad52;
+
+        font-size:
+            12px;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            0.5px;
+
+        margin-bottom:
+            5px;
+
+    }
+
+
+    .auftrag-nummer {
+
+        margin:
+            0 0 8px;
+
+        color:
+            #ffffff;
+
+        font-size:
+            17px;
+
+    }
+
+
+    .auftrag-status {
+
+        display:
+            inline-block;
+
+        background:
+            rgba(105, 25, 25, 0.8);
+
+        border:
+            1px solid
+            rgba(215, 173, 82, 0.45);
+
+        border-radius:
+            5px;
+
+        padding:
+            4px 8px;
+
+        font-size:
+            12px;
+
+        margin-bottom:
+            8px;
+
+    }
+
+
+    .auftrag-preis {
+
+        color:
+            #d7ad52;
+
+        font-weight:
+            bold;
+
+        font-size:
+            16px;
+
+    }
+
+
+    .auftrag-datum {
+
+        color:
+            #999;
+
+        font-size:
+            12px;
+
+        margin-top:
+            5px;
+
+    }
+
+
+    .auftrag-info {
+
+        color:
+            #bbb;
+
+        font-size:
+            13px;
+
+        margin-top:
+            7px;
+
+    }
+
+
+    .keine-auftraege {
+
+        color:
+            #888;
+
+        padding:
+            12px 0;
+
+        text-align:
+            center;
+
+    }
+
+</style>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- =========================================================
+     EHRENMARKT SUPABASE CLIENT
+========================================================= -->
+
+<script
+    src="../supabase.js"
+></script>
+
+
+<!-- =========================================================
+     KUNDENBEREICH JAVASCRIPT
+========================================================= -->
+
+<script
+    src="../JS/kundenbereich.js"
+></script>
+
+
+</body>
+
+</html>
