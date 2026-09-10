@@ -1,11 +1,9 @@
-
 // ============================================================
 // EHRENMARKT – MITARBEITERBEREICH
-// Teil 1/4 – Anmeldung & Zugriffskontrolle
+// TEIL 1–4 KOMPLETT
 // ============================================================
 
 "use strict";
-
 
 // ============================================================
 // SUPABASE
@@ -21,6 +19,9 @@ let mitarbeiterSupabase = null;
 let aktuellerUser = null;
 let aktuellesProfil = null;
 let aktuellerMitarbeiter = null;
+
+let authSubscription = null;
+let aktualisierungsTimer = null;
 
 
 // ============================================================
@@ -44,17 +45,18 @@ function element(id) {
 
 
 function setText(id, text) {
-
     const el = element(id);
 
     if (el) {
-        el.textContent = text ?? "";
+        el.textContent =
+            text === null || text === undefined
+                ? ""
+                : String(text);
     }
 }
 
 
 function anzeigen(id) {
-
     const el = element(id);
 
     if (el) {
@@ -64,7 +66,6 @@ function anzeigen(id) {
 
 
 function verstecken(id) {
-
     const el = element(id);
 
     if (el) {
@@ -74,35 +75,50 @@ function verstecken(id) {
 
 
 function zeigeFehler(text) {
-
     const fehler = element("fehler");
 
     if (!fehler) {
         return;
     }
 
-    fehler.textContent = text;
-    fehler.style.display = "block";
+    fehler.textContent = text || "";
+    fehler.style.display = text ? "block" : "none";
 }
 
 
 function versteckeFehler() {
-
     const fehler = element("fehler");
 
     if (fehler) {
-        fehler.style.display = "none";
         fehler.textContent = "";
+        fehler.style.display = "none";
     }
 }
 
 
+function escapeHtml(wert) {
+    if (
+        wert === null ||
+        wert === undefined
+    ) {
+        return "";
+    }
+
+    return String(wert)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
 // ============================================================
-// GASTBEREICH
+// ANZEIGE – NICHT ANGEMELDET
 // ============================================================
 
 function zeigeGastbereich(
-    text = "Du bist aktuell nicht angemeldet."
+    nachricht = "Du bist aktuell nicht angemeldet."
 ) {
 
     const gastBereich =
@@ -111,8 +127,16 @@ function zeigeGastbereich(
     const mitarbeiterBereich =
         element("mitarbeiterBereich");
 
+    const ladebereich =
+        element("ladebereich");
+
     const abmeldenButton =
         element("abmeldenButton");
+
+
+    if (ladebereich) {
+        ladebereich.style.display = "none";
+    }
 
 
     if (mitarbeiterBereich) {
@@ -124,11 +148,13 @@ function zeigeGastbereich(
 
         gastBereich.style.display = "block";
 
-        const paragraph =
-            gastBereich.querySelector("p");
+        const texte =
+            gastBereich.querySelectorAll("p");
 
-        if (paragraph) {
-            paragraph.textContent = text;
+        if (texte.length > 0) {
+
+            texte[0].textContent =
+                nachricht;
         }
     }
 
@@ -140,7 +166,7 @@ function zeigeGastbereich(
 
 
 // ============================================================
-// ZUGRIFF VERWEIGERT
+// ANZEIGE – KEIN ZUGRIFF
 // ============================================================
 
 function zeigeKeinZugriff() {
@@ -151,12 +177,25 @@ function zeigeKeinZugriff() {
     const mitarbeiterBereich =
         element("mitarbeiterBereich");
 
+    const ladebereich =
+        element("ladebereich");
+
     const abmeldenButton =
         element("abmeldenButton");
 
 
+    if (ladebereich) {
+        ladebereich.style.display = "none";
+    }
+
+
     if (mitarbeiterBereich) {
         mitarbeiterBereich.style.display = "none";
+    }
+
+
+    if (abmeldenButton) {
+        abmeldenButton.style.display = "none";
     }
 
 
@@ -172,26 +211,24 @@ function zeigeKeinZugriff() {
                 auf den Mitarbeiterbereich.
             </p>
 
-            <p>
+            <p style="color:#aaa;">
                 Zugriff haben nur Mitarbeiter,
                 Leitung und Stadtleitung.
             </p>
 
-            <a href="kundenbereich.html" class="button">
+            <a
+                href="kundenbereich.html"
+                class="button"
+            >
                 Zum Kundenbereich
             </a>
         `;
-    }
-
-
-    if (abmeldenButton) {
-        abmeldenButton.style.display = "none";
     }
 }
 
 
 // ============================================================
-// MITARBEITERBEREICH ANZEIGEN
+// ANZEIGE – MITARBEITERBEREICH
 // ============================================================
 
 function zeigeMitarbeiterbereich() {
@@ -202,8 +239,16 @@ function zeigeMitarbeiterbereich() {
     const mitarbeiterBereich =
         element("mitarbeiterBereich");
 
+    const ladebereich =
+        element("ladebereich");
+
     const abmeldenButton =
         element("abmeldenButton");
+
+
+    if (ladebereich) {
+        ladebereich.style.display = "none";
+    }
 
 
     if (gastBereich) {
@@ -223,12 +268,17 @@ function zeigeMitarbeiterbereich() {
 
 
 // ============================================================
-// MITARBEITERZUGRIFF PRÜFEN
+// TEIL 1
+// ANMELDUNG UND ZUGRIFFSKONTROLLE
 // ============================================================
 
 async function pruefeMitarbeiterZugriff(user) {
 
     if (!user) {
+
+        aktuellerUser = null;
+        aktuellesProfil = null;
+        aktuellerMitarbeiter = null;
 
         zeigeGastbereich();
 
@@ -239,102 +289,137 @@ async function pruefeMitarbeiterZugriff(user) {
     aktuellerUser = user;
 
 
-    const {
-        data: profil,
-        error
-    } = await mitarbeiterSupabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
+    try {
+
+        const {
+            data: profil,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .maybeSingle();
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Profil konnte nicht geladen werden:",
+                error
+            );
+
+            zeigeFehler(
+                "Dein Profil konnte nicht geladen werden."
+            );
+
+            zeigeGastbereich(
+                "Dein Profil konnte nicht geladen werden."
+            );
+
+            return false;
+        }
+
+
+        if (!profil) {
+
+            console.error(
+                "Kein Profil für Benutzer gefunden."
+            );
+
+            zeigeFehler(
+                "Für dein Konto wurde kein Profil gefunden."
+            );
+
+            zeigeGastbereich(
+                "Für dein Konto wurde kein Profil gefunden."
+            );
+
+            return false;
+        }
+
+
+        aktuellesProfil = profil;
+
+
+        const rang =
+            String(
+                profil.rang || ""
+            ).trim();
+
+
+        console.log(
+            "Ehrenmarkt Mitarbeiterbereich – Rang:",
+            rang
+        );
+
+
+        if (
+            !ERLAUBTE_MITARBEITER_RAEGE
+                .includes(rang)
+        ) {
+
+            console.log(
+                "Zugriff verweigert:",
+                rang
+            );
+
+            versteckeFehler();
+
+            zeigeKeinZugriff();
+
+            return false;
+        }
+
+
+        versteckeFehler();
+
+        zeigeMitarbeiterbereich();
+
+
+        await ladeMitarbeiterbereich(
+            user,
+            profil
+        );
+
+
+        return true;
+
+    } catch (error) {
 
         console.error(
-            "Profil konnte nicht geladen werden:",
+            "Fehler bei der Zugriffskontrolle:",
             error
         );
 
         zeigeFehler(
-            "Dein Profil konnte nicht geladen werden."
-        );
-
-        zeigeGastbereich(
-            "Dein Profil konnte nicht geladen werden."
+            "Der Mitarbeiterbereich konnte nicht geladen werden."
         );
 
         return false;
     }
-
-
-    if (!profil) {
-
-        zeigeFehler(
-            "Für dein Konto wurde kein Profil gefunden."
-        );
-
-        zeigeGastbereich(
-            "Für dein Konto wurde kein Profil gefunden."
-        );
-
-        return false;
-    }
-
-
-    aktuellesProfil = profil;
-
-
-    const rang =
-        String(
-            profil.rang || ""
-        ).trim();
-
-
-    console.log(
-        "Angemeldeter Rang:",
-        rang
-    );
-
-
-    if (
-        !ERLAUBTE_MITARBEITER_RAEGE
-            .includes(rang)
-    ) {
-
-        console.log(
-            "Zugriff verweigert. Rang:",
-            rang
-        );
-
-        versteckeFehler();
-
-        zeigeKeinZugriff();
-
-        return false;
-    }
-
-
-    versteckeFehler();
-
-    zeigeMitarbeiterbereich();
-
-
-    await ladeMitarbeiterbereich(
-        user,
-        profil
-    );
-
-
-    return true;
 }
 
 
 // ============================================================
-// ANMELDUNG / SESSION PRÜFEN
+// SESSION PRÜFEN
 // ============================================================
 
 async function pruefeAnmeldung() {
+
+    if (!mitarbeiterSupabase) {
+
+        console.error(
+            "Supabase Client nicht vorhanden."
+        );
+
+        zeigeFehler(
+            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
+        );
+
+        return;
+    }
+
 
     try {
 
@@ -356,14 +441,15 @@ async function pruefeAnmeldung() {
             data?.session;
 
 
-        // --------------------------------------------------------
-        // NICHT ANGEMELDET
-        // --------------------------------------------------------
-
         if (!session?.user) {
+
+            console.log(
+                "Ehrenmarkt: Kein Benutzer angemeldet."
+            );
 
             aktuellerUser = null;
             aktuellesProfil = null;
+            aktuellerMitarbeiter = null;
 
             zeigeGastbereich();
 
@@ -371,58 +457,28 @@ async function pruefeAnmeldung() {
         }
 
 
-        // --------------------------------------------------------
-        // ANGEMELDET
-        // --------------------------------------------------------
-
-        aktuellerUser =
-            session.user;
+        console.log(
+            "Ehrenmarkt: Benutzer angemeldet:",
+            session.user.email
+        );
 
 
         await pruefeMitarbeiterZugriff(
             session.user
         );
 
-    } catch (fehler) {
+    } catch (error) {
 
         console.error(
-            "Fehler beim Prüfen der Anmeldung:",
-            fehler
+            "Fehler beim Prüfen der Session:",
+            error
         );
 
         zeigeFehler(
-            "Der Mitarbeiterbereich konnte nicht geladen werden."
+            "Die Anmeldung konnte nicht überprüft werden."
         );
     }
 }
-
-
-// ============================================================
-// SEITE STARTEN
-// ============================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        mitarbeiterSupabase =
-            window.supabaseClient;
-
-
-        if (!mitarbeiterSupabase) {
-
-            zeigeFehler(
-                "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-            );
-
-            return;
-        }
-
-
-        await pruefeAnmeldung();
-
-    }
-);
 
 
 // ============================================================
@@ -430,6 +486,11 @@ document.addEventListener(
 // ============================================================
 
 async function abmelden() {
+
+    if (!mitarbeiterSupabase) {
+        return;
+    }
+
 
     try {
 
@@ -446,9 +507,13 @@ async function abmelden() {
         }
 
 
+        aktuellerUser = null;
+        aktuellesProfil = null;
+        aktuellerMitarbeiter = null;
+
+
         window.location.href =
             "registrieren.html";
-
 
     } catch (error) {
 
@@ -456,7 +521,6 @@ async function abmelden() {
             "Fehler beim Abmelden:",
             error
         );
-
 
         zeigeFehler(
             "Du konntest nicht abgemeldet werden."
@@ -466,66 +530,74 @@ async function abmelden() {
 
 
 // ============================================================
-// AUTH-ÄNDERUNGEN
+// AUTH LISTENER
 // ============================================================
 
 function registriereAuthListener() {
 
     if (!mitarbeiterSupabase) {
-
-        console.error(
-            "Ehrenmarkt: Supabase-Client nicht verfügbar."
-        );
-
         return;
     }
 
 
-    mitarbeiterSupabase
-        .auth
-        .onAuthStateChange(
-            async (
-                event,
-                session
-            ) => {
-
-                console.log(
-                    "Auth-Änderung:",
-                    event
-                );
+    if (authSubscription) {
+        return;
+    }
 
 
-                if (
-                    event === "SIGNED_OUT"
-                ) {
+    const result =
+        mitarbeiterSupabase
+            .auth
+            .onAuthStateChange(
+                (event, session) => {
 
-                    aktuellerUser = null;
-                    aktuellesProfil = null;
-                    aktuellerMitarbeiter = null;
-
-                    zeigeGastbereich();
-
-                    return;
-                }
-
-
-                if (
-                    event === "SIGNED_IN" &&
-                    session?.user
-                ) {
-
-                    await pruefeMitarbeiterZugriff(
-                        session.user
+                    console.log(
+                        "Ehrenmarkt Auth:",
+                        event
                     );
-                }
 
-            }
-        );
+
+                    if (
+                        event === "SIGNED_OUT"
+                    ) {
+
+                        aktuellerUser = null;
+                        aktuellesProfil = null;
+                        aktuellerMitarbeiter = null;
+
+                        zeigeGastbereich();
+
+                        return;
+                    }
+
+
+                    if (
+                        (
+                            event === "SIGNED_IN" ||
+                            event === "TOKEN_REFRESHED"
+                        ) &&
+                        session?.user
+                    ) {
+
+                        aktuellerUser =
+                            session.user;
+
+
+                        void pruefeMitarbeiterZugriff(
+                            session.user
+                        );
+                    }
+                }
+            );
+
+
+    authSubscription =
+        result?.data?.subscription || null;
 }
 
 
 // ============================================================
-// ABMELDE-BUTTON VERBINDEN
+// BUTTON – ABMELDEN
 // ============================================================
 
 function verbindeAbmeldenButton() {
@@ -539,33 +611,14 @@ function verbindeAbmeldenButton() {
     }
 
 
-    button.addEventListener(
-        "click",
-        abmelden
-    );
+    button.onclick =
+        abmelden;
 }
 
 
 // ============================================================
-// START
-// ============================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        verbindeAbmeldenButton();
-
-        registriereAuthListener();
-
-        await pruefeAnmeldung();
-
-    }
-);
-
-// ============================================================
-// MITARBEITERBEREICH LADEN
-// Teil 2/4 – Profil & Mitarbeiterdaten
+// TEIL 2
+// PROFIL UND MITARBEITERDATEN
 // ============================================================
 
 async function ladeMitarbeiterbereich(
@@ -574,7 +627,7 @@ async function ladeMitarbeiterbereich(
 ) {
 
     // --------------------------------------------------------
-    // Profil anzeigen
+    // PROFIL
     // --------------------------------------------------------
 
     const username =
@@ -582,29 +635,29 @@ async function ladeMitarbeiterbereich(
         user.user_metadata?.username ||
         "Unbekannt";
 
+
     const minecraftName =
         profil.minecraft_name ||
         profil.minecraft ||
         user.user_metadata?.minecraft_name ||
         "Nicht hinterlegt";
 
+
     const email =
         user.email ||
         profil.email ||
         "Keine E-Mail";
 
+
     const rang =
         profil.rang ||
         "Mitarbeiter";
+
 
     const rolle =
         profil.rolle ||
         "Keine Rolle hinterlegt";
 
-
-    // --------------------------------------------------------
-    // Begrüßung
-    // --------------------------------------------------------
 
     setText(
         "mitarbeiterBegruessung",
@@ -612,29 +665,29 @@ async function ladeMitarbeiterbereich(
     );
 
 
-    // --------------------------------------------------------
-    // Profilfelder
-    // --------------------------------------------------------
-
     setText(
         "mitarbeiterUsername",
         username
     );
+
 
     setText(
         "mitarbeiterMinecraft",
         minecraftName
     );
 
+
     setText(
         "mitarbeiterEmail",
         email
     );
 
+
     setText(
         "mitarbeiterRang",
         rang
     );
+
 
     setText(
         "mitarbeiterRolle",
@@ -643,19 +696,23 @@ async function ladeMitarbeiterbereich(
 
 
     // --------------------------------------------------------
-    // Mitarbeiter-Datensatz aus employees laden
+    // EMPLOYEES DATENSATZ
     // --------------------------------------------------------
+
+    aktuellerMitarbeiter = null;
+
 
     try {
 
         const {
-            data: mitarbeiter,
+            data,
             error
-        } = await mitarbeiterSupabase
-            .from("employees")
-            .select("*")
-            .eq("user_id", user.id)
-            .maybeSingle();
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .select("*")
+                .eq("user_id", user.id)
+                .maybeSingle();
 
 
         if (error) {
@@ -665,31 +722,20 @@ async function ladeMitarbeiterbereich(
                 error
             );
 
-            // Der Rang ist bereits autorisiert.
-            // Deshalb wird der komplette Bereich nicht gesperrt.
-
-            aktuellerMitarbeiter = null;
-
         } else {
 
             aktuellerMitarbeiter =
-                mitarbeiter;
+                data || null;
         }
 
     } catch (error) {
 
         console.error(
-            "Fehler beim Laden des Mitarbeiter-Datensatzes:",
+            "Fehler beim Laden der Mitarbeiterdaten:",
             error
         );
-
-        aktuellerMitarbeiter = null;
     }
 
-
-    // --------------------------------------------------------
-    // Mitarbeiterdaten verarbeiten
-    // --------------------------------------------------------
 
     if (aktuellerMitarbeiter) {
 
@@ -699,22 +745,24 @@ async function ladeMitarbeiterbereich(
 
     } else {
 
-        // Falls noch kein employees-Datensatz existiert
-
         setText(
             "statusText",
             "Mitarbeiterdaten nicht vollständig hinterlegt"
         );
 
+
         setText(
             "arbeitszeitAnzeige",
             "0 Std. 0 Min."
         );
+
+
+        aktualisiereVerfuegbarkeitsAnzeige();
     }
 
 
     // --------------------------------------------------------
-    // Weitere Bereiche laden
+    // WEITERE BEREICHE
     // --------------------------------------------------------
 
     await Promise.allSettled([
@@ -726,48 +774,46 @@ async function ladeMitarbeiterbereich(
 
 
 // ============================================================
-// MITARBEITER-ANZEIGE AKTUALISIEREN
+// MITARBEITERSTATUS
 // ============================================================
 
 function aktualisiereMitarbeiterAnzeige(
     mitarbeiter
 ) {
 
-    // --------------------------------------------------------
-    // Aktiv / Inaktiv
-    // --------------------------------------------------------
+    if (!mitarbeiter) {
+        return;
+    }
+
 
     const aktiv =
         mitarbeiter.is_active === true;
 
+
     const statusPunkt =
         element("statusPunkt");
 
+
     const statusText =
         element("statusText");
+
 
     if (statusPunkt) {
 
         statusPunkt.style.display =
             "inline-block";
 
-        if (aktiv) {
 
-            statusPunkt.textContent =
-                "●";
+        statusPunkt.textContent =
+            "●";
 
-            statusPunkt.title =
-                "Aktiv";
 
-        } else {
-
-            statusPunkt.textContent =
-                "●";
-
-            statusPunkt.title =
-                "Inaktiv";
-        }
+        statusPunkt.title =
+            aktiv
+                ? "Aktiv"
+                : "Inaktiv";
     }
+
 
     if (statusText) {
 
@@ -778,12 +824,9 @@ function aktualisiereMitarbeiterAnzeige(
     }
 
 
-    // --------------------------------------------------------
-    // Status-Button
-    // --------------------------------------------------------
-
     const statusButton =
         element("statusButton");
+
 
     if (statusButton) {
 
@@ -791,89 +834,132 @@ function aktualisiereMitarbeiterAnzeige(
             aktiv
                 ? "Auf Inaktiv setzen"
                 : "Auf Aktiv setzen";
-}
 
-// ============================================================
-// STATUS-BUTTON VERBINDEN
-// ============================================================
 
-    if (statusButton) {
-
-        statusButton.addEventListener(
-            "click",
-            async () => {
-
-                if (!aktuellerUser) {
-                    return;
-                }
-
-                try {
-
-                    statusButton.disabled = true;
-
-                    const neuerStatus =
-                        !(aktuellerMitarbeiter?.is_active === true);
-
-                    const {
-                        data,
-                        error
-                    } = await mitarbeiterSupabase
-                        .from("employees")
-                        .update({
-                            is_active: neuerStatus
-                        })
-                        .eq(
-                            "user_id",
-                            aktuellerUser.id
-                        )
-                        .select("*")
-                        .maybeSingle();
-
-                    if (error) {
-                        throw error;
-                    }
-
-                    if (data) {
-                        aktuellerMitarbeiter = data;
-
-                        aktualisiereMitarbeiterAnzeige(
-                            aktuellerMitarbeiter
-                        );
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Fehler beim Ändern des Mitarbeiterstatus:",
-                        error
-                    );
-
-                    zeigeFehler(
-                        "Der Mitarbeiterstatus konnte nicht geändert werden."
-                    );
-
-                } finally {
-
-                    statusButton.disabled = false;
-                }
-            }
-        );
+        statusButton.disabled =
+            !aktuellerUser ||
+            !aktuellerMitarbeiter;
     }
 
 
-    // --------------------------------------------------------
-    // Verfügbarkeit anzeigen
-    // --------------------------------------------------------
+    const arbeitszeit =
+        Number(
+            mitarbeiter.total_work_minutes || 0
+        );
+
+
+    setText(
+        "arbeitszeitAnzeige",
+        formatiereArbeitszeit(
+            arbeitszeit
+        )
+    );
+
 
     aktualisiereVerfuegbarkeitsAnzeige();
 }
 
 
 // ============================================================
-// ARBEITSZEIT FORMATIEREN
+// STATUS ÄNDERN
 // ============================================================
 
-function formatiereArbeitszeit(minuten) {
+async function aendereMitarbeiterStatus() {
+
+    if (
+        !aktuellerUser ||
+        !mitarbeiterSupabase
+    ) {
+        return;
+    }
+
+
+    if (!aktuellerMitarbeiter) {
+
+        zeigeFehler(
+            "Für dein Konto wurden noch keine Mitarbeiterdaten hinterlegt."
+        );
+
+        return;
+    }
+
+
+    const button =
+        element("statusButton");
+
+
+    const neuerStatus =
+        aktuellerMitarbeiter.is_active !== true;
+
+
+    if (button) {
+        button.disabled = true;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .update({
+                    is_active: neuerStatus,
+                    updated_at: new Date().toISOString()
+                })
+                .eq(
+                    "user_id",
+                    aktuellerUser.id
+                )
+                .select("*")
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (data) {
+
+            aktuellerMitarbeiter =
+                data;
+
+
+            aktualisiereMitarbeiterAnzeige(
+                data
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Ändern des Mitarbeiterstatus:",
+            error
+        );
+
+        zeigeFehler(
+            "Der Mitarbeiterstatus konnte nicht geändert werden."
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+
+// ============================================================
+// ARBEITSZEIT
+// ============================================================
+
+function formatiereArbeitszeit(
+    minuten
+) {
 
     const gesamtMinuten =
         Math.max(
@@ -881,34 +967,205 @@ function formatiereArbeitszeit(minuten) {
             Number(minuten) || 0
         );
 
+
     const stunden =
         Math.floor(
             gesamtMinuten / 60
         );
 
+
     const restMinuten =
         gesamtMinuten % 60;
+
 
     return `${stunden} Std. ${restMinuten} Min.`;
 }
 
-
 // ============================================================
-// EIGENE AUFTRÄGE LADEN
+// TEIL 3
+// VERFÜGBARKEIT
 // ============================================================
 
-async function ladeEigeneAuftraege(user) {
+function aktualisiereVerfuegbarkeitsAnzeige() {
 
-    if (!user) {
+    const verfuegbar =
+        aktuellerMitarbeiter?.is_available === true;
+
+
+    const text =
+        element("verfuegbarkeitText");
+
+
+    const button =
+        element("verfuegbarkeitButton");
+
+
+    if (text) {
+
+        text.textContent =
+            verfuegbar
+                ? "Verfügbar"
+                : "Nicht verfügbar";
+    }
+
+
+    if (button) {
+
+        button.textContent =
+            verfuegbar
+                ? "Nicht verfügbar"
+                : "Verfügbar";
+
+
+        button.disabled =
+            !aktuellerUser ||
+            !aktuellerMitarbeiter;
+    }
+}
+
+
+async function setzeVerfuegbarkeit(
+    wert
+) {
+
+    if (
+        !aktuellerUser ||
+        !aktuellerMitarbeiter ||
+        !mitarbeiterSupabase
+    ) {
         return;
     }
+
+
+    const button =
+        element("verfuegbarkeitButton");
+
+
+    if (button) {
+        button.disabled = true;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .update({
+                    is_available: wert,
+                    updated_at: new Date().toISOString()
+                })
+                .eq(
+                    "user_id",
+                    aktuellerUser.id
+                )
+                .select("*")
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (data) {
+
+            aktuellerMitarbeiter =
+                data;
+        }
+
+
+        aktualisiereVerfuegbarkeitsAnzeige();
+
+    } catch (error) {
+
+        console.error(
+            "Fehler bei der Verfügbarkeit:",
+            error
+        );
+
+        zeigeFehler(
+            "Die Verfügbarkeit konnte nicht geändert werden."
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+
+function verbindeMitarbeiterButtons() {
+
+    const statusButton =
+        element("statusButton");
+
+
+    if (statusButton) {
+
+        statusButton.onclick =
+            aendereMitarbeiterStatus;
+    }
+
+
+    const verfuegbarkeitButton =
+        element("verfuegbarkeitButton");
+
+
+    if (verfuegbarkeitButton) {
+
+        verfuegbarkeitButton.onclick =
+            async () => {
+
+                if (
+                    aktuellerMitarbeiter?.is_available === true
+                ) {
+
+                    await setzeVerfuegbarkeit(
+                        false
+                    );
+
+                } else {
+
+                    await setzeVerfuegbarkeit(
+                        true
+                    );
+                }
+            };
+    }
+}
+
+
+// ============================================================
+// EIGENE AUFTRÄGE
+// ============================================================
+
+async function ladeEigeneAuftraege(
+    user
+) {
 
     const container =
         element("eigeneAuftraege");
 
+
     if (!container) {
         return;
     }
+
+
+    if (!user) {
+
+        container.innerHTML =
+            "<p>Keine Anmeldung vorhanden.</p>";
+
+        return;
+    }
+
 
     try {
 
@@ -917,136 +1174,112 @@ async function ladeEigeneAuftraege(user) {
             materialResult,
             redstoneResult,
             logistikResult
-        ] = await Promise.allSettled([
+        ] =
+            await Promise.all([
+                mitarbeiterSupabase
+                    .from("build_order_workers")
+                    .select("*")
+                    .eq(
+                        "employee_id",
+                        user.id
+                    ),
 
-            mitarbeiterSupabase
-                .from("build_order_workers")
-                .select("*")
-                .eq("employee_id", user.id),
+                mitarbeiterSupabase
+                    .from("material_order_workers")
+                    .select("*")
+                    .eq(
+                        "employee_id",
+                        user.id
+                    ),
 
-            mitarbeiterSupabase
-                .from("material_order_workers")
-                .select("*")
-                .eq("employee_id", user.id),
+                mitarbeiterSupabase
+                    .from("redstone_order_workers")
+                    .select("*")
+                    .eq(
+                        "employee_id",
+                        user.id
+                    ),
 
-            mitarbeiterSupabase
-                .from("redstone_order_workers")
-                .select("*")
-                .eq("employee_id", user.id),
-
-            mitarbeiterSupabase
-                .from("logistics_order_workers")
-                .select("*")
-                .eq("employee_id", user.id)
-        ]);
-
-
-        let auftraege = [];
+                mitarbeiterSupabase
+                    .from("logistics_order_workers")
+                    .select("*")
+                    .eq(
+                        "employee_id",
+                        user.id
+                    )
+            ]);
 
 
-        // ----------------------------------------------------
-        // BAUAUFTRÄGE
-        // ----------------------------------------------------
+        const auftraege = [];
+
 
         if (
-            bauResult.status === "fulfilled" &&
-            !bauResult.value.error
+            !bauResult.error &&
+            Array.isArray(bauResult.data)
         ) {
 
-            const daten =
-                bauResult.value.data || [];
-
-            daten.forEach(
-                (auftrag) => {
+            bauResult.data.forEach(
+                auftrag => {
 
                     auftraege.push({
                         typ: "Bau",
                         daten: auftrag
                     });
-
                 }
             );
         }
 
 
-        // ----------------------------------------------------
-        // MATERIALAUFTRÄGE
-        // ----------------------------------------------------
-
         if (
-            materialResult.status === "fulfilled" &&
-            !materialResult.value.error
+            !materialResult.error &&
+            Array.isArray(materialResult.data)
         ) {
 
-            const daten =
-                materialResult.value.data || [];
-
-            daten.forEach(
-                (auftrag) => {
+            materialResult.data.forEach(
+                auftrag => {
 
                     auftraege.push({
                         typ: "Material",
                         daten: auftrag
                     });
-
                 }
             );
         }
 
 
-        // ----------------------------------------------------
-        // REDSTONE-AUFTRÄGE
-        // ----------------------------------------------------
-
         if (
-            redstoneResult.status === "fulfilled" &&
-            !redstoneResult.value.error
+            !redstoneResult.error &&
+            Array.isArray(redstoneResult.data)
         ) {
 
-            const daten =
-                redstoneResult.value.data || [];
-
-            daten.forEach(
-                (auftrag) => {
+            redstoneResult.data.forEach(
+                auftrag => {
 
                     auftraege.push({
                         typ: "Redstone",
                         daten: auftrag
                     });
-
                 }
             );
         }
 
 
-        // ----------------------------------------------------
-        // LOGISTIKAUFTRÄGE
-        // ----------------------------------------------------
-
         if (
-            logistikResult.status === "fulfilled" &&
-            !logistikResult.value.error
+            !logistikResult.error &&
+            Array.isArray(logistikResult.data)
         ) {
 
-            const daten =
-                logistikResult.value.data || [];
-
-            daten.forEach(
-                (auftrag) => {
+            logistikResult.data.forEach(
+                auftrag => {
 
                     auftraege.push({
                         typ: "Logistik",
                         daten: auftrag
                     });
-
                 }
             );
         }
 
-
-        // ----------------------------------------------------
-        // ANZEIGE
-        // ----------------------------------------------------
 
         if (auftraege.length === 0) {
 
@@ -1070,25 +1303,33 @@ async function ladeEigeneAuftraege(user) {
 
 
         auftraege.forEach(
-            (auftrag) => {
+            auftrag => {
 
                 const daten =
                     auftrag.daten || {};
 
-                const karte =
-                    document.createElement("div");
-
-                karte.className =
-                    "auftrag";
 
                 const titel =
                     daten.title ||
                     daten.order_title ||
+                    daten.name ||
                     `${auftrag.typ}-Auftrag`;
+
 
                 const status =
                     daten.status ||
                     "Offen";
+
+
+                const karte =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                karte.className =
+                    "auftrag";
+
 
                 karte.innerHTML = `
                     <div
@@ -1098,11 +1339,11 @@ async function ladeEigeneAuftraege(user) {
                             margin-bottom:6px;
                         "
                     >
-                        ${auftrag.typ}
+                        ${escapeHtml(auftrag.typ)}
                     </div>
 
                     <div>
-                        ${titel}
+                        ${escapeHtml(titel)}
                     </div>
 
                     <div
@@ -1111,9 +1352,11 @@ async function ladeEigeneAuftraege(user) {
                             margin-top:5px;
                         "
                     >
-                        Status: ${status}
+                        Status:
+                        ${escapeHtml(status)}
                     </div>
                 `;
+
 
                 container.appendChild(
                     karte
@@ -1140,189 +1383,11 @@ async function ladeEigeneAuftraege(user) {
             </div>
         `;
     }
-}
-
-
-// ============================================================
-// VERFÜGBARKEITSANZEIGE
-// ============================================================
-
-function aktualisiereVerfuegbarkeitsAnzeige() {
-
-    const verfuegbar =
-        aktuellerMitarbeiter?.is_available === true;
-
-    const text =
-        element("verfuegbarkeitText");
-
-    const button =
-        element("verfuegbarkeitButton");
-
-
-    if (text) {
-
-        text.textContent =
-            verfuegbar
-                ? "Verfügbar"
-                : "Nicht verfügbar";
-    }
-
-
-    if (button) {
-
-        button.textContent =
-            verfuegbar
-                ? "Nicht verfügbar"
-                : "Verfügbar";
-
-        button.disabled =
-            !aktuellerUser ||
-            !aktuellerMitarbeiter;
-    }
-}
-
+                        }
 
 // ============================================================
-// VERFÜGBARKEIT AUF VERFÜGBAR SETZEN
-// ============================================================
-
-async function setzeVerfuegbar() {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter
-    ) {
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await mitarbeiterSupabase
-            .from("employees")
-            .update({
-                is_available: true
-            })
-            .eq(
-                "user_id",
-                aktuellerUser.id
-            )
-            .select("*")
-            .maybeSingle();
-
-        if (error) {
-            throw error;
-        }
-
-        if (data) {
-            aktuellerMitarbeiter = data;
-        }
-
-        aktualisiereVerfuegbarkeitsAnzeige();
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Setzen der Verfügbarkeit:",
-            error
-        );
-
-        zeigeFehler(
-            "Die Verfügbarkeit konnte nicht geändert werden."
-        );
-    }
-}
-
-
-// ============================================================
-// VERFÜGBARKEIT AUF NICHT VERFÜGBAR SETZEN
-// ============================================================
-
-async function setzeNichtVerfuegbar() {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter
-    ) {
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await mitarbeiterSupabase
-            .from("employees")
-            .update({
-                is_available: false
-            })
-            .eq(
-                "user_id",
-                aktuellerUser.id
-            )
-            .select("*")
-            .maybeSingle();
-
-        if (error) {
-            throw error;
-        }
-
-        if (data) {
-            aktuellerMitarbeiter = data;
-        }
-
-        aktualisiereVerfuegbarkeitsAnzeige();
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Entfernen der Verfügbarkeit:",
-            error
-        );
-
-        zeigeFehler(
-            "Die Verfügbarkeit konnte nicht geändert werden."
-        );
-    }
-}
-
-
-// ============================================================
-// VERFÜGBARKEITS-BUTTON
-// ============================================================
-
-function verbindeVerfuegbarkeitsButton() {
-
-    const button =
-        element("verfuegbarkeitButton");
-
-    if (!button) {
-        return;
-    }
-
-    button.addEventListener(
-        "click",
-        async () => {
-
-            if (
-                aktuellerMitarbeiter?.is_available === true
-            ) {
-
-                await setzeNichtVerfuegbar();
-
-            } else {
-
-                await setzeVerfuegbar();
-            }
-        }
-    );
-            }
-
-// ============================================================
-// OFFENE VERSTÄRKUNG LADEN
+// TEIL 4
+// OFFENE VERSTÄRKUNG
 // ============================================================
 
 async function ladeOffeneVerstaerkung() {
@@ -1330,12 +1395,11 @@ async function ladeOffeneVerstaerkung() {
     const container =
         element("offeneVerstaerkung");
 
+
     if (!container) {
         return;
     }
 
-    container.innerHTML =
-        "<p>Verstärkungsanfragen werden geladen...</p>";
 
     if (!aktuellerUser) {
 
@@ -1346,39 +1410,41 @@ async function ladeOffeneVerstaerkung() {
     }
 
 
+    container.innerHTML =
+        "<p>Verstärkungsanfragen werden geladen...</p>";
+
+
     try {
 
         const {
             data,
             error
-        } = await mitarbeiterSupabase
-            .from("employee_help_requests")
-            .select("*")
-            .eq("status", "Offen")
-            .is("helper_id", null)
-            .neq(
-                "employee_id",
-                aktuellerUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
+        } =
+            await mitarbeiterSupabase
+                .from("employee_help_requests")
+                .select("*")
+                .eq(
+                    "status",
+                    "Offen"
+                )
+                .is(
+                    "helper_id",
+                    null
+                )
+                .neq(
+                    "employee_id",
+                    aktuellerUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         if (error) {
-
-            console.error(
-                "Verstärkungsanfragen konnten nicht geladen werden:",
-                error
-            );
-
-            container.innerHTML =
-                "<p>Aktuell konnten keine Verstärkungsanfragen geladen werden.</p>";
-
-            return;
+            throw error;
         }
 
 
@@ -1400,19 +1466,27 @@ async function ladeOffeneVerstaerkung() {
         }
 
 
-        container.innerHTML =
-            anfragen
-                .slice(0, 10)
-                .map(
-                    anfrage =>
+        container.innerHTML = "";
+
+
+        anfragen
+            .slice(0, 10)
+            .forEach(
+                anfrage => {
+
+                    const karte =
                         erstelleVerstaerkungsElement(
                             anfrage
-                        )
-                )
-                .join("");
+                        );
 
 
-        // Buttons nach dem Erstellen verbinden
+                    container.insertAdjacentHTML(
+                        "beforeend",
+                        karte
+                    );
+                }
+            );
+
 
         container
             .querySelectorAll(
@@ -1425,18 +1499,14 @@ async function ladeOffeneVerstaerkung() {
                         "click",
                         () => {
 
-                            const id =
-                                button.dataset.verstaerkungId;
-
-                            uebernehmeVerstaerkung(
-                                id,
+                            void uebernehmeVerstaerkung(
+                                button.dataset.verstaerkungId,
                                 button
                             );
                         }
                     );
                 }
             );
-
 
     } catch (error) {
 
@@ -1445,14 +1515,17 @@ async function ladeOffeneVerstaerkung() {
             error
         );
 
-        container.innerHTML =
-            "<p>Beim Laden der Verstärkungsanfragen ist ein Fehler aufgetreten.</p>";
+        container.innerHTML = `
+            <p>
+                Aktuell konnten keine Verstärkungsanfragen geladen werden.
+            </p>
+        `;
     }
 }
 
 
 // ============================================================
-// VERSTÄRKUNGS-ELEMENT ERSTELLEN
+// VERSTÄRKUNGS-ELEMENT
 // ============================================================
 
 function erstelleVerstaerkungsElement(
@@ -1462,17 +1535,21 @@ function erstelleVerstaerkungsElement(
     const id =
         anfrage.id;
 
+
     const auftragstyp =
         anfrage.order_type ||
         "Auftrag";
+
 
     const auftragsId =
         anfrage.order_id ||
         "Nicht angegeben";
 
+
     const kommentar =
         anfrage.comment ||
         "Keine zusätzlichen Informationen.";
+
 
     const belohnung =
         Number(
@@ -1503,39 +1580,30 @@ function erstelleVerstaerkungsElement(
             "
         >
 
-            <h3
-                style="
-                    margin-top:0;
-                "
-            >
+            <h3 style="margin-top:0;">
                 Verstärkung gesucht
             </h3>
-
 
             <p>
                 <strong>Auftrag:</strong>
                 ${escapeHtml(auftragstyp)}
             </p>
 
-
             <p>
                 <strong>Auftrags-ID:</strong>
                 ${escapeHtml(auftragsId)}
             </p>
-
 
             <p>
                 <strong>Information:</strong>
                 ${escapeHtml(kommentar)}
             </p>
 
-
             <p>
                 <strong>
                     ${escapeHtml(belohnungsText)}
                 </strong>
             </p>
-
 
             <button
                 type="button"
@@ -1551,7 +1619,7 @@ function erstelleVerstaerkungsElement(
 
 
 // ============================================================
-// VERSTÄRKUNGSANFRAGE ÜBERNEHMEN
+// VERSTÄRKUNG ÜBERNEHMEN
 // ============================================================
 
 async function uebernehmeVerstaerkung(
@@ -1559,7 +1627,10 @@ async function uebernehmeVerstaerkung(
     button
 ) {
 
-    if (!aktuellerUser) {
+    if (
+        !aktuellerUser ||
+        !mitarbeiterSupabase
+    ) {
         return;
     }
 
@@ -1578,29 +1649,33 @@ async function uebernehmeVerstaerkung(
         const {
             data,
             error
-        } = await mitarbeiterSupabase
-            .from("employee_help_requests")
-            .update({
-                helper_id:
-                    aktuellerUser.id,
+        } =
+            await mitarbeiterSupabase
+                .from("employee_help_requests")
+                .update({
+                    helper_id:
+                        aktuellerUser.id,
 
-                status:
-                    "Angenommen"
-            })
-            .eq(
-                "id",
-                anfrageId
-            )
-            .eq(
-                "status",
-                "Offen"
-            )
-            .is(
-                "helper_id",
-                null
-            )
-            .select("*")
-            .maybeSingle();
+                    status:
+                        "Angenommen",
+
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    "id",
+                    anfrageId
+                )
+                .eq(
+                    "status",
+                    "Offen"
+                )
+                .is(
+                    "helper_id",
+                    null
+                )
+                .select("*")
+                .maybeSingle();
 
 
         if (error) {
@@ -1611,7 +1686,7 @@ async function uebernehmeVerstaerkung(
         if (!data) {
 
             throw new Error(
-                "Die Verstärkungsanfrage wurde bereits übernommen oder ist nicht mehr verfügbar."
+                "Die Verstärkungsanfrage wurde bereits übernommen."
             );
         }
 
@@ -1619,12 +1694,9 @@ async function uebernehmeVerstaerkung(
         await ladeOffeneVerstaerkung();
 
 
-        // Eigene Aufträge ebenfalls aktualisieren
-
         await ladeEigeneAuftraege(
             aktuellerUser
         );
-
 
     } catch (error) {
 
@@ -1632,7 +1704,6 @@ async function uebernehmeVerstaerkung(
             "Fehler beim Übernehmen der Verstärkung:",
             error
         );
-
 
         zeigeFehler(
             "Die Verstärkungsanfrage konnte nicht übernommen werden."
@@ -1649,45 +1720,6 @@ async function uebernehmeVerstaerkung(
     }
 }
 
-
-// ============================================================
-// HTML-SICHERHEIT
-// ============================================================
-
-function escapeHtml(wert) {
-
-    if (
-        wert === null ||
-        wert === undefined
-    ) {
-        return "";
-    }
-
-
-    return String(wert)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
 // ============================================================
 // BENACHRICHTIGUNGEN
 // ============================================================
@@ -1696,6 +1728,7 @@ async function ladeBenachrichtigungen() {
 
     const container =
         element("benachrichtigungen");
+
 
     if (!container) {
         return;
@@ -1712,20 +1745,48 @@ async function ladeBenachrichtigungen() {
 
 
 // ============================================================
-// GESAMTEN MITARBEITERBEREICH AKTUALISIEREN
+// KOMPLETTE AKTUALISIERUNG
 // ============================================================
 
 async function aktualisiereMitarbeiterbereich() {
 
-    if (!aktuellerUser) {
+    if (
+        !aktuellerUser ||
+        !mitarbeiterSupabase
+    ) {
         return;
     }
 
 
     try {
 
-        await Promise.allSettled([
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .select("*")
+                .eq(
+                    "user_id",
+                    aktuellerUser.id
+                )
+                .maybeSingle();
 
+
+        if (!error && data) {
+
+            aktuellerMitarbeiter =
+                data;
+
+
+            aktualisiereMitarbeiterAnzeige(
+                data
+            );
+        }
+
+
+        await Promise.allSettled([
             ladeEigeneAuftraege(
                 aktuellerUser
             ),
@@ -1735,40 +1796,6 @@ async function aktualisiereMitarbeiterbereich() {
             ladeBenachrichtigungen()
         ]);
 
-
-        // Mitarbeiterdaten erneut laden
-
-        const {
-            data,
-            error
-        } = await mitarbeiterSupabase
-            .from("employees")
-            .select("*")
-            .eq(
-                "user_id",
-                aktuellerUser.id
-            )
-            .maybeSingle();
-
-
-        if (
-            !error &&
-            data
-        ) {
-
-            aktuellerMitarbeiter =
-                data;
-
-
-            aktualisiereMitarbeiterAnzeige(
-                data
-            );
-
-
-            aktualisiereVerfuegbarkeitsAnzeige();
-        }
-
-
     } catch (error) {
 
         console.error(
@@ -1776,48 +1803,30 @@ async function aktualisiereMitarbeiterbereich() {
             error
         );
     }
-            }
-
-// ============================================================
-// ÖFFENTLICHE AKTUALISIERUNGSFUNKTION
-// ============================================================
-
-window.ehrenmarktMitarbeiterAktualisieren =
-    aktualisiereMitarbeiterbereich;
-
-
-// ============================================================
-// ÖFFENTLICHE ABMELDEFUNKTION
-// ============================================================
-
-window.ehrenmarktMitarbeiterAbmelden =
-    abmelden;
+}
 
 
 // ============================================================
 // AUTOMATISCHE AKTUALISIERUNG
 // ============================================================
 
-let mitarbeiterAktualisierungsTimer = null;
-
-
 function starteAutomatischeAktualisierung() {
 
-    if (mitarbeiterAktualisierungsTimer) {
+    if (aktualisierungsTimer) {
 
         clearInterval(
-            mitarbeiterAktualisierungsTimer
+            aktualisierungsTimer
         );
     }
 
 
-    mitarbeiterAktualisierungsTimer =
+    aktualisierungsTimer =
         setInterval(
             () => {
 
                 if (aktuellerUser) {
 
-                    aktualisiereMitarbeiterbereich();
+                    void aktualisiereMitarbeiterbereich();
                 }
 
             },
@@ -1827,15 +1836,98 @@ function starteAutomatischeAktualisierung() {
 
 
 // ============================================================
-// START DER MITARBEITER-BUTTONS
+// START
+// NUR EIN EINZIGER DOMCONTENTLOADED
 // ============================================================
+
+async function starteMitarbeiterbereich() {
+
+    console.log(
+        "Ehrenmarkt Mitarbeiterbereich startet..."
+    );
+
+
+    versteckeFehler();
+
+
+    // --------------------------------------------------------
+    // SUPABASE CLIENT
+    // --------------------------------------------------------
+
+    mitarbeiterSupabase =
+        window.supabaseClient;
+
+
+    if (!mitarbeiterSupabase) {
+
+        console.error(
+            "window.supabaseClient fehlt."
+        );
+
+        zeigeFehler(
+            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // BUTTONS
+    // --------------------------------------------------------
+
+    verbindeAbmeldenButton();
+
+    verbindeMitarbeiterButtons();
+
+
+    // --------------------------------------------------------
+    // AUTH
+    // --------------------------------------------------------
+
+    registriereAuthListener();
+
+
+    // --------------------------------------------------------
+    // SESSION
+    // --------------------------------------------------------
+
+    await pruefeAnmeldung();
+
+
+    // --------------------------------------------------------
+    // AUTOMATISCHE AKTUALISIERUNG
+    // --------------------------------------------------------
+
+    starteAutomatischeAktualisierung();
+
+
+    console.log(
+        "Ehrenmarkt Mitarbeiterbereich fertig."
+    );
+}
+
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        verbindeVerfuegbarkeitsButton();
+        void starteMitarbeiterbereich();
 
-        starteAutomatischeAktualisierung();
+    },
+    {
+        once: true
     }
 );
+
+
+// ============================================================
+// ÖFFENTLICHE FUNKTIONEN
+// ============================================================
+
+window.ehrenmarktMitarbeiterAktualisieren =
+    aktualisiereMitarbeiterbereich;
+
+
+window.ehrenmarktMitarbeiterAbmelden =
+    abmelden;
