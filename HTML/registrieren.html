@@ -623,153 +623,143 @@
                     }
 
 
-                    /*
-                     * Wenn Supabase sofort eine Session liefert,
-                     * kann der Kunde direkt in den Kundenbereich.
-                     *
-                     * Wenn E-Mail-Bestätigung aktiviert ist,
-                     * liefert Supabase normalerweise noch keine Session.
-                     */
-                    if (data.session) {
+                <script>
 
-                        zeigeMeldung(
-                            "Registrierung erfolgreich. Du wirst weitergeleitet..."
-                        );
+    const registerForm =
+        document.getElementById("registerForm");
 
-                        
-                    zeigeMeldung(
-                        "✓ Registrierung erfolgreich! " +
-                        "Bitte bestätige zuerst deine E-Mail-Adresse. " +
-                        "Danach kannst du dich über „Anmelden“ einloggen."
-                    );
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const registerButton =
+        document.getElementById("registerButton");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const meldung =
+        document.getElementById("meldung");
 
 
-                    zeigeModus("anmelden");
+    const registrierenModus =
+        document.getElementById("registrierenModus");
 
-                    document.getElementById("loginEmail").value = email;
+    const anmeldenModus =
+        document.getElementById("anmeldenModus");
 
-                } catch (error) {
+    const registrierenBereich =
+        document.getElementById("registrierenBereich");
 
-                    console.error(
-                        "Registrierung fehlgeschlagen:",
-                        error
-                    );
+    const anmeldenBereich =
+        document.getElementById("anmeldenBereich");
 
-                    zeigeMeldung(
-                        error.message ||
-                        "Die Registrierung ist fehlgeschlagen."
-                    );
 
-                } finally {
+    // ========================================================
+    // MELDUNG
+    // ========================================================
 
-                    registerButton.disabled = false;
-                }
+    function zeigeMeldung(text) {
+
+        if (meldung) {
+            meldung.textContent = text;
+        }
+
+    }
+
+
+    // ========================================================
+    // MODUS WECHSELN
+    // ========================================================
+
+    function zeigeModus(modus) {
+
+        zeigeMeldung("");
+
+        if (modus === "anmelden") {
+
+            if (registrierenBereich) {
+                registrierenBereich.classList.remove("aktiv");
             }
-        );
+
+            if (anmeldenBereich) {
+                anmeldenBereich.classList.add("aktiv");
+            }
+
+            if (registrierenModus) {
+                registrierenModus.classList.remove("aktiv");
+            }
+
+            if (anmeldenModus) {
+                anmeldenModus.classList.add("aktiv");
+            }
+
+        } else {
+
+            if (anmeldenBereich) {
+                anmeldenBereich.classList.remove("aktiv");
+            }
+
+            if (registrierenBereich) {
+                registrierenBereich.classList.add("aktiv");
+            }
+
+            if (anmeldenModus) {
+                anmeldenModus.classList.remove("aktiv");
+            }
+
+            if (registrierenModus) {
+                registrierenModus.classList.add("aktiv");
+            }
+
+        }
+
+    }
 
 
-        loginForm.addEventListener(
-            "submit",
-            async function (event) {
+    // ========================================================
+    // REGISTRIERUNG
+    // ========================================================
 
-                event.preventDefault();
+    registerForm.addEventListener(
+        "submit",
+        async function (event) {
 
-                const email =
-                    document
-                        .getElementById("loginEmail")
-                        .value
-                        .trim();
-
-                const passwort =
-                    document
-                        .getElementById("loginPasswort")
-                        .value;
+            event.preventDefault();
 
 
-                loginButton.disabled = true;
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
+
+            const passwort =
+                document
+                    .getElementById("passwort")
+                    .value;
+
+            const passwortWiederholen =
+                document
+                    .getElementById("passwortWiederholen")
+                    .value;
+
+
+            if (passwort !== passwortWiederholen) {
 
                 zeigeMeldung(
-                    "Anmeldung läuft..."
+                    "Die Passwörter stimmen nicht überein."
                 );
 
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } =
-                        await supabaseClient.auth.signInWithPassword({
-                            email: email,
-                            password: passwort
-                        });
-
-
-                    if (error) {
-                        throw error;
-                    }
-
-
-                    if (!data.session) {
-                        throw new Error(
-                            "Anmeldung erfolgreich, aber es wurde keine Sitzung erstellt."
-                        );
-                    }
-
-
-                    zeigeMeldung(
-                        "✓ Anmeldung erfolgreich. " +
-                        "Kundenbereich wird geöffnet..."
-                    );
-
-
-                    const parameter =
-    new URLSearchParams(window.location.search);
-
-const bereich =
-    parameter.get("bereich");
-
-if (bereich === "mitarbeiter") {
-    window.location.href = "mitarbeiterbereich.html";
-} else {
-    window.location.href = "kundenbereich.html";
-}
-
-                } catch (error) {
-
-                    console.error(
-                        "Anmeldung fehlgeschlagen:",
-                        error
-                    );
-
-                    let text =
-                        error.message ||
-                        "Die Anmeldung ist fehlgeschlagen.";
-
-                    if (
-                        text.toLowerCase().includes(
-                            "email not confirmed"
-                        )
-                    ) {
-                        text =
-                            "Bitte bestätige zuerst deine E-Mail-Adresse.";
-                    }
-
-                    zeigeMeldung(text);
-
-                } finally {
-
-                    loginButton.disabled = false;
-                }
+                return;
             }
-        );
 
 
-        /*
-         * Falls bereits eine Session existiert,
-         * wird sie nicht gelöscht.
-         */
-        (async function pruefeSession() {
+            registerButton.disabled = true;
+
+            zeigeMeldung(
+                "Registrierung läuft..."
+            );
+
 
             try {
 
@@ -777,35 +767,332 @@ if (bereich === "mitarbeiter") {
                     data,
                     error
                 } =
-                    await supabaseClient.auth.getSession();
+                    await supabaseClient.auth.signUp({
+                        email: email,
+                        password: passwort
+                    });
+
 
                 if (error) {
+                    throw error;
+                }
+
+
+                if (!data.user) {
+
+                    throw new Error(
+                        "Es konnte kein Benutzerkonto erstellt werden."
+                    );
+                }
+
+
+                // =================================================
+                // KUNDENPROFIL ERSTELLEN
+                // =================================================
+
+                const {
+                    error: profilFehler
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .insert({
+                            id: data.user.id,
+                            user_type: "kunde",
+                            rang: "Kunde",
+                            rolle: null
+                        });
+
+
+                if (profilFehler) {
+
                     console.error(
-                        "Session konnte nicht geprüft werden:",
-                        error
+                        "Profil konnte nicht erstellt werden:",
+                        profilFehler
+                    );
+
+                    zeigeMeldung(
+                        "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden."
                     );
 
                     return;
                 }
 
+
+                // =================================================
+                // FALLS DIREKT EINE SESSION ERSTELLT WURDE
+                // =================================================
+
                 if (data.session) {
 
                     zeigeMeldung(
-                        "Du bist bereits angemeldet. " +
-                        "Öffne den Kundenbereich."
+                        "Registrierung erfolgreich. Du wirst weitergeleitet..."
                     );
+
+                    window.location.href =
+                        "kundenbereich.html";
+
+                    return;
                 }
+
+
+                // =================================================
+                // E-MAIL-BESTÄTIGUNG ERFORDERLICH
+                // =================================================
+
+                zeigeMeldung(
+                    "✓ Registrierung erfolgreich! " +
+                    "Bitte bestätige zuerst deine E-Mail-Adresse. " +
+                    "Danach kannst du dich über „Anmelden“ einloggen."
+                );
+
+
+                zeigeModus("anmelden");
+
+
+                const loginEmail =
+                    document.getElementById(
+                        "loginEmail"
+                    );
+
+                if (loginEmail) {
+                    loginEmail.value = email;
+                }
+
 
             } catch (error) {
 
                 console.error(
-                    "Sessionprüfung fehlgeschlagen:",
+                    "Registrierung fehlgeschlagen:",
                     error
                 );
+
+                zeigeMeldung(
+                    error.message ||
+                    "Die Registrierung ist fehlgeschlagen."
+                );
+
+            } finally {
+
+                registerButton.disabled = false;
+
             }
 
-        })();
-    </script>
+        }
+    );
 
-</body>
-</html>
+
+    // ========================================================
+    // ANMELDUNG
+    // ========================================================
+
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document
+                    .getElementById("loginEmail")
+                    .value
+                    .trim();
+
+            const passwort =
+                document
+                    .getElementById("loginPasswort")
+                    .value;
+
+
+            loginButton.disabled = true;
+
+
+            zeigeMeldung(
+                "Anmeldung läuft..."
+            );
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: passwort
+                    });
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (!data.session) {
+
+                    throw new Error(
+                        "Anmeldung erfolgreich, aber es wurde keine Sitzung erstellt."
+                    );
+                }
+
+
+                // =================================================
+                // ZIELBEREICH ERMITTELN
+                // =================================================
+
+                const parameter =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+
+                const bereich =
+                    parameter.get("bereich");
+
+
+                // =================================================
+                // MITARBEITERBEREICH
+                // =================================================
+
+                if (bereich === "mitarbeiter") {
+
+                    zeigeMeldung(
+                        "✓ Anmeldung erfolgreich. " +
+                        "Mitarbeiterbereich wird geöffnet..."
+                    );
+
+
+                    window.location.href =
+                        "mitarbeiterbereich.html";
+
+                    return;
+                }
+
+
+                // =================================================
+                // STANDARD: KUNDENBEREICH
+                // =================================================
+
+                zeigeMeldung(
+                    "✓ Anmeldung erfolgreich. " +
+                    "Kundenbereich wird geöffnet..."
+                );
+
+
+                window.location.href =
+                    "kundenbereich.html";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Anmeldung fehlgeschlagen:",
+                    error
+                );
+
+
+                let text =
+                    error.message ||
+                    "Die Anmeldung ist fehlgeschlagen.";
+
+
+                if (
+                    text
+                        .toLowerCase()
+                        .includes("email not confirmed")
+                ) {
+
+                    text =
+                        "Bitte bestätige zuerst deine E-Mail-Adresse.";
+                }
+
+
+                zeigeMeldung(text);
+
+
+            } finally {
+
+                loginButton.disabled = false;
+
+            }
+
+        }
+    );
+
+
+    // ========================================================
+    // BESTEHENDE SESSION PRÜFEN
+    // ========================================================
+
+    (async function pruefeSession() {
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session konnte nicht geprüft werden:",
+                    error
+                );
+
+                return;
+            }
+
+
+            if (data.session) {
+
+                const parameter =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+
+                const bereich =
+                    parameter.get("bereich");
+
+
+                if (bereich === "mitarbeiter") {
+
+                    zeigeMeldung(
+                        "Du bist bereits angemeldet. " +
+                        "Mitarbeiterbereich wird geöffnet..."
+                    );
+
+
+                    window.location.href =
+                        "mitarbeiterbereich.html";
+
+                } else {
+
+                    zeigeMeldung(
+                        "Du bist bereits angemeldet. " +
+                        "Kundenbereich wird geöffnet..."
+                    );
+
+
+                    window.location.href =
+                        "kundenbereich.html";
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Sessionprüfung fehlgeschlagen:",
+                error
+            );
+
+        }
+
+    })();
+
+</script>
