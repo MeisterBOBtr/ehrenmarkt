@@ -7,7 +7,6 @@
 ========================================================= */
 
 "use strict";
-alert("KUNDENBEREICH-JS WIRD GELADEN");
 
 
 /* =========================================================
@@ -39,9 +38,7 @@ const AUFTRAGSTYPEN = {
 ========================================================= */
 
 function element(id) {
-
     return document.getElementById(id);
-
 }
 
 
@@ -251,8 +248,8 @@ async function pruefeAnmeldung() {
     zeigeGastBereich();
 
     return;
-}
 
+        }
 
         /* -----------------------------------------------------
            ANGEMELDET
@@ -357,13 +354,11 @@ function zeigeFehler(nachricht) {
 
     }
 
-  }
+       }
 
 /* =========================================================
-   EHRENMARKT – KUNDENBEREICH
-
    TEIL 2 / 5
-   Profil + Kundendaten
+   Profil laden + Kundenbereich
 ========================================================= */
 
 
@@ -373,39 +368,37 @@ function zeigeFehler(nachricht) {
 
 async function ladeKundenbereich() {
 
+    if (!aktuellerBenutzer) {
+
+        zeigeGastBereich();
+
+        return;
+
+    }
+
+
     try {
-
-        if (!aktuellerBenutzer) {
-
-            zeigeGastBereich();
-
-            return;
-
-        }
-
-
-        /* -----------------------------------------------------
-           PROFIL LADEN
-        ----------------------------------------------------- */
 
         const {
             data: profil,
-            error: profilFehler
+            error
         } =
             await supabase
                 .from("profiles")
-                .select(
-                    "id, username, minecraft_name, user_type, rang, rolle"
-                )
-                .eq(
-                    "id",
-                    aktuellerBenutzer.id
-                )
+                .select(`
+                    id,
+                    username,
+                    minecraft_name,
+                    user_type,
+                    rang,
+                    rolle
+                `)
+                .eq("id", aktuellerBenutzer.id)
                 .maybeSingle();
 
 
-        if (profilFehler) {
-            throw profilFehler;
+        if (error) {
+            throw error;
         }
 
 
@@ -414,7 +407,7 @@ async function ladeKundenbereich() {
 
 
         /* -----------------------------------------------------
-           EINGELOGGTEN BEREICH ANZEIGEN
+           KUNDENBEREICH ANZEIGEN
         ----------------------------------------------------- */
 
         zeigeKundenBereich();
@@ -424,26 +417,19 @@ async function ladeKundenbereich() {
            PROFIL ANZEIGEN
         ----------------------------------------------------- */
 
-        zeigeProfildaten();
-
-
-        /* -----------------------------------------------------
-           AUFTRÄGE LADEN
-        ----------------------------------------------------- */
-
-        await ladeAlleKundenauftraege();
+        fuelleKundenProfil();
 
 
     } catch (fehler) {
 
         console.error(
-            "Fehler beim Laden des Kundenbereichs:",
+            "Fehler beim Laden des Kundenprofils:",
             fehler
         );
 
 
         zeigeFehler(
-            "Dein Kundenbereich konnte nicht geladen werden."
+            "Dein Kundenprofil konnte nicht geladen werden."
         );
 
     }
@@ -452,29 +438,49 @@ async function ladeKundenbereich() {
 
 
 /* =========================================================
-   PROFILDATEN ANZEIGEN
+   KUNDENPROFIL AUSFÜLLEN
 ========================================================= */
 
-function zeigeProfildaten() {
+function fuelleKundenProfil() {
 
     if (!aktuellerBenutzer) {
         return;
     }
 
 
+    const profil =
+        aktuellesProfil || {};
+
+
+    /* -----------------------------------------------------
+       BENUTZERNAME
+    ----------------------------------------------------- */
+
     const username =
-        aktuellesProfil?.username ||
+        profil.username ||
+        aktuellerBenutzer.user_metadata?.username ||
         "Kunde";
 
 
     const minecraftName =
-        aktuellesProfil?.minecraft_name ||
-        "Nicht hinterlegt";
+        profil.minecraft_name ||
+        aktuellerBenutzer.user_metadata?.minecraft_name ||
+        "Nicht angegeben";
 
 
     const email =
         aktuellerBenutzer.email ||
-        "Nicht verfügbar";
+        "Nicht angegeben";
+
+
+    const rang =
+        profil.rang ||
+        "Kunde";
+
+
+    const rolle =
+        profil.rolle ||
+        "Keine";
 
 
     /* -----------------------------------------------------
@@ -488,13 +494,13 @@ function zeigeProfildaten() {
     if (begruessung) {
 
         begruessung.textContent =
-            `Willkommen zurück, ${username}!`;
+            `Willkommen, ${username}!`;
 
     }
 
 
     /* -----------------------------------------------------
-       BENUTZERNAME
+       PROFILFELDER
     ----------------------------------------------------- */
 
     const usernameElement =
@@ -509,10 +515,6 @@ function zeigeProfildaten() {
     }
 
 
-    /* -----------------------------------------------------
-       MINECRAFT-NAME
-    ----------------------------------------------------- */
-
     const minecraftElement =
         element("kundenMinecraft");
 
@@ -524,10 +526,6 @@ function zeigeProfildaten() {
 
     }
 
-
-    /* -----------------------------------------------------
-       E-MAIL
-    ----------------------------------------------------- */
 
     const emailElement =
         element("kundenEmail");
@@ -541,10 +539,6 @@ function zeigeProfildaten() {
     }
 
 
-    /* -----------------------------------------------------
-       RANG
-    ----------------------------------------------------- */
-
     const rangElement =
         element("kundenRang");
 
@@ -552,15 +546,10 @@ function zeigeProfildaten() {
     if (rangElement) {
 
         rangElement.textContent =
-            aktuellesProfil?.rang ||
-            "Kunde";
+            rang;
 
     }
 
-
-    /* -----------------------------------------------------
-       ROLLE
-    ----------------------------------------------------- */
 
     const rolleElement =
         element("kundenRolle");
@@ -569,8 +558,7 @@ function zeigeProfildaten() {
     if (rolleElement) {
 
         rolleElement.textContent =
-            aktuellesProfil?.rolle ||
-            "Kunde";
+            rolle;
 
     }
 
@@ -578,7 +566,7 @@ function zeigeProfildaten() {
 
 
 /* =========================================================
-   LADEANZEIGE
+   LADEANZEIGE AUSBLENDEN
 ========================================================= */
 
 function setzeLadeanzeige(anzeigen) {
@@ -594,1249 +582,7 @@ function setzeLadeanzeige(anzeigen) {
 
     ladebereich.style.display =
         anzeigen
-            ? "block"
+            ? "flex"
             : "none";
 
 }
-
-
-/* =========================================================
-   AUFTRAGSANZEIGE ZURÜCKSETZEN
-========================================================= */
-
-function leereAuftragsbereiche() {
-
-    const bereiche = [
-
-        "aktiveAuftraege",
-        "offeneAuftraege",
-        "bearbeitungAuftraege",
-        "abgeschlosseneAuftraege"
-
-    ];
-
-
-    bereiche.forEach(id => {
-
-        const bereich =
-            element(id);
-
-
-        if (bereich) {
-
-            bereich.innerHTML =
-                "";
-
-        }
-
-    });
-
-}
-
-
-/* =========================================================
-   ZAHLEN DER AUFTRÄGE ANZEIGEN
-========================================================= */
-
-function zeigeAuftragszahlen(
-    offen,
-    bearbeitung,
-    abgeschlossen
-) {
-
-    const gesamt =
-        element("auftragsGesamt");
-
-    const offenElement =
-        element("auftragsOffen");
-
-    const bearbeitungElement =
-        element("auftragsBearbeitung");
-
-    const abgeschlossenElement =
-        element("auftragsAbgeschlossen");
-
-
-    if (gesamt) {
-
-        gesamt.textContent =
-            offen +
-            bearbeitung +
-            abgeschlossen;
-
-    }
-
-
-    if (offenElement) {
-
-        offenElement.textContent =
-            offen;
-
-    }
-
-
-    if (bearbeitungElement) {
-
-        bearbeitungElement.textContent =
-            bearbeitung;
-
-    }
-
-
-    if (abgeschlossenElement) {
-
-        abgeschlossenElement.textContent =
-            abgeschlossen;
-
-    }
-
-}
-
-/* =========================================================
-   EHRENMARKT – KUNDENBEREICH
-
-   TEIL 3 / 5
-   Alle Kundenaufträge laden
-========================================================= */
-
-
-/* =========================================================
-   ALLE AUFTRÄGE LADEN
-========================================================= */
-
-async function ladeAlleKundenauftraege() {
-
-    setzeLadeanzeige(true);
-
-    leereAuftragsbereiche();
-
-
-    try {
-
-        if (!aktuellerBenutzer) {
-            return;
-        }
-
-
-        alleAuftraege = [];
-
-
-        /* =====================================================
-           MATERIALAUFTRÄGE
-        ===================================================== */
-
-        const {
-            data: materialAuftraege,
-            error: materialFehler
-        } =
-            await supabase
-                .from("orders")
-                .select(
-                    "id, order_number, minecraft_name, status, total_price, notes, created_at"
-                )
-                .eq(
-                    "user_id",
-                    aktuellerBenutzer.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (materialFehler) {
-
-            console.error(
-                "Materialaufträge konnten nicht geladen werden:",
-                materialFehler
-            );
-
-        } else {
-
-            (
-                materialAuftraege || []
-            ).forEach(auftrag => {
-
-                alleAuftraege.push({
-
-                    id:
-                        auftrag.id,
-
-                    typ:
-                        AUFTRAGSTYPEN.MATERIAL,
-
-                    order_number:
-                        auftrag.order_number,
-
-                    minecraft_name:
-                        auftrag.minecraft_name,
-
-                    status:
-                        auftrag.status,
-
-                    total_price:
-                        auftrag.total_price,
-
-                    created_at:
-                        auftrag.created_at,
-
-                    notes:
-                        auftrag.notes
-
-                });
-
-            });
-
-        }
-
-
-        /* =====================================================
-           BAUAUFTRÄGE
-        ===================================================== */
-
-        const {
-            data: bauAuftraege,
-            error: bauFehler
-        } =
-            await supabase
-                .from("build_orders")
-                .select(
-                    "id, order_number, minecraft_name, status, provisional_price, final_price, created_at, description, location"
-                )
-                .eq(
-                    "user_id",
-                    aktuellerBenutzer.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (bauFehler) {
-
-            console.error(
-                "Bauaufträge konnten nicht geladen werden:",
-                bauFehler
-            );
-
-        } else {
-
-            (
-                bauAuftraege || []
-            ).forEach(auftrag => {
-
-                const preis =
-                    auftrag.final_price ??
-                    auftrag.provisional_price ??
-                    0;
-
-
-                alleAuftraege.push({
-
-                    id:
-                        auftrag.id,
-
-                    typ:
-                        AUFTRAGSTYPEN.BAU,
-
-                    order_number:
-                        auftrag.order_number,
-
-                    minecraft_name:
-                        auftrag.minecraft_name,
-
-                    status:
-                        auftrag.status,
-
-                    total_price:
-                        preis,
-
-                    created_at:
-                        auftrag.created_at,
-
-                    description:
-                        auftrag.description,
-
-                    location:
-                        auftrag.location
-
-                });
-
-            });
-
-        }
-
-
-        /* =====================================================
-           REDSTONEAUFTRÄGE
-        ===================================================== */
-
-        const {
-            data: redstoneAuftraege,
-            error: redstoneFehler
-        } =
-            await supabase
-                .from("redstone_orders")
-                .select(
-                    "id, order_number, minecraft_name, title, status, total_price, deposit_amount, remaining_amount, created_at, description"
-                )
-                .eq(
-                    "user_id",
-                    aktuellerBenutzer.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (redstoneFehler) {
-
-            console.error(
-                "Redstone-Aufträge konnten nicht geladen werden:",
-                redstoneFehler
-            );
-
-        } else {
-
-            (
-                redstoneAuftraege || []
-            ).forEach(auftrag => {
-
-                alleAuftraege.push({
-
-                    id:
-                        auftrag.id,
-
-                    typ:
-                        AUFTRAGSTYPEN.REDSTONE,
-
-                    order_number:
-                        auftrag.order_number,
-
-                    minecraft_name:
-                        auftrag.minecraft_name,
-
-                    title:
-                        auftrag.title,
-
-                    status:
-                        auftrag.status,
-
-                    total_price:
-                        auftrag.total_price,
-
-                    deposit_amount:
-                        auftrag.deposit_amount,
-
-                    remaining_amount:
-                        auftrag.remaining_amount,
-
-                    created_at:
-                        auftrag.created_at,
-
-                    description:
-                        auftrag.description
-
-                });
-
-            });
-
-        }
-
-
-        /* =====================================================
-           LOGISTIKAUFTRÄGE
-        ===================================================== */
-
-        const {
-            data: logistikAuftraege,
-            error: logistikFehler
-        } =
-            await supabase
-                .from("logistics_orders")
-                .select(
-                    "id, order_number, customer_name, start_point, destination, status, total_price, deposit, remaining_payment, created_at, description"
-                )
-                .eq(
-                    "created_by",
-                    aktuellerBenutzer.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (logistikFehler) {
-
-            console.error(
-                "Logistik-Aufträge konnten nicht geladen werden:",
-                logistikFehler
-            );
-
-        } else {
-
-            (
-                logistikAuftraege || []
-            ).forEach(auftrag => {
-
-                alleAuftraege.push({
-
-                    id:
-                        auftrag.id,
-
-                    typ:
-                        AUFTRAGSTYPEN.LOGISTIK,
-
-                    order_number:
-                        auftrag.order_number,
-
-                    minecraft_name:
-                        auftrag.customer_name,
-
-                    status:
-                        auftrag.status,
-
-                    total_price:
-                        auftrag.total_price,
-
-                    deposit_amount:
-                        auftrag.deposit,
-
-                    remaining_amount:
-                        auftrag.remaining_payment,
-
-                    created_at:
-                        auftrag.created_at,
-
-                    description:
-                        auftrag.description,
-
-                    start_point:
-                        auftrag.start_point,
-
-                    destination:
-                        auftrag.destination
-
-                });
-
-            });
-
-        }
-
-
-        /* =====================================================
-           NACH DATUM SORTIEREN
-        ===================================================== */
-
-        alleAuftraege.sort(
-            (a, b) => {
-
-                const datumA =
-                    new Date(
-                        a.created_at || 0
-                    ).getTime();
-
-                const datumB =
-                    new Date(
-                        b.created_at || 0
-                    ).getTime();
-
-
-                return datumB - datumA;
-
-            }
-        );
-
-
-        /* =====================================================
-           AUFTRÄGE ANZEIGEN
-        ===================================================== */
-
-        zeigeAuftraege();
-
-
-    } catch (fehler) {
-
-        console.error(
-            "Fehler beim Laden aller Kundenaufträge:",
-            fehler
-        );
-
-
-        zeigeFehler(
-            "Die Aufträge konnten nicht geladen werden."
-        );
-
-    } finally {
-
-        setzeLadeanzeige(false);
-
-    }
-
-}
-
-/* =========================================================
-   EHRENMARKT – KUNDENBEREICH
-
-   TEIL 4 / 5
-   Auftragssortierung + Darstellung
-========================================================= */
-
-
-/* =========================================================
-   STATUS-KATEGORIE
-========================================================= */
-
-function kategorieFuerAuftrag(auftrag) {
-
-    const status =
-        normalisiereStatus(
-            auftrag.status
-        );
-
-
-    /* -----------------------------------------------------
-       ABGESCHLOSSEN
-    ----------------------------------------------------- */
-
-    if (
-        status === "abgeschlossen" ||
-        status === "erledigt"
-    ) {
-
-        return "abgeschlossen";
-
-    }
-
-
-    /* -----------------------------------------------------
-       BEARBEITUNG
-    ----------------------------------------------------- */
-
-    if (
-        status === "in bearbeitung" ||
-        status === "bearbeitung"
-    ) {
-
-        return "bearbeitung";
-
-    }
-
-
-    /* -----------------------------------------------------
-       OFFEN
-    ----------------------------------------------------- */
-
-    if (
-        status === "offen"
-    ) {
-
-        return "offen";
-
-    }
-
-
-    /* -----------------------------------------------------
-       SONSTIGE STATUS
-       → aktive Aufträge
-    ----------------------------------------------------- */
-
-    if (
-        status === "storniert" ||
-        status === "abgebrochen"
-    ) {
-
-        return "abgeschlossen";
-
-    }
-
-
-    return "offen";
-
-}
-
-
-/* =========================================================
-   ALLE AUFTRÄGE DARSTELLEN
-========================================================= */
-
-function zeigeAuftraege() {
-
-    const offene = [];
-    const bearbeitung = [];
-    const abgeschlossene = [];
-
-
-    alleAuftraege.forEach(
-        auftrag => {
-
-            const kategorie =
-                kategorieFuerAuftrag(
-                    auftrag
-                );
-
-
-            if (
-                kategorie === "offen"
-            ) {
-
-                offene.push(
-                    auftrag
-                );
-
-            }
-
-
-            else if (
-                kategorie === "bearbeitung"
-            ) {
-
-                bearbeitung.push(
-                    auftrag
-                );
-
-            }
-
-
-            else {
-
-                abgeschlossene.push(
-                    auftrag
-                );
-
-            }
-
-        }
-    );
-
-
-    /* -----------------------------------------------------
-       ZAHLEN
-    ----------------------------------------------------- */
-
-    zeigeAuftragszahlen(
-        offene.length,
-        bearbeitung.length,
-        abgeschlossene.length
-    );
-
-
-    /* -----------------------------------------------------
-       OFFENE AUFTRÄGE
-    ----------------------------------------------------- */
-
-    renderAuftragsliste(
-        "offeneAuftraege",
-        offene,
-        "Keine offenen Aufträge."
-    );
-
-
-    /* -----------------------------------------------------
-       BEARBEITUNG
-    ----------------------------------------------------- */
-
-    renderAuftragsliste(
-        "bearbeitungAuftraege",
-        bearbeitung,
-        "Keine Aufträge in Bearbeitung."
-    );
-
-
-    /* -----------------------------------------------------
-       ABGESCHLOSSEN
-    ----------------------------------------------------- */
-
-    renderAuftragsliste(
-        "abgeschlosseneAuftraege",
-        abgeschlossene,
-        "Noch keine abgeschlossenen Aufträge."
-    );
-
-
-    /* -----------------------------------------------------
-       AKTIVE AUFTRÄGE
-       OFFEN + BEARBEITUNG
-    ----------------------------------------------------- */
-
-    renderAuftragsliste(
-        "aktiveAuftraege",
-        [
-            ...offene,
-            ...bearbeitung
-        ],
-        "Keine aktiven Aufträge."
-    );
-
-}
-
-
-/* =========================================================
-   AUFTRAGSLISTE RENDERN
-========================================================= */
-
-function renderAuftragsliste(
-    elementId,
-    auftraege,
-    leertext
-) {
-
-    const container =
-        element(elementId);
-
-
-    if (!container) {
-        return;
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        !auftraege ||
-        auftraege.length === 0
-    ) {
-
-        const leer =
-            document.createElement(
-                "div"
-            );
-
-
-        leer.className =
-            "keine-auftraege";
-
-
-        leer.textContent =
-            leertext;
-
-
-        container.appendChild(
-            leer
-        );
-
-
-        return;
-
-    }
-
-
-    auftraege.forEach(
-        auftrag => {
-
-            container.appendChild(
-                erstelleAuftragskarte(
-                    auftrag
-                )
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   AUFTRAGSKARTE ERSTELLEN
-========================================================= */
-
-function erstelleAuftragskarte(
-    auftrag
-) {
-
-    const karte =
-        document.createElement(
-            "article"
-        );
-
-
-    karte.className =
-        "auftrag-karte";
-
-
-    /* -----------------------------------------------------
-       TYP
-    ----------------------------------------------------- */
-
-    const typ =
-        document.createElement(
-            "div"
-        );
-
-
-    typ.className =
-        "auftrag-typ";
-
-
-    typ.textContent =
-        auftrag.typ;
-
-
-    /* -----------------------------------------------------
-       AUFTRAGSNUMMER
-    ----------------------------------------------------- */
-
-    const nummer =
-        document.createElement(
-            "h3"
-        );
-
-
-    nummer.className =
-        "auftrag-nummer";
-
-
-    nummer.textContent =
-        auftrag.order_number ||
-        "Ohne Auftragsnummer";
-
-
-    /* -----------------------------------------------------
-       STATUS
-    ----------------------------------------------------- */
-
-    const status =
-        document.createElement(
-            "div"
-        );
-
-
-    status.className =
-        "auftrag-status";
-
-
-    status.textContent =
-        statusText(
-            auftrag.status
-        );
-
-
-    /* -----------------------------------------------------
-       PREIS
-    ----------------------------------------------------- */
-
-    const preis =
-        document.createElement(
-            "div"
-        );
-
-
-    preis.className =
-        "auftrag-preis";
-
-
-    preis.textContent =
-        formatPreis(
-            auftrag.total_price
-        );
-
-
-    /* -----------------------------------------------------
-       DATUM
-    ----------------------------------------------------- */
-
-    const datum =
-        document.createElement(
-            "div"
-        );
-
-
-    datum.className =
-        "auftrag-datum";
-
-
-    datum.textContent =
-        "Erstellt: " +
-        formatDatum(
-            auftrag.created_at
-        );
-
-
-    /* -----------------------------------------------------
-       ZUSATZINFORMATION
-    ----------------------------------------------------- */
-
-    const info =
-        document.createElement(
-            "div"
-        );
-
-
-    info.className =
-        "auftrag-info";
-
-
-    if (
-        auftrag.typ ===
-        AUFTRAGSTYPEN.LOGISTIK
-    ) {
-
-        if (
-            auftrag.start_point ||
-            auftrag.destination
-        ) {
-
-            info.textContent =
-                (
-                    auftrag.start_point ||
-                    "–"
-                ) +
-                " → " +
-                (
-                    auftrag.destination ||
-                    "–"
-                );
-
-        }
-
-    }
-
-
-    else if (
-        auftrag.typ ===
-        AUFTRAGSTYPEN.REDSTONE
-    ) {
-
-        info.textContent =
-            auftrag.title ||
-            "";
-
-    }
-
-
-    else if (
-        auftrag.typ ===
-        AUFTRAGSTYPEN.BAU
-    ) {
-
-        info.textContent =
-            auftrag.location ||
-            "";
-
-    }
-
-
-    /* -----------------------------------------------------
-       ELEMENTE ZUSAMMENFÜGEN
-    ----------------------------------------------------- */
-
-    karte.appendChild(
-        typ
-    );
-
-    karte.appendChild(
-        nummer
-    );
-
-    karte.appendChild(
-        status
-    );
-
-    karte.appendChild(
-        preis
-    );
-
-    karte.appendChild(
-        datum
-    );
-
-
-    if (
-        info.textContent
-    ) {
-
-        karte.appendChild(
-            info
-        );
-
-    }
-
-
-    return karte;
-
-      }
-
-/* =========================================================
-   EHRENMARKT – KUNDENBEREICH
-
-   TEIL 5 / 5
-   Abmelden + Aktualisieren
-========================================================= */
-
-
-/* =========================================================
-   ABMELDEN
-========================================================= */
-
-async function abmelden() {
-
-    try {
-
-        if (!supabase) {
-
-            supabase =
-                holeSupabase();
-
-        }
-
-
-        if (!supabase) {
-
-            zeigeFehler(
-                "Supabase ist nicht verfügbar."
-            );
-
-            return;
-
-        }
-
-
-        const bestaetigen =
-            confirm(
-                "Möchtest du dich wirklich abmelden?"
-            );
-
-
-        if (!bestaetigen) {
-            return;
-        }
-
-
-        const {
-            error
-        } =
-            await supabase
-                .auth
-                .signOut();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        aktuellerBenutzer =
-            null;
-
-        aktuellesProfil =
-            null;
-
-        alleAuftraege =
-            [];
-
-
-        /* -----------------------------------------------------
-           ZUR GAST-ANSICHT
-        ----------------------------------------------------- */
-
-        zeigeGastBereich();
-
-
-        /* -----------------------------------------------------
-           OPTIONAL: SEITE NEU LADEN
-        ----------------------------------------------------- */
-
-        window.location.reload();
-
-
-    } catch (fehler) {
-
-        console.error(
-            "Fehler beim Abmelden:",
-            fehler
-        );
-
-
-        zeigeFehler(
-            "Das Abmelden ist fehlgeschlagen."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   ABMELDEN-BUTTON
-========================================================= */
-
-function initialisiereAbmelden() {
-
-    const button =
-        element("abmeldenButton");
-
-
-    if (!button) {
-        return;
-    }
-
-
-    button.addEventListener(
-        "click",
-        abmelden
-    );
-
-}
-
-
-/* =========================================================
-   AUFTRÄGE AKTUALISIEREN
-========================================================= */
-
-async function aktualisiereAuftraege() {
-
-    if (!aktuellerBenutzer) {
-
-        return;
-
-    }
-
-
-    await ladeAlleKundenauftraege();
-
-}
-
-
-/* =========================================================
-   AKTUALISIEREN-BUTTON
-========================================================= */
-
-function initialisiereAktualisieren() {
-
-    const button =
-        element("auftraegeAktualisieren");
-
-
-    if (!button) {
-        return;
-    }
-
-
-    button.addEventListener(
-        "click",
-        async () => {
-
-            button.disabled =
-                true;
-
-
-            const alterText =
-                button.textContent;
-
-
-            button.textContent =
-                "Wird geladen...";
-
-
-            try {
-
-                await aktualisiereAuftraege();
-
-            } finally {
-
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    alterText;
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   SESSION-ÄNDERUNGEN ÜBERWACHEN
-========================================================= */
-
-function initialisiereAuthListener() {
-
-    if (!supabase) {
-        return;
-    }
-
-
-    supabase.auth.onAuthStateChange(
-        async (
-            event,
-            session
-        ) => {
-
-            console.log(
-                "Ehrenmarkt Auth:",
-                event
-            );
-
-
-            if (
-                event ===
-                "SIGNED_OUT"
-            ) {
-
-                aktuellerBenutzer =
-                    null;
-
-                aktuellesProfil =
-                    null;
-
-                alleAuftraege =
-                    [];
-
-
-                zeigeGastBereich();
-
-                return;
-
-            }
-
-
-            if (
-                session?.user
-            ) {
-
-                aktuellerBenutzer =
-                    session.user;
-
-
-                await ladeKundenbereich();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   ZUSÄTZLICHE INITIALISIERUNG
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        initialisiereAbmelden();
-
-        initialisiereAktualisieren();
-
-        initialisiereAuthListener();
-
-    }
-);
