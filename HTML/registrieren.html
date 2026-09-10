@@ -636,13 +636,7 @@
                             "Registrierung erfolgreich. Du wirst weitergeleitet..."
                         );
 
-                        window.location.href =
-                            "kundenbereich.html";
-
-                        return;
-                    }
-
-
+                        
                     zeigeMeldung(
                         "✓ Registrierung erfolgreich! " +
                         "Bitte bestätige zuerst deine E-Mail-Adresse. " +
@@ -729,8 +723,17 @@
                     );
 
 
-                    window.location.href =
-                        "kundenbereich.html";
+                    const parameter =
+    new URLSearchParams(window.location.search);
+
+const bereich =
+    parameter.get("bereich");
+
+if (bereich === "mitarbeiter") {
+    window.location.href = "mitarbeiterbereich.html";
+} else {
+    window.location.href = "kundenbereich.html";
+}
 
                 } catch (error) {
 
