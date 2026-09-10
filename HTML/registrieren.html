@@ -460,170 +460,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
 
-    <script>
-        const registerForm = document.getElementById("registerForm");
-        const loginForm = document.getElementById("loginForm");
+        <script>
 
-        const registerButton = document.getElementById("registerButton");
-        const loginButton = document.getElementById("loginButton");
-
-        const meldung = document.getElementById("meldung");
-
-        const registrierenModus =
-            document.getElementById("registrierenModus");
-
-        const anmeldenModus =
-            document.getElementById("anmeldenModus");
-
-        const registrierenBereich =
-            document.getElementById("registrierenBereich");
-
-        const anmeldenBereich =
-            document.getElementById("anmeldenBereich");
-
-
-        function zeigeMeldung(text) {
-            meldung.textContent = text;
-        }
-
-
-        function zeigeModus(modus) {
-
-            meldung.textContent = "";
-
-            if (modus === "anmelden") {
-
-                registrierenBereich.classList.remove("aktiv");
-                anmeldenBereich.classList.add("aktiv");
-
-                registrierenModus.classList.remove("aktiv");
-                anmeldenModus.classList.add("aktiv");
-
-            } else {
-
-                anmeldenBereich.classList.remove("aktiv");
-                registrierenBereich.classList.add("aktiv");
-
-                anmeldenModus.classList.remove("aktiv");
-                registrierenModus.classList.add("aktiv");
-            }
-        }
-
-
-        registrierenModus.addEventListener(
-            "click",
-            function () {
-                zeigeModus("registrieren");
-            }
-        );
-
-
-        anmeldenModus.addEventListener(
-            "click",
-            function () {
-                zeigeModus("anmelden");
-            }
-        );
-
-
-        registerForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
-
-                const email =
-                    document
-                        .getElementById("registerEmail")
-                        .value
-
-                                .trim();
-
-                const passwort =
-                    document
-                        .getElementById("registerPasswort")
-                        .value;
-
-                const passwortWiederholen =
-                    document
-                        .getElementById("passwortWiederholen")
-                        .value;
-
-
-                if (passwort !== passwortWiederholen) {
-
-                    zeigeMeldung(
-                        "Die Passwörter stimmen nicht überein."
-                    );
-
-                    return;
-                }
-
-
-                registerButton.disabled = true;
-
-                zeigeMeldung(
-                    "Registrierung läuft..."
-                );
-
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } =
-                        await supabaseClient.auth.signUp({
-                            email: email,
-                            password: passwort
-                        });
-
-
-                    if (error) {
-                        throw error;
-                    }
-
-
-                    if (!data.user) {
-                        throw new Error(
-                            "Das Benutzerkonto konnte nicht erstellt werden."
-                        );
-                    }
-
-
-                    /*
-                     * Profil in "profiles" anlegen.
-                     * Die bisher verwendeten Felder bleiben erhalten.
-                     */
-                    const {
-                        error: profilFehler
-                    } =
-                        await supabaseClient
-                            .from("profiles")
-                            .insert({
-                                id: data.user.id,
-                                user_type: "kunde",
-                                rang: "Kunde",
-                                rolle: null
-                            });
-
-
-                    if (profilFehler) {
-
-                        console.error(
-                            "Profil konnte nicht erstellt werden:",
-                            profilFehler
-                        );
-
-                        zeigeMeldung(
-                            "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden."
-                        );
-
-                        return;
-                    }
-
-
-                <script>
+    // ========================================================
+    // ELEMENTE
+    // ========================================================
 
     const registerForm =
         document.getElementById("registerForm");
@@ -639,7 +480,6 @@
 
     const meldung =
         document.getElementById("meldung");
-
 
     const registrierenModus =
         document.getElementById("registrierenModus");
@@ -677,43 +517,41 @@
 
         if (modus === "anmelden") {
 
-            if (registrierenBereich) {
-                registrierenBereich.classList.remove("aktiv");
-            }
+            registrierenBereich.classList.remove("aktiv");
+            anmeldenBereich.classList.add("aktiv");
 
-            if (anmeldenBereich) {
-                anmeldenBereich.classList.add("aktiv");
-            }
-
-            if (registrierenModus) {
-                registrierenModus.classList.remove("aktiv");
-            }
-
-            if (anmeldenModus) {
-                anmeldenModus.classList.add("aktiv");
-            }
+            registrierenModus.classList.remove("aktiv");
+            anmeldenModus.classList.add("aktiv");
 
         } else {
 
-            if (anmeldenBereich) {
-                anmeldenBereich.classList.remove("aktiv");
-            }
+            anmeldenBereich.classList.remove("aktiv");
+            registrierenBereich.classList.add("aktiv");
 
-            if (registrierenBereich) {
-                registrierenBereich.classList.add("aktiv");
-            }
-
-            if (anmeldenModus) {
-                anmeldenModus.classList.remove("aktiv");
-            }
-
-            if (registrierenModus) {
-                registrierenModus.classList.add("aktiv");
-            }
-
+            anmeldenModus.classList.remove("aktiv");
+            registrierenModus.classList.add("aktiv");
         }
-
     }
+
+
+    // ========================================================
+    // MODUS-BUTTONS
+    // ========================================================
+
+    registrierenModus.addEventListener(
+        "click",
+        function () {
+            zeigeModus("registrieren");
+        }
+    );
+
+
+    anmeldenModus.addEventListener(
+        "click",
+        function () {
+            zeigeModus("anmelden");
+        }
+    );
 
 
     // ========================================================
@@ -726,16 +564,15 @@
 
             event.preventDefault();
 
-
             const email =
                 document
-                    .getElementById("email")
+                    .getElementById("registerEmail")
                     .value
                     .trim();
 
             const passwort =
                 document
-                    .getElementById("passwort")
+                    .getElementById("registerPasswort")
                     .value;
 
             const passwortWiederholen =
@@ -781,13 +618,13 @@
                 if (!data.user) {
 
                     throw new Error(
-                        "Es konnte kein Benutzerkonto erstellt werden."
+                        "Das Benutzerkonto konnte nicht erstellt werden."
                     );
                 }
 
 
                 // =================================================
-                // KUNDENPROFIL ERSTELLEN
+                // PROFIL ERSTELLEN
                 // =================================================
 
                 const {
@@ -810,22 +647,21 @@
                         profilFehler
                     );
 
-                    zeigeMeldung(
-                        "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden."
+                    throw new Error(
+                        "Das Kundenprofil konnte nicht erstellt werden."
                     );
-
-                    return;
                 }
 
 
                 // =================================================
-                // FALLS DIREKT EINE SESSION ERSTELLT WURDE
+                // DIREKTE SESSION
                 // =================================================
 
                 if (data.session) {
 
                     zeigeMeldung(
-                        "Registrierung erfolgreich. Du wirst weitergeleitet..."
+                        "Registrierung erfolgreich. " +
+                        "Kundenbereich wird geöffnet..."
                     );
 
                     window.location.href =
@@ -836,7 +672,7 @@
 
 
                 // =================================================
-                // E-MAIL-BESTÄTIGUNG ERFORDERLICH
+                // E-MAIL-BESTÄTIGUNG
                 // =================================================
 
                 zeigeMeldung(
@@ -850,9 +686,8 @@
 
 
                 const loginEmail =
-                    document.getElementById(
-                        "loginEmail"
-                    );
+                    document.getElementById("loginEmail");
+
 
                 if (loginEmail) {
                     loginEmail.value = email;
@@ -874,7 +709,6 @@
             } finally {
 
                 registerButton.disabled = false;
-
             }
 
         }
@@ -938,7 +772,7 @@
 
 
                 // =================================================
-                // ZIELBEREICH ERMITTELN
+                // ZIEL ERMITTELN
                 // =================================================
 
                 const parameter =
@@ -971,7 +805,7 @@
 
 
                 // =================================================
-                // STANDARD: KUNDENBEREICH
+                // KUNDENBEREICH
                 // =================================================
 
                 zeigeMeldung(
@@ -1014,7 +848,6 @@
             } finally {
 
                 loginButton.disabled = false;
-
             }
 
         }
@@ -1022,7 +855,7 @@
 
 
     // ========================================================
-    // BESTEHENDE SESSION PRÜFEN
+    // BEREITS ANGEMELDET
     // ========================================================
 
     (async function pruefeSession() {
@@ -1047,42 +880,44 @@
             }
 
 
-            if (data.session) {
-
-                const parameter =
-                    new URLSearchParams(
-                        window.location.search
-                    );
-
-
-                const bereich =
-                    parameter.get("bereich");
-
-
-                if (bereich === "mitarbeiter") {
-
-                    zeigeMeldung(
-                        "Du bist bereits angemeldet. " +
-                        "Mitarbeiterbereich wird geöffnet..."
-                    );
-
-
-                    window.location.href =
-                        "mitarbeiterbereich.html";
-
-                } else {
-
-                    zeigeMeldung(
-                        "Du bist bereits angemeldet. " +
-                        "Kundenbereich wird geöffnet..."
-                    );
-
-
-                    window.location.href =
-                        "kundenbereich.html";
-                }
-
+            if (!data.session) {
+                return;
             }
+
+
+            const parameter =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const bereich =
+                parameter.get("bereich");
+
+
+            if (bereich === "mitarbeiter") {
+
+                zeigeMeldung(
+                    "Du bist bereits angemeldet. " +
+                    "Mitarbeiterbereich wird geöffnet..."
+                );
+
+
+                window.location.href =
+                    "mitarbeiterbereich.html";
+
+            } else {
+
+                zeigeMeldung(
+                    "Du bist bereits angemeldet. " +
+                    "Kundenbereich wird geöffnet..."
+                );
+
+
+                window.location.href =
+                    "kundenbereich.html";
+            }
+
 
         } catch (error) {
 
@@ -1095,4 +930,4 @@
 
     })();
 
-</script>
+        </script>
