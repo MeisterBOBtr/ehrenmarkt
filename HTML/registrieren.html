@@ -460,7 +460,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase.js"></script>
 
-        <script>
+    <script>
 
     // ========================================================
     // ELEMENTE
@@ -530,7 +530,9 @@
 
             anmeldenModus.classList.remove("aktiv");
             registrierenModus.classList.add("aktiv");
+
         }
+
     }
 
 
@@ -541,7 +543,9 @@
     registrierenModus.addEventListener(
         "click",
         function () {
+
             zeigeModus("registrieren");
+
         }
     );
 
@@ -549,7 +553,9 @@
     anmeldenModus.addEventListener(
         "click",
         function () {
+
             zeigeModus("anmelden");
+
         }
     );
 
@@ -620,10 +626,10 @@
                     throw new Error(
                         "Das Benutzerkonto konnte nicht erstellt werden."
                     );
+
                 }
 
-
-                // =================================================
+                            // =================================================
                 // PROFIL ERSTELLEN
                 // =================================================
 
@@ -650,6 +656,7 @@
                     throw new Error(
                         "Das Kundenprofil konnte nicht erstellt werden."
                     );
+
                 }
 
 
@@ -706,9 +713,11 @@
                     "Die Registrierung ist fehlgeschlagen."
                 );
 
+
             } finally {
 
                 registerButton.disabled = false;
+
             }
 
         }
@@ -768,11 +777,11 @@
                     throw new Error(
                         "Anmeldung erfolgreich, aber es wurde keine Sitzung erstellt."
                     );
+
                 }
 
-
-                // =================================================
-                // ZIEL ERMITTELN
+                            // =================================================
+                // ZIELBEREICH ERMITTELN
                 // =================================================
 
                 const parameter =
@@ -805,7 +814,7 @@
 
 
                 // =================================================
-                // KUNDENBEREICH
+                // STANDARD → KUNDENBEREICH
                 // =================================================
 
                 zeigeMeldung(
@@ -839,6 +848,7 @@
 
                     text =
                         "Bitte bestätige zuerst deine E-Mail-Adresse.";
+
                 }
 
 
@@ -848,86 +858,24 @@
             } finally {
 
                 loginButton.disabled = false;
+
             }
 
         }
     );
 
-
+            // ========================================================
+    // KEINE AUTOMATISCHE SESSION-WEITERLEITUNG
     // ========================================================
-    // BEREITS ANGEMELDET
-    // ========================================================
-
-    (async function pruefeSession() {
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient.auth.getSession();
+    //
+    // Absichtlich keine getSession()-Weiterleitung hier.
+    //
+    // Dadurch bleibt die Login-Seite geöffnet und du kannst
+    // E-Mail und Passwort selbst eingeben.
+    //
+    // Die Weiterleitung erfolgt NUR nachdem du auf
+    // "Anmelden" geklickt hast.
+    //
 
 
-            if (error) {
-
-                console.error(
-                    "Session konnte nicht geprüft werden:",
-                    error
-                );
-
-                return;
-            }
-
-
-            if (!data.session) {
-                return;
-            }
-
-
-            const parameter =
-                new URLSearchParams(
-                    window.location.search
-                );
-
-
-            const bereich =
-                parameter.get("bereich");
-
-
-            if (bereich === "mitarbeiter") {
-
-                zeigeMeldung(
-                    "Du bist bereits angemeldet. " +
-                    "Mitarbeiterbereich wird geöffnet..."
-                );
-
-
-                window.location.href =
-                    "mitarbeiterbereich.html";
-
-            } else {
-
-                zeigeMeldung(
-                    "Du bist bereits angemeldet. " +
-                    "Kundenbereich wird geöffnet..."
-                );
-
-
-                window.location.href =
-                    "kundenbereich.html";
-            }
-
-
-        } catch (error) {
-
-            console.error(
-                "Sessionprüfung fehlgeschlagen:",
-                error
-            );
-
-        }
-
-    })();
-
-        </script>
+</script>
