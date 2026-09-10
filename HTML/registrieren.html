@@ -456,12 +456,32 @@
 
                     if (data.user) {
 
-                        meldung.innerHTML =
-                            "✓ Registrierung erfolgreich!<br>" +
-                            "📧 Wir haben dir eine Bestätigungs-Mail geschickt.<br>" +
-                            "Bitte bestätige deine E-Mail-Adresse.";
+    // Profil in der Tabelle "profiles" anlegen
+    const { error: profilFehler } = await supabaseClient
+        .from("profiles")
+        .insert({
+            id: data.user.id,
+            user_type: "kunde",
+            rang: "Kunde",
+            rolle: null
+        });
 
-                    }
+    if (profilFehler) {
+        console.error(
+            "Profil konnte nicht erstellt werden:",
+            profilFehler
+        );
+
+        meldung.textContent =
+            "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden.";
+        return;
+    }
+
+    meldung.innerHTML =
+        "✓ Registrierung erfolgreich!<br>" +
+        "📧 Wir haben dir eine Bestätigungs-Mail geschickt.<br>" +
+        "Bitte bestätige deine E-Mail-Adresse.";
+}
 
                 } catch (error) {
 
