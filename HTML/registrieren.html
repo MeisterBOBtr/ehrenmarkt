@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ehrenmarkt – Kundenkonto erstellen</title>
+    <title>Ehrenmarkt – Kundenkonto</title>
 
     <style>
         * {
@@ -86,6 +85,39 @@
             height: 1px;
             margin: 23px 0;
             background: #8f6b32;
+        }
+
+        .modus {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .modus-button {
+            padding: 11px 8px;
+            background: #17120d;
+            color: #bcae98;
+            border: 1px solid #6f552d;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modus-button.aktiv {
+            background: linear-gradient(#c79b48, #8f6b32);
+            color: #fff;
+            border-color: #e1bd6b;
+        }
+
+        .bereich {
+            display: none;
+        }
+
+        .bereich.aktiv {
+            display: block;
         }
 
         .hinweis {
@@ -216,7 +248,6 @@
         }
 
         @media (max-width: 600px) {
-
             body {
                 padding: 15px 10px;
                 background-attachment: scroll;
@@ -236,7 +267,7 @@
                 font-size: 13px;
             }
 
-            input {
+                    input {
                 padding: 13px;
                 font-size: 16px;
             }
@@ -248,7 +279,6 @@
         }
 
         @media (max-width: 380px) {
-
             .register-box {
                 padding: 22px 15px;
             }
@@ -270,99 +300,154 @@
 
         <div class="logo">
             <h1>Ehrenmarkt</h1>
-
-            <p>
-                Kundenkonto erstellen
-            </p>
+            <p>Kundenkonto</p>
         </div>
 
         <div class="linie"></div>
 
-        <div class="hinweis">
-            Ein Kundenkonto ist freiwillig.
-            <br>
-            Du kannst auch ohne Kundenkonto Aufträge erstellen.
-        </div>
-
-        <form id="registerForm">
-
-            <div class="feld">
-                <label for="email">
-                    E-Mail-Adresse
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Deine E-Mail-Adresse"
-                    autocomplete="email"
-                    required
-                >
-            </div>
-
-            <div class="feld">
-                <label for="passwort">
-                    Passwort
-                </label>
-
-                <input
-                    type="password"
-                    id="passwort"
-                    placeholder="Dein Passwort"
-                    autocomplete="new-password"
-                    required
-                >
-            </div>
-
-            <div class="feld">
-                <label for="passwortWiederholen">
-                    Passwort wiederholen
-                </label>
-
-                <input
-                    type="password"
-                    id="passwortWiederholen"
-                    placeholder="Passwort wiederholen"
-                    autocomplete="new-password"
-                    required
-                >
-            </div>
-
+        <div class="modus">
             <button
-                type="submit"
-                class="register-button"
-                id="registerButton"
+                type="button"
+                class="modus-button aktiv"
+                id="registrierenModus"
             >
-                ⚜ Kundenkonto erstellen ⚜
+                Registrieren
             </button>
 
-        </form>
+            <button
+                type="button"
+                class="modus-button"
+                id="anmeldenModus"
+            >
+                Anmelden
+            </button>
+        </div>
+
+        <!-- REGISTRIERUNG -->
+        <section id="registrierenBereich" class="bereich aktiv">
+
+            <div class="hinweis">
+                Ein Kundenkonto ist freiwillig.
+                <br>
+                Du kannst auch ohne Kundenkonto Aufträge erstellen.
+            </div>
+
+            <form id="registerForm">
+
+                <div class="feld">
+                    <label for="registerEmail">
+                        E-Mail-Adresse
+                    </label>
+
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        placeholder="Deine E-Mail-Adresse"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="feld">
+                    <label for="registerPasswort">
+                        Passwort
+                    </label>
+
+                    <input
+                        type="password"
+                        id="registerPasswort"
+                        placeholder="Dein Passwort"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <div class="feld">
+                    <label for="passwortWiederholen">
+                        Passwort wiederholen
+                    </label>
+
+                    <input
+                        type="password"
+                        id="passwortWiederholen"
+                        placeholder="Passwort wiederholen"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="register-button"
+                    id="registerButton"
+                >
+                    ⚜ Kundenkonto erstellen ⚜
+                </button>
+
+            </form>
+        </section>
+
+        <!-- ANMELDUNG -->
+        <section id="anmeldenBereich" class="bereich">
+
+            <div class="hinweis">
+                Melde dich mit der E-Mail-Adresse und dem Passwort
+                deines Ehrenmarkt-Kontos an.
+            </div>
+
+            <form id="loginForm">
+
+                <div class="feld">
+                    <label for="loginEmail">
+                        E-Mail-Adresse
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="Deine E-Mail-Adresse"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="feld">
+                    <label for="loginPasswort">
+                        Passwort
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPasswort"
+                        placeholder="Dein Passwort"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="register-button"
+                    id="loginButton"
+                >
+                    ⚜ Anmelden ⚜
+                </button>
+
+            </form>
+        </section>
 
         <div id="meldung"></div>
 
         <div class="links">
 
             <p>
-                Bereits ein Kundenkonto?
-                <a href="anmelden.html">
-                    Anmelden
-                </a>
-            </p>
-
-            <p>
-                <a
-                    href="kundenbereich.html"
-                    class="zurueck"
-                >
+                <a href="kundenbereich.html" class="zurueck">
                     ← Zum Kundenbereich
                 </a>
             </p>
 
             <p>
-                <a
-                    href="startseite.html"
-                    class="zurueck"
-                >
+                <a href="startseite.html" class="zurueck">
                     ← Zurück zum Ehrenmarkt
                 </a>
             </p>
@@ -371,44 +456,92 @@
 
     </main>
 
-
     <!-- SUPABASE -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="../supabase.js"></script>
 
-
-    <!-- REGISTRIERUNG -->
-
     <script>
+        const registerForm = document.getElementById("registerForm");
+        const loginForm = document.getElementById("loginForm");
 
-        const registerForm =
-            document.getElementById("registerForm");
+        const registerButton = document.getElementById("registerButton");
+        const loginButton = document.getElementById("loginButton");
 
-        const meldung =
-            document.getElementById("meldung");
+        const meldung = document.getElementById("meldung");
 
-        const registerButton =
-            document.getElementById("registerButton");
+        const registrierenModus =
+            document.getElementById("registrierenModus");
+
+        const anmeldenModus =
+            document.getElementById("anmeldenModus");
+
+        const registrierenBereich =
+            document.getElementById("registrierenBereich");
+
+        const anmeldenBereich =
+            document.getElementById("anmeldenBereich");
+
+
+        function zeigeMeldung(text) {
+            meldung.textContent = text;
+        }
+
+
+        function zeigeModus(modus) {
+
+            meldung.textContent = "";
+
+            if (modus === "anmelden") {
+
+                registrierenBereich.classList.remove("aktiv");
+                anmeldenBereich.classList.add("aktiv");
+
+                registrierenModus.classList.remove("aktiv");
+                anmeldenModus.classList.add("aktiv");
+
+            } else {
+
+                anmeldenBereich.classList.remove("aktiv");
+                registrierenBereich.classList.add("aktiv");
+
+                anmeldenModus.classList.remove("aktiv");
+                registrierenModus.classList.add("aktiv");
+            }
+        }
+
+
+        registrierenModus.addEventListener(
+            "click",
+            function () {
+                zeigeModus("registrieren");
+            }
+        );
+
+
+        anmeldenModus.addEventListener(
+            "click",
+            function () {
+                zeigeModus("anmelden");
+            }
+        );
 
 
         registerForm.addEventListener(
             "submit",
-            async function(event) {
+            async function (event) {
 
                 event.preventDefault();
 
-
                 const email =
                     document
-                        .getElementById("email")
+                        .getElementById("registerEmail")
                         .value
-                        .trim();
+
+                                .trim();
 
                 const passwort =
                     document
-                        .getElementById("passwort")
+                        .getElementById("registerPasswort")
                         .value;
 
                 const passwortWiederholen =
@@ -417,13 +550,11 @@
                         .value;
 
 
-                if (
-                    passwort !==
-                    passwortWiederholen
-                ) {
+                if (passwort !== passwortWiederholen) {
 
-                    meldung.textContent =
-                        "Die Passwörter stimmen nicht überein.";
+                    zeigeMeldung(
+                        "Die Passwörter stimmen nicht überein."
+                    );
 
                     return;
                 }
@@ -431,8 +562,9 @@
 
                 registerButton.disabled = true;
 
-                meldung.textContent =
-                    "Registrierung läuft...";
+                zeigeMeldung(
+                    "Registrierung läuft..."
+                );
 
 
                 try {
@@ -441,12 +573,10 @@
                         data,
                         error
                     } =
-                        await supabaseClient
-                            .auth
-                            .signUp({
-                                email: email,
-                                password: passwort
-                            });
+                        await supabaseClient.auth.signUp({
+                            email: email,
+                            password: passwort
+                        });
 
 
                     if (error) {
@@ -454,34 +584,75 @@
                     }
 
 
-                    if (data.user) {
+                    if (!data.user) {
+                        throw new Error(
+                            "Das Benutzerkonto konnte nicht erstellt werden."
+                        );
+                    }
 
-    // Profil in der Tabelle "profiles" anlegen
-    const { error: profilFehler } = await supabaseClient
-        .from("profiles")
-        .insert({
-            id: data.user.id,
-            user_type: "kunde",
-            rang: "Kunde",
-            rolle: null
-        });
 
-    if (profilFehler) {
-        console.error(
-            "Profil konnte nicht erstellt werden:",
-            profilFehler
-        );
+                    /*
+                     * Profil in "profiles" anlegen.
+                     * Die bisher verwendeten Felder bleiben erhalten.
+                     */
+                    const {
+                        error: profilFehler
+                    } =
+                        await supabaseClient
+                            .from("profiles")
+                            .insert({
+                                id: data.user.id,
+                                user_type: "kunde",
+                                rang: "Kunde",
+                                rolle: null
+                            });
 
-        meldung.textContent =
-            "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden.";
-        return;
-    }
 
-    meldung.innerHTML =
-        "✓ Registrierung erfolgreich!<br>" +
-        "📧 Wir haben dir eine Bestätigungs-Mail geschickt.<br>" +
-        "Bitte bestätige deine E-Mail-Adresse.";
-}
+                    if (profilFehler) {
+
+                        console.error(
+                            "Profil konnte nicht erstellt werden:",
+                            profilFehler
+                        );
+
+                        zeigeMeldung(
+                            "Registrierung erfolgreich, aber das Kundenprofil konnte nicht erstellt werden."
+                        );
+
+                        return;
+                    }
+
+
+                    /*
+                     * Wenn Supabase sofort eine Session liefert,
+                     * kann der Kunde direkt in den Kundenbereich.
+                     *
+                     * Wenn E-Mail-Bestätigung aktiviert ist,
+                     * liefert Supabase normalerweise noch keine Session.
+                     */
+                    if (data.session) {
+
+                        zeigeMeldung(
+                            "Registrierung erfolgreich. Du wirst weitergeleitet..."
+                        );
+
+                        window.location.href =
+                            "kundenbereich.html";
+
+                        return;
+                    }
+
+
+                    zeigeMeldung(
+                        "✓ Registrierung erfolgreich! " +
+                        "Bitte bestätige zuerst deine E-Mail-Adresse. " +
+                        "Danach kannst du dich über „Anmelden“ einloggen."
+                    );
+
+
+                    zeigeModus("anmelden");
+
+                    document.getElementById("loginEmail").value = email;
 
                 } catch (error) {
 
@@ -490,21 +661,148 @@
                         error
                     );
 
-                    meldung.textContent =
+                    zeigeMeldung(
                         error.message ||
-                        "Die Registrierung ist fehlgeschlagen.";
+                        "Die Registrierung ist fehlgeschlagen."
+                    );
 
                 } finally {
 
                     registerButton.disabled = false;
-
                 }
-
             }
         );
 
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const email =
+                    document
+                        .getElementById("loginEmail")
+                        .value
+                        .trim();
+
+                const passwort =
+                    document
+                        .getElementById("loginPasswort")
+                        .value;
+
+
+                loginButton.disabled = true;
+
+                zeigeMeldung(
+                    "Anmeldung läuft..."
+                );
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.signInWithPassword({
+                            email: email,
+                            password: passwort
+                        });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    if (!data.session) {
+                        throw new Error(
+                            "Anmeldung erfolgreich, aber es wurde keine Sitzung erstellt."
+                        );
+                    }
+
+
+                    zeigeMeldung(
+                        "✓ Anmeldung erfolgreich. " +
+                        "Kundenbereich wird geöffnet..."
+                    );
+
+
+                    window.location.href =
+                        "kundenbereich.html";
+
+                } catch (error) {
+
+                    console.error(
+                        "Anmeldung fehlgeschlagen:",
+                        error
+                    );
+
+                    let text =
+                        error.message ||
+                        "Die Anmeldung ist fehlgeschlagen.";
+
+                    if (
+                        text.toLowerCase().includes(
+                            "email not confirmed"
+                        )
+                    ) {
+                        text =
+                            "Bitte bestätige zuerst deine E-Mail-Adresse.";
+                    }
+
+                    zeigeMeldung(text);
+
+                } finally {
+
+                    loginButton.disabled = false;
+                }
+            }
+        );
+
+
+        /*
+         * Falls bereits eine Session existiert,
+         * wird sie nicht gelöscht.
+         */
+        (async function pruefeSession() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth.getSession();
+
+                if (error) {
+                    console.error(
+                        "Session konnte nicht geprüft werden:",
+                        error
+                    );
+
+                    return;
+                }
+
+                if (data.session) {
+
+                    zeigeMeldung(
+                        "Du bist bereits angemeldet. " +
+                        "Öffne den Kundenbereich."
+                    );
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Sessionprüfung fehlgeschlagen:",
+                    error
+                );
+            }
+
+        })();
     </script>
 
 </body>
-
 </html>
