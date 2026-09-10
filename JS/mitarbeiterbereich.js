@@ -2,6 +2,7 @@
 // EHRENMARKT – MITARBEITERBEREICH
 // Teil 1/4 – Anmeldung & Zugriffskontrolle
 // ============================================================
+(() => {
 
 const supabaseClient = window.supabaseClient;
 
@@ -1817,3 +1818,5 @@ document.addEventListener(
 
     }
 );
+
+ })();
