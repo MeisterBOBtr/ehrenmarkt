@@ -243,14 +243,14 @@ async function pruefeAnmeldung() {
 
         if (!session?.user) {
 
-            aktuellerBenutzer = null;
-            aktuellesProfil = null;
+    aktuellerBenutzer = null;
+    aktuellesProfil = null;
 
-            zeigeGastBereich();
+    setzeLadeanzeige(false);
+    zeigeGastBereich();
 
-            return;
-
-        }
+    return;
+}
 
 
         /* -----------------------------------------------------
