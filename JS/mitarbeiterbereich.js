@@ -1,20 +1,37 @@
+
 // ============================================================
 // EHRENMARKT – MITARBEITERBEREICH
 // Teil 1/4 – Anmeldung & Zugriffskontrolle
 // ============================================================
 
-const mitarbeiterSupabase = window.supabaseClient;
+"use strict";
 
-// Erlaubte Ränge für den Mitarbeiterbereich
+
+// ============================================================
+// SUPABASE
+// ============================================================
+
+let mitarbeiterSupabase = null;
+
+
+// ============================================================
+// GLOBALE VARIABLEN
+// ============================================================
+
+let aktuellerUser = null;
+let aktuellesProfil = null;
+let aktuellerMitarbeiter = null;
+
+
+// ============================================================
+// ERLAUBTE RÄNGE
+// ============================================================
+
 const ERLAUBTE_MITARBEITER_RAEGE = [
     "Mitarbeiter",
     "Leitung",
     "Stadtleitung"
 ];
-
-let aktuellerUser = null;
-let aktuellesProfil = null;
-let aktuellerMitarbeiter = null;
 
 
 // ============================================================
@@ -27,6 +44,7 @@ function element(id) {
 
 
 function setText(id, text) {
+
     const el = element(id);
 
     if (el) {
@@ -36,6 +54,7 @@ function setText(id, text) {
 
 
 function anzeigen(id) {
+
     const el = element(id);
 
     if (el) {
@@ -45,6 +64,7 @@ function anzeigen(id) {
 
 
 function verstecken(id) {
+
     const el = element(id);
 
     if (el) {
@@ -54,6 +74,7 @@ function verstecken(id) {
 
 
 function zeigeFehler(text) {
+
     const fehler = element("fehler");
 
     if (!fehler) {
@@ -66,6 +87,7 @@ function zeigeFehler(text) {
 
 
 function versteckeFehler() {
+
     const fehler = element("fehler");
 
     if (fehler) {
@@ -76,28 +98,40 @@ function versteckeFehler() {
 
 
 // ============================================================
-// GASTBEREICH / KEIN ZUGRIFF
+// GASTBEREICH
 // ============================================================
 
-function zeigeGastbereich(text = "Du bist aktuell nicht angemeldet.") {
+function zeigeGastbereich(
+    text = "Du bist aktuell nicht angemeldet."
+) {
 
-    const gastBereich = element("gastBereich");
-    const mitarbeiterBereich = element("mitarbeiterBereich");
-    const abmeldenButton = element("abmeldenButton");
+    const gastBereich =
+        element("gastBereich");
+
+    const mitarbeiterBereich =
+        element("mitarbeiterBereich");
+
+    const abmeldenButton =
+        element("abmeldenButton");
+
 
     if (mitarbeiterBereich) {
         mitarbeiterBereich.style.display = "none";
     }
 
+
     if (gastBereich) {
+
         gastBereich.style.display = "block";
 
-        const paragraph = gastBereich.querySelector("p");
+        const paragraph =
+            gastBereich.querySelector("p");
 
         if (paragraph) {
             paragraph.textContent = text;
         }
     }
+
 
     if (abmeldenButton) {
         abmeldenButton.style.display = "none";
@@ -111,26 +145,36 @@ function zeigeGastbereich(text = "Du bist aktuell nicht angemeldet.") {
 
 function zeigeKeinZugriff() {
 
-    const gastBereich = element("gastBereich");
-    const mitarbeiterBereich = element("mitarbeiterBereich");
-    const abmeldenButton = element("abmeldenButton");
+    const gastBereich =
+        element("gastBereich");
+
+    const mitarbeiterBereich =
+        element("mitarbeiterBereich");
+
+    const abmeldenButton =
+        element("abmeldenButton");
+
 
     if (mitarbeiterBereich) {
         mitarbeiterBereich.style.display = "none";
     }
 
+
     if (gastBereich) {
+
         gastBereich.style.display = "block";
 
         gastBereich.innerHTML = `
             <h2>Kein Zugriff</h2>
 
             <p>
-                Dein Rang besitzt keinen Zugriff auf den Mitarbeiterbereich.
+                Dein Rang besitzt keinen Zugriff
+                auf den Mitarbeiterbereich.
             </p>
 
             <p>
-                Zugriff haben nur Mitarbeiter, Leitung und Stadtleitung.
+                Zugriff haben nur Mitarbeiter,
+                Leitung und Stadtleitung.
             </p>
 
             <a href="kundenbereich.html" class="button">
@@ -138,6 +182,7 @@ function zeigeKeinZugriff() {
             </a>
         `;
     }
+
 
     if (abmeldenButton) {
         abmeldenButton.style.display = "none";
@@ -151,17 +196,25 @@ function zeigeKeinZugriff() {
 
 function zeigeMitarbeiterbereich() {
 
-    const gastBereich = element("gastBereich");
-    const mitarbeiterBereich = element("mitarbeiterBereich");
-    const abmeldenButton = element("abmeldenButton");
+    const gastBereich =
+        element("gastBereich");
+
+    const mitarbeiterBereich =
+        element("mitarbeiterBereich");
+
+    const abmeldenButton =
+        element("abmeldenButton");
+
 
     if (gastBereich) {
         gastBereich.style.display = "none";
     }
 
+
     if (mitarbeiterBereich) {
         mitarbeiterBereich.style.display = "block";
     }
+
 
     if (abmeldenButton) {
         abmeldenButton.style.display = "";
@@ -170,27 +223,38 @@ function zeigeMitarbeiterbereich() {
 
 
 // ============================================================
-// PROFIL LADEN UND RANG PRÜFEN
+// MITARBEITERZUGRIFF PRÜFEN
 // ============================================================
 
 async function pruefeMitarbeiterZugriff(user) {
 
     if (!user) {
+
         zeigeGastbereich();
+
         return false;
     }
 
+
     aktuellerUser = user;
 
-    const { data: profil, error } = await mitarbeiterSupabase
+
+    const {
+        data: profil,
+        error
+    } = await mitarbeiterSupabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
+
     if (error) {
 
-        console.error("Profil konnte nicht geladen werden:", error);
+        console.error(
+            "Profil konnte nicht geladen werden:",
+            error
+        );
 
         zeigeFehler(
             "Dein Profil konnte nicht geladen werden."
@@ -202,6 +266,7 @@ async function pruefeMitarbeiterZugriff(user) {
 
         return false;
     }
+
 
     if (!profil) {
 
@@ -216,18 +281,26 @@ async function pruefeMitarbeiterZugriff(user) {
         return false;
     }
 
+
     aktuellesProfil = profil;
 
-    const rang = String(profil.rang || "").trim();
 
-    console.log("Angemeldeter Rang:", rang);
+    const rang =
+        String(
+            profil.rang || ""
+        ).trim();
 
-    // --------------------------------------------------------
-    // WICHTIG:
-    // Nur diese drei Ränge dürfen hinein.
-    // --------------------------------------------------------
 
-    if (!ERLAUBTE_MITARBEITER_RAEGE.includes(rang)) {
+    console.log(
+        "Angemeldeter Rang:",
+        rang
+    );
+
+
+    if (
+        !ERLAUBTE_MITARBEITER_RAEGE
+            .includes(rang)
+    ) {
 
         console.log(
             "Zugriff verweigert. Rang:",
@@ -235,106 +308,121 @@ async function pruefeMitarbeiterZugriff(user) {
         );
 
         versteckeFehler();
+
         zeigeKeinZugriff();
 
         return false;
     }
 
-    // Rang ist erlaubt
+
     versteckeFehler();
+
     zeigeMitarbeiterbereich();
 
-    // Mitarbeiterdaten erst jetzt laden
-    await ladeMitarbeiterbereich(user, profil);
+
+    await ladeMitarbeiterbereich(
+        user,
+        profil
+    );
+
 
     return true;
 }
 
 
 // ============================================================
-// INITIALISIERUNG
+// ANMELDUNG / SESSION PRÜFEN
 // ============================================================
 
-async function initialisieren() {
-
-    versteckeFehler();
-
-    const ladebereich = element("ladebereich");
-
-    if (ladebereich) {
-        ladebereich.style.display = "block";
-    }
-
-    if (!mitarbeiterSupabase) {
-
-        zeigeFehler(
-            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-        );
-
-        if (ladebereich) {
-            ladebereich.style.display = "none";
-        }
-
-        return;
-    }
+async function pruefeAnmeldung() {
 
     try {
 
-        const sessionPromise =
-            mitarbeiterSupabase.auth.getSession();
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .auth
+                .getSession();
 
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => {
-                reject(
-                    new Error(
-                        "Zeitüberschreitung beim Laden der Anmeldung."
-                    )
-                );
-            }, 10000);
-        });
 
-        const result = await Promise.race([
-            sessionPromise,
-            timeoutPromise
-        ]);
+        if (error) {
+            throw error;
+        }
 
-        const session = result?.data?.session;
 
-        if (!session || !session.user) {
+        const session =
+            data?.session;
 
-            if (ladebereich) {
-                ladebereich.style.display = "none";
-            }
+
+        // --------------------------------------------------------
+        // NICHT ANGEMELDET
+        // --------------------------------------------------------
+
+        if (!session?.user) {
+
+            aktuellerUser = null;
+            aktuellesProfil = null;
 
             zeigeGastbereich();
 
             return;
         }
 
-        await pruefeMitarbeiterZugriff(session.user);
 
-    } catch (error) {
+        // --------------------------------------------------------
+        // ANGEMELDET
+        // --------------------------------------------------------
+
+        aktuellerUser =
+            session.user;
+
+
+        await pruefeMitarbeiterZugriff(
+            session.user
+        );
+
+    } catch (fehler) {
 
         console.error(
-            "Fehler bei der Initialisierung:",
-            error
+            "Fehler beim Prüfen der Anmeldung:",
+            fehler
         );
 
         zeigeFehler(
             "Der Mitarbeiterbereich konnte nicht geladen werden."
         );
-
-        zeigeGastbereich(
-            "Die Anmeldung konnte nicht überprüft werden."
-        );
-
-    } finally {
-
-        if (ladebereich) {
-            ladebereich.style.display = "none";
-        }
     }
 }
+
+
+// ============================================================
+// SEITE STARTEN
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        mitarbeiterSupabase =
+            window.supabaseClient;
+
+
+        if (!mitarbeiterSupabase) {
+
+            zeigeFehler(
+                "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
+            );
+
+            return;
+        }
+
+
+        await pruefeAnmeldung();
+
+    }
+);
 
 
 // ============================================================
@@ -345,14 +433,22 @@ async function abmelden() {
 
     try {
 
-        const { error } =
-            await mitarbeiterSupabase.auth.signOut();
+        const {
+            error
+        } =
+            await mitarbeiterSupabase
+                .auth
+                .signOut();
+
 
         if (error) {
             throw error;
         }
 
-        window.location.href = "registrieren.html";
+
+        window.location.href =
+            "registrieren.html";
+
 
     } catch (error) {
 
@@ -361,11 +457,6 @@ async function abmelden() {
             error
         );
 
-        zeigeFehler(
-
-            // ============================================================
-// FEHLERBEHANDLUNG BEIM ABMELDEN
-// ============================================================
 
         zeigeFehler(
             "Du konntest nicht abgemeldet werden."
@@ -381,44 +472,55 @@ async function abmelden() {
 function registriereAuthListener() {
 
     if (!mitarbeiterSupabase) {
+
         console.error(
             "Ehrenmarkt: Supabase-Client nicht verfügbar."
         );
+
         return;
     }
 
-    mitarbeiterSupabase.auth.onAuthStateChange(
-        async (event, session) => {
 
-            console.log(
-                "Auth-Änderung:",
-                event
-            );
+    mitarbeiterSupabase
+        .auth
+        .onAuthStateChange(
+            async (
+                event,
+                session
+            ) => {
 
-            if (event === "SIGNED_OUT") {
-
-                aktuellerUser = null;
-                aktuellesProfil = null;
-                aktuellerMitarbeiter = null;
-
-                zeigeGastbereich(
-                    "Du bist aktuell nicht angemeldet."
+                console.log(
+                    "Auth-Änderung:",
+                    event
                 );
 
-                return;
-            }
 
-            if (
-                event === "SIGNED_IN" &&
-                session?.user
-            ) {
+                if (
+                    event === "SIGNED_OUT"
+                ) {
 
-                await pruefeMitarbeiterZugriff(
-                    session.user
-                );
+                    aktuellerUser = null;
+                    aktuellesProfil = null;
+                    aktuellerMitarbeiter = null;
+
+                    zeigeGastbereich();
+
+                    return;
+                }
+
+
+                if (
+                    event === "SIGNED_IN" &&
+                    session?.user
+                ) {
+
+                    await pruefeMitarbeiterZugriff(
+                        session.user
+                    );
+                }
+
             }
-        }
-    );
+        );
 }
 
 
@@ -431,9 +533,11 @@ function verbindeAbmeldenButton() {
     const button =
         element("abmeldenButton");
 
+
     if (!button) {
         return;
     }
+
 
     button.addEventListener(
         "click",
@@ -454,10 +558,10 @@ document.addEventListener(
 
         registriereAuthListener();
 
-        await initialisieren();
+        await pruefeAnmeldung();
+
     }
 );
-
 
 // ============================================================
 // MITARBEITERBEREICH LADEN
