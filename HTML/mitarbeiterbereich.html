@@ -1,1057 +1,1398 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Ehrenmarkt – Mitarbeiterbereich</title>
 
+
+    <!-- =====================================================
+         GRUND-DESIGN
+    ====================================================== -->
+
     <style>
+
         * {
             box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+
             margin: 0;
             padding: 0;
+            min-height: 100%;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            min-height: 100vh;
-            color: #f5f5f5;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
             background-image:
-                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/file_00000000bb3881f49c17b6470e840a15.png");
+                linear-gradient(
+                    rgba(0, 0, 0, 0.58),
+                    rgba(0, 0, 0, 0.72)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Kunde.png");
 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background-size:
+                cover;
 
-            background-color: #111;
+            background-position:
+                center;
+
+            background-attachment:
+                fixed;
+
+            background-repeat:
+                no-repeat;
+
+            color:
+                #ffffff;
+
+            min-height:
+                100vh;
         }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
 
-        button {
-            font-family: inherit;
-        }
+        /* =================================================
+           HAUPTCONTAINER
+        ================================================= */
 
         .seite {
-            min-height: 100vh;
-            padding: 20px;
+
+            width:
+                100%;
+
+            max-width:
+                1100px;
+
+            margin:
+                0 auto;
+
+            padding:
+                18px 14px 40px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
 
-        /* =========================
-           HEADER
-           ========================= */
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-
-            padding: 18px 22px;
-            margin-bottom: 25px;
-
-            background: rgba(15, 15, 15, 0.90);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(8px);
-        }
-
-        .logo-bereich {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .logo {
-            font-size: 25px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .logo span {
-            color: #d7a84b;
-        }
-
-        .untertitel {
-            font-size: 13px;
-            color: #aaa;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            min-height: 42px;
-            padding: 10px 16px;
-
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-
-            background: rgba(255, 255, 255, 0.07);
-            color: #fff;
-
-            font-size: 14px;
-            font-weight: 700;
-
-            cursor: pointer;
-            transition: 0.2s ease;
-        }
-
-        .button:hover {
-            background: rgba(255, 255, 255, 0.13);
-            transform: translateY(-1px);
-        }
-
-        .button.gold {
-            background: #b8872f;
-            border-color: #d7a84b;
-        }
-
-        .button.gold:hover {
-            background: #c99738;
-        }
-
-        .button.danger {
-            background: rgba(160, 45, 45, 0.25);
-            border-color: rgba(220, 80, 80, 0.45);
-        }
-
-        .button.danger:hover {
-            background: rgba(180, 50, 50, 0.4);
-        }
-
-        /* =========================
-           FEHLER
-           ========================= */
-
-        .fehler {
-            display: none;
-
-            margin-bottom: 20px;
-            padding: 15px 18px;
-
-            background: rgba(150, 35, 35, 0.90);
-            border: 1px solid rgba(255, 100, 100, 0.45);
-            border-radius: 12px;
-
-            color: #fff;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           WILLKOMMEN
-           ========================= */
-
-        .willkommen {
-            margin-bottom: 25px;
-            padding: 28px;
-
-            background: rgba(15, 15, 15, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
-
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-        }
-
-        .willkommen h1 {
-            margin-bottom: 8px;
-
-            font-size: clamp(25px, 5vw, 38px);
-            line-height: 1.15;
-        }
-
-        .willkommen h1 span {
-            color: #d7a84b;
-        }
-
-        .willkommen p {
-            color: #bdbdbd;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        /* =========================
-           GRID
-           ========================= */
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
-        }
+        /* =================================================
+           KARTEN
+        ================================================= */
 
         .karte {
-            padding: 22px;
 
-            background: rgba(15, 15, 15, 0.90);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
+            background:
+                rgba(15, 12, 10, 0.88);
 
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(8px);
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.55);
+
+            border-radius:
+                12px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.45);
+
+            padding:
+                18px;
+
+            margin-bottom:
+                16px;
         }
 
-        .karte.ganz {
-            grid-column: 1 / -1;
+
+        /* =================================================
+           ÜBERSCHRIFTEN
+        ================================================= */
+
+        h1,
+        h2,
+        h3 {
+
+            margin-top:
+                0;
+
+            color:
+                #d7ad52;
         }
 
-        .karten-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
 
-            margin-bottom: 18px;
+        h1 {
+
+            font-size:
+                26px;
         }
 
-        .karten-header h2 {
-            font-size: 20px;
+
+        h2 {
+
+            font-size:
+                20px;
         }
 
-        .karten-header p {
-            margin-top: 4px;
-            color: #999;
-            font-size: 13px;
+
+        h3 {
+
+            font-size:
+                17px;
         }
 
-        /* =========================
+
+        p {
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =================================================
+           BUTTONS
+        ================================================= */
+
+        button,
+        .button {
+
+            display:
+                inline-block;
+
+            border:
+                1px solid
+                #a97b27;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #6f1d1d,
+                    #431010
+                );
+
+            color:
+                #ffffff;
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            text-decoration:
+                none;
+
+            font-weight:
+                bold;
+
+            transition:
+                0.2s;
+        }
+
+
+        button:hover,
+        .button:hover {
+
+            filter:
+                brightness(1.18);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        button:disabled {
+
+            opacity:
+                0.5;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+        }
+
+
+        /* =================================================
+           LADEBEREICH
+        ================================================= */
+
+        #ladebereich {
+
+            text-align:
+                center;
+
+            color:
+                #d7ad52;
+
+            padding:
+                20px;
+        }
+
+
+        /* =================================================
+           FEHLER
+        ================================================= */
+
+        #fehler {
+
+            display:
+                none;
+
+            background:
+                rgba(120, 20, 20, 0.9);
+
+            border:
+                1px solid
+                #d64b4b;
+
+            border-radius:
+                8px;
+
+            padding:
+                12px;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        /* =================================================
+           GAST-BEREICH
+        ================================================= */
+
+        #gastBereich {
+
+            text-align:
+                left;
+        }
+
+
+        /* =================================================
+           MITARBEITERBEREICH
+        ================================================= */
+
+        #mitarbeiterBereich {
+
+            display:
+                none;
+        }
+
+
+        /* =================================================
            PROFIL
-           ========================= */
+        ================================================= */
 
-        .profil-daten {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
+        .profil-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap:
+                12px;
         }
+
 
         .profil-item {
-            padding: 14px;
 
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 11px;
+            padding:
+                12px;
+
+            background:
+                rgba(255, 255, 255, 0.04);
+
+            border-radius:
+                8px;
         }
+
 
         .profil-label {
-            display: block;
-            margin-bottom: 6px;
 
-            color: #888;
-            font-size: 12px;
+            color:
+                #aaa;
+
+            font-size:
+                13px;
         }
+
 
         .profil-wert {
-            color: #fff;
-            font-size: 15px;
-            font-weight: 700;
 
-            word-break: break-word;
+            margin-top:
+                4px;
+
+            font-weight:
+                bold;
+
+            word-break:
+                break-word;
         }
 
-        /* =========================
+
+        .profil-wert.gold {
+
+            color:
+                #d7ad52;
+        }
+
+
+        /* =================================================
            STATUS
-           ========================= */
+        ================================================= */
 
         .status-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
 
-            padding: 16px;
+            display:
+                flex;
 
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                15px;
+
+            flex-wrap:
+                wrap;
         }
 
-        .status-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+
+        .status-anzeige {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
         }
+
 
         .status-punkt {
-            width: 12px;
-            height: 12px;
-            flex-shrink: 0;
 
-            border-radius: 50%;
-            background: #777;
+            width:
+                12px;
 
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+            height:
+                12px;
+
+            border-radius:
+                50%;
+
+            background:
+                #777;
+
+            flex-shrink:
+                0;
         }
+
+
+        .status-punkt.aktiv {
+
+            background:
+                #4caf50;
+
+            box-shadow:
+                0 0 10px
+                rgba(76, 175, 80, 0.6);
+        }
+
+
+        .status-punkt.inaktiv {
+
+            background:
+                #777;
+        }
+
 
         .status-text {
-            font-weight: 700;
+
+            font-weight:
+                bold;
         }
 
-        .status-hinweis {
-            margin-top: 5px;
-            color: #888;
-            font-size: 12px;
-        }
 
-        /* =========================
+        /* =================================================
            VERFÜGBARKEIT
-           ========================= */
+        ================================================= */
 
         .verfuegbarkeit {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                10px;
         }
 
-        .verfuegbarkeit button {
-            min-height: 48px;
+
+        .verfuegbarkeit button.ausgewaehlt {
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #a97b27,
+                    #765116
+                );
         }
 
-        /* =========================
+
+        /* =================================================
            ARBEITSZEIT
-           ========================= */
+        ================================================= */
 
         .arbeitszeit {
-            text-align: center;
-            padding: 10px;
+
+            text-align:
+                center;
+
+            padding:
+                10px;
         }
+
 
         .arbeitszeit-wert {
-            margin-bottom: 6px;
 
-            font-size: 34px;
-            font-weight: 800;
-            color: #d7a84b;
+            font-size:
+                28px;
+
+            font-weight:
+                bold;
+
+            color:
+                #d7ad52;
         }
+
 
         .arbeitszeit-label {
-            color: #999;
-            font-size: 13px;
-        }
-```0
 
-              /* =========================
-           AUFTRAGS-STATISTIK
-           ========================= */
+            color:
+                #aaa;
 
-        .statistik {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
+            font-size:
+                13px;
         }
 
-        .statistik-box {
-            padding: 18px 12px;
-            text-align: center;
-
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-        }
-
-        .statistik-wert {
-            margin-bottom: 5px;
-
-            font-size: 28px;
-            font-weight: 800;
-            color: #d7a84b;
-        }
-
-        .statistik-label {
-            color: #999;
-            font-size: 12px;
-        }
-
-        /* =========================
-           AUFTRÄGE
-           ========================= */
-
-        .auftraege-liste {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .auftrag {
-            padding: 16px;
-
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-
-            transition: 0.2s ease;
-        }
-
-        .auftrag:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(215, 168, 75, 0.35);
-        }
-
-        .auftrag-kopf {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-
-            margin-bottom: 8px;
-        }
-
-        .auftrag-titel {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .auftrag-typ {
-            margin-top: 4px;
-
-            color: #999;
-            font-size: 12px;
-        }
-
-        .auftrag-status {
-            flex-shrink: 0;
-
-            padding: 5px 9px;
-
-            border-radius: 20px;
-            background: rgba(215, 168, 75, 0.15);
-            border: 1px solid rgba(215, 168, 75, 0.25);
-
-            color: #d7a84b;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .auftrag-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-
-            color: #aaa;
-            font-size: 12px;
-        }
-
-        /* =========================
-           VERSTÄRKUNG
-           ========================= */
-
-        .verstaerkung-liste {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .verstaerkung {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-
-            padding: 16px;
-
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-        }
-
-        .verstaerkung-info {
-            min-width: 0;
-        }
-
-        .verstaerkung-titel {
-            margin-bottom: 5px;
-
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .verstaerkung-details {
-            color: #999;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           BENACHRICHTIGUNGEN
-           ========================= */
-
-        .benachrichtigungen-liste {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .benachrichtigung {
-            padding: 15px;
-
-            background: rgba(255, 255, 255, 0.045);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-        }
-
-        .benachrichtigung-titel {
-            margin-bottom: 5px;
-
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .benachrichtigung-text {
-            color: #aaa;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           LEERER INHALT
-           ========================= */
-
-        .leer {
-            padding: 20px;
-
-            text-align: center;
-            color: #888;
-
-            background: rgba(255, 255, 255, 0.025);
-            border: 1px dashed rgba(255, 255, 255, 0.10);
-            border-radius: 12px;
-
-            font-size: 13px;
-        }
-
-        /* =========================
-           LADETEXT
-           ========================= */
-
-        .laden {
-            padding: 20px;
-
-            text-align: center;
-            color: #999;
-
-            font-size: 13px;
-        }
-
-        /* =========================
-           FOOTER
-           ========================= */
-
-        .footer {
-            margin-top: 25px;
-            padding: 20px;
-
-            text-align: center;
-
-            background: rgba(15, 15, 15, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            border-radius: 14px;
-
-            color: #777;
-            font-size: 12px;
-
-            backdrop-filter: blur(8px);
-        }
-
-        .footer strong {
-            color: #aaa;
-        }
-
-        /* =========================
-           RESPONSIVE
-           ========================= */
-
-        @media (max-width: 800px) {
-
-            .seite {
-                padding: 12px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .header-buttons {
-                width: 100%;
-            }
-
-            .header-buttons .button {
-                flex: 1;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .karte.ganz {
-                grid-column: auto;
-            }
-
-            .profil-daten {
-                grid-template-columns: 1fr;
-            }
-
-            .statistik {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .status-box {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .verstaerkung {
-                align-items: stretch;
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 500px) {
-
-            .willkommen,
-            .karte {
-                padding: 17px;
-            }
-
-            .statistik {
-                gap: 7px;
-            }
-
-            .statistik-box {
-                padding: 14px 6px;
-            }
-
-            .statistik-wert {
-                font-size: 23px;
-            }
-
-            .statistik-label {
-                font-size: 10px;
-            }
-
-            .auftrag-kopf {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .verfuegbarkeit {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="seite">
-    <div class="container">
 
-        <!-- HEADER -->
-        <header class="header">
 
-            <div class="logo-bereich">
-                <div class="logo">
-                    EHREN<span>MARKT</span>
-                </div>
+    <!-- =====================================================
+         KOPFBEREICH
+    ====================================================== -->
 
-                <div class="untertitel">
-                    Mitarbeiterbereich · Falkenstein
-                </div>
+    <div class="karte">
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:12px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <div>
+
+                <h1>
+                    Ehrenmarkt
+                </h1>
+
+                <p
+                    style="
+                        margin:0;
+                        color:#c8c8c8;
+                    "
+                >
+                    Mitarbeiterbereich
+                </p>
+
             </div>
 
-            <div class="header-buttons">
 
-                <a href="startseite.html" class="button">
-                    Startseite
+            <div
+                style="
+                    display:flex;
+                    gap:8px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <a
+                    href="startseite.html"
+                    class="button"
+                >
+                    ← Startseite
                 </a>
+
 
                 <button
                     type="button"
                     id="abmeldenButton"
-                    class="button danger">
+                >
                     Abmelden
                 </button>
 
             </div>
 
-        </header>
-
-        <!-- FEHLERMELDUNG -->
-        <div id="fehler" class="fehler"></div>
-
-        <!-- WILLKOMMEN -->
-        <section class="willkommen">
-
-            <h1>
-                Willkommen zurück,
-                <span id="mitarbeiterBegruessung">Mitarbeiter</span>!
-            </h1>
-
-            <p>
-                Willkommen im Mitarbeiterbereich des Ehrenmarkt-Portals.
-                Hier findest du deine persönlichen Daten, deinen aktuellen
-                Mitarbeiterstatus, deine Aufträge und offene Verstärkungsanfragen.
-            </p>
-
-        </section>
-
-        <!-- HAUPTGRID -->
-        <main class="grid">
-
-            <!-- PROFIL -->
-            <section class="karte">
-
-                <div class="karten-header">
-                    <div>
-                        <h2>Mein Profil</h2>
-                        <p>Deine Mitarbeiterdaten</p>
-                    </div>
-                </div>
-
-                <div class="profil-daten">
-
-                    <div class="profil-item">
-                        <span class="profil-label">
-                            Benutzername
-                        </span>
-
-                        <div
-                            class="profil-wert"
-                            id="mitarbeiterUsername">
-                            Wird geladen...
-                        </div>
-                    </div>
-
-                    <div class="profil-item">
-                        <span class="profil-label">
-                            Minecraft
-                        </span>
-
-                        <div
-                            class="profil-wert"
-                            id="mitarbeiterMinecraft">
-                            Wird geladen...
-                        </div>
-                    </div>
-
-                    <div class="profil-item">
-                        <span class="profil-label">
-                            Rang
-                        </span>
-
-                        <div
-                            class="profil-wert"
-                            id="mitarbeiterRang">
-                            Wird geladen...
-                        </div>
-                    </div>
-
-                    <div class="profil-item">
-                        <span class="profil-label">
-                            Rolle
-                        </span>
-
-                        <div
-                            class="profil-wert"
-                            id="mitarbeiterRolle">
-                            Wird geladen...
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- MITARBEITERSTATUS -->
-            <section class="karte">
-
-                <div class="karten-header">
-                    <div>
-                        <h2>Mitarbeiterstatus</h2>
-                        <p>Aktiv oder inaktiv</p>
-                    </div>
-                </div>
-
-                <div class="status-box">
-
-                    <div class="status-info">
-
-                        <span
-                            id="statusPunkt"
-                            class="status-punkt">
-                        </span>
-
-                        <div>
-                            <div
-                                id="statusText"
-                                class="status-text">
-                                Wird geladen...
-                            </div>
-
-                            <div class="status-hinweis">
-                                Dein aktueller Mitarbeiterstatus
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        id="statusButton"
-                        class="button gold">
-                        Status ändern
-                    </button>
-
-                </div>
-
-            </section>
-```0
-
-                      <!-- VERFÜGBARKEIT -->
-            <section class="karte">
-
-                <div class="karten-header">
-                    <div>
-                        <h2>Verfügbarkeit</h2>
-                        <p>Kannst du aktuell Aufträge übernehmen?</p>
-                    </div>
-                </div>
-
-                <div class="verfuegbarkeit">
-
-                    <button
-                        type="button"
-                        id="verfuegbarButton"
-                        class="button gold">
-                        Verfügbar
-                    </button>
-
-                    <button
-                        type="button"
-                        id="nichtVerfuegbarButton"
-                        class="button">
-                        Nicht verfügbar
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- ARBEITSZEIT -->
-            <section class="karte">
-
-                <div class="karten-header">
-                    <div>
-                        <h2>Arbeitszeit</h2>
-                        <p>Deine bisher erfasste Arbeitszeit</p>
-                    </div>
-                </div>
-
-                <div class="arbeitszeit">
-
-                    <div
-                        id="arbeitszeitAnzeige"
-                        class="arbeitszeit-wert">
-                        0:00
-                    </div>
-
-                    <div class="arbeitszeit-label">
-                        Stunden : Minuten
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- AUFTRAGSSTATISTIK -->
-            <section class="karte ganz">
-
-                <div class="karten-header">
-                    <div>
-                        <h2>Meine Aufträge</h2>
-                        <p>Übersicht über deine aktuellen Aufträge</p>
-                    </div>
-                </div>
-
-                <div class="statistik">
-
-                    <div class="statistik-box">
-
-                        <div
-                            id="auftraegeGesamt"
-                            class="statistik-wert">
-                            0
-                        </div>
-
-                        <div class="statistik-label">
-                            Gesamt
-                        </div>
-
-                    </div>
-
-                    <div class="statistik-box">
-
-                        <div
-                            id="auftraegeOffen"
-                            class="statistik-wert">
-                            0
-                        </div>
-
-                        <div class="statistik-label">
-                            Offen
-                        </div>
-
-                    </div>
-
-                    <div class="statistik-box">
-
-                        <div
-                            id="auftraegeBearbeitung"
-                            class="statistik-wert">
-                            0
-                        </div>
-
-                        <div class="statistik-label">
-                            In Bearbeitung
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- MEINE AUFTRÄGE -->
-            <section class="karte ganz">
-
-                <div class="karten-header">
-
-                    <div>
-                        <h2>Aktuelle Aufträge</h2>
-                        <p>Aufträge, die dir zugewiesen wurden</p>
-                    </div>
-
-                </div>
-
-                <div
-                    id="meineAuftraege"
-                    class="auftraege-liste">
-
-                    <div class="laden">
-                        Aufträge werden geladen...
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- OFFENE VERSTÄRKUNG -->
-            <section class="karte">
-
-                <div class="karten-header">
-
-                    <div>
-                        <h2>Offene Verstärkung</h2>
-                        <p>Hier wird Unterstützung gesucht</p>
-                    </div>
-
-                </div>
-
-                <div
-                    id="offeneVerstaerkung"
-                    class="verstaerkung-liste">
-
-                    <div class="laden">
-                        Verstärkungsanfragen werden geladen...
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- BENACHRICHTIGUNGEN -->
-            <section class="karte">
-
-                <div class="karten-header">
-
-                    <div>
-                        <h2>Benachrichtigungen</h2>
-                        <p>Wichtige Informationen für dich</p>
-                    </div>
-
-                </div>
-
-                <div
-                    id="benachrichtigungen"
-                    class="benachrichtigungen-liste">
-
-                    <div class="leer">
-                        Keine neuen Benachrichtigungen.
-                    </div>
-
-                </div>
-
-            </section>
-```0
-
-                  </main>
-
-        <!-- FOOTER -->
-        <footer class="footer">
-
-            <strong>Ehrenmarkt</strong>
-            · Mitarbeiterbereich Falkenstein
-
-            <br>
-
-            Alle Mitarbeiterfunktionen werden über das
-            Ehrenmarkt-Portal verwaltet.
-
-        </footer>
+        </div>
 
     </div>
+
+
+    <!-- =====================================================
+         FEHLERMELDUNG
+    ====================================================== -->
+
+    <div
+        id="fehler"
+    ></div>
+
+
+    <!-- =====================================================
+         LADEBEREICH
+    ====================================================== -->
+
+    <div
+        id="ladebereich"
+        class="karte"
+    >
+        Mitarbeiterbereich wird geladen...
+    </div>
+
+
+    <!-- =====================================================
+         GAST-BEREICH
+    ====================================================== -->
+
+    <div
+        id="gastBereich"
+        class="karte"
+        style="display:none;"
+    >
+
+        <h2>
+            Nicht angemeldet
+        </h2>
+
+
+        <p>
+            Du bist aktuell nicht angemeldet.
+        </p>
+
+
+        <p
+            style="
+                color:#aaa;
+            "
+        >
+            Bitte melde dich an, um deinen
+            Mitarbeiterbereich zu öffnen.
+        </p>
+
+
+        <a
+            href="registrieren.html"
+            class="button"
+        >
+            Zum Login
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         EINGELOGGTER MITARBEITERBEREICH
+    ====================================================== -->
+
+    <div
+        id="mitarbeiterBereich"
+    >
+
+
+        <!-- =================================================
+             BEGRÜSSUNG
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2
+                id="mitarbeiterBegruessung"
+            >
+                Willkommen!
+            </h2>
+
+
+            <p>
+                Hier findest du deine persönlichen
+                Mitarbeiterdaten, deinen Status und
+                deine aktuellen Aufgaben.
+            </p>
+
+        </div>
+
+                <!-- =================================================
+             PROFIL
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Mein Profil
+            </h2>
+
+
+            <div class="profil-grid">
+
+                <!-- Benutzername -->
+
+                <div class="profil-item">
+
+                    <div class="profil-label">
+                        Benutzername
+                    </div>
+
+                    <div
+                        id="mitarbeiterUsername"
+                        class="profil-wert"
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- Minecraft -->
+
+                <div class="profil-item">
+
+                    <div class="profil-label">
+                        Minecraft-Name
+                    </div>
+
+                    <div
+                        id="mitarbeiterMinecraft"
+                        class="profil-wert"
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- E-Mail -->
+
+                <div class="profil-item">
+
+                    <div class="profil-label">
+                        E-Mail
+                    </div>
+
+                    <div
+                        id="mitarbeiterEmail"
+                        class="profil-wert"
+                    >
+                        –
+                    </div>
+
+                </div>
+
+
+                <!-- Rang -->
+
+                <div class="profil-item">
+
+                    <div class="profil-label">
+                        Rang
+                    </div>
+
+                    <div
+                        id="mitarbeiterRang"
+                        class="profil-wert gold"
+                    >
+                        Mitarbeiter
+                    </div>
+
+                </div>
+
+
+                <!-- Rolle -->
+
+                <div class="profil-item">
+
+                    <div class="profil-label">
+                        Rolle
+                    </div>
+
+                    <div
+                        id="mitarbeiterRolle"
+                        class="profil-wert gold"
+                    >
+                        Mitarbeiter
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MITARBEITERSTATUS
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Mitarbeiterstatus
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Hier kannst du deinen aktuellen
+                Mitarbeiterstatus selbst ändern.
+            </p>
+
+
+            <div class="status-box">
+
+                <div class="status-anzeige">
+
+                    <span
+                        id="statusPunkt"
+                        class="status-punkt"
+                    ></span>
+
+
+                    <div>
+
+                        <div
+                            id="statusText"
+                            class="status-text"
+                        >
+                            Wird geladen...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="statusButton"
+                >
+                    Status ändern
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             VERFÜGBARKEIT
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Verfügbarkeit
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Zeige an, ob du aktuell Aufträge
+                übernehmen kannst.
+            </p>
+
+
+            <div class="verfuegbarkeit">
+
+                <button
+                    type="button"
+                    id="verfuegbarButton"
+                >
+                    Verfügbar
+                </button>
+
+
+                <button
+                    type="button"
+                    id="nichtVerfuegbarButton"
+                >
+                    Nicht verfügbar
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ARBEITSZEIT
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Arbeitszeit
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Deine bisher erfasste Arbeitszeit.
+            </p>
+
+
+            <div class="arbeitszeit">
+
+                <div
+                    id="arbeitszeitAnzeige"
+                    class="arbeitszeit-wert"
+                >
+                    0:00
+                </div>
+
+
+                <div class="arbeitszeit-label">
+                    Stunden : Minuten
+                </div>
+
+            </div>
+
+        </div>
+
+                <!-- =================================================
+             AUFTRAGSÜBERSICHT
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Meine Aufträge
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Übersicht über deine aktuellen Aufträge.
+            </p>
+
+
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(4,1fr);
+                    gap:12px;
+                "
+            >
+
+                <!-- Gesamt -->
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:12px;
+                        background:
+                            rgba(255,255,255,0.04);
+                        border-radius:8px;
+                    "
+                >
+
+                    <div
+                        id="auftraegeGesamt"
+                        style="
+                            font-size:24px;
+                            font-weight:bold;
+                            color:#d7ad52;
+                        "
+                    >
+                        0
+                    </div>
+
+                    <small
+                        style="
+                            color:#aaa;
+                        "
+                    >
+                        Gesamt
+                    </small>
+
+                </div>
+
+
+                <!-- Offen -->
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:12px;
+                        background:
+                            rgba(255,255,255,0.04);
+                        border-radius:8px;
+                    "
+                >
+
+                    <div
+                        id="auftraegeOffen"
+                        style="
+                            font-size:24px;
+                            font-weight:bold;
+                            color:#d7ad52;
+                        "
+                    >
+                        0
+                    </div>
+
+                    <small
+                        style="
+                            color:#aaa;
+                        "
+                    >
+                        Offen
+                    </small>
+
+                </div>
+
+
+                <!-- In Bearbeitung -->
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:12px;
+                        background:
+                            rgba(255,255,255,0.04);
+                        border-radius:8px;
+                    "
+                >
+
+                    <div
+                        id="auftraegeBearbeitung"
+                        style="
+                            font-size:24px;
+                            font-weight:bold;
+                            color:#d7ad52;
+                        "
+                    >
+                        0
+                    </div>
+
+                    <small
+                        style="
+                            color:#aaa;
+                        "
+                    >
+                        In Bearbeitung
+                    </small>
+
+                </div>
+
+
+                <!-- Abgeschlossen -->
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:12px;
+                        background:
+                            rgba(255,255,255,0.04);
+                        border-radius:8px;
+                    "
+                >
+
+                    <div
+                        id="auftraegeAbgeschlossen"
+                        style="
+                            font-size:24px;
+                            font-weight:bold;
+                            color:#d7ad52;
+                        "
+                    >
+                        0
+                    </div>
+
+                    <small
+                        style="
+                            color:#aaa;
+                        "
+                    >
+                        Abgeschlossen
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             AKTUELLE AUFTRÄGE
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Aktuelle Aufträge
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Aufträge, die dir aktuell zugewiesen wurden.
+            </p>
+
+
+            <div
+                id="meineAuftraege"
+            >
+
+                <div
+                    style="
+                        color:#888;
+                        text-align:center;
+                        padding:15px;
+                    "
+                >
+                    Aufträge werden geladen...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             OFFENE VERSTÄRKUNG
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Offene Verstärkung
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Aufträge, bei denen aktuell Unterstützung
+                gesucht wird.
+            </p>
+
+
+            <div
+                id="offeneVerstaerkung"
+            >
+
+                <div
+                    style="
+                        color:#888;
+                        text-align:center;
+                        padding:15px;
+                    "
+                >
+                    Verstärkungsanfragen werden geladen...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BENACHRICHTIGUNGEN
+        ================================================== -->
+
+        <div class="karte">
+
+            <h2>
+                Benachrichtigungen
+            </h2>
+
+
+            <p
+                style="
+                    color:#aaa;
+                    margin-top:-5px;
+                "
+            >
+                Wichtige Informationen für dich.
+            </p>
+
+
+            <div
+                id="benachrichtigungen"
+            >
+
+                <div
+                    style="
+                        color:#888;
+                        text-align:center;
+                        padding:15px;
+                    "
+                >
+                    Keine neuen Benachrichtigungen.
+                </div>
+
+            </div>
+
+        </div>
+
+            </div>
+    <!-- Ende mitarbeiterBereich -->
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <div
+        style="
+            text-align:center;
+            color:#888;
+            font-size:12px;
+            padding:10px 0;
+        "
+    >
+
+        Ehrenmarkt Mitarbeiterbereich
+
+    </div>
+
+
 </div>
+<!-- Ende seite -->
 
 
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- =========================================================
+     RESPONSIVE DESIGN
+========================================================= -->
 
-<!-- EHRENMARKT SUPABASE -->
-<script src="../supabase.js"></script>
+<style>
 
-<!-- MITARBEITERBEREICH -->
-<script src="../JS/mitarbeiterbereich.js"></script>
+    @media (max-width: 700px) {
+
+        .seite {
+
+            padding:
+                10px 9px 30px;
+        }
+
+
+        .karte {
+
+            padding:
+                14px;
+
+            border-radius:
+                10px;
+        }
+
+
+        h1 {
+
+            font-size:
+                23px;
+        }
+
+
+        h2 {
+
+            font-size:
+                18px;
+        }
+
+
+        /* ---------------------------------------------
+           AUFTRAGSZAHLEN
+        --------------------------------------------- */
+
+        .karte > div[style*="repeat(4,1fr)"] {
+
+            grid-template-columns:
+                repeat(2, 1fr) !important;
+        }
+
+
+        /* ---------------------------------------------
+           BUTTONS
+        --------------------------------------------- */
+
+        button,
+        .button {
+
+            text-align:
+                center;
+        }
+
+
+        /* ---------------------------------------------
+           STATUS
+        --------------------------------------------- */
+
+        .status-box {
+
+            align-items:
+                stretch;
+
+            flex-direction:
+                column;
+        }
+
+
+        .status-box button {
+
+            width:
+                100%;
+        }
+
+
+        /* ---------------------------------------------
+           VERFÜGBARKEIT
+        --------------------------------------------- */
+
+        .verfuegbarkeit {
+
+            grid-template-columns:
+                1fr;
+        }
+
+    }
+
+
+    @media (max-width: 430px) {
+
+        /* ---------------------------------------------
+           AUFTRAGSZAHLEN AUF HANDY
+        --------------------------------------------- */
+
+        .karte > div[style*="repeat(4,1fr)"] {
+
+            grid-template-columns:
+                repeat(2, 1fr) !important;
+        }
+
+
+        /* ---------------------------------------------
+           PROFIL
+        --------------------------------------------- */
+
+        .profil-grid {
+
+            grid-template-columns:
+                1fr;
+        }
+
+
+        /* ---------------------------------------------
+           BUTTONS
+        --------------------------------------------- */
+
+        button,
+        .button {
+
+            width:
+                100%;
+
+            text-align:
+                center;
+        }
+
+    }
+
+</style>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- =========================================================
+     EHRENMARKT SUPABASE
+========================================================= -->
+
+<script
+    src="../supabase.js"
+></script>
+
+
+<!-- =========================================================
+     MITARBEITERBEREICH JAVASCRIPT
+========================================================= -->
+
+<script
+    src="../JS/mitarbeiterbereich.js"
+></script>
+
 
 </body>
+
 </html>
