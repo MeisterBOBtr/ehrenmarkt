@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Regelwerk</title>
+
+
+    <style>
+
+        /* =========================================================
+           EHRENMARKT – REGELWERK
+           Teil 1/5
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #ead8ad;
+
+            background:
+
+                linear-gradient(
+                    rgba(8, 7, 6, 0.72),
+                    rgba(8, 7, 6, 0.90)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regel.png")
+
+                center top /
+                cover
+                fixed
+                no-repeat;
+
+            background-color: #0b0907;
+
+        }
+
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+
+                radial-gradient(
+                    circle at center,
+                    rgba(215, 173, 82, 0.08),
+                    transparent 58%
+                );
+
+            z-index: -1;
+
+        }
+
+
+        /* =========================================================
+           EHRENMARKT KOPF
+        ========================================================= */
+
+        .topbar {
+
+            width: 100%;
+
+            padding:
+                20px
+                18px;
+
+            background:
+                rgba(10, 8, 7, 0.94);
+
+            border-bottom:
+                1px solid
+                rgba(215, 173, 82, 0.45);
+
+            box-shadow:
+                0 4px 22px
+                rgba(0, 0, 0, 0.55);
+
+        }
+
+
+        .topbar-inner {
+
+            width:
+                min(
+                    1200px,
+                    100%
+                );
+
+            margin: 0 auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .brand {
+
+            color: #d7ad52;
+
+            font-size: 26px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+                0 2px 5px
+                rgba(0, 0, 0, 0.8);
+
+        }
+
+
+        .brand span {
+
+            display: block;
+
+            margin-top: 5px;
+
+            color: #a78a52;
+
+            font-size: 12px;
+
+            font-weight: normal;
+
+            letter-spacing: 1.2px;
+
+            text-transform: none;
+
+        }
+
+
+        .back-button {
+
+            display: inline-block;
+
+            padding:
+                10px
+                18px;
+
+            color: #f1dfb0;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    rgba(91, 31, 24, 0.95),
+                    rgba(58, 19, 15, 0.95)
+                );
+
+            border:
+                1px solid
+                #a9823b;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 4px 12px
+                rgba(0, 0, 0, 0.4);
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .back-button:hover {
+
+            color: #fff0c9;
+
+            border-color:
+                #d7ad52;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =========================================================
+           HAUPTBEREICH
+        ========================================================= */
+
+        main {
+
+            width:
+                min(
+                    1100px,
+                    calc(100% - 28px)
+                );
+
+            margin:
+                42px auto
+                70px;
+
+        }
+
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .hero {
+
+            padding:
+                40px
+                25px;
+
+            margin-bottom: 26px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    rgba(25, 18, 13, 0.94),
+                    rgba(17, 12, 9, 0.94)
+                );
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.62);
+
+            border-radius: 12px;
+
+            box-shadow:
+
+                0 12px 35px
+                rgba(0, 0, 0, 0.55),
+
+                inset 0 0 25px
+                rgba(215, 173, 82, 0.04);
+
+        }
+
+
+        .hero-kicker {
+
+            margin-bottom: 9px;
+
+            color: #b48c47;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .hero h1 {
+
+            margin-bottom: 13px;
+
+            color: #e1bb65;
+
+            font-size:
+                clamp(
+                    36px,
+                    7vw,
+                    58px
+                );
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+                0 3px 8px
+                rgba(0, 0, 0, 0.9);
+
+        }
+
+
+        .hero-line {
+
+            width: 120px;
+
+            height: 1px;
+
+            margin:
+                0 auto
+                18px;
+
+            background:
+                #b88d39;
+
+        }
+
+
+        .hero p {
+
+            max-width: 780px;
+
+            margin: 0 auto;
+
+            color: #d6c49c;
+
+            font-size: 16px;
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =========================================================
+           REGEL-KARTEN BASIS
+        ========================================================= */
+
+        .rules {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 20px;
+
+        }
+
+
+        .rule-card {
+
+            padding: 25px;
+
+            background:
+                linear-gradient(
+                    rgba(20, 15, 12, 0.95),
+                    rgba(13, 10, 8, 0.95)
+                );
+
+            border:
+                1px solid
+                rgba(168, 126, 50, 0.65);
+
+            border-radius: 10px;
+
+            box-shadow:
+
+                0 8px 25px
+                rgba(0, 0, 0, 0.45),
+
+                inset 0 0 18px
+                rgba(215, 173, 82, 0.035);
+
+        }
+
+
+        .rule-card.full {
+
+            grid-column:
+                1 / -1;
+
+        }
+
+
+        .rule-number {
+
+            display: inline-flex;
+
+            width: 35px;
+
+            height: 35px;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 12px;
+
+            color: #1a1109;
+
+            background:
+                #d7ad52;
+
+            border-radius: 50%;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.55);
+
+        }
+
+
+        .rule-card h2 {
+
+            margin-bottom: 12px;
+
+            color: #d7ad52;
+
+            font-size: 22px;
+
+            text-shadow:
+                0 2px 4px
+                rgba(0, 0, 0, 0.7);
+
+        }
+
+
+        .rule-card p {
+
+            color: #d5c5a5;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+        }
+
+
+        .rule-card ul {
+
+            margin-top: 10px;
+
+            list-style: none;
+
+        }
+
+
+        .rule-card li {
+
+            position: relative;
+
+            padding:
+                7px
+                0
+                7px
+                22px;
+
+            color: #d5c5a5;
+
+            font-size: 15px;
+
+            line-height: 1.55;
+
+        }
+
+
+        .rule-card li::before {
+
+            content: "◆";
+
+            position: absolute;
+
+            left: 0;
+
+            top: 9px;
+
+            color: #b98b39;
+
+            font-size: 9px;
+
+        }
+
+              /* =========================================================
+           HERVORGEHOBENER HINWEIS
+        ========================================================= */
+
+        .important {
+
+            margin-top: 16px;
+
+            padding:
+                15px
+                17px;
+
+            background:
+                rgba(86, 27, 21, 0.45);
+
+            border-left:
+                3px solid
+                #a53c2d;
+
+            border-radius: 5px;
+
+            color: #e1cd9f;
+
+            font-size: 14px;
+
+            line-height: 1.65;
+
+        }
+
+
+        .important strong {
+
+            color: #e0b85b;
+
+        }
+
+
+        /* =========================================================
+           REGELINHALT
+        ========================================================= */
+
+        .rule-card a {
+
+            color: #d7ad52;
+
+            text-decoration: none;
+
+        }
+
+
+        .rule-card a:hover {
+
+            color: #f0cf7b;
+
+            text-decoration: underline;
+
+        }
+
+
+        /* =========================================================
+           ABSCHLUSS / FRAGEN
+        ========================================================= */
+
+        .closing {
+
+            margin-top: 28px;
+
+            padding:
+                32px
+                24px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    rgba(31, 21, 15, 0.96),
+                    rgba(18, 13, 10, 0.96)
+                );
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.62);
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.5);
+
+        }
+
+
+        .closing h2 {
+
+            margin-bottom: 12px;
+
+            color: #d7ad52;
+
+            font-size: 29px;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 2px 5px
+                rgba(0, 0, 0, 0.8);
+
+        }
+
+
+        .closing p {
+
+            max-width: 720px;
+
+            margin: 0 auto;
+
+            color: #d7c6a0;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =========================================================
+           BUTTON-BEREICH
+        ========================================================= */
+
+        .action-area {
+
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 14px;
+
+            margin-top: 25px;
+
+        }
+
+
+        .action-button {
+
+            display: inline-block;
+
+            min-width: 190px;
+
+            padding:
+                13px
+                22px;
+
+            color: #f3dfad;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    rgba(92, 29, 22, 0.96),
+                    rgba(61, 20, 16, 0.96)
+                );
+
+            border:
+                1px solid
+                #b58a3c;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.4);
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .action-button:hover {
+
+            color: #fff1ca;
+
+            border-color:
+                #e0b95e;
+
+            background:
+                linear-gradient(
+                    rgba(116, 36, 27, 0.98),
+                    rgba(78, 23, 18, 0.98)
+                );
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        /* =========================================================
+           DISCORD BUTTON
+        ========================================================= */
+
+        .action-button.discord {
+
+            background:
+                linear-gradient(
+                    rgba(55, 45, 76, 0.96),
+                    rgba(36, 29, 53, 0.96)
+                );
+
+            border-color:
+                #9b7bc4;
+
+        }
+
+
+        .action-button.discord:hover {
+
+            background:
+                linear-gradient(
+                    rgba(74, 60, 103, 0.98),
+                    rgba(47, 38, 68, 0.98)
+                );
+
+            border-color:
+                #c1a5e4;
+
+        }
+
+
+        /* =========================================================
+           TRENNLINIE
+        ========================================================= */
+
+        .ornament {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            margin:
+                26px auto
+                4px;
+
+            color: #b88d39;
+
+            font-size: 12px;
+
+        }
+
+
+        .ornament::before,
+        .ornament::after {
+
+            content: "";
+
+            width: 70px;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    transparent,
+                    #a9823b
+                );
+
+        }
+
+
+        .ornament::after {
+
+            background:
+                linear-gradient(
+                    to left,
+                    transparent,
+                    #a9823b
+                );
+
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+
+            padding:
+                25px
+                18px
+                35px;
+
+            text-align: center;
+
+            color: #927b50;
+
+            font-size: 13px;
+
+        }
+
+
+        footer strong {
+
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #c09a4e;
+
+            font-size: 17px;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        footer span {
+
+            color: #806d49;
+
+        }
+
+              /* =========================================================
+           MOBILE DARSTELLUNG
+        ========================================================= */
+
+        @media (max-width: 760px) {
+
+            .topbar {
+                padding:
+                    17px
+                    14px;
+            }
+
+
+            .topbar-inner {
+
+                flex-direction: column;
+
+                text-align: center;
+
+                gap: 14px;
+
+            }
+
+
+            .brand {
+
+                font-size: 21px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .brand span {
+
+                font-size: 11px;
+
+            }
+
+
+            .back-button {
+
+                width: 100%;
+
+                max-width: 240px;
+
+            }
+
+
+            main {
+
+                width:
+                    calc(100% - 18px);
+
+                margin:
+                    25px auto
+                    45px;
+
+            }
+
+
+            .hero {
+
+                padding:
+                    29px
+                    16px;
+
+                margin-bottom: 18px;
+
+            }
+
+
+            .hero-kicker {
+
+                font-size: 11px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size: 36px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 14px;
+
+                line-height: 1.65;
+
+            }
+
+
+            .rules {
+
+                grid-template-columns: 1fr;
+
+                gap: 15px;
+
+            }
+
+
+            .rule-card {
+
+                padding: 20px 18px;
+
+            }
+
+
+            .rule-card.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .rule-card h2 {
+
+                font-size: 20px;
+
+            }
+
+
+            .rule-card p,
+            .rule-card li {
+
+                font-size: 14px;
+
+            }
+
+
+            .rule-number {
+
+                width: 32px;
+
+                height: 32px;
+
+                font-size: 14px;
+
+            }
+
+
+            .closing {
+
+                margin-top: 18px;
+
+                padding:
+                    27px
+                    17px;
+
+            }
+
+
+            .closing h2 {
+
+                font-size: 25px;
+
+            }
+
+
+            .closing p {
+
+                font-size: 14px;
+
+            }
+
+
+            .action-area {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+
+            .action-button {
+
+                width: 100%;
+
+                min-width: 0;
+
+            }
+
+
+            .ornament::before,
+            .ornament::after {
+
+                width: 45px;
+
+            }
+
+
+            footer {
+
+                padding:
+                    20px
+                    15px
+                    30px;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           SEHR KLEINE HANDYS
+        ========================================================= */
+
+        @media (max-width: 400px) {
+
+            .hero h1 {
+
+                font-size: 31px;
+
+            }
+
+
+            .rule-card {
+
+                padding: 18px 15px;
+
+            }
+
+
+            .closing {
+
+                padding:
+                    24px
+                    15px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         KOPFBEREICH
+    ========================================================= -->
+
+    <header class="topbar">
+
+        <div class="topbar-inner">
+
+            <div class="brand">
+
+                EHRENMARKT
+
+                <span>
+                    Gemeinsam bauen – gemeinsam wachsen
+                </span>
+
+            </div>
+
+
+            <a
+                href="startseite.html"
+                class="back-button"
+            >
+                ← Zurück
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         HAUPTINHALT
+    ========================================================= -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-kicker">
+                Ehrenmarkt
+            </div>
+
+
+            <h1>
+                Regelwerk
+            </h1>
+
+
+            <div class="hero-line"></div>
+
+
+            <p>
+                Willkommen im Regelwerk des Ehrenmarkts.
+                Die folgenden Regeln bilden die Grundlage für
+                ein faires, respektvolles und zuverlässiges
+                Miteinander.
+            </p>
+
+        </section>
+
+
+        <section class="rules">
+
+                      <!-- =================================================
+                 REGEL 1
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">1</div>
+
+                <h2>Respektvoller Umgang</h2>
+
+                <p>
+                    Im Ehrenmarkt steht ein respektvoller und
+                    freundlicher Umgang miteinander an erster Stelle.
+                    Behandle andere Mitglieder, Kunden und Mitarbeiter
+                    so, wie auch du selbst behandelt werden möchtest.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Keine Beleidigungen oder persönlichen Angriffe.
+                    </li>
+
+                    <li>
+                        Respektvoll und sachlich miteinander umgehen.
+                    </li>
+
+                    <li>
+                        Keine absichtlichen Provokationen oder
+                        unnötigen Streitigkeiten.
+                    </li>
+
+                    <li>
+                        Probleme möglichst ruhig und gemeinsam lösen.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 2
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">2</div>
+
+                <h2>Fairness & Ehrlichkeit</h2>
+
+                <p>
+                    Der Ehrenmarkt soll für alle Beteiligten fair
+                    bleiben. Ehrlichkeit und gegenseitiges Vertrauen
+                    sind deshalb ein wichtiger Bestandteil unserer
+                    Gemeinschaft.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Keine Täuschung anderer Mitglieder.
+                    </li>
+
+                    <li>
+                        Absprachen und Vereinbarungen einhalten.
+                    </li>
+
+                    <li>
+                        Keine bewusste Ausnutzung anderer Personen.
+                    </li>
+
+                    <li>
+                        Fehler und Probleme ehrlich ansprechen.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 3
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">3</div>
+
+                <h2>Aufträge</h2>
+
+                <p>
+                    Bei einem Auftrag müssen die vereinbarten
+                    Leistungen, Materialien, Preise und sonstigen
+                    Bedingungen beachtet werden.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Angaben beim Auftrag wahrheitsgemäß machen.
+                    </li>
+
+                    <li>
+                        Vereinbarte Leistungen zuverlässig ausführen.
+                    </li>
+
+                    <li>
+                        Änderungen möglichst frühzeitig mitteilen.
+                    </li>
+
+                    <li>
+                        Bei Problemen die zuständige Person informieren.
+                    </li>
+
+                </ul>
+
+                <div class="important">
+
+                    <strong>Wichtig:</strong><br>
+
+                    Bei Unklarheiten sollte vor Beginn der Arbeit
+                    nachgefragt werden. So lassen sich unnötige
+                    Missverständnisse vermeiden.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 4
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">4</div>
+
+                <h2>Materialien</h2>
+
+                <p>
+                    Materialien werden entsprechend der jeweiligen
+                    Vereinbarung bereitgestellt und verwendet.
+                    Mit Materialien anderer Personen ist sorgfältig
+                    umzugehen.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Keine Materialien absichtlich verschwenden.
+                    </li>
+
+                    <li>
+                        Materialien anderer nicht ohne Erlaubnis verwenden.
+                    </li>
+
+                    <li>
+                        Fehlende Materialien rechtzeitig melden.
+                    </li>
+
+                    <li>
+                        Vereinbarte Mengen beachten.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 5
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">5</div>
+
+                <h2>Zahlungen & Preise</h2>
+
+                <p>
+                    Vereinbarte Preise und Zahlungen sind einzuhalten.
+                    Bei Fragen zu Kosten oder Leistungen sollte die
+                    Angelegenheit vor Beginn geklärt werden.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Vereinbarte Preise beachten.
+                    </li>
+
+                    <li>
+                        Zahlungen nicht absichtlich zurückhalten.
+                    </li>
+
+                    <li>
+                        Keine falschen Zahlungsnachweise verwenden.
+                    </li>
+
+                    <li>
+                        Preisfragen vor der Auftragserteilung klären.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 6
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">6</div>
+
+                <h2>Kommunikation</h2>
+
+                <p>
+                    Eine gute Kommunikation ist wichtig, damit Aufträge
+                    und Absprachen zuverlässig funktionieren.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Wichtige Änderungen rechtzeitig mitteilen.
+                    </li>
+
+                    <li>
+                        Nachrichten verständlich formulieren.
+                    </li>
+
+                    <li>
+                        Bei Problemen frühzeitig Bescheid geben.
+                    </li>
+
+                    <li>
+                        Fragen stellen, wenn etwas unklar ist.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 7
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">7</div>
+
+                <h2>System & Portal</h2>
+
+                <p>
+                    Das Ehrenmarkt-Portal soll zuverlässig und fair
+                    genutzt werden. Fehler oder Sicherheitsprobleme
+                    dürfen nicht absichtlich ausgenutzt werden.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Keine Manipulation von Portal-Daten.
+                    </li>
+
+                    <li>
+                        Keine absichtliche Ausnutzung von Fehlern.
+                    </li>
+
+                    <li>
+                        Keine fremden Konten verwenden.
+                    </li>
+
+                    <li>
+                        Auffällige Fehler der Leitung melden.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 8
+            ================================================= -->
+
+            <article class="rule-card">
+
+                <div class="rule-number">8</div>
+
+                <h2>Mitarbeiter</h2>
+
+                <p>
+                    Mitarbeiter vertreten den Ehrenmarkt und tragen
+                    deshalb eine besondere Verantwortung gegenüber
+                    Kunden und anderen Mitgliedern.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Kunden fair und respektvoll behandeln.
+                    </li>
+
+                    <li>
+                        Aufträge gewissenhaft bearbeiten.
+                    </li>
+
+                    <li>
+                        Interne Informationen nicht missbrauchen.
+                    </li>
+
+                    <li>
+                        Bei Problemen die zuständige Leitung informieren.
+                    </li>
+
+                </ul>
+
+            </article>
+
+
+            <!-- =================================================
+                 REGEL 9
+            ================================================= -->
+
+            <article class="rule-card full">
+
+                <div class="rule-number">9</div>
+
+                <h2>Gemeinschaft</h2>
+
+                <p>
+                    Der Ehrenmarkt lebt von Zusammenarbeit.
+                    Jeder Nutzer trägt dazu bei, dass die Gemeinschaft
+                    funktioniert und sich weiterentwickeln kann.
+                </p>
+
+                <ul>
+
+                    <li>
+                        Hilfsbereit und freundlich gegenüber anderen sein.
+                    </li>
+
+                    <li>
+                        Neue Mitglieder respektvoll aufnehmen.
+                    </li>
+
+                    <li>
+                        Gemeinsam nach Lösungen suchen.
+                    </li>
+
+                    <li>
+                        Die Gemeinschaft nicht absichtlich schädigen.
+                    </li>
+
+                </ul>
+
+                <div class="important">
+
+                    <strong>Unser Grundsatz:</strong><br>
+
+                    Respekt, Fairness, Ehrlichkeit und Zusammenarbeit
+                    stehen im Ehrenmarkt an erster Stelle.
+
+                </div>
+
+            </article>
+
+                  </section>
+
+
+        <!-- =====================================================
+             ABSCHLUSS
+        ===================================================== -->
+
+        <section class="closing">
+
+            <div class="ornament">
+                ◆
+            </div>
+
+
+            <h2>Noch Fragen?</h2>
+
+
+            <p>
+                Das Regelwerk kann nicht jede mögliche Frage beantworten.
+                Wenn du etwas wissen möchtest, das hier nicht erklärt wird,
+                findest du weitere Antworten in unserem FAQ.
+            </p>
+
+
+            <div class="action-area">
+
+                <!--
+                    Das FAQ ist absichtlich nicht als eigener
+                    Hauptpunkt sichtbar.
+
+                    Es ist über das Regelwerk erreichbar.
+                -->
+
+                <a
+                    href="faq.html"
+                    class="action-button"
+                >
+                    Zum FAQ →
+                </a>
+
+
+                <!-- Discord -->
+
+                <a
+                    href="https://discord.gg/UTBkKqCvgH"
+                    class="action-button discord"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Zum Discord →
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ===================================================== -->
+
+    <footer>
+
+        <strong>
+            EHRENMARKT
+        </strong>
+
+        <span>
+            Gemeinsam bauen – gemeinsam wachsen
+        </span>
+
+    </footer>
+
+</body>
+
+</html>
