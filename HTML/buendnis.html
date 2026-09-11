@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Bündnis</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #f3e5c0;
+
+            background-image:
+                linear-gradient(
+                    rgba(5, 4, 3, 0.68),
+                    rgba(5, 4, 3, 0.88)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bundnis.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            overflow-x: hidden;
+        }
+
+        .seite {
+            width: 100%;
+            min-height: 100vh;
+            padding: 30px 15px 50px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+
+            color: #d7ad52;
+
+            font-size:
+                clamp(38px, 8vw, 72px);
+
+            letter-spacing: 5px;
+
+            text-shadow:
+                0 3px 8px #000,
+                0 0 20px rgba(215, 173, 82, 0.35);
+        }
+
+        .header h2 {
+            margin: 5px 0 0;
+
+            color: #f1dfb1;
+
+            font-size:
+                clamp(25px, 5vw, 43px);
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+                0 3px 8px #000;
+        }
+
+        .trennlinie {
+            width: 260px;
+            max-width: 80%;
+
+            height: 2px;
+
+            margin: 18px auto;
+
+            background: #d7ad52;
+
+            box-shadow:
+                0 0 10px
+                rgba(215, 173, 82, 0.45);
+        }
+
+        .beschreibung {
+            max-width: 720px;
+
+            margin: 0 auto;
+
+            color: #d9c99e;
+
+            font-size: 17px;
+
+            line-height: 1.6;
+
+            text-shadow:
+                0 2px 4px #000;
+        }
+
+        /* =====================================================
+           INFOBOX
+        ===================================================== */
+
+        .infobox {
+            padding: 18px 20px;
+
+            margin-bottom: 22px;
+
+            background:
+                rgba(70, 15, 15, 0.30);
+
+            border-left:
+                3px solid #d7ad52;
+
+            border-radius: 7px;
+
+            color: #d9c99e;
+
+            line-height: 1.65;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .infobox strong {
+            color: #d7ad52;
+        }
+
+        /* =====================================================
+           FORMULAR-KARTEN
+        ===================================================== */
+
+        .karte {
+            margin-bottom: 22px;
+
+            padding: 25px;
+
+            background:
+                rgba(15, 12, 10, 0.93);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.55);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.55),
+
+                inset 0 0 25px
+                rgba(215, 173, 82, 0.035);
+        }
+
+        .karte h3 {
+            margin: 0 0 20px;
+
+            padding-bottom: 12px;
+
+            color: #d7ad52;
+
+            font-size: 25px;
+
+            letter-spacing: 1px;
+
+            border-bottom:
+                1px solid
+                rgba(215, 173, 82, 0.25);
+
+            text-shadow:
+                0 2px 5px #000;
+        }
+
+        /* =====================================================
+           FORMULAR-GRID
+        ===================================================== */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
+        }
+
+        .feld {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .feld.ganz {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 7px;
+
+            color: #d7ad52;
+
+            font-weight: bold;
+
+            font-size: 15px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+
+            padding:
+                13px 14px;
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.35);
+
+            border-radius: 8px;
+
+            background:
+                rgba(5, 4, 3, 0.88);
+
+            color: #f3e5c0;
+
+            font-family: inherit;
+
+            font-size: 16px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #d7ad52;
+
+            box-shadow:
+                0 0 9px
+                rgba(215, 173, 82, 0.22);
+        }
+
+        textarea {
+            min-height: 120px;
+
+            resize: vertical;
+        }
+
+        select option {
+            background: #17120f;
+
+            color: #f3e5c0;
+        }
+
+        .hinweis {
+            margin-top: 8px;
+
+            color: #a99b7c;
+
+            font-size: 13px;
+        }
+
+      
+        /* =====================================================
+           CLAN-INFORMATIONEN
+        ===================================================== */
+
+        .clan-section {
+            margin-bottom: 22px;
+        }
+
+        .clan-section h3 {
+            margin: 0 0 20px;
+
+            padding-bottom: 12px;
+
+            color: #d7ad52;
+
+            font-size: 25px;
+
+            letter-spacing: 1px;
+
+            border-bottom:
+                1px solid
+                rgba(215, 173, 82, 0.25);
+        }
+
+        /* =====================================================
+           ANSPRECHPARTNER
+        ===================================================== */
+
+        .kontakt-section {
+            margin-bottom: 22px;
+        }
+
+        /* =====================================================
+           BUTTON-BEREICH
+        ===================================================== */
+
+        .aktionen {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-top: 28px;
+        }
+
+        button {
+            border:
+                1px solid #d7ad52;
+
+            border-radius: 9px;
+
+            padding:
+                14px 28px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #6d4b19,
+                    #3e2810
+                );
+
+            color: #f8e8b8;
+
+            font-family: inherit;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.4),
+
+                inset 0 1px
+                rgba(255, 255, 255, 0.08);
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 8px 20px
+                rgba(0, 0, 0, 0.5),
+
+                0 0 12px
+                rgba(215, 173, 82, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        .zurueck {
+            background:
+                rgba(20, 16, 13, 0.92);
+
+            color: #c8b98f;
+
+            border-color:
+                rgba(215, 173, 82, 0.35);
+        }
+
+        /* =====================================================
+           NACHRICHTEN
+        ===================================================== */
+
+        .meldung {
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 15px 18px;
+
+            border-radius: 8px;
+
+            line-height: 1.5;
+        }
+
+        .meldung.erfolg {
+            background:
+                rgba(35, 85, 45, 0.35);
+
+            border:
+                1px solid
+                rgba(100, 180, 110, 0.5);
+
+            color: #c8e8ca;
+        }
+
+        .meldung.fehler {
+            background:
+                rgba(100, 25, 25, 0.35);
+
+            border:
+                1px solid
+                rgba(200, 80, 80, 0.5);
+
+            color: #f0c1c1;
+        }
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            text-align: center;
+
+            margin-top: 35px;
+
+            color: #887b62;
+
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .seite {
+                padding:
+                    20px 10px 35px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feld.ganz {
+                grid-column: auto;
+            }
+
+            .karte {
+                padding: 18px;
+            }
+
+            .beschreibung {
+                font-size: 15px;
+            }
+
+            .aktionen {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .header h1 {
+                letter-spacing: 3px;
+            }
+
+            .header h2 {
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="seite">
+
+    <div class="container">
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+            <h1>EHRENMARKT</h1>
+
+            <h2>Bündnis</h2>
+
+            <div class="trennlinie"></div>
+
+            <p class="beschreibung">
+                Gemeinsam stärker. Stelle einen Bündnisantrag
+                für deinen Clan und erzähle uns mehr über eure
+                Gemeinschaft und eure Vorstellungen einer
+                Zusammenarbeit.
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             HINWEIS
+        ================================================== -->
+
+        <div class="infobox">
+
+            <strong>Wichtig:</strong><br>
+
+            Mit diesem Formular kannst du im Namen deines Clans
+            einen Bündnisantrag bei Ehrenmarkt stellen.
+
+            Der Antrag wird anschließend von der Leitung geprüft.
+            Erst nach einer Bestätigung durch Ehrenmarkt wird das
+            Bündnis offiziell aktiv.
+
+        </div>
+
+
+        <!-- =================================================
+             CLAN-INFORMATIONEN
+        ================================================== -->
+
+        <section class="karte clan-section">
+
+            <h3>🏰 Informationen über deinen Clan</h3>
+
+            <div class="grid">
+
+                <div class="feld">
+
+                    <label for="clanName">
+                        Clanname *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="clanName"
+                        name="clan_name"
+                        placeholder="z. B. BeispielClan"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="clanTag">
+                        Clan-Kürzel
+                    </label>
+
+                    <input
+                        type="text"
+                        id="clanTag"
+                        name="clan_tag"
+                        placeholder="z. B. BCL"
+                    >
+
+                </div>
+
+
+                <div class="feld ganz">
+
+                    <label for="clanDescription">
+                        Vorstellung des Clans *
+                    </label>
+
+                    <textarea
+                        id="clanDescription"
+                        name="clan_description"
+                        placeholder="Erzähle uns kurz etwas über euren Clan..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="clanMemberCount">
+                        Mitgliederzahl
+                    </label>
+
+                    <input
+                        type="number"
+                        id="clanMemberCount"
+                        name="clan_member_count"
+                        min="1"
+                        placeholder="z. B. 15"
+                    >
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="clanSince">
+                        Clan besteht seit
+                    </label>
+
+                    <input
+                        type="date"
+                        id="clanSince"
+                        name="clan_since"
+                    >
+
+                </div>
+
+
+                <div class="feld ganz">
+
+                    <label for="clanDiscord">
+                        Discord-Server
+                    </label>
+
+                    <input
+                        type="text"
+                        id="clanDiscord"
+                        name="clan_discord"
+                        placeholder="Discord-Link oder Servername"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ANSPRECHPARTNER
+        ================================================== -->
+
+        <section class="karte kontakt-section">
+
+            <h3>👤 Ansprechpartner</h3>
+
+            <div class="grid">
+
+                <div class="feld">
+
+                    <label for="contactName">
+                        Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="contactName"
+                        name="contact_name"
+                        placeholder="Dein Name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="clanRole">
+                        Rolle im Clan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="clanRole"
+                        name="clan_role"
+                        placeholder="z. B. Clanleitung"
+                    >
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="minecraftName">
+                        Minecraft-Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="minecraftName"
+                        name="minecraft_name"
+                        placeholder="Dein Minecraft-Name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="feld">
+
+                    <label for="discordName">
+                        Discord-Name / ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="discordName"
+                        name="discord_name"
+                        placeholder="z. B. @name"
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+              <!-- =================================================
+             BÜNDNISANTRAG
+        ================================================== -->
+
+        <section class="karte">
+
+            <h3>🤝 Dein Bündnisantrag</h3>
+
+            <div class="grid">
+
+                <div class="feld ganz">
+
+                    <label for="reason">
+                        Warum möchtest du ein Bündnis mit
+                        Ehrenmarkt? *
+                    </label>
+
+                    <textarea
+                        id="reason"
+                        name="reason"
+                        placeholder="Erkläre uns, warum dein Clan ein Bündnis mit Ehrenmarkt eingehen möchte..."
+                        required
+                    ></textarea>
+
+                    <div class="hinweis">
+                        Beschreibe bitte möglichst genau eure
+                        Beweggründe für den Bündnisantrag.
+                    </div>
+
+                </div>
+
+
+                <div class="feld ganz">
+
+                    <label for="cooperation">
+                        Wie stellt ihr euch die Zusammenarbeit vor?
+                    </label>
+
+                    <textarea
+                        id="cooperation"
+                        name="cooperation"
+                        placeholder="Welche gemeinsamen Aktivitäten oder Formen der Zusammenarbeit stellt ihr euch vor?"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="feld ganz">
+
+                    <label for="desiredAgreement">
+                        Gewünschte Vereinbarung
+                    </label>
+
+                    <textarea
+                        id="desiredAgreement"
+                        name="desired_agreement"
+                        placeholder="Gibt es besondere Wünsche oder Vereinbarungen, die ihr euch für das Bündnis vorstellt?"
+                    ></textarea>
+
+                    <div class="hinweis">
+                        Hier können beispielsweise besondere
+                        Absprachen oder langfristige Vorteile
+                        genannt werden.
+                    </div>
+
+                </div>
+
+
+                <div class="feld ganz">
+
+                    <label for="applicationText">
+                        Weitere Informationen
+                    </label>
+
+                    <textarea
+                        id="applicationText"
+                        name="application_text"
+                        placeholder="Gibt es noch etwas, das die Leitung über euren Clan oder den Antrag wissen sollte?"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             BESTÄTIGUNG
+        ================================================== -->
+
+        <section class="karte">
+
+            <h3>📜 Bestätigung</h3>
+
+            <div class="infobox">
+
+                Mit dem Absenden bestätigst du, dass die
+                angegebenen Informationen nach bestem Wissen
+                und Gewissen korrekt sind.
+
+                <br><br>
+
+                Der Antrag wird von der Leitung geprüft.
+                Ein Bündnis entsteht erst, wenn Ehrenmarkt
+                den Antrag offiziell annimmt.
+
+            </div>
+
+            <label
+                style="
+                    display:flex;
+                    flex-direction:row;
+                    align-items:flex-start;
+                    gap:10px;
+                    cursor:pointer;
+                    color:#d9c99e;
+                    font-weight:normal;
+                "
+            >
+
+                <input
+                    type="checkbox"
+                    id="confirmation"
+                    name="confirmation"
+                    style="
+                        width:18px;
+                        height:18px;
+                        margin-top:2px;
+                        accent-color:#d7ad52;
+                        flex-shrink:0;
+                    "
+                >
+
+                <span>
+                    Ich bestätige, dass meine Angaben korrekt
+                    sind und ich im Namen meines Clans diesen
+                    Bündnisantrag stelle.
+                </span>
+
+            </label>
+
+        </section>
+
+
+        <!-- =================================================
+             MELDUNGEN
+        ================================================== -->
+
+        <div
+            id="successMessage"
+            class="meldung erfolg"
+        >
+        </div>
+
+        <div
+            id="errorMessage"
+            class="meldung fehler"
+        >
+        </div>
+
+              <!-- =================================================
+             AKTIONEN
+        ================================================== -->
+
+        <div class="aktionen">
+
+            <button
+                type="button"
+                class="zurueck"
+                onclick="history.back()"
+            >
+                ← Zurück
+            </button>
+
+            <button
+                type="button"
+                id="submitButton"
+            >
+                🤝 Bündnisantrag stellen
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer>
+            © Ehrenmarkt – Gemeinsam mehr erreichen
+        </footer>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Ehrenmarkt Supabase Verbindung -->
+<script src="../supabase.js"></script>
+
+<!-- Bündnis JavaScript -->
+<script src="../JS/buendnis.js"></script>
+
+</body>
+</html>
