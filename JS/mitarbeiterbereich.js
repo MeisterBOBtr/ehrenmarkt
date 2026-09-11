@@ -1013,22 +1013,6 @@ async function einstempeln() {
 
     if (aktuellerMitarbeiter.clock_in) {
 
-    async function einstempeln() {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter ||
-        !mitarbeiterSupabase
-    ) {
-        zeigeFehler(
-            "Mitarbeiterdaten konnten nicht geladen werden."
-        );
-        return;
-    }
-
-
-    if (aktuellerMitarbeiter.clock_in) {
-
         zeigeFehler(
             "Du bist bereits eingestempelt."
         );
@@ -1092,7 +1076,7 @@ async function einstempeln() {
             "Einstempeln fehlgeschlagen."
         );
     }
-    }
+            }
 
 
 // ============================================================
