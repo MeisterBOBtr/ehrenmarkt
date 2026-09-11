@@ -1,1273 +1,798 @@
-// ============================================================
-// EHRENMARKT – VERWALTUNG
-// verwaltung.js
-// TEIL 1 VON 5
-// ============================================================
-
 document.addEventListener("DOMContentLoaded", async () => {
 
-    console.log("Ehrenmarkt Verwaltung – JavaScript gestartet.");
+    // =========================================================
+    // EHRENMARKT – VERWALTUNG
+    // Teil 1/7 – Initialisierung & Zugriff
+    // =========================================================
 
-
-    // ========================================================
-    // SUPABASE
-    // ========================================================
-
-    const supabase =
-        window.supabaseClient;
-
+    const supabase = window.supabaseClient;
 
     if (!supabase) {
-
-        console.error(
-            "Supabase Client wurde nicht gefunden."
-        );
-
-        zeigeZugriffsfehler(
-            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-        );
-
+        console.error("Supabase Client wurde nicht gefunden.");
+        alert("Supabase konnte nicht geladen werden.");
         return;
     }
-
-
-    // ========================================================
-    // ELEMENTE
-    // ========================================================
-
-    const accessMessage =
-        document.getElementById("accessMessage");
-
-
-    const navButtons =
-        document.querySelectorAll(".nav-button");
-
-
-    const sections =
-        document.querySelectorAll(".admin-section");
-
-
-    // ========================================================
-    // BENUTZER / SESSION
-    // ========================================================
 
     let user = null;
-    let mitarbeiter = null;
+    let aktuellerMitarbeiter = null;
 
+    // ---------------------------------------------------------
+    // Hilfsfunktionen
+    // ---------------------------------------------------------
 
-    try {
+    function element(id) {
+        return document.getElementById(id);
+    }
 
-        const {
-            data,
-            error
-        } =
-            await supabase.auth.getUser();
+    function setzeWert(id, wert) {
+        const el = element(id);
+        if (el) {
+            el.textContent = wert ?? "";
+        }
+    }
 
+    function zeigeFehler(text) {
+        console.error(text);
 
-        if (error) {
-            throw error;
+        const message = element("accessMessage");
+
+        if (message) {
+            message.textContent = text;
+            message.style.display = "block";
+        } else {
+            alert(text);
+        }
+    }
+
+    function zeigeErfolg(text) {
+        console.log(text);
+
+        const message = element("accessMessage");
+
+        if (message) {
+            message.textContent = text;
+            message.style.display = "block";
+        }
+    }
+
+    function datum(wert) {
+        if (!wert) return "–";
+
+        try {
+            return new Date(wert).toLocaleString("de-DE", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        } catch {
+            return wert;
+        }
+    }
+
+    function preis(wert) {
+        if (wert === null || wert === undefined || wert === "") {
+            return "–";
         }
 
+        const zahl = Number(wert);
 
-        user =
-            data?.user || null;
+        if (Number.isNaN(zahl)) {
+            return String(wert);
+        }
 
+        return zahl.toLocaleString("de-DE", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }) + " $";
+    }
 
-    } catch (error) {
+    function escapeHTML(wert) {
+        if (wert === null || wert === undefined) {
+            return "";
+        }
 
-        console.error(
-            "Fehler beim Prüfen der Anmeldung:",
-            error
-        );
+        const div = document.createElement("div");
+        div.textContent = String(wert);
+        return div.innerHTML;
+    }
 
-        zeigeZugriffsfehler(
-            "Deine Anmeldung konnte nicht überprüft werden."
-        );
+    function meldungAusblenden() {
+        const message = element("accessMessage");
 
+        if (message) {
+            message.style.display = "none";
+        }
+    }
+
+    // ---------------------------------------------------------
+    // Angemeldeten Benutzer prüfen
+    // ---------------------------------------------------------
+
+    const {
+        data: userData,
+        error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError) {
+        console.error("Fehler beim Abrufen des Benutzers:", userError);
+        zeigeFehler("Die Anmeldung konnte nicht geprüft werden.");
         return;
     }
 
-
-    // ========================================================
-    // NICHT ANGEMELDET
-    // ========================================================
+    user = userData?.user;
 
     if (!user) {
+        zeigeFehler("Du bist nicht angemeldet.");
 
-        zeigeZugriffsfehler(
-            "Du musst angemeldet sein, um die Verwaltung zu öffnen."
-        );
+        setTimeout(() => {
+            window.location.href = "../HTML/registrieren.html";
+        }, 1200);
 
         return;
     }
 
+    // ---------------------------------------------------------
+    // Mitarbeiter des angemeldeten Benutzers laden
+    // ---------------------------------------------------------
 
-    console.log(
-        "Angemeldeter Benutzer:",
-        user.id
-    );
+    const {
+        data: mitarbeiter,
+        error: mitarbeiterError
+    } = await supabase
+        .from("employees")
+        .select(`
+            id,
+            user_id,
+            name,
+            role,
+            rang,
+            is_active,
+            is_available,
+            total_work_minutes,
+            clock_in,
+            created_at,
+            updated_at
+        `)
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
 
-
-    // ========================================================
-    // MITARBEITERDATEN LADEN
-    // ========================================================
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from("employees")
-                .select(`
-                    id,
-                    user_id,
-                    name,
-                    role,
-                    rang,
-                    is_active,
-                    is_available
-                `)
-                .eq("user_id", user.id)
-                .eq("is_active", true)
-                .maybeSingle();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        mitarbeiter =
-            data || null;
-
-
-    } catch (error) {
-
+    if (mitarbeiterError) {
         console.error(
-            "Fehler beim Laden der Mitarbeiterdaten:",
-            error
+            "Fehler beim Laden des Mitarbeiters:",
+            mitarbeiterError
         );
 
-        zeigeZugriffsfehler(
+        zeigeFehler(
             "Deine Mitarbeiterdaten konnten nicht geladen werden."
         );
 
         return;
     }
 
+    aktuellerMitarbeiter = mitarbeiter;
 
-    // ========================================================
-    // KEIN AKTIVER MITARBEITER
-    // ========================================================
+    // ---------------------------------------------------------
+    // Verwaltungsberechtigung
+    // ---------------------------------------------------------
 
-    if (!mitarbeiter) {
-
-        zeigeZugriffsfehler(
-            "Für deinen Account wurde kein aktiver Mitarbeiter gefunden."
+    if (!aktuellerMitarbeiter) {
+        zeigeFehler(
+            "Du hast keinen aktiven Mitarbeiterzugang."
         );
 
         return;
     }
-
-
-    console.log(
-        "Mitarbeiter:",
-        mitarbeiter
-    );
-
-
-    // ========================================================
-    // BERECHTIGUNG PRÜFEN
-    // ========================================================
 
     const erlaubteRaenge = [
         "Leitung",
         "Stadtleitung"
     ];
 
-
-    const darfVerwalten =
-        erlaubteRaenge.includes(
-            mitarbeiter.rang
-        );
-
-
-    if (!darfVerwalten) {
-
-        zeigeZugriffsfehler(
+    if (!erlaubteRaenge.includes(aktuellerMitarbeiter.rang)) {
+        zeigeFehler(
             "Du hast keine Berechtigung für die Verwaltung."
         );
 
         return;
     }
 
+    // ---------------------------------------------------------
+    // Zugriff erfolgreich
+    // ---------------------------------------------------------
 
-    // ========================================================
-    // ZUGRIFF ERLAUBT
-    // ========================================================
+    meldungAusblenden();
 
-    if (accessMessage) {
+    const headerText = element("accessMessage");
 
-        accessMessage.textContent =
-            `Angemeldet als ${mitarbeiter.name} · ${mitarbeiter.rang}`;
-
-        accessMessage.style.background =
-            "rgba(45, 75, 30, 0.45)";
-
-        accessMessage.style.borderColor =
-            "#607844";
-
-        accessMessage.style.color =
-            "#c6d8a9";
+    if (headerText) {
+        headerText.textContent =
+            `Angemeldet als ${aktuellerMitarbeiter.name} – ${aktuellerMitarbeiter.rang}`;
+        headerText.style.display = "block";
     }
-
 
     console.log(
-        "Verwaltungszugriff erlaubt."
+        "Verwaltung erfolgreich geladen:",
+        aktuellerMitarbeiter
     );
 
+    // ---------------------------------------------------------
+    // Navigation
+    // ---------------------------------------------------------
 
-    // ========================================================
-    // NAVIGATION
-    // ========================================================
+    const navButtons = document.querySelectorAll(".nav-button");
 
-    navButtons.forEach(
-        (button) => {
+    navButtons.forEach(button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+        button.addEventListener("click", () => {
 
-                    const ziel =
-                        button.dataset.section;
+            const sectionName =
+                button.dataset.section;
 
-
-                    if (!ziel) {
-                        return;
-                    }
-
-
-                    // Alle Buttons deaktivieren
-
-                    navButtons.forEach(
-                        (item) => {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-
-                    // Alle Bereiche verstecken
-
-                    sections.forEach(
-                        (section) => {
-
-                            section.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-
-                    // Aktiven Button markieren
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    // Zielbereich anzeigen
-
-                    const zielBereich =
-                        document.getElementById(
-                            "section-" + ziel
-                        );
-
-
-                    if (zielBereich) {
-
-                        zielBereich.classList.add(
-                            "active"
-                        );
-
-                    }
-
-
-                    console.log(
-                        "Verwaltungsbereich geöffnet:",
-                        ziel
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-    // ========================================================
-    // FEHLER BEI ZUGRIFF
-    // ========================================================
-
-    function zeigeZugriffsfehler(nachricht) {
-
-        if (!accessMessage) {
-            return;
-        }
-
-
-        accessMessage.textContent =
-            nachricht;
-
-
-        accessMessage.style.background =
-            "rgba(100, 30, 30, 0.45)";
-
-
-        accessMessage.style.borderColor =
-            "#7d3030";
-
-
-        accessMessage.style.color =
-            "#e4aaa0";
-
-
-        navButtons.forEach(
-            (button) => {
-
-                button.disabled = true;
-
-                button.style.opacity =
-                    "0.45";
-
+            if (!sectionName) {
+                return;
             }
-        );
 
+            document
+                .querySelectorAll(".verwaltung-section")
+                .forEach(section => {
+                    section.style.display = "none";
+                });
 
-        sections.forEach(
-            (section) => {
+            const zielSection =
+                element("section-" + sectionName);
 
-                section.classList.remove(
-                    "active"
-                );
-
+            if (zielSection) {
+                zielSection.style.display = "block";
             }
-        );
 
+            navButtons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+        });
+
+    });
+
+    // ---------------------------------------------------------
+    // Ersten Bereich anzeigen
+    // ---------------------------------------------------------
+
+    const ersteSection =
+        element("section-bewerbungen");
+
+    if (ersteSection) {
+        ersteSection.style.display = "block";
     }
 
-
-    // ========================================================
-    // HILFSFUNKTIONEN
-    // ========================================================
-
-    window.verwaltungZeigeFehler =
-        function(nachricht, elementId) {
-
-            const element =
-                document.getElementById(
-                    elementId
-                );
-
-
-            if (!element) {
-                return;
-            }
-
-
-            element.textContent =
-                nachricht;
-
-
-            element.className =
-                "message error";
-
-
-            element.style.display =
-                "block";
-
-        };
-
-
-    window.verwaltungZeigeErfolg =
-        function(nachricht, elementId) {
-
-            const element =
-                document.getElementById(
-                    elementId
-                );
-
-
-            if (!element) {
-                return;
-            }
-
-
-            element.textContent =
-                nachricht;
-
-
-            element.className =
-                "message success";
-
-
-            element.style.display =
-                "block";
-
-        };
-
-
-    window.verwaltungMeldungAusblenden =
-        function(elementId) {
-
-            const element =
-                document.getElementById(
-                    elementId
-                );
-
-
-            if (!element) {
-                return;
-            }
-
-
-            element.style.display =
-                "none";
-
-        };
-
-
-    // ========================================================
-    // DATUM FORMATIEREN
-    // ========================================================
-
-    window.verwaltungDatum =
-        function(wert) {
-
-            if (!wert) {
-                return "—";
-            }
-
-
-            const datum =
-                new Date(wert);
-
-
-            if (Number.isNaN(
-                datum.getTime()
-            )) {
-
-                return wert;
-
-            }
-
-
-            return datum.toLocaleString(
-                "de-DE",
-                {
-                    dateStyle: "medium",
-                    timeStyle: "short"
-                }
-            );
-
-        };
-
-
-    // ========================================================
-    // GELD FORMATIEREN
-    // ========================================================
-
-    window.verwaltungPreis =
-        function(wert) {
-
-            if (
-                wert === null ||
-                wert === undefined ||
-                wert === ""
-            ) {
-
-                return "—";
-
-            }
-
-
-            const nummer =
-                Number(wert);
-
-
-            if (Number.isNaN(nummer)) {
-                return wert;
-            }
-
-
-            return nummer.toLocaleString(
-                "de-DE",
-                {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2
-                }
-            ) + " $";
-
-        };
-
-
-    // ========================================================
-    // TEXT SICHER FÜR HTML MACHEN
-    // ========================================================
-
-    window.verwaltungEscape =
-        function(text) {
-
-            if (
-                text === null ||
-                text === undefined
-            ) {
-
-                return "";
-
-            }
-
-
-            const div =
-                document.createElement("div");
-
-
-            div.textContent =
-                String(text);
-
-
-            return div.innerHTML;
-
-        };
-
-
-    // ========================================================
-    // STARTWERTE
-    // ========================================================
-
-    console.log(
-        "Verwaltung Grundsystem erfolgreich geladen."
-    );
-
-});
-
-
-// ============================================================
-// EHRENMARKT – VERWALTUNG
-// TEIL 2 VON 5
-// BEWERBUNGSVERWALTUNG
-// ============================================================
-
-
-// ============================================================
-// BEWERBUNGEN LADEN
-// ============================================================
-
-async function ladeBewerbungen() {
-
-    const liste =
-        document.getElementById("bewerbungenListe");
-
-    if (!liste) {
-        return;
-    }
-
-
-    liste.innerHTML =
-        '<div class="loading">Bewerbungen werden geladen...</div>';
-
-
-    try {
+    // ---------------------------------------------------------
+    // Globale Hilfsfunktionen für spätere Teile
+    // ---------------------------------------------------------
+
+    window.verwaltungZeigeFehler = zeigeFehler;
+    window.verwaltungZeigeErfolg = zeigeErfolg;
+    window.verwaltungMeldungAusblenden = meldungAusblenden;
+    window.verwaltungDatum = datum;
+    window.verwaltungPreis = preis;
+    window.verwaltungEscape = escapeHTML;
+
+        // =========================================================
+    // TEIL 2/7 – BEWERBUNGEN
+    // =========================================================
+
+    let alleBewerbungen = [];
+    let aktuelleBewerbung = null;
+
+    // ---------------------------------------------------------
+    // Bewerbungen laden
+    // ---------------------------------------------------------
+
+    async function ladeBewerbungen() {
+
+        const liste = element("bewerbungenListe");
+
+        if (liste) {
+            liste.innerHTML = "Bewerbungen werden geladen...";
+        }
 
         const {
             data,
             error
-        } =
-            await supabase
-                .from("applications")
-                .select("*")
-                .order("created_at", {
-                    ascending: false
-                });
-
+        } = await supabase
+            .from("applications")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
         if (error) {
-            throw error;
+            console.error(
+                "Fehler beim Laden der Bewerbungen:",
+                error
+            );
+
+            setzeWert(
+                "bewerbungenMessage",
+                "Bewerbungen konnten nicht geladen werden."
+            );
+
+            if (liste) {
+                liste.innerHTML = "";
+            }
+
+            return;
         }
 
+        alleBewerbungen = data || [];
 
-        const bewerbungen =
-            data || [];
-
-
-        // Statistiken
+        // -----------------------------------------------------
+        // Statistik
+        // -----------------------------------------------------
 
         const offen =
-            bewerbungen.filter(
-                b => b.status === "offen"
+            alleBewerbungen.filter(
+                bewerbung =>
+                    bewerbung.status === "offen"
             ).length;
-
 
         const angenommen =
-            bewerbungen.filter(
-                b => b.status === "angenommen"
+            alleBewerbungen.filter(
+                bewerbung =>
+                    bewerbung.status === "angenommen"
             ).length;
-
 
         const abgelehnt =
-            bewerbungen.filter(
-                b => b.status === "abgelehnt"
+            alleBewerbungen.filter(
+                bewerbung =>
+                    bewerbung.status === "abgelehnt"
             ).length;
-
 
         setzeWert(
             "bewerbungenOffen",
             offen
         );
 
-
         setzeWert(
             "bewerbungenAngenommen",
             angenommen
         );
-
 
         setzeWert(
             "bewerbungenAbgelehnt",
             abgelehnt
         );
 
-
         setzeWert(
             "bewerbungenGesamt",
-            bewerbungen.length
+            alleBewerbungen.length
         );
 
+        // -----------------------------------------------------
+        // Liste anzeigen
+        // -----------------------------------------------------
 
-        // Keine Bewerbungen
+        if (!liste) {
+            return;
+        }
 
-        if (bewerbungen.length === 0) {
+        if (alleBewerbungen.length === 0) {
 
             liste.innerHTML = `
-                <div class="empty-message">
-                    Es liegen derzeit keine Bewerbungen vor.
+                <div class="verwaltung-empty">
+                    Keine Bewerbungen vorhanden.
                 </div>
             `;
 
             return;
         }
 
+        liste.innerHTML = "";
 
-        // Liste erstellen
+        alleBewerbungen.forEach(bewerbung => {
 
-        liste.innerHTML =
-            bewerbungen
-                .map(
-                    bewerbung =>
-                        erstelleBewerbungKarte(
-                            bewerbung
-                        )
-                )
-                .join("");
+            liste.appendChild(
+                erstelleBewerbungKarte(bewerbung)
+            );
 
+        });
+    }
 
-    } catch (error) {
+    // ---------------------------------------------------------
+    // Bewerbungskarte
+    // ---------------------------------------------------------
 
-        console.error(
-            "Fehler beim Laden der Bewerbungen:",
-            error
-        );
+    function erstelleBewerbungKarte(bewerbung) {
 
+        const karte =
+            document.createElement("div");
 
-        liste.innerHTML = `
-            <div class="empty-message">
-                Bewerbungen konnten nicht geladen werden.<br><br>
-                ${verwaltungEscape(
-                    error.message ||
-                    "Unbekannter Fehler"
-                )}
+        karte.className =
+            "verwaltung-item";
+
+        let statusText =
+            bewerbung.status || "offen";
+
+        let statusKlasse =
+            "status-offen";
+
+        if (statusText === "angenommen") {
+            statusKlasse = "status-angenommen";
+        }
+
+        if (statusText === "abgelehnt") {
+            statusKlasse = "status-abgelehnt";
+        }
+
+        karte.innerHTML = `
+            <div>
+                <strong>
+                    ${escapeHTML(
+                        bewerbung.name || "Unbekannt"
+                    )}
+                </strong>
+
+                <div>
+                    Minecraft:
+                    ${escapeHTML(
+                        bewerbung.minecraft_name || "–"
+                    )}
+                </div>
+
+                <div>
+                    Rolle:
+                    ${escapeHTML(
+                        bewerbung.desired_role || "–"
+                    )}
+                </div>
+
+                <div>
+                    Eingang:
+                    ${datum(
+                        bewerbung.created_at
+                    )}
+                </div>
+            </div>
+
+            <div class="${statusKlasse}">
+                ${escapeHTML(statusText)}
             </div>
         `;
 
+        karte.addEventListener(
+            "click",
+            () => {
+                window.zeigeBewerbungDetails(
+                    bewerbung.id
+                );
+            }
+        );
+
+        return karte;
     }
 
-}
+    // ---------------------------------------------------------
+    // Bewerbung Details
+    // ---------------------------------------------------------
 
+    window.zeigeBewerbungDetails = function(id) {
 
-// ============================================================
-// BEWERBUNGSKARTE
-// ============================================================
+        const bewerbung =
+            alleBewerbungen.find(
+                item => item.id === id
+            );
 
-function erstelleBewerbungKarte(
-    bewerbung
-) {
+        if (!bewerbung) {
+            zeigeFehler(
+                "Die Bewerbung wurde nicht gefunden."
+            );
+            return;
+        }
 
-    const status =
-        String(
-            bewerbung.status || "offen"
-        ).toLowerCase();
+        aktuelleBewerbung = bewerbung;
 
+        const details =
+            element("bewerbungDetails");
 
-    let statusText =
-        "Offen";
+        const content =
+            element("bewerbungDetailsContent");
 
+        if (!details || !content) {
+            return;
+        }
 
-    if (status === "angenommen") {
-        statusText = "Angenommen";
-    }
-
-
-    if (status === "abgelehnt") {
-        statusText = "Abgelehnt";
-    }
-
-
-    return `
-
-        <div
-            class="list-item"
-            data-bewerbung-id="${bewerbung.id}"
-        >
-
+        content.innerHTML = `
             <h3>
-                ${verwaltungEscape(
-                    bewerbung.name ||
-                    "Unbekannter Bewerber"
+                Bewerbung von
+                ${escapeHTML(
+                    bewerbung.name || "Unbekannt"
                 )}
             </h3>
 
+            <div class="detail-grid">
 
-            <p>
-                <strong>Minecraft:</strong>
-                ${verwaltungEscape(
-                    bewerbung.minecraft_name ||
-                    "—"
-                )}
-            </p>
+                <div>
+                    <strong>Name</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.name || "–"
+                        )}
+                    </span>
+                </div>
 
+                <div>
+                    <strong>Minecraft-Name</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.minecraft_name || "–"
+                        )}
+                    </span>
+                </div>
 
-            <p>
-                <strong>Alter:</strong>
-                ${verwaltungEscape(
-                    bewerbung.age ??
-                    "—"
-                )}
-            </p>
+                <div>
+                    <strong>Discord-ID</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.discord_id || "–"
+                        )}
+                    </span>
+                </div>
 
+                <div>
+                    <strong>Alter</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.age ?? "–"
+                        )}
+                    </span>
+                </div>
 
-            <p>
-                <strong>Gewünschte Rolle:</strong>
-                ${verwaltungEscape(
-                    bewerbung.desired_role ||
-                    "—"
-                )}
-            </p>
+                <div>
+                    <strong>Gewünschte Rolle</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.desired_role || "–"
+                        )}
+                    </span>
+                </div>
 
+                <div>
+                    <strong>Erfahrung</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.experience || "–"
+                        )}
+                    </span>
+                </div>
 
-            <p>
-                <strong>Status:</strong>
-                ${verwaltungEscape(
-                    statusText
-                )}
-            </p>
+                <div>
+                    <strong>Bisherige Arbeit</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.previous_work || "–"
+                        )}
+                    </span>
+                </div>
 
+                <div>
+                    <strong>Zusätzliche Fähigkeiten</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.additional_skills || "–"
+                        )}
+                    </span>
+                </div>
 
-            <p>
-                <strong>Eingegangen:</strong>
-                ${verwaltungDatum(
-                    bewerbung.created_at
-                )}
-            </p>
+                <div>
+                    <strong>Verfügbarkeit</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.availability || "–"
+                        )}
+                    </span>
+                </div>
 
-
-            <div class="button-row">
-
-                <button
-                    type="button"
-                    class="action-button"
-                    onclick="zeigeBewerbungDetails(${bewerbung.id})"
-                >
-                    Details
-                </button>
-
-
-                ${
-                    status === "offen"
-                    ?
-                    `
-                    <button
-                        type="button"
-                        class="action-button success"
-                        onclick="bewerbungAnnehmen(${bewerbung.id})"
-                    >
-                        Annehmen
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-button danger"
-                        onclick="bewerbungAblehnen(${bewerbung.id})"
-                    >
-                        Ablehnen
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-
-                <button
-                    type="button"
-                    class="action-button danger"
-                    onclick="bewerbungLoeschen(${bewerbung.id})"
-                >
-                    Löschen
-                </button>
+                <div>
+                    <strong>Ungeeignete Zeiten</strong>
+                    <span>
+                        ${escapeHTML(
+                            bewerbung.unavailable_times || "–"
+                        )}
+                    </span>
+                </div>
 
             </div>
 
-        </div>
-
-    `;
-
-}
-
-
-// ============================================================
-// BEWERBUNGSDETAILS
-// ============================================================
-
-window.zeigeBewerbungDetails =
-    async function(id) {
-
-        const panel =
-            document.getElementById(
-                "bewerbungDetails"
-            );
-
-
-        const content =
-            document.getElementById(
-                "bewerbungDetailsContent"
-            );
-
-
-        if (!panel || !content) {
-            return;
-        }
-
-
-        content.innerHTML =
-            '<div class="loading">Details werden geladen...</div>';
-
-
-        panel.classList.add("active");
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("applications")
-                    .select("*")
-                    .eq("id", id)
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            if (!data) {
-
-                content.innerHTML = `
-                    <div class="empty-message">
-                        Bewerbung wurde nicht gefunden.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            content.innerHTML = `
-
-                <div class="list-item">
-
-                    <h3>
-                        ${verwaltungEscape(
-                            data.name || "—"
-                        )}
-                    </h3>
-
-
-                    <p>
-                        <strong>Minecraft-Name:</strong><br>
-                        ${verwaltungEscape(
-                            data.minecraft_name || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Discord-ID:</strong><br>
-                        ${verwaltungEscape(
-                            data.discord_id || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Alter:</strong><br>
-                        ${verwaltungEscape(
-                            data.age ?? "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Erfahrung:</strong><br>
-                        ${verwaltungEscape(
-                            data.experience || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Bisherige Arbeiten:</strong><br>
-                        ${verwaltungEscape(
-                            data.previous_work || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Gewünschte Rolle:</strong><br>
-                        ${verwaltungEscape(
-                            data.desired_role || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Weitere Fähigkeiten:</strong><br>
-                        ${verwaltungEscape(
-                            data.additional_skills || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Bewerbungstext:</strong><br>
-                        ${verwaltungEscape(
-                            data.application_text || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Verfügbarkeit:</strong><br>
-                        ${verwaltungEscape(
-                            data.availability || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Nicht verfügbar:</strong><br>
-                        ${verwaltungEscape(
-                            data.unavailable_times || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Status:</strong><br>
-                        ${verwaltungEscape(
-                            data.status || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Entscheidungsnotiz:</strong><br>
-                        ${verwaltungEscape(
-                            data.decision_note || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Eingereicht:</strong><br>
-                        ${verwaltungDatum(
-                            data.created_at
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Bearbeitet:</strong><br>
-                        ${verwaltungDatum(
-                            data.processed_at
-                        )}
-                    </p>
-
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            onclick="schliesseBewerbungDetails()"
-                        >
-                            Schließen
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler bei den Bewerbungsdetails:",
-                error
-            );
-
-
-            content.innerHTML = `
-
-                <div class="empty-message">
-
-                    Die Bewerbungsdetails konnten
-                    nicht geladen werden.
-
-                    <br><br>
-
-                    ${verwaltungEscape(
-                        error.message ||
-                        "Unbekannter Fehler"
+            <div class="detail-text">
+                <strong>Bewerbungstext</strong>
+                <p>
+                    ${escapeHTML(
+                        bewerbung.application_text || "–"
                     )}
+                </p>
+            </div>
 
-                </div>
+            ${
+                bewerbung.decision_note
+                    ? `
+                        <div class="detail-text">
+                            <strong>Entscheidungsnotiz</strong>
+                            <p>
+                                ${escapeHTML(
+                                    bewerbung.decision_note
+                                )}
+                            </p>
+                        </div>
+                    `
+                    : ""
+            }
 
-            `;
+            <div class="details-actions">
 
-        }
+                ${
+                    bewerbung.status === "offen"
+                        ? `
+                            <button
+                                class="verwaltung-button success"
+                                onclick="bewerbungAnnehmen(${bewerbung.id})"
+                            >
+                                Bewerbung annehmen
+                            </button>
 
+                            <button
+                                class="verwaltung-button danger"
+                                onclick="bewerbungAblehnen(${bewerbung.id})"
+                            >
+                                Bewerbung ablehnen
+                            </button>
+                        `
+                        : ""
+                }
+
+                <button
+                    class="verwaltung-button danger"
+                    onclick="bewerbungLoeschen(${bewerbung.id})"
+                >
+                    Bewerbung löschen
+                </button>
+
+                <button
+                    class="verwaltung-button"
+                    onclick="schliesseBewerbungDetails()"
+                >
+                    Schließen
+                </button>
+
+            </div>
+        `;
+
+        details.style.display = "block";
     };
 
+    // ---------------------------------------------------------
+    // Details schließen
+    // ---------------------------------------------------------
 
-// ============================================================
-// DETAILS SCHLIESSEN
-// ============================================================
+    window.schliesseBewerbungDetails = function() {
 
-window.schliesseBewerbungDetails =
-    function() {
+        const details =
+            element("bewerbungDetails");
 
-        const panel =
-            document.getElementById(
-                "bewerbungDetails"
-            );
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "active"
-            );
-
+        if (details) {
+            details.style.display = "none";
         }
 
+        aktuelleBewerbung = null;
     };
 
+    // ---------------------------------------------------------
+    // Bewerbung annehmen
+    // ---------------------------------------------------------
 
-// ============================================================
-// BEWERBUNG ANNEHMEN
-// ============================================================
+    window.bewerbungAnnehmen = async function(id) {
 
-window.bewerbungAnnehmen =
-    async function(id) {
+        const bewerbung =
+            alleBewerbungen.find(
+                item => item.id === id
+            );
 
-        if (
-            !confirm(
-                "Diese Bewerbung wirklich annehmen?"
-            )
-        ) {
+        if (!bewerbung) {
+            zeigeFehler(
+                "Die Bewerbung wurde nicht gefunden."
+            );
             return;
         }
 
-
-        try {
-
-            const {
-                data: bewerbung,
-                error: ladenFehler
-            } =
-                await supabase
-                    .from("applications")
-                    .select("*")
-                    .eq("id", id)
-                    .maybeSingle();
-
-
-            if (ladenFehler) {
-                throw ladenFehler;
-            }
-
-
-            if (!bewerbung) {
-
-                throw new Error(
-                    "Die Bewerbung wurde nicht gefunden."
-                );
-
-            }
-
-
-            // Bereits angenommen?
-
-            if (
-                String(
-                    bewerbung.status
-                ).toLowerCase() === "angenommen"
-            ) {
-
-                throw new Error(
-                    "Diese Bewerbung wurde bereits angenommen."
-                );
-
-            }
-
-
-            // Rolle bestimmen
-
-            const rolle =
+        const rolle =
+            prompt(
+                "Welche Rolle soll der Mitarbeiter erhalten?",
                 bewerbung.assigned_role ||
                 bewerbung.desired_role ||
-                "Mitarbeiter";
+                "Mitarbeiter"
+            );
 
+        if (rolle === null) {
+            return;
+        }
 
-            const rang =
+        const rang =
+            prompt(
+                "Welchen Rang soll der Mitarbeiter erhalten?",
                 bewerbung.assigned_rank ||
-                "Mitarbeiter";
+                "Mitarbeiter"
+            );
 
+        if (rang === null) {
+            return;
+        }
 
+        try {
+
+            // -------------------------------------------------
             // Mitarbeiter erstellen
+            // -------------------------------------------------
 
             const {
                 data: neuerMitarbeiter,
-                error: mitarbeiterFehler
-            } =
-                await supabase
-                    .from("employees")
-                    .insert({
+                error: mitarbeiterError
+            } = await supabase
+                .from("employees")
+                .insert({
+                    user_id: bewerbung.user_id,
+                    name: bewerbung.name,
+                    role: rolle,
+                    rang: rang,
+                    is_active: true,
+                    is_available: false
+                })
+                .select()
+                .single();
 
-                        user_id:
-                            bewerbung.user_id,
+            if (mitarbeiterError) {
+                console.error(
+                    "Fehler beim Erstellen des Mitarbeiters:",
+                    mitarbeiterError
+                );
 
-                        name:
-                            bewerbung.name,
-
-                        role:
-                            rolle,
-
-                        rang:
-                            rang,
-
-                        is_active:
-                            true,
-
-                        is_available:
-                            false
-
-                    })
-                    .select()
-                    .single();
-
-
-            if (mitarbeiterFehler) {
-
-                // Falls bereits ein Mitarbeiter existiert,
-                // Bewerbung trotzdem nicht einfach doppelt
-                // anlegen.
-
-                if (
-                    mitarbeiterFehler.code ===
-                    "23505"
-                ) {
-
-                    throw new Error(
-                        "Für diesen Benutzer existiert bereits ein Mitarbeiter."
-                    );
-
-                }
-
-
-                throw mitarbeiterFehler;
+                throw mitarbeiterError;
             }
 
-
+            // -------------------------------------------------
             // Bewerbung aktualisieren
+            // -------------------------------------------------
 
             const {
-                error: updateFehler
-            } =
-                await supabase
-                    .from("applications")
-                    .update({
+                error: updateError
+            } = await supabase
+                .from("applications")
+                .update({
+                    status: "angenommen",
+                    assigned_role: rolle,
+                    assigned_rank: rang,
+                    processed_by: user.id,
+                    processed_at: new Date().toISOString()
+                })
+                .eq("id", id);
 
-                        status:
-                            "angenommen",
+            if (updateError) {
+                console.error(
+                    "Fehler beim Aktualisieren der Bewerbung:",
+                    updateError
+                );
 
-                        assigned_role:
-                            rolle,
-
-                        assigned_rank:
-                            rang,
-
-                        processed_by:
-                            user.id,
-
-                        processed_at:
-                            new Date().toISOString(),
-
-                        updated_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq("id", id);
-
-
-            if (updateFehler) {
-                throw updateFehler;
+                throw updateError;
             }
 
-
-            alert(
-                "Bewerbung wurde angenommen und der Mitarbeiter wurde angelegt."
+            zeigeErfolg(
+                "Bewerbung angenommen und Mitarbeiter angelegt."
             );
 
+            window.schliesseBewerbungDetails();
 
             await ladeBewerbungen();
-
-
-            schliesseBewerbungDetails();
-
 
         } catch (error) {
 
@@ -1276,91 +801,72 @@ window.bewerbungAnnehmen =
                 error
             );
 
-
-            alert(
+            zeigeFehler(
                 "Die Bewerbung konnte nicht angenommen werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
+                (error.message || "Unbekannter Fehler")
             );
-
         }
-
     };
 
+    // ---------------------------------------------------------
+    // Bewerbung ablehnen
+    // ---------------------------------------------------------
 
-// ============================================================
-// BEWERBUNG ABLEHNEN
-// ============================================================
+    window.bewerbungAblehnen = async function(id) {
 
-window.bewerbungAblehnen =
-    async function(id) {
+        const bewerbung =
+            alleBewerbungen.find(
+                item => item.id === id
+            );
+
+        if (!bewerbung) {
+            zeigeFehler(
+                "Die Bewerbung wurde nicht gefunden."
+            );
+            return;
+        }
 
         const notiz =
             prompt(
-                "Optionale Begründung für die Ablehnung:"
+                "Warum wird die Bewerbung abgelehnt?",
+                ""
             );
-
 
         if (notiz === null) {
             return;
         }
 
-
-        if (
-            !confirm(
-                "Diese Bewerbung wirklich ablehnen?"
-            )
-        ) {
-            return;
-        }
-
-
         try {
 
             const {
                 error
-            } =
-                await supabase
-                    .from("applications")
-                    .update({
-
-                        status:
-                            "abgelehnt",
-
-                        processed_by:
-                            user.id,
-
-                        processed_at:
-                            new Date().toISOString(),
-
-                        decision_note:
-                            notiz.trim() || null,
-
-                        updated_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq("id", id)
-                    .eq("status", "offen");
-
+            } = await supabase
+                .from("applications")
+                .update({
+                    status: "abgelehnt",
+                    decision_note: notiz,
+                    processed_by: user.id,
+                    processed_at:
+                        new Date().toISOString()
+                })
+                .eq("id", id);
 
             if (error) {
+                console.error(
+                    "Fehler beim Ablehnen:",
+                    error
+                );
+
                 throw error;
             }
 
-
-            alert(
+            zeigeErfolg(
                 "Bewerbung wurde abgelehnt."
             );
 
+            window.schliesseBewerbungDetails();
 
             await ladeBewerbungen();
-
-
-            schliesseBewerbungDetails();
-
 
         } catch (error) {
 
@@ -1369,62 +875,52 @@ window.bewerbungAblehnen =
                 error
             );
 
-
-            alert(
+            zeigeFehler(
                 "Die Bewerbung konnte nicht abgelehnt werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
+                (error.message || "Unbekannter Fehler")
             );
-
         }
-
     };
 
+    // ---------------------------------------------------------
+    // Bewerbung löschen
+    // ---------------------------------------------------------
 
-// ============================================================
-// BEWERBUNG LÖSCHEN
-// ============================================================
-
-window.bewerbungLoeschen =
-    async function(id) {
+    window.bewerbungLoeschen = async function(id) {
 
         if (
             !confirm(
-                "Diese Bewerbung wirklich dauerhaft löschen?"
+                "Diese Bewerbung wirklich löschen?"
             )
         ) {
             return;
         }
 
-
         try {
 
             const {
                 error
-            } =
-                await supabase
-                    .from("applications")
-                    .delete()
-                    .eq("id", id);
-
+            } = await supabase
+                .from("applications")
+                .delete()
+                .eq("id", id);
 
             if (error) {
+                console.error(
+                    "Fehler beim Löschen der Bewerbung:",
+                    error
+                );
+
                 throw error;
             }
 
-
-            alert(
-                "Bewerbung wurde gelöscht."
+            zeigeErfolg(
+                "Bewerbung erfolgreich gelöscht."
             );
 
+            window.schliesseBewerbungDetails();
 
             await ladeBewerbungen();
-
-
-            schliesseBewerbungDetails();
-
 
         } catch (error) {
 
@@ -1433,3443 +929,3342 @@ window.bewerbungLoeschen =
                 error
             );
 
-
-            alert(
+            zeigeFehler(
                 "Die Bewerbung konnte nicht gelöscht werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
+                (error.message || "Unbekannter Fehler")
             );
-
         }
-
     };
 
+    // ---------------------------------------------------------
+    // Bewerbungen initial laden
+    // ---------------------------------------------------------
 
-// ============================================================
-// HILFSFUNKTION FÜR STATISTIKEN
-// ============================================================
+    await ladeBewerbungen();
 
-function setzeWert(
-    elementId,
-    wert
-) {
+        // =========================================================
+    // TEIL 3/7 – AUFTRÄGE
+    // =========================================================
 
-    const element =
-        document.getElementById(
-            elementId
-        );
+    const auftragTabellen = {
+        bau: {
+            tabelle: "build_orders",
+            name: "Bauaufträge"
+        },
 
+        material: {
+            tabelle: "orders",
+            name: "Materialbestellungen"
+        },
 
-    if (element) {
+        redstone: {
+            tabelle: "redstone_orders",
+            name: "Redstone-Aufträge"
+        },
 
-        element.textContent =
-            String(wert);
+        logistik: {
+            tabelle: "logistics_orders",
+            name: "Logistikaufträge"
+        }
+    };
 
-    }
+    let aktuelleAuftragsart = "bau";
+    let alleAuftraege = [];
+    let aktuellerAuftrag = null;
 
-}
+    // ---------------------------------------------------------
+    // Aufträge laden
+    // ---------------------------------------------------------
 
+    async function ladeAuftraege(typ = aktuelleAuftragsart) {
 
-// ============================================================
-// BEWERBUNGEN BEIM START LADEN
-// ============================================================
+        aktuelleAuftragsart = typ;
 
-ladeBewerbungen();
+        const config =
+            auftragTabellen[typ];
 
-// ============================================================
-// EHRENMARKT – VERWALTUNG
-// TEIL 3 VON 5
-// AUFTRAGSVERWALTUNG
-// ============================================================
+        if (!config) {
+            console.error(
+                "Unbekannter Auftragstyp:",
+                typ
+            );
+            return;
+        }
 
+        const liste =
+            element("auftraegeListe");
 
-// ============================================================
-// AUFTRÄGE – AKTUELLE LISTE
-// ============================================================
-
-let aktuellerAuftragstyp = null;
-let aktuelleAuftraege = [];
-
-
-// ============================================================
-// AUFTRAGSTYPEN
-// ============================================================
-
-const auftragTabellen = {
-
-    bau: {
-        tabelle: "build_orders",
-        name: "Bauaufträge"
-    },
-
-    material: {
-        tabelle: "orders",
-        name: "Materialbestellungen"
-    },
-
-    redstone: {
-        tabelle: "redstone_orders",
-        name: "Redstone-Aufträge"
-    },
-
-    logistik: {
-        tabelle: "logistics_orders",
-        name: "Logistikaufträge"
-    }
-
-};
-
-
-// ============================================================
-// AUFTRAGSART ÖFFNEN
-// ============================================================
-
-async function ladeAuftraege(
-    typ
-) {
-
-    const konfiguration =
-        auftragTabellen[typ];
-
-
-    if (!konfiguration) {
-
-        console.error(
-            "Unbekannter Auftragstyp:",
-            typ
-        );
-
-        return;
-    }
-
-
-    aktuellerAuftragstyp =
-        typ;
-
-
-    const liste =
-        document.getElementById(
-            "auftraegeListe"
-        );
-
-
-    if (!liste) {
-        return;
-    }
-
-
-    liste.innerHTML =
-        `
-        <div class="loading">
-            ${verwaltungEscape(
-                konfiguration.name
-            )} werden geladen...
-        </div>
-        `;
-
-
-    try {
+        if (liste) {
+            liste.innerHTML =
+                "Aufträge werden geladen...";
+        }
 
         const {
             data,
             error
-        } =
-            await supabase
-                .from(konfiguration.tabelle)
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
+        } = await supabase
+            .from(config.tabelle)
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
         if (error) {
-            throw error;
-        }
 
+            console.error(
+                `Fehler beim Laden der ${config.name}:`,
+                error
+            );
 
-        aktuelleAuftraege =
-            data || [];
+            setzeWert(
+                "auftraegeMessage",
+                `${config.name} konnten nicht geladen werden.`
+            );
 
-
-        aktualisiereAuftragsStatistik();
-
-
-        if (
-            aktuelleAuftraege.length === 0
-        ) {
-
-            liste.innerHTML =
-                `
-                <div class="empty-message">
-                    Keine ${verwaltungEscape(
-                        konfiguration.name
-                    )} vorhanden.
-                </div>
-                `;
+            if (liste) {
+                liste.innerHTML = "";
+            }
 
             return;
         }
 
+        alleAuftraege = data || [];
 
-        liste.innerHTML =
-            aktuelleAuftraege
-                .map(
-                    auftrag =>
-                        erstelleAuftragsKarte(
-                            auftrag,
-                            typ
-                        )
-                )
-                .join("");
+        // -----------------------------------------------------
+        // Statistik
+        // -----------------------------------------------------
 
+        aktualisiereAuftragsStatistik();
 
-    } catch (error) {
+        // -----------------------------------------------------
+        // Liste anzeigen
+        // -----------------------------------------------------
 
-        console.error(
-            "Fehler beim Laden der Aufträge:",
-            error
-        );
+        if (!liste) {
+            return;
+        }
 
+        if (alleAuftraege.length === 0) {
 
-        liste.innerHTML =
-            `
-            <div class="empty-message">
-
-                ${verwaltungEscape(
-                    konfiguration.name
-                )}
-                konnten nicht geladen werden.
-
-                <br><br>
-
-                ${verwaltungEscape(
-                    error.message ||
-                    "Unbekannter Fehler"
-                )}
-
-            </div>
+            liste.innerHTML = `
+                <div class="verwaltung-empty">
+                    Keine ${escapeHTML(
+                        config.name
+                    )} vorhanden.
+                </div>
             `;
 
+            return;
+        }
+
+        liste.innerHTML = "";
+
+        alleAuftraege.forEach(auftrag => {
+
+            liste.appendChild(
+                erstelleAuftragsKarte(auftrag)
+            );
+
+        });
     }
 
-}
+    // ---------------------------------------------------------
+    // Auftragkarte
+    // ---------------------------------------------------------
 
+    function erstelleAuftragsKarte(auftrag) {
 
-// ============================================================
-// AUFTRAGSKARTE
-// ============================================================
+        const karte =
+            document.createElement("div");
 
-function erstelleAuftragsKarte(
-    auftrag,
-    typ
-) {
+        karte.className =
+            "verwaltung-item";
 
-    const status =
-        auftrag.status ||
-        "Unbekannt";
+        const id =
+            auftrag.id ?? "–";
 
+        const status =
+            auftrag.status || "–";
 
-    const id =
-        auftrag.id;
+        const statusLower =
+            String(status).toLowerCase();
 
+        let statusKlasse =
+            "status-offen";
 
-    const name =
-        auftrag.name ||
-        auftrag.title ||
-        auftrag.order_name ||
-        auftrag.project_name ||
-        `${auftragTabellen[typ].name} #${id}`;
+        if (
+            statusLower.includes("bearbeitung") ||
+            statusLower.includes("bearbeitet") ||
+            statusLower.includes("in arbeit")
+        ) {
+            statusKlasse =
+                "status-bearbeitung";
+        }
 
+        if (
+            statusLower.includes("abgeschlossen") ||
+            statusLower.includes("fertig")
+        ) {
+            statusKlasse =
+                "status-abgeschlossen";
+        }
 
-    const kunde =
-        auftrag.customer_name ||
-        auftrag.user_name ||
-        auftrag.name ||
-        "—";
+        let kunde =
+            auftrag.name ||
+            auftrag.customer_name ||
+            auftrag.username ||
+            auftrag.user_name ||
+            "–";
 
+        karte.innerHTML = `
+            <div>
 
-    const mitarbeiter =
-        auftrag.employee_name ||
-        "Noch nicht übernommen";
+                <strong>
+                    Auftrag #${escapeHTML(id)}
+                </strong>
 
+                <div>
+                    Kunde:
+                    ${escapeHTML(kunde)}
+                </div>
 
-    return `
+                <div>
+                    Erstellt:
+                    ${datum(auftrag.created_at)}
+                </div>
 
-        <div
-            class="list-item"
-            data-auftrag-id="${verwaltungEscape(id)}"
-        >
+            </div>
+
+            <div class="${statusKlasse}">
+                ${escapeHTML(status)}
+            </div>
+        `;
+
+        karte.addEventListener(
+            "click",
+            () => {
+                window.zeigeAuftragDetails(
+                    id
+                );
+            }
+        );
+
+        return karte;
+    }
+
+    // ---------------------------------------------------------
+    // Auftragsdetails anzeigen
+    // ---------------------------------------------------------
+
+    window.zeigeAuftragDetails = function(id) {
+
+        const auftrag =
+            alleAuftraege.find(
+                item =>
+                    String(item.id) ===
+                    String(id)
+            );
+
+        if (!auftrag) {
+
+            zeigeFehler(
+                "Der Auftrag wurde nicht gefunden."
+            );
+
+            return;
+        }
+
+        aktuellerAuftrag =
+            auftrag;
+
+        const details =
+            element("auftragDetails");
+
+        const content =
+            element("auftragDetailsContent");
+
+        if (!details || !content) {
+            return;
+        }
+
+        const config =
+            auftragTabellen[
+                aktuelleAuftragsart
+            ];
+
+        let felderHTML = "";
+
+        Object.keys(auftrag).forEach(
+            feld => {
+
+                let wert =
+                    auftrag[feld];
+
+                if (
+                    wert === null ||
+                    wert === undefined ||
+                    wert === ""
+                ) {
+                    wert = "–";
+                }
+
+                if (
+                    feld.includes("price") ||
+                    feld.includes("preis") ||
+                    feld.includes("cost") ||
+                    feld.includes("kosten")
+                ) {
+                    wert = preis(wert);
+                }
+
+                if (
+                    feld.includes("created_at") ||
+                    feld.includes("updated_at") ||
+                    feld.includes("processed_at")
+                ) {
+                    wert = datum(wert);
+                }
+
+                felderHTML += `
+                    <div>
+                        <strong>
+                            ${escapeHTML(feld)}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(wert)}
+                        </span>
+                    </div>
+                `;
+            }
+        );
+
+        content.innerHTML = `
 
             <h3>
-                ${verwaltungEscape(name)}
+                ${escapeHTML(
+                    config?.name ||
+                    "Auftrag"
+                )}
+                #${escapeHTML(id)}
             </h3>
 
+            <div class="detail-grid">
+                ${felderHTML}
+            </div>
 
-            <p>
-                <strong>Auftrags-ID:</strong>
-                ${verwaltungEscape(id)}
-            </p>
-
-
-            <p>
-                <strong>Kunde:</strong>
-                ${verwaltungEscape(kunde)}
-            </p>
-
-
-            <p>
-                <strong>Status:</strong>
-                ${verwaltungEscape(status)}
-            </p>
-
-
-            <p>
-                <strong>Mitarbeiter:</strong>
-                ${verwaltungEscape(mitarbeiter)}
-            </p>
-
-
-            <p>
-                <strong>Erstellt:</strong>
-                ${verwaltungDatum(
-                    auftrag.created_at
-                )}
-            </p>
-
-
-            <div class="button-row">
+            <div class="details-actions">
 
                 <button
-                    type="button"
-                    class="action-button"
-                    onclick="zeigeAuftragDetails('${verwaltungEscape(
-                        id
-                    )}')"
-                >
-                    Details
-                </button>
-
-
-                <button
-                    type="button"
-                    class="action-button"
-                    onclick="auftragStatusAendern('${verwaltungEscape(
-                        id
-                    )}')"
+                    class="verwaltung-button"
+                    onclick="auftragStatusAendern('${escapeHTML(id)}')"
                 >
                     Status ändern
                 </button>
 
+                <button
+                    class="verwaltung-button danger"
+                    onclick="auftragLoeschen('${escapeHTML(id)}')"
+                >
+                    Auftrag löschen
+                </button>
 
                 <button
-                    type="button"
-                    class="action-button danger"
-                    onclick="auftragLoeschen('${verwaltungEscape(
-                        id
-                    )}')"
+                    class="verwaltung-button"
+                    onclick="schliesseAuftragDetails()"
                 >
-                    Löschen
+                    Schließen
                 </button>
 
             </div>
+        `;
 
-        </div>
+        details.style.display =
+            "block";
+    };
 
-    `;
+    // ---------------------------------------------------------
+    // Auftragsdetails schließen
+    // ---------------------------------------------------------
 
-}
+    window.schliesseAuftragDetails =
+        function() {
 
+            const details =
+                element("auftragDetails");
 
-// ============================================================
-// AUFTRAG DETAILS
-// ============================================================
-
-window.zeigeAuftragDetails =
-    async function(id) {
-
-        if (!aktuellerAuftragstyp) {
-
-            alert(
-                "Bitte zuerst eine Auftragsart auswählen."
-            );
-
-            return;
-        }
-
-
-        const konfiguration =
-            auftragTabellen[
-                aktuellerAuftragstyp
-            ];
-
-
-        const panel =
-            document.getElementById(
-                "auftragDetails"
-            );
-
-
-        const content =
-            document.getElementById(
-                "auftragDetailsContent"
-            );
-
-
-        if (!panel || !content) {
-            return;
-        }
-
-
-        panel.classList.add(
-            "active"
-        );
-
-
-        content.innerHTML =
-            `
-            <div class="loading">
-                Auftragsdetails werden geladen...
-            </div>
-            `;
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from(
-                        konfiguration.tabelle
-                    )
-                    .select("*")
-                    .eq("id", id)
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
+            if (details) {
+                details.style.display =
+                    "none";
             }
 
+            aktuellerAuftrag =
+                null;
+        };
 
-            if (!data) {
+    // ---------------------------------------------------------
+    // Auftragstatus ändern
+    // ---------------------------------------------------------
 
-                content.innerHTML =
-                    `
-                    <div class="empty-message">
-                        Auftrag wurde nicht gefunden.
-                    </div>
-                    `;
+    window.auftragStatusAendern =
+        async function(id) {
+
+            const auftrag =
+                alleAuftraege.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!auftrag) {
+
+                zeigeFehler(
+                    "Der Auftrag wurde nicht gefunden."
+                );
 
                 return;
             }
 
+            const neuerStatus =
+                prompt(
+                    "Neuen Status eingeben:",
+                    auftrag.status || "Offen"
+                );
 
-            const felder =
-                Object.entries(data);
+            if (neuerStatus === null) {
+                return;
+            }
 
+            const status =
+                neuerStatus.trim();
 
-            let html = "";
+            if (!status) {
 
+                zeigeFehler(
+                    "Der Status darf nicht leer sein."
+                );
 
-            felder.forEach(
-                ([schluessel, wert]) => {
+                return;
+            }
 
-                    if (
-                        wert === null ||
-                        wert === undefined ||
-                        wert === ""
-                    ) {
+            const config =
+                auftragTabellen[
+                    aktuelleAuftragsart
+                ];
 
-                        wert = "—";
+            if (!config) {
+                return;
+            }
 
-                    }
+            try {
 
+                const {
+                    error
+                } = await supabase
+                    .from(config.tabelle)
+                    .update({
+                        status: status,
+                        updated_at:
+                            new Date().toISOString()
+                    })
+                    .eq("id", id);
 
-                    html += `
-
-                        <p>
-                            <strong>
-                                ${verwaltungEscape(
-                                    schluessel
-                                )}:
-                            </strong><br>
-
-                            ${verwaltungEscape(
-                                wert
-                            )}
-                        </p>
-
-                    `;
-
+                if (error) {
+                    throw error;
                 }
-            );
 
+                zeigeErfolg(
+                    "Auftragsstatus wurde geändert."
+                );
 
-            content.innerHTML =
-                `
+                window.schliesseAuftragDetails();
 
-                <div class="list-item">
+                await ladeAuftraege(
+                    aktuelleAuftragsart
+                );
 
-                    ${html}
+            } catch (error) {
 
-                    <div class="button-row">
+                console.error(
+                    "Fehler beim Ändern des Status:",
+                    error
+                );
 
-                        <button
-                            type="button"
-                            class="action-button"
-                            onclick="schliesseAuftragDetails()"
-                        >
-                            Schließen
-                        </button>
-
-                    </div>
-
-                </div>
-
-                `;
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Laden der Auftragsdetails:",
-                error
-            );
-
-
-            content.innerHTML =
-                `
-                <div class="empty-message">
-
-                    Auftragsdetails konnten
-                    nicht geladen werden.
-
-                    <br><br>
-
-                    ${verwaltungEscape(
+                zeigeFehler(
+                    "Der Status konnte nicht geändert werden.\n\n" +
+                    (
                         error.message ||
                         "Unbekannter Fehler"
-                    )}
-
-                </div>
-                `;
-
-        }
-
-    };
-
-
-// ============================================================
-// AUFTRAGSDETAILS SCHLIESSEN
-// ============================================================
-
-window.schliesseAuftragDetails =
-    function() {
-
-        const panel =
-            document.getElementById(
-                "auftragDetails"
-            );
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "active"
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// STATUS ÄNDERN
-// ============================================================
-
-window.auftragStatusAendern =
-    async function(id) {
-
-        if (!aktuellerAuftragstyp) {
-            return;
-        }
-
-
-        const konfiguration =
-            auftragTabellen[
-                aktuellerAuftragstyp
-            ];
-
-
-        const neuerStatus =
-            prompt(
-                "Neuen Status eingeben:",
-                "In Bearbeitung"
-            );
-
-
-        if (
-            neuerStatus === null
-        ) {
-            return;
-        }
-
-
-        const status =
-            neuerStatus.trim();
-
-
-        if (!status) {
-
-            alert(
-                "Bitte einen Status eingeben."
-            );
-
-            return;
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from(
-                        konfiguration.tabelle
                     )
-                    .update({
-                        status: status
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
+                );
+            }
+        };
 
+    // ---------------------------------------------------------
+    // Auftrag löschen
+    // ---------------------------------------------------------
 
-            if (error) {
-                throw error;
+    window.auftragLoeschen =
+        async function(id) {
+
+            if (
+                !confirm(
+                    "Diesen Auftrag wirklich löschen?"
+                )
+            ) {
+                return;
             }
 
+            const config =
+                auftragTabellen[
+                    aktuelleAuftragsart
+                ];
 
-            alert(
-                "Status wurde erfolgreich geändert."
-            );
+            if (!config) {
+                return;
+            }
 
+            try {
 
-            await ladeAuftraege(
-                aktuellerAuftragstyp
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Ändern des Status:",
-                error
-            );
-
-
-            alert(
-                "Der Status konnte nicht geändert werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// AUFTRAG LÖSCHEN
-// ============================================================
-
-window.auftragLoeschen =
-    async function(id) {
-
-        if (!aktuellerAuftragstyp) {
-            return;
-        }
-
-
-        const konfiguration =
-            auftragTabellen[
-                aktuellerAuftragstyp
-            ];
-
-
-        if (
-            !confirm(
-                `${konfiguration.name.slice(
-                    0,
-                    -1
-                )} wirklich dauerhaft löschen?`
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from(
-                        konfiguration.tabelle
-                    )
+                const {
+                    error
+                } = await supabase
+                    .from(config.tabelle)
                     .delete()
-                    .eq(
-                        "id",
-                        id
-                    );
+                    .eq("id", id);
 
+                if (error) {
+                    throw error;
+                }
 
-            if (error) {
-                throw error;
+                zeigeErfolg(
+                    "Auftrag erfolgreich gelöscht."
+                );
+
+                window.schliesseAuftragDetails();
+
+                await ladeAuftraege(
+                    aktuelleAuftragsart
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Löschen des Auftrags:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Der Auftrag konnte nicht gelöscht werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
             }
-
-
-            alert(
-                "Auftrag wurde gelöscht."
-            );
-
-
-            await ladeAuftraege(
-                aktuellerAuftragstyp
-            );
-
-
-            schliesseAuftragDetails();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Löschen des Auftrags:",
-                error
-            );
-
-
-            alert(
-                "Der Auftrag konnte nicht gelöscht werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// AUFTRAGSSTATISTIK
-// ============================================================
-
-function aktualisiereAuftragsStatistik() {
-
-    const alle =
-        aktuelleAuftraege;
-
-
-    const offen =
-        alle.filter(
-            auftrag =>
-                String(
-                    auftrag.status || ""
-                ).toLowerCase() === "offen"
-        ).length;
-
-
-    const bearbeitung =
-        alle.filter(
-            auftrag =>
-                String(
-                    auftrag.status || ""
-                ).toLowerCase()
-                === "in bearbeitung"
-        ).length;
-
-
-    const abgeschlossen =
-        alle.filter(
-            auftrag =>
-                String(
-                    auftrag.status || ""
-                ).toLowerCase()
-                === "abgeschlossen"
-        ).length;
-
-
-    setzeWert(
-        "auftraegeOffen",
-        offen
-    );
-
-
-    setzeWert(
-        "auftraegeBearbeitung",
-        bearbeitung
-    );
-
-
-    setzeWert(
-        "auftraegeAbgeschlossen",
-        abgeschlossen
-    );
-
-
-    setzeWert(
-        "auftraegeGesamt",
-        alle.length
-    );
-
-}
-
-
-// ============================================================
-// BUTTONS FÜR AUFTRÄGE
-// ============================================================
-
-const bauButton =
-    document.getElementById(
-        "bauauftraegeAnzeigen"
-    );
-
-
-if (bauButton) {
-
-    bauButton.addEventListener(
-        "click",
-        () => {
-
-            ladeAuftraege("bau");
-
-        }
-    );
-
-}
-
-
-const materialButton =
-    document.getElementById(
-        "materialauftraegeAnzeigen"
-    );
-
-
-if (materialButton) {
-
-    materialButton.addEventListener(
-        "click",
-        () => {
-
-            ladeAuftraege("material");
-
-        }
-    );
-
-}
-
-
-const redstoneButton =
-    document.getElementById(
-        "redstoneAuftraegeAnzeigen"
-    );
-
-
-if (redstoneButton) {
-
-    redstoneButton.addEventListener(
-        "click",
-        () => {
-
-            ladeAuftraege("redstone");
-
-        }
-    );
-
-}
-
-
-const logistikButton =
-    document.getElementById(
-        "logistikAuftraegeAnzeigen"
-    );
-
-
-if (logistikButton) {
-
-    logistikButton.addEventListener(
-        "click",
-        () => {
-
-            ladeAuftraege("logistik");
-
-        }
-    );
-
-}
-
-// ============================================================
-// EHRENMARKT – VERWALTUNG
-// TEIL 4 VON 5
-// MITARBEITER + PREISVERWALTUNG
-// ============================================================
-
-
-// ============================================================
-// MITARBEITER LADEN
-// ============================================================
-
-async function ladeMitarbeiter() {
-
-    const liste =
-        document.getElementById(
-            "mitarbeiterListe"
+        };
+
+    // ---------------------------------------------------------
+    // Auftragsstatistik
+    // ---------------------------------------------------------
+
+    function aktualisiereAuftragsStatistik() {
+
+        const offen =
+            alleAuftraege.filter(
+                auftrag =>
+                    String(
+                        auftrag.status || ""
+                    ).toLowerCase() ===
+                    "offen"
+            ).length;
+
+        const bearbeitung =
+            alleAuftraege.filter(
+                auftrag => {
+
+                    const status =
+                        String(
+                            auftrag.status || ""
+                        ).toLowerCase();
+
+                    return (
+                        status.includes(
+                            "bearbeitung"
+                        ) ||
+                        status.includes(
+                            "in arbeit"
+                        )
+                    );
+                }
+            ).length;
+
+        const abgeschlossen =
+            alleAuftraege.filter(
+                auftrag => {
+
+                    const status =
+                        String(
+                            auftrag.status || ""
+                        ).toLowerCase();
+
+                    return (
+                        status.includes(
+                            "abgeschlossen"
+                        ) ||
+                        status.includes(
+                            "fertig"
+                        )
+                    );
+                }
+            ).length;
+
+        setzeWert(
+            "auftraegeOffen",
+            offen
         );
 
+        setzeWert(
+            "auftraegeBearbeitung",
+            bearbeitung
+        );
 
-    if (!liste) {
-        return;
+        setzeWert(
+            "auftraegeAbgeschlossen",
+            abgeschlossen
+        );
+
+        setzeWert(
+            "auftraegeGesamt",
+            alleAuftraege.length
+        );
     }
 
+    // ---------------------------------------------------------
+    // Auftragstyp-Buttons
+    // ---------------------------------------------------------
 
-    liste.innerHTML =
-        `
-        <div class="loading">
-            Mitarbeiter werden geladen...
-        </div>
-        `;
+    const bauButton =
+        element("bauauftraegeAnzeigen");
 
+    if (bauButton) {
+        bauButton.addEventListener(
+            "click",
+            () => ladeAuftraege("bau")
+        );
+    }
 
-    try {
+    const materialButton =
+        element("materialauftraegeAnzeigen");
+
+    if (materialButton) {
+        materialButton.addEventListener(
+            "click",
+            () => ladeAuftraege("material")
+        );
+    }
+
+    const redstoneButton =
+        element("redstoneAuftraegeAnzeigen");
+
+    if (redstoneButton) {
+        redstoneButton.addEventListener(
+            "click",
+            () => ladeAuftraege("redstone")
+        );
+    }
+
+    const logistikButton =
+        element("logistikAuftraegeAnzeigen");
+
+    if (logistikButton) {
+        logistikButton.addEventListener(
+            "click",
+            () => ladeAuftraege("logistik")
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Standardmäßig Bauaufträge laden
+    // ---------------------------------------------------------
+
+    await ladeAuftraege("bau");
+
+        // =========================================================
+    // TEIL 4/7 – MITARBEITER
+    // =========================================================
+
+    let alleMitarbeiter = [];
+    let aktuellerMitarbeiterDetails = null;
+
+    // ---------------------------------------------------------
+    // Mitarbeiter laden
+    // ---------------------------------------------------------
+
+    async function ladeMitarbeiter() {
+
+        const liste =
+            element("mitarbeiterListe");
+
+        if (liste) {
+            liste.innerHTML =
+                "Mitarbeiter werden geladen...";
+        }
 
         const {
             data,
             error
-        } =
-            await supabase
-                .from("employees")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: true
-                    }
-                );
-
+        } = await supabase
+            .from("employees")
+            .select(`
+                id,
+                user_id,
+                name,
+                role,
+                rang,
+                is_active,
+                is_available,
+                total_work_minutes,
+                clock_in,
+                created_at,
+                updated_at
+            `)
+            .order("created_at", {
+                ascending: false
+            });
 
         if (error) {
-            throw error;
+
+            console.error(
+                "Fehler beim Laden der Mitarbeiter:",
+                error
+            );
+
+            setzeWert(
+                "mitarbeiterMessage",
+                "Mitarbeiter konnten nicht geladen werden."
+            );
+
+            if (liste) {
+                liste.innerHTML = "";
+            }
+
+            return;
         }
 
-
-        const mitarbeiterListe =
+        alleMitarbeiter =
             data || [];
 
-
-        // ====================================================
-        // STATISTIKEN
-        // ====================================================
+        // -----------------------------------------------------
+        // Statistik
+        // -----------------------------------------------------
 
         const aktiv =
-            mitarbeiterListe.filter(
-                person =>
-                    person.is_active === true
+            alleMitarbeiter.filter(
+                mitarbeiter =>
+                    mitarbeiter.is_active === true
             ).length;
-
 
         const inaktiv =
-            mitarbeiterListe.filter(
-                person =>
-                    person.is_active !== true
+            alleMitarbeiter.filter(
+                mitarbeiter =>
+                    mitarbeiter.is_active === false
             ).length;
-
 
         const verfuegbar =
-            mitarbeiterListe.filter(
-                person =>
-                    person.is_active === true &&
-                    person.is_available === true
+            alleMitarbeiter.filter(
+                mitarbeiter =>
+                    mitarbeiter.is_active === true &&
+                    mitarbeiter.is_available === true
             ).length;
-
 
         setzeWert(
             "mitarbeiterAktiv",
             aktiv
         );
 
-
         setzeWert(
             "mitarbeiterInaktiv",
             inaktiv
         );
 
-
         setzeWert(
             "mitarbeiterGesamt",
-            mitarbeiterListe.length
+            alleMitarbeiter.length
         );
-
 
         setzeWert(
             "mitarbeiterVerfuegbar",
             verfuegbar
         );
 
+        // -----------------------------------------------------
+        // Liste
+        // -----------------------------------------------------
 
-        // ====================================================
-        // KEINE MITARBEITER
-        // ====================================================
-
-        if (
-            mitarbeiterListe.length === 0
-        ) {
-
-            liste.innerHTML =
-                `
-                <div class="empty-message">
-                    Es wurden noch keine Mitarbeiter angelegt.
-                </div>
-                `;
-
+        if (!liste) {
             return;
         }
 
+        if (alleMitarbeiter.length === 0) {
 
-        // ====================================================
-        // KARTEN
-        // ====================================================
-
-        liste.innerHTML =
-            mitarbeiterListe
-                .map(
-                    person =>
-                        erstelleMitarbeiterKarte(
-                            person
-                        )
-                )
-                .join("");
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Laden der Mitarbeiter:",
-            error
-        );
-
-
-        liste.innerHTML =
-            `
-            <div class="empty-message">
-
-                Mitarbeiter konnten nicht geladen werden.
-
-                <br><br>
-
-                ${verwaltungEscape(
-                    error.message ||
-                    "Unbekannter Fehler"
-                )}
-
-            </div>
+            liste.innerHTML = `
+                <div class="verwaltung-empty">
+                    Keine Mitarbeiter vorhanden.
+                </div>
             `;
 
-    }
-
-}
-
-
-// ============================================================
-// MITARBEITER-KARTE
-// ============================================================
-
-function erstelleMitarbeiterKarte(
-    person
-) {
-
-    const aktiv =
-        person.is_active === true;
-
-
-    const verfuegbar =
-        person.is_available === true;
-
-
-    return `
-
-        <div
-            class="employee-card"
-            data-mitarbeiter-id="${verwaltungEscape(
-                person.id
-            )}"
-        >
-
-            <h3>
-                ${verwaltungEscape(
-                    person.name ||
-                    "Unbekannter Mitarbeiter"
-                )}
-            </h3>
-
-
-            <p>
-                <strong>Rolle:</strong>
-                ${verwaltungEscape(
-                    person.role ||
-                    "—"
-                )}
-            </p>
-
-
-            <p>
-                <strong>Rang:</strong>
-                ${verwaltungEscape(
-                    person.rang ||
-                    "—"
-                )}
-            </p>
-
-
-            <p>
-                <strong>Status:</strong>
-                ${
-                    aktiv
-                    ? "Aktiv"
-                    : "Inaktiv"
-                }
-            </p>
-
-
-            <p>
-                <strong>Verfügbarkeit:</strong>
-                ${
-                    verfuegbar
-                    ? "Verfügbar"
-                    : "Nicht verfügbar"
-                }
-            </p>
-
-
-            <p>
-                <strong>Arbeitszeit:</strong>
-                ${verwaltungArbeitszeit(
-                    person.total_work_minutes
-                )}
-            </p>
-
-
-            <div class="button-row">
-
-                <button
-                    type="button"
-                    class="action-button"
-                    onclick="mitarbeiterBearbeiten('${verwaltungEscape(
-                        person.id
-                    )}')"
-                >
-                    Bearbeiten
-                </button>
-
-
-                <button
-                    type="button"
-                    class="action-button"
-                    onclick="mitarbeiterAktivStatus('${verwaltungEscape(
-                        person.id
-                    )}', ${aktiv})"
-                >
-                    ${
-                        aktiv
-                        ? "Deaktivieren"
-                        : "Aktivieren"
-                    }
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-// ============================================================
-// ARBEITSZEIT FORMATIEREN
-// ============================================================
-
-window.verwaltungArbeitszeit =
-    function(minuten) {
-
-        const wert =
-            Number(minuten || 0);
-
-
-        if (!Number.isFinite(wert)) {
-            return "0 Std. 0 Min.";
-        }
-
-
-        const stunden =
-            Math.floor(
-                wert / 60
-            );
-
-
-        const rest =
-            wert % 60;
-
-
-        return `${stunden} Std. ${rest} Min.`;
-
-    };
-
-
-// ============================================================
-// MITARBEITER BEARBEITEN
-// ============================================================
-
-window.mitarbeiterBearbeiten =
-    async function(id) {
-
-        const panel =
-            document.getElementById(
-                "mitarbeiterDetails"
-            );
-
-
-        const content =
-            document.getElementById(
-                "mitarbeiterDetailsContent"
-            );
-
-
-        if (!panel || !content) {
             return;
         }
 
+        liste.innerHTML = "";
 
-        panel.classList.add(
-            "active"
-        );
+        alleMitarbeiter.forEach(
+            mitarbeiter => {
 
-
-        content.innerHTML =
-            `
-            <div class="loading">
-                Mitarbeiterdaten werden geladen...
-            </div>
-            `;
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("employees")
-                    .select("*")
-                    .eq("id", id)
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            if (!data) {
-
-                throw new Error(
-                    "Mitarbeiter wurde nicht gefunden."
-                );
-
-            }
-
-
-            content.innerHTML =
-                `
-
-                <div class="list-item">
-
-                    <h3>
-                        ${verwaltungEscape(
-                            data.name || "—"
-                        )}
-                    </h3>
-
-
-                    <p>
-                        <strong>Benutzer-ID:</strong><br>
-                        ${verwaltungEscape(
-                            data.user_id || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Rolle:</strong><br>
-                        ${verwaltungEscape(
-                            data.role || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Rang:</strong><br>
-                        ${verwaltungEscape(
-                            data.rang || "—"
-                        )}
-                    </p>
-
-
-                    <p>
-                        <strong>Aktiv:</strong>
-                        ${
-                            data.is_active
-                            ? "Ja"
-                            : "Nein"
-                        }
-                    </p>
-
-
-                    <p>
-                        <strong>Verfügbar:</strong>
-                        ${
-                            data.is_available
-                            ? "Ja"
-                            : "Nein"
-                        }
-                    </p>
-
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button success"
-                            onclick="mitarbeiterDatenSpeichern('${verwaltungEscape(
-                                data.id
-                            )}')"
-                        >
-                            Änderungen speichern
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            onclick="schliesseMitarbeiterDetails()"
-                        >
-                            Schließen
-                        </button>
-
-                    </div>
-
-
-                    <div
-                        id="mitarbeiterBearbeitenForm"
-                        style="margin-top: 18px;"
-                    >
-
-                        <p>
-                            <strong>Rolle</strong>
-                        </p>
-
-                        <input
-                            id="bearbeitenRolle"
-                            class="search-input"
-                            type="text"
-                            value="${verwaltungEscape(
-                                data.role || ""
-                            )}"
-                            style="width: 100%; margin-top: 7px;"
-                        >
-
-
-                        <p style="margin-top: 14px;">
-                            <strong>Rang</strong>
-                        </p>
-
-                        <input
-                            id="bearbeitenRang"
-                            class="search-input"
-                            type="text"
-                            value="${verwaltungEscape(
-                                data.rang || ""
-                            )}"
-                            style="width: 100%; margin-top: 7px;"
-                        >
-
-
-                        <p style="margin-top: 14px;">
-                            <strong>Aktiv</strong>
-                        </p>
-
-                        <select
-                            id="bearbeitenAktiv"
-                            class="search-input"
-                            style="width: 100%; margin-top: 7px;"
-                        >
-
-                            <option
-                                value="true"
-                                ${
-                                    data.is_active
-                                    ? "selected"
-                                    : ""
-                                }
-                            >
-                                Aktiv
-                            </option>
-
-                            <option
-                                value="false"
-                                ${
-                                    !data.is_active
-                                    ? "selected"
-                                    : ""
-                                }
-                            >
-                                Inaktiv
-                            </option>
-
-                        </select>
-
-
-                        <p style="margin-top: 14px;">
-                            <strong>Verfügbarkeit</strong>
-                        </p>
-
-                        <select
-                            id="bearbeitenVerfuegbar"
-                            class="search-input"
-                            style="width: 100%; margin-top: 7px;"
-                        >
-
-                            <option
-                                value="true"
-                                ${
-                                    data.is_available
-                                    ? "selected"
-                                    : ""
-                                }
-                            >
-                                Verfügbar
-                            </option>
-
-                            <option
-                                value="false"
-                                ${
-                                    !data.is_available
-                                    ? "selected"
-                                    : ""
-                                }
-                            >
-                                Nicht verfügbar
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-                `;
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Öffnen des Mitarbeiters:",
-                error
-            );
-
-
-            content.innerHTML =
-                `
-                <div class="empty-message">
-
-                    Mitarbeiter konnte nicht geladen werden.
-
-                    <br><br>
-
-                    ${verwaltungEscape(
-                        error.message ||
-                        "Unbekannter Fehler"
-                    )}
-
-                </div>
-                `;
-
-        }
-
-    };
-
-
-// ============================================================
-// MITARBEITER SPEICHERN
-// ============================================================
-
-window.mitarbeiterDatenSpeichern =
-    async function(id) {
-
-        const rolle =
-            document.getElementById(
-                "bearbeitenRolle"
-            )?.value.trim();
-
-
-        const rang =
-            document.getElementById(
-                "bearbeitenRang"
-            )?.value.trim();
-
-
-        const aktiv =
-            document.getElementById(
-                "bearbeitenAktiv"
-            )?.value === "true";
-
-
-        const verfuegbar =
-            document.getElementById(
-                "bearbeitenVerfuegbar"
-            )?.value === "true";
-
-
-        if (!rolle) {
-
-            alert(
-                "Bitte eine Rolle eingeben."
-            );
-
-            return;
-        }
-
-
-        if (!rang) {
-
-            alert(
-                "Bitte einen Rang eingeben."
-            );
-
-            return;
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("employees")
-                    .update({
-
-                        role:
-                            rolle,
-
-                        rang:
-                            rang,
-
-                        is_active:
-                            aktiv,
-
-                        is_available:
-                            verfuegbar,
-
-                        updated_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert(
-                "Mitarbeiterdaten wurden gespeichert."
-            );
-
-
-            schliesseMitarbeiterDetails();
-
-
-            await ladeMitarbeiter();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Speichern:",
-                error
-            );
-
-
-            alert(
-                "Die Mitarbeiterdaten konnten nicht gespeichert werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// AKTIV / INAKTIV
-// ============================================================
-
-window.mitarbeiterAktivStatus =
-    async function(
-        id,
-        aktuellAktiv
-    ) {
-
-        const neuerStatus =
-            !aktuellAktiv;
-
-
-        if (
-            !confirm(
-                neuerStatus
-                ? "Mitarbeiter wirklich aktivieren?"
-                : "Mitarbeiter wirklich deaktivieren?"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("employees")
-                    .update({
-
-                        is_active:
-                            neuerStatus,
-
-                        updated_at:
-                            new Date().toISOString()
-
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert(
-                neuerStatus
-                ? "Mitarbeiter wurde aktiviert."
-                : "Mitarbeiter wurde deaktiviert."
-            );
-
-
-            await ladeMitarbeiter();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Ändern des Aktivstatus:",
-                error
-            );
-
-
-            alert(
-                "Der Aktivstatus konnte nicht geändert werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// MITARBEITER DETAILS SCHLIESSEN
-// ============================================================
-
-window.schliesseMitarbeiterDetails =
-    function() {
-
-        const panel =
-            document.getElementById(
-                "mitarbeiterDetails"
-            );
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "active"
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// PREISVERWALTUNG – DATEN
-// ============================================================
-
-let alleItems =
-    [];
-
-
-// ============================================================
-// ITEMS LADEN
-// ============================================================
-
-async function ladeItems() {
-
-    const liste =
-        document.getElementById(
-            "itemsListe"
-        );
-
-
-    if (!liste) {
-        return;
-    }
-
-
-    liste.innerHTML =
-        `
-        <tr>
-            <td
-                colspan="5"
-                class="loading"
-            >
-                Items werden geladen...
-            </td>
-        </tr>
-        `;
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from("items")
-                .select("*")
-                .order(
-                    "name",
-                    {
-                        ascending: true
-                    }
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        alleItems =
-            data || [];
-
-
-        zeigeItems(
-            alleItems
-        );
-
-
-    } catch (error) {
-
-            console.error(
-                "Fehler beim Löschen des Items:",
-                error
-            );
-
-
-            alert(
-                "Das Item konnte nicht gelöscht werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// ITEM HINZUFÜGEN
-// ============================================================
-
-const neuesItemButton =
-    document.getElementById(
-        "neuesItemButton"
-    );
-
-
-if (neuesItemButton) {
-
-    neuesItemButton.addEventListener(
-        "click",
-        async () => {
-
-            const name =
-                prompt(
-                    "Name des neuen Items:"
-                );
-
-
-            if (
-                name === null ||
-                !name.trim()
-            ) {
-
-                return;
-
-            }
-
-
-            const kategorie =
-                prompt(
-                    "Kategorie:"
-                );
-
-
-            if (
-                kategorie === null
-            ) {
-
-                return;
-
-            }
-
-
-            const preis =
-                prompt(
-                    "Preis:"
-                );
-
-
-            if (
-                preis === null
-            ) {
-
-                return;
-
-            }
-
-
-            const preisNummer =
-                Number(
-                    String(
-                        preis
-                    ).replace(
-                        ",",
-                        "."
+                liste.appendChild(
+                    erstelleMitarbeiterKarte(
+                        mitarbeiter
                     )
                 );
 
+            }
+        );
+    }
 
-            if (
-                !Number.isFinite(
-                    preisNummer
-                ) ||
-                preisNummer < 0
-            ) {
+    // ---------------------------------------------------------
+    // Mitarbeiterkarte
+    // ---------------------------------------------------------
 
-                alert(
-                    "Bitte einen gültigen Preis eingeben."
+    function erstelleMitarbeiterKarte(
+        mitarbeiter
+    ) {
+
+        const karte =
+            document.createElement("div");
+
+        karte.className =
+            "verwaltung-item";
+
+        const status =
+            mitarbeiter.is_active
+                ? "Aktiv"
+                : "Inaktiv";
+
+        const verfuegbarkeit =
+            mitarbeiter.is_available
+                ? "Verfügbar"
+                : "Nicht verfügbar";
+
+        karte.innerHTML = `
+            <div>
+
+                <strong>
+                    ${escapeHTML(
+                        mitarbeiter.name || "Unbekannt"
+                    )}
+                </strong>
+
+                <div>
+                    Rolle:
+                    ${escapeHTML(
+                        mitarbeiter.role || "–"
+                    )}
+                </div>
+
+                <div>
+                    Rang:
+                    ${escapeHTML(
+                        mitarbeiter.rang || "–"
+                    )}
+                </div>
+
+                <div>
+                    ${escapeHTML(status)}
+                    ·
+                    ${escapeHTML(verfuegbarkeit)}
+                </div>
+
+            </div>
+
+            <div>
+                ${escapeHTML(status)}
+            </div>
+        `;
+
+        karte.addEventListener(
+            "click",
+            () => {
+
+                window.mitarbeiterBearbeiten(
+                    mitarbeiter.id
+                );
+
+            }
+        );
+
+        return karte;
+    }
+
+    // ---------------------------------------------------------
+    // Mitarbeiterdetails öffnen
+    // ---------------------------------------------------------
+
+    window.mitarbeiterBearbeiten =
+        function(id) {
+
+            const mitarbeiter =
+                alleMitarbeiter.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!mitarbeiter) {
+
+                zeigeFehler(
+                    "Der Mitarbeiter wurde nicht gefunden."
                 );
 
                 return;
-
             }
 
+            aktuellerMitarbeiterDetails =
+                mitarbeiter;
+
+            const details =
+                element("mitarbeiterDetails");
+
+            const content =
+                element("mitarbeiterDetailsContent");
+
+            if (!details || !content) {
+                return;
+            }
+
+            const minuten =
+                Number(
+                    mitarbeiter.total_work_minutes || 0
+                );
+
+            const stunden =
+                Math.floor(
+                    minuten / 60
+                );
+
+            const restMinuten =
+                minuten % 60;
+
+            content.innerHTML = `
+
+                <h3>
+                    Mitarbeiter bearbeiten
+                </h3>
+
+                <div class="detail-grid">
+
+                    <div>
+                        <strong>Name</strong>
+                        <span>
+                            ${escapeHTML(
+                                mitarbeiter.name || "–"
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Benutzer-ID</strong>
+                        <span>
+                            ${escapeHTML(
+                                mitarbeiter.user_id || "–"
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Rolle</strong>
+                        <span>
+                            ${escapeHTML(
+                                mitarbeiter.role || "–"
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Rang</strong>
+                        <span>
+                            ${escapeHTML(
+                                mitarbeiter.rang || "–"
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Status</strong>
+                        <span>
+                            ${
+                                mitarbeiter.is_active
+                                    ? "Aktiv"
+                                    : "Inaktiv"
+                            }
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Verfügbarkeit</strong>
+                        <span>
+                            ${
+                                mitarbeiter.is_available
+                                    ? "Verfügbar"
+                                    : "Nicht verfügbar"
+                            }
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Arbeitszeit</strong>
+                        <span>
+                            ${stunden} Std.
+                            ${restMinuten} Min.
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Zeiterfassung</strong>
+                        <span>
+                            ${
+                                mitarbeiter.clock_in
+                                    ? datum(
+                                        mitarbeiter.clock_in
+                                    )
+                                    : "Nicht eingestempelt"
+                            }
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Erstellt</strong>
+                        <span>
+                            ${datum(
+                                mitarbeiter.created_at
+                            )}
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>Zuletzt geändert</strong>
+                        <span>
+                            ${datum(
+                                mitarbeiter.updated_at
+                            )}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="details-actions">
+
+                    <button
+                        class="verwaltung-button"
+                        onclick="verwaltungArbeitszeit('${escapeHTML(
+                            mitarbeiter.id
+                        )}')"
+                    >
+                        Arbeitszeit anzeigen
+                    </button>
+
+                    <button
+                        class="verwaltung-button"
+                        onclick="mitarbeiterDatenSpeichern('${escapeHTML(
+                            mitarbeiter.id
+                        )}')"
+                    >
+                        Rolle / Rang bearbeiten
+                    </button>
+
+                    <button
+                        class="verwaltung-button"
+                        onclick="mitarbeiterAktivStatus('${escapeHTML(
+                            mitarbeiter.id
+                        )}')"
+                    >
+                        ${
+                            mitarbeiter.is_active
+                                ? "Mitarbeiter deaktivieren"
+                                : "Mitarbeiter aktivieren"
+                        }
+                    </button>
+
+                    <button
+                        class="verwaltung-button"
+                        onclick="schliesseMitarbeiterDetails()"
+                    >
+                        Schließen
+                    </button>
+
+                </div>
+            `;
+
+            details.style.display =
+                "block";
+        };
+
+    // ---------------------------------------------------------
+    // Arbeitszeit
+    // ---------------------------------------------------------
+
+    window.verwaltungArbeitszeit =
+        function(id) {
+
+            const mitarbeiter =
+                alleMitarbeiter.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!mitarbeiter) {
+                zeigeFehler(
+                    "Der Mitarbeiter wurde nicht gefunden."
+                );
+                return;
+            }
+
+            const minuten =
+                Number(
+                    mitarbeiter.total_work_minutes || 0
+                );
+
+            const stunden =
+                Math.floor(
+                    minuten / 60
+                );
+
+            const rest =
+                minuten % 60;
+
+            alert(
+                `${mitarbeiter.name}\n\n` +
+                `Gesamte Arbeitszeit:\n` +
+                `${stunden} Stunden und ${rest} Minuten`
+            );
+        };
+
+    // ---------------------------------------------------------
+    // Rolle / Rang speichern
+    // ---------------------------------------------------------
+
+    window.mitarbeiterDatenSpeichern =
+        async function(id) {
+
+            const mitarbeiter =
+                alleMitarbeiter.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!mitarbeiter) {
+                zeigeFehler(
+                    "Der Mitarbeiter wurde nicht gefunden."
+                );
+                return;
+            }
+
+            const rolle =
+                prompt(
+                    "Neue Rolle:",
+                    mitarbeiter.role || ""
+                );
+
+            if (rolle === null) {
+                return;
+            }
+
+            const rang =
+                prompt(
+                    "Neuer Rang:",
+                    mitarbeiter.rang || ""
+                );
+
+            if (rang === null) {
+                return;
+            }
+
+            if (!rolle.trim() || !rang.trim()) {
+
+                zeigeFehler(
+                    "Rolle und Rang dürfen nicht leer sein."
+                );
+
+                return;
+            }
 
             try {
 
-                // Die konkrete Spaltenstruktur der
-                // items-Tabelle wird beim Einfügen
-                // zunächst anhand vorhandener Items
-                // übernommen.
-
-                const vorlage =
-                    alleItems[0];
-
-
-                if (!vorlage) {
-
-                    throw new Error(
-                        "Die items-Tabelle enthält noch kein Item. Für das erste Item müssen wir zuerst die genaue Tabellenstruktur prüfen."
-                    );
-
-                }
-
-
-                const neuerEintrag = {};
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "name"
-                    )
-                ) {
-
-                    neuerEintrag.name =
-                        name.trim();
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "item_name"
-                    )
-                ) {
-
-                    neuerEintrag.item_name =
-                        name.trim();
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "minecraft_name"
-                    )
-                ) {
-
-                    neuerEintrag.minecraft_name =
-                        name.trim();
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "category"
-                    )
-                ) {
-
-                    neuerEintrag.category =
-                        kategorie.trim();
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "kategorie"
-                    )
-                ) {
-
-                    neuerEintrag.kategorie =
-                        kategorie.trim();
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "price"
-                    )
-                ) {
-
-                    neuerEintrag.price =
-                        preisNummer;
-
-                }
-
-
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        vorlage,
-                        "preis"
-                    )
-                ) {
-
-                    neuerEintrag.preis =
-                        preisNummer;
-
-                }
-
-
                 const {
                     error
-                } =
-                    await supabase
-                        .from("items")
-                        .insert(
-                            neuerEintrag
-                        );
-
+                } = await supabase
+                    .from("employees")
+                    .update({
+                        role: rolle.trim(),
+                        rang: rang.trim(),
+                        updated_at:
+                            new Date().toISOString()
+                    })
+                    .eq("id", id);
 
                 if (error) {
                     throw error;
                 }
 
-
-                alert(
-                    "Neues Item wurde erfolgreich hinzugefügt."
+                zeigeErfolg(
+                    "Mitarbeiterdaten wurden gespeichert."
                 );
 
+                await ladeMitarbeiter();
 
-                await ladeItems();
+                const aktualisiert =
+                    alleMitarbeiter.find(
+                        item =>
+                            String(item.id) ===
+                            String(id)
+                    );
 
+                if (aktualisiert) {
+                    aktuellerMitarbeiterDetails =
+                        aktualisiert;
+
+                    window.mitarbeiterBearbeiten(
+                        id
+                    );
+                }
 
             } catch (error) {
 
                 console.error(
-                    "Fehler beim Hinzufügen des Items:",
+                    "Fehler beim Speichern:",
                     error
                 );
 
-
-                alert(
-                    "Das Item konnte nicht hinzugefügt werden.\n\n" +
+                zeigeFehler(
+                    "Die Mitarbeiterdaten konnten nicht gespeichert werden.\n\n" +
                     (
                         error.message ||
                         "Unbekannter Fehler"
                     )
                 );
+            }
+        };
 
+    // ---------------------------------------------------------
+    // Aktiv / Inaktiv
+    // ---------------------------------------------------------
+
+    window.mitarbeiterAktivStatus =
+        async function(id) {
+
+            const mitarbeiter =
+                alleMitarbeiter.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!mitarbeiter) {
+                zeigeFehler(
+                    "Der Mitarbeiter wurde nicht gefunden."
+                );
+                return;
             }
 
+            const neuerStatus =
+                !mitarbeiter.is_active;
+
+            const frage =
+                neuerStatus
+                    ? "Mitarbeiter wirklich aktivieren?"
+                    : "Mitarbeiter wirklich deaktivieren?";
+
+            if (!confirm(frage)) {
+                return;
+            }
+
+            try {
+
+                const {
+                    error
+                } = await supabase
+                    .from("employees")
+                    .update({
+                        is_active: neuerStatus,
+                        updated_at:
+                            new Date().toISOString()
+                    })
+                    .eq("id", id);
+
+                if (error) {
+                    throw error;
+                }
+
+                zeigeErfolg(
+                    neuerStatus
+                        ? "Mitarbeiter wurde aktiviert."
+                        : "Mitarbeiter wurde deaktiviert."
+                );
+
+                window.schliesseMitarbeiterDetails();
+
+                await ladeMitarbeiter();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Ändern des Mitarbeiterstatus:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Der Mitarbeiterstatus konnte nicht geändert werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Mitarbeiterdetails schließen
+    // ---------------------------------------------------------
+
+    window.schliesseMitarbeiterDetails =
+        function() {
+
+            const details =
+                element("mitarbeiterDetails");
+
+            if (details) {
+                details.style.display =
+                    "none";
+            }
+
+            aktuellerMitarbeiterDetails =
+                null;
+        };
+
+    // ---------------------------------------------------------
+    // Mitarbeiter laden
+    // ---------------------------------------------------------
+
+    await ladeMitarbeiter();
+
+        // =========================================================
+    // TEIL 5/7 – PREISVERWALTUNG / ITEMS
+    // =========================================================
+
+    let alleItems = [];
+    let aktuellesItem = null;
+
+    // ---------------------------------------------------------
+    // Items laden
+    // ---------------------------------------------------------
+
+    async function ladeItems() {
+
+        const liste =
+            element("itemsListe");
+
+        if (liste) {
+            liste.innerHTML =
+                "Items werden geladen...";
         }
-    );
-
-}
-
-
-// ============================================================
-// MITARBEITER UND ITEMS BEIM START LADEN
-// ============================================================
-
-ladeMitarbeiter();
-
-ladeItems();
-
-// ============================================================
-// EHRENMARKT – VERWALTUNG
-// TEIL 5 VON 5
-// BÜNDNISVERWALTUNG + ABSCHLUSS
-// ============================================================
-
-
-// ============================================================
-// BÜNDNISSE LADEN
-// ============================================================
-
-async function ladeBuendnisse() {
-
-    const liste =
-        document.getElementById(
-            "buendnisseListe"
-        );
-
-
-    if (!liste) {
-        return;
-    }
-
-
-    liste.innerHTML =
-        `
-        <div class="loading">
-            Bündnisse werden geladen...
-        </div>
-        `;
-
-
-    try {
 
         const {
             data,
             error
-        } =
-            await supabase
-                .from("buendnisse")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
+        } = await supabase
+            .from("items")
+            .select("*")
+            .order("name", {
+                ascending: true
+            });
 
         if (error) {
-            throw error;
+
+            console.error(
+                "Fehler beim Laden der Items:",
+                error
+            );
+
+            setzeWert(
+                "preiseMessage",
+                "Items konnten nicht geladen werden."
+            );
+
+            if (liste) {
+                liste.innerHTML = "";
+            }
+
+            return;
         }
 
-
-        const buendnisse =
+        alleItems =
             data || [];
 
+        zeigeItems();
+    }
 
-        // ====================================================
-        // STATISTIKEN
-        // ====================================================
+    // ---------------------------------------------------------
+    // Items anzeigen
+    // ---------------------------------------------------------
+
+    function zeigeItems(
+        suchbegriff = ""
+    ) {
+
+        const liste =
+            element("itemsListe");
+
+        if (!liste) {
+            return;
+        }
+
+        const suche =
+            String(suchbegriff)
+                .trim()
+                .toLowerCase();
+
+        const gefilterteItems =
+            alleItems.filter(item => {
+
+                if (!suche) {
+                    return true;
+                }
+
+                return Object.values(item)
+                    .some(wert =>
+                        String(
+                            wert ?? ""
+                        )
+                        .toLowerCase()
+                        .includes(suche)
+                    );
+            });
+
+        if (gefilterteItems.length === 0) {
+
+            liste.innerHTML = `
+                <div class="verwaltung-empty">
+                    Keine passenden Items gefunden.
+                </div>
+            `;
+
+            return;
+        }
+
+        liste.innerHTML = "";
+
+        gefilterteItems.forEach(
+            item => {
+
+                liste.appendChild(
+                    erstelleItemZeile(item)
+                );
+
+            }
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Item-Zeile
+    // ---------------------------------------------------------
+
+    function erstelleItemZeile(item) {
+
+        const zeile =
+            document.createElement("div");
+
+        zeile.className =
+            "verwaltung-item";
+
+        const itemName =
+            item.name ??
+            item.item_name ??
+            item.minecraft_name ??
+            item.minecraft_item ??
+            "Unbekannt";
+
+        const kategorie =
+            item.category ??
+            item.kategorie ??
+            item.type ??
+            "–";
+
+        const itemPreis =
+            item.price ??
+            item.preis ??
+            item.value ??
+            item.wert ??
+            null;
+
+        zeile.innerHTML = `
+            <div>
+
+                <strong>
+                    ${escapeHTML(itemName)}
+                </strong>
+
+                <div>
+                    Kategorie:
+                    ${escapeHTML(kategorie)}
+                </div>
+
+                <div>
+                    Preis:
+                    ${preis(itemPreis)}
+                </div>
+
+            </div>
+
+            <div class="details-actions">
+
+                <button
+                    class="verwaltung-button"
+                    type="button"
+                    onclick="itemBearbeiten('${escapeHTML(
+                        item.id
+                    )}'); event.stopPropagation();"
+                >
+                    Bearbeiten
+                </button>
+
+                <button
+                    class="verwaltung-button danger"
+                    type="button"
+                    onclick="itemLoeschen('${escapeHTML(
+                        item.id
+                    )}'); event.stopPropagation();"
+                >
+                    Löschen
+                </button>
+
+            </div>
+        `;
+
+        return zeile;
+    }
+
+    // ---------------------------------------------------------
+    // Suche
+    // ---------------------------------------------------------
+
+    const itemSuche =
+        element("itemSuche");
+
+    if (itemSuche) {
+
+        itemSuche.addEventListener(
+            "input",
+            () => {
+
+                zeigeItems(
+                    itemSuche.value
+                );
+
+            }
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Item bearbeiten
+    // ---------------------------------------------------------
+
+    window.itemBearbeiten =
+        async function(id) {
+
+            const item =
+                alleItems.find(
+                    eintrag =>
+                        String(eintrag.id) ===
+                        String(id)
+                );
+
+            if (!item) {
+
+                zeigeFehler(
+                    "Das Item wurde nicht gefunden."
+                );
+
+                return;
+            }
+
+            aktuellesItem =
+                item;
+
+            const itemName =
+                item.name ??
+                item.item_name ??
+                item.minecraft_name ??
+                item.minecraft_item ??
+                "";
+
+            const kategorie =
+                item.category ??
+                item.kategorie ??
+                item.type ??
+                "";
+
+            const aktuellerPreis =
+                item.price ??
+                item.preis ??
+                item.value ??
+                item.wert ??
+                0;
+
+            const neuerName =
+                prompt(
+                    "Item-Name:",
+                    itemName
+                );
+
+            if (neuerName === null) {
+                return;
+            }
+
+            const neueKategorie =
+                prompt(
+                    "Kategorie:",
+                    kategorie
+                );
+
+            if (neueKategorie === null) {
+                return;
+            }
+
+            const neuerPreis =
+                prompt(
+                    "Preis:",
+                    aktuellerPreis
+                );
+
+            if (neuerPreis === null) {
+                return;
+            }
+
+            const preisZahl =
+                Number(
+                    neuerPreis
+                        .replace(",", ".")
+                );
+
+            if (
+                !Number.isFinite(
+                    preisZahl
+                ) ||
+                preisZahl < 0
+            ) {
+
+                zeigeFehler(
+                    "Bitte einen gültigen Preis eingeben."
+                );
+
+                return;
+            }
+
+            try {
+
+                // -------------------------------------------------
+                // Nur tatsächlich vorhandene Spalten aktualisieren
+                // -------------------------------------------------
+
+                const updateData = {};
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "name"
+                    )
+                ) {
+                    updateData.name =
+                        neuerName.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "item_name"
+                    )
+                ) {
+                    updateData.item_name =
+                        neuerName.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "minecraft_name"
+                    )
+                ) {
+                    updateData.minecraft_name =
+                        neuerName.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "minecraft_item"
+                    )
+                ) {
+                    updateData.minecraft_item =
+                        neuerName.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "category"
+                    )
+                ) {
+                    updateData.category =
+                        neueKategorie.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "kategorie"
+                    )
+                ) {
+                    updateData.kategorie =
+                        neueKategorie.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "type"
+                    )
+                ) {
+                    updateData.type =
+                        neueKategorie.trim();
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "price"
+                    )
+                ) {
+                    updateData.price =
+                        preisZahl;
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "preis"
+                    )
+                ) {
+                    updateData.preis =
+                        preisZahl;
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "value"
+                    )
+                ) {
+                    updateData.value =
+                        preisZahl;
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "wert"
+                    )
+                ) {
+                    updateData.wert =
+                        preisZahl;
+                }
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        item,
+                        "updated_at"
+                    )
+                ) {
+                    updateData.updated_at =
+                        new Date().toISOString();
+                }
+
+                const {
+                    error
+                } = await supabase
+                    .from("items")
+                    .update(updateData)
+                    .eq("id", id);
+
+                if (error) {
+                    throw error;
+                }
+
+                zeigeErfolg(
+                    "Item wurde erfolgreich geändert."
+                );
+
+                aktuellesItem =
+                    null;
+
+                await ladeItems();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Bearbeiten des Items:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Item konnte nicht geändert werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Item löschen
+    // ---------------------------------------------------------
+
+    window.itemLoeschen =
+        async function(id) {
+
+            const item =
+                alleItems.find(
+                    eintrag =>
+                        String(eintrag.id) ===
+                        String(id)
+                );
+
+            if (!item) {
+
+                zeigeFehler(
+                    "Das Item wurde nicht gefunden."
+                );
+
+                return;
+            }
+
+            const itemName =
+                item.name ??
+                item.item_name ??
+                item.minecraft_name ??
+                item.minecraft_item ??
+                "dieses Item";
+
+            if (
+                !confirm(
+                    `„${itemName}“ wirklich löschen?`
+                )
+            ) {
+                return;
+            }
+
+            try {
+
+                const {
+                    error
+                } = await supabase
+                    .from("items")
+                    .delete()
+                    .eq("id", id);
+
+                if (error) {
+                    throw error;
+                }
+
+                zeigeErfolg(
+                    "Item wurde erfolgreich gelöscht."
+                );
+
+                await ladeItems();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Löschen des Items:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Item konnte nicht gelöscht werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Neues Item
+    // ---------------------------------------------------------
+
+    const neuesItemButton =
+        element("neuesItemButton");
+
+    if (neuesItemButton) {
+
+        neuesItemButton.addEventListener(
+            "click",
+            async () => {
+
+                const name =
+                    prompt(
+                        "Name des neuen Items:"
+                    );
+
+                if (
+                    name === null ||
+                    !name.trim()
+                ) {
+                    return;
+                }
+
+                const kategorie =
+                    prompt(
+                        "Kategorie:"
+                    );
+
+                if (kategorie === null) {
+                    return;
+                }
+
+                const preisEingabe =
+                    prompt(
+                        "Preis:"
+                    );
+
+                if (preisEingabe === null) {
+                    return;
+                }
+
+                const neuerPreis =
+                    Number(
+                        preisEingabe
+                            .replace(",", ".")
+                    );
+
+                if (
+                    !Number.isFinite(
+                        neuerPreis
+                    ) ||
+                    neuerPreis < 0
+                ) {
+
+                    zeigeFehler(
+                        "Bitte einen gültigen Preis eingeben."
+                    );
+
+                    return;
+                }
+
+                try {
+
+                    // -------------------------------------------------
+                    // Vorhandenes Item als Vorlage verwenden
+                    // -------------------------------------------------
+
+                    if (
+                        alleItems.length === 0
+                    ) {
+
+                        zeigeFehler(
+                            "Es ist noch kein Item vorhanden, anhand dessen die Spaltenstruktur erkannt werden kann."
+                        );
+
+                        return;
+                    }
+
+                    const vorlage =
+                        alleItems[0];
+
+                    const insertData = {};
+
+                    // Name
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "name"
+                        )
+                    ) {
+                        insertData.name =
+                            name.trim();
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "item_name"
+                        )
+                    ) {
+                        insertData.item_name =
+                            name.trim();
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "minecraft_name"
+                        )
+                    ) {
+                        insertData.minecraft_name =
+                            name.trim();
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "minecraft_item"
+                        )
+                    ) {
+                        insertData.minecraft_item =
+                            name.trim();
+                    }
+
+                    // Kategorie
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "category"
+                        )
+                    ) {
+                        insertData.category =
+                            kategorie.trim();
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "kategorie"
+                        )
+                    ) {
+                        insertData.kategorie =
+                            kategorie.trim();
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "type"
+                        )
+                    ) {
+                        insertData.type =
+                            kategorie.trim();
+                    }
+
+                    // Preis
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "price"
+                        )
+                    ) {
+                        insertData.price =
+                            neuerPreis;
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "preis"
+                        )
+                    ) {
+                        insertData.preis =
+                            neuerPreis;
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "value"
+                        )
+                    ) {
+                        insertData.value =
+                            neuerPreis;
+                    } else if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "wert"
+                        )
+                    ) {
+                        insertData.wert =
+                            neuerPreis;
+                    }
+
+                    // updated_at nur wenn vorhanden
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            vorlage,
+                            "updated_at"
+                        )
+                    ) {
+                        insertData.updated_at =
+                            new Date().toISOString();
+                    }
+
+                    const {
+                        error
+                    } = await supabase
+                        .from("items")
+                        .insert(insertData);
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    zeigeErfolg(
+                        "Neues Item wurde erfolgreich angelegt."
+                    );
+
+                    await ladeItems();
+
+                } catch (error) {
+
+                    console.error(
+                        "Fehler beim Erstellen des Items:",
+                        error
+                    );
+
+                    zeigeFehler(
+                        "Das neue Item konnte nicht erstellt werden.\n\n" +
+                        (
+                            error.message ||
+                            "Unbekannter Fehler"
+                        )
+                    );
+                }
+            }
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Items initial laden
+    // ---------------------------------------------------------
+
+    await ladeItems();
+
+        // =========================================================
+    // TEIL 6/7 – BÜNDNISSE
+    // =========================================================
+
+    let alleBuendnisse = [];
+    let aktuellesBuendnis = null;
+
+    // ---------------------------------------------------------
+    // Bündnisse laden
+    // ---------------------------------------------------------
+
+    async function ladeBuendnisse() {
+
+        const liste =
+            element("buendnisseListe");
+
+        if (liste) {
+            liste.innerHTML =
+                "Bündnisse werden geladen...";
+        }
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from("buendnisse")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Bündnisse:",
+                error
+            );
+
+            setzeWert(
+                "buendnisseMessage",
+                "Bündnisse konnten nicht geladen werden."
+            );
+
+            if (liste) {
+                liste.innerHTML = "";
+            }
+
+            return;
+        }
+
+        alleBuendnisse =
+            data || [];
+
+        // -----------------------------------------------------
+        // Statistik
+        // -----------------------------------------------------
 
         const offen =
-            buendnisse.filter(
-                b =>
-                    b.status === "Offen"
+            alleBuendnisse.filter(
+                buendnis =>
+                    buendnis.status === "Offen"
             ).length;
-
 
         const aktiv =
-            buendnisse.filter(
-                b =>
-                    b.status === "Angenommen"
+            alleBuendnisse.filter(
+                buendnis =>
+                    buendnis.status === "Angenommen"
             ).length;
-
 
         const abgelehnt =
-            buendnisse.filter(
-                b =>
-                    b.status === "Abgelehnt"
+            alleBuendnisse.filter(
+                buendnis =>
+                    buendnis.status === "Abgelehnt"
             ).length;
-
 
         setzeWert(
             "buendnisseOffen",
             offen
         );
 
-
         setzeWert(
             "buendnisseAktiv",
             aktiv
         );
-
 
         setzeWert(
             "buendnisseAbgelehnt",
             abgelehnt
         );
 
-
         setzeWert(
             "buendnisseGesamt",
-            buendnisse.length
+            alleBuendnisse.length
         );
 
+        // -----------------------------------------------------
+        // Liste
+        // -----------------------------------------------------
 
-        // ====================================================
-        // KEINE BÜNDNISSE
-        // ====================================================
+        if (!liste) {
+            return;
+        }
 
-        if (
-            buendnisse.length === 0
-        ) {
+        if (alleBuendnisse.length === 0) {
 
-            liste.innerHTML =
-                `
-                <div class="empty-message">
-                    Es liegen derzeit keine Bündnisanträge vor.
+            liste.innerHTML = `
+                <div class="verwaltung-empty">
+                    Keine Bündnisse vorhanden.
                 </div>
-                `;
+            `;
 
             return;
         }
 
+        liste.innerHTML = "";
 
-        // ====================================================
-        // LISTE
-        // ====================================================
+        alleBuendnisse.forEach(
+            buendnis => {
 
-        liste.innerHTML =
-            buendnisse
-                .map(
-                    buendnis =>
-                        erstelleBuendnisKarte(
-                            buendnis
-                        )
-                )
-                .join("");
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Laden der Bündnisse:",
-            error
-        );
-
-
-        liste.innerHTML =
-            `
-            <div class="empty-message">
-
-                Bündnisse konnten nicht geladen werden.
-
-                <br><br>
-
-                ${verwaltungEscape(
-                    error.message ||
-                    "Unbekannter Fehler"
-                )}
-
-            </div>
-            `;
-
-    }
-
-}
-
-
-// ============================================================
-// BÜNDNIS-KARTE
-// ============================================================
-
-function erstelleBuendnisKarte(
-    buendnis
-) {
-
-    const status =
-        buendnis.status ||
-        "Offen";
-
-
-    let statusKlasse =
-        "open";
-
-
-    if (
-        status === "Angenommen"
-    ) {
-
-        statusKlasse =
-            "accepted";
-
-    }
-
-
-    if (
-        status === "Abgelehnt"
-    ) {
-
-        statusKlasse =
-            "rejected";
-
-    }
-
-
-    const buendnisId =
-        buendnis.buendnis_id ||
-        "Noch nicht vergeben";
-
-
-    return `
-
-        <div
-            class="list-item"
-        >
-
-            <h3>
-
-                ${verwaltungEscape(
-                    buendnis.clan_name ||
-                    "Unbekannter Clan"
-                )}
-
-            </h3>
-
-
-            <p>
-
-                <strong>Bündnis-ID:</strong>
-
-                ${verwaltungEscape(
-                    buendnisId
-                )}
-
-            </p>
-
-
-            <p>
-
-                <strong>Clan-Tag:</strong>
-
-                ${verwaltungEscape(
-                    buendnis.clan_tag ||
-                    "—"
-                )}
-
-            </p>
-
-
-            <p>
-
-                <strong>Ansprechpartner:</strong>
-
-                ${verwaltungEscape(
-                    buendnis.contact_name ||
-                    "—"
-                )}
-
-            </p>
-
-
-            <p>
-
-                <strong>Minecraft:</strong>
-
-                ${verwaltungEscape(
-                    buendnis.minecraft_name ||
-                    "—"
-                )}
-
-            </p>
-
-
-            <p>
-
-                <strong>Status:</strong>
-
-                <span
-                    class="alliance-status ${statusKlasse}"
-                >
-                    ${verwaltungEscape(
-                        status
-                    )}
-                </span>
-
-            </p>
-
-
-            <p>
-
-                <strong>Rabatt:</strong>
-
-                ${verwaltungEscape(
-                    buendnis.discount_percent ??
-                    0
-                )} %
-
-            </p>
-
-
-            <p>
-
-                <strong>Antrag eingegangen:</strong>
-
-                ${verwaltungDatum(
-                    buendnis.created_at
-                )}
-
-            </p>
-
-
-            <div class="button-row">
-
-                <button
-                    type="button"
-                    class="action-button"
-                    onclick="zeigeBuendnisDetails('${verwaltungEscape(
-                        buendnis.id
-                    )}')"
-                >
-                    Details
-                </button>
-
-
-                ${
-                    status === "Offen"
-                    ?
-                    `
-                    <button
-                        type="button"
-                        class="action-button success"
-                        onclick="buendnisAnnehmen('${verwaltungEscape(
-                            buendnis.id
-                        )}')"
-                    >
-                        Annehmen
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-button danger"
-                        onclick="buendnisAblehnen('${verwaltungEscape(
-                            buendnis.id
-                        )}')"
-                    >
-                        Ablehnen
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-
-                ${
-                    status === "Angenommen"
-                    ?
-                    `
-                    <button
-                        type="button"
-                        class="action-button"
-                        onclick="buendnisBearbeiten('${verwaltungEscape(
-                            buendnis.id
-                        )}')"
-                    >
-                        Vereinbarung bearbeiten
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-
-                <button
-                    type="button"
-                    class="action-button danger"
-                    onclick="buendnisLoeschen('${verwaltungEscape(
-                        buendnis.id
-                    )}')"
-                >
-                    Löschen
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-// ============================================================
-// BÜNDNISDETAILS
-// ============================================================
-
-window.zeigeBuendnisDetails =
-    async function(id) {
-
-        const panel =
-            document.getElementById(
-                "buendnisDetails"
-            );
-
-
-        const content =
-            document.getElementById(
-                "buendnisDetailsContent"
-            );
-
-
-        if (!panel || !content) {
-            return;
-        }
-
-
-        panel.classList.add(
-            "active"
-        );
-
-
-        content.innerHTML =
-            `
-            <div class="loading">
-                Bündnisdetails werden geladen...
-            </div>
-            `;
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .select("*")
-                    .eq(
-                        "id",
-                        id
+                liste.appendChild(
+                    erstelleBuendnisKarte(
+                        buendnis
                     )
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            if (!data) {
-
-                throw new Error(
-                    "Bündnis wurde nicht gefunden."
                 );
 
             }
+        );
+    }
 
+    // ---------------------------------------------------------
+    // Bündniskarte
+    // ---------------------------------------------------------
 
-            content.innerHTML =
-                `
+    function erstelleBuendnisKarte(
+        buendnis
+    ) {
 
-                <div class="list-item">
+        const karte =
+            document.createElement("div");
 
-                    <h3>
-                        ${verwaltungEscape(
-                            data.clan_name ||
-                            "—"
-                        )}
-                    </h3>
+        karte.className =
+            "verwaltung-item";
 
+        let statusKlasse =
+            "status-offen";
 
-                    <p>
-                        <strong>Bündnis-ID:</strong><br>
-                        ${verwaltungEscape(
-                            data.buendnis_id ||
-                            "Noch nicht vergeben"
-                        )}
-                    </p>
+        if (
+            buendnis.status === "Angenommen"
+        ) {
+            statusKlasse =
+                "status-angenommen";
+        }
 
+        if (
+            buendnis.status === "Abgelehnt"
+        ) {
+            statusKlasse =
+                "status-abgelehnt";
+        }
 
-                    <p>
-                        <strong>Clan-Tag:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_tag ||
-                            "—"
-                        )}
-                    </p>
+        karte.innerHTML = `
+            <div>
 
+                <strong>
+                    ${escapeHTML(
+                        buendnis.clan_name ||
+                        "Unbekannter Clan"
+                    )}
+                </strong>
 
-                    <p>
-                        <strong>Clan-Beschreibung:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_description ||
-                            "—"
-                        )}
-                    </p>
+                <div>
+                    ${
+                        buendnis.buendnis_id
+                            ? escapeHTML(
+                                buendnis.buendnis_id
+                            )
+                            : "Noch keine Bündnis-ID"
+                    }
+                </div>
 
+                <div>
+                    Ansprechpartner:
+                    ${escapeHTML(
+                        buendnis.contact_name ||
+                        "–"
+                    )}
+                </div>
 
-                    <p>
-                        <strong>Mitglieder:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_member_count ??
-                            "—"
-                        )}
-                    </p>
+                <div>
+                    Antrag:
+                    ${datum(
+                        buendnis.created_at
+                    )}
+                </div>
 
+            </div>
 
-                    <p>
-                        <strong>Clan seit:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_since ||
-                            "—"
-                        )}
-                    </p>
+            <div class="${statusKlasse}">
+                ${escapeHTML(
+                    buendnis.status ||
+                    "Offen"
+                )}
+            </div>
+        `;
 
+        karte.addEventListener(
+            "click",
+            () => {
 
-                    <p>
-                        <strong>Clan-Discord:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_discord ||
-                            "—"
-                        )}
-                    </p>
+                window.zeigeBuendnisDetails(
+                    buendnis.id
+                );
 
+            }
+        );
 
-                    <p>
-                        <strong>Ansprechpartner:</strong><br>
-                        ${verwaltungEscape(
-                            data.contact_name ||
-                            "—"
-                        )}
-                    </p>
+        return karte;
+    }
 
+    // ---------------------------------------------------------
+    // Bündnisdetails anzeigen
+    // ---------------------------------------------------------
 
-                    <p>
-                        <strong>Minecraft:</strong><br>
-                        ${verwaltungEscape(
-                            data.minecraft_name ||
-                            "—"
-                        )}
-                    </p>
+    window.zeigeBuendnisDetails =
+        function(id) {
 
+            const buendnis =
+                alleBuendnisse.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
 
-                    <p>
-                        <strong>Discord:</strong><br>
-                        ${verwaltungEscape(
-                            data.discord_name ||
-                            "—"
-                        )}
-                    </p>
+            if (!buendnis) {
 
+                zeigeFehler(
+                    "Das Bündnis wurde nicht gefunden."
+                );
 
-                    <p>
-                        <strong>Clan-Rolle:</strong><br>
-                        ${verwaltungEscape(
-                            data.clan_role ||
-                            "—"
-                        )}
-                    </p>
+                return;
+            }
 
+            aktuellesBuendnis =
+                buendnis;
 
-                    <p>
-                        <strong>Grund für den Antrag:</strong><br>
-                        ${verwaltungEscape(
-                            data.reason ||
-                            "—"
-                        )}
-                    </p>
+            const details =
+                element("buendnisDetails");
 
+            const content =
+                element(
+                    "buendnisDetailsContent"
+                );
 
-                    <p>
-                        <strong>Gewünschte Zusammenarbeit:</strong><br>
-                        ${verwaltungEscape(
-                            data.cooperation ||
-                            "—"
-                        )}
-                    </p>
+            if (!details || !content) {
+                return;
+            }
 
+            content.innerHTML = `
 
-                    <p>
-                        <strong>Gewünschte Vereinbarung:</strong><br>
-                        ${verwaltungEscape(
-                            data.desired_agreement ||
-                            "—"
-                        )}
-                    </p>
+                <h3>
+                    ${
+                        escapeHTML(
+                            buendnis.clan_name ||
+                            "Bündnis"
+                        )
+                    }
+                </h3>
 
+                <div class="detail-grid">
 
-                    <p>
-                        <strong>Antragstext:</strong><br>
-                        ${verwaltungEscape(
-                            data.application_text ||
-                            "—"
-                        )}
-                    </p>
+                    <div>
+                        <strong>Bündnis-ID</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.buendnis_id ||
+                                    "Noch nicht vergeben"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Status</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.status ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <p>
-                        <strong>Status:</strong><br>
-                        ${verwaltungEscape(
-                            data.status ||
-                            "—"
-                        )}
-                    </p>
+                    <div>
+                        <strong>Clan-Name</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_name ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Clan-Tag</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_tag ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <p>
-                        <strong>Vereinbarung:</strong><br>
-                        ${verwaltungEscape(
-                            data.agreement ||
-                            "Noch keine Vereinbarung"
-                        )}
-                    </p>
+                    <div>
+                        <strong>Mitglieder</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_member_count ??
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Clan seit</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_since ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <p>
-                        <strong>Rabatt:</strong><br>
-                        ${verwaltungEscape(
-                            data.discount_percent ??
-                            0
-                        )} %
-                    </p>
+                    <div>
+                        <strong>Discord</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_discord ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Ansprechpartner</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.contact_name ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <p>
-                        <strong>Aktiv seit:</strong><br>
-                        ${verwaltungEscape(
-                            data.active_since ||
-                            "—"
-                        )}
-                    </p>
+                    <div>
+                        <strong>Minecraft-Name</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.minecraft_name ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Discord-Name</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.discord_name ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <p>
-                        <strong>Entscheidungsnotiz:</strong><br>
-                        ${verwaltungEscape(
-                            data.decision_note ||
-                            "—"
-                        )}
-                    </p>
+                    <div>
+                        <strong>Clan-Rolle</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.clan_role ||
+                                    "–"
+                                )
+                            }
+                        </span>
+                    </div>
 
+                    <div>
+                        <strong>Erstellt</strong>
+                        <span>
+                            ${
+                                datum(
+                                    buendnis.created_at
+                                )
+                            }
+                        </span>
+                    </div>
 
-                    <div class="button-row">
+                    <div>
+                        <strong>Rabatt</strong>
+                        <span>
+                            ${
+                                Number(
+                                    buendnis.discount_percent ||
+                                    0
+                                ).toLocaleString(
+                                    "de-DE"
+                                )
+                            } %
+                        </span>
+                    </div>
 
-                        <button
-                            type="button"
-                            class="action-button"
-                            onclick="schliesseBuendnisDetails()"
-                        >
-                            Schließen
-                        </button>
-
+                    <div>
+                        <strong>Aktiv seit</strong>
+                        <span>
+                            ${
+                                escapeHTML(
+                                    buendnis.active_since ||
+                                    "–"
+                                )
+                            }
+                        </span>
                     </div>
 
                 </div>
 
-                `;
+                <div class="detail-text">
 
+                    <strong>Clan-Beschreibung</strong>
 
-        } catch (error) {
-
-            console.error(
-                "Fehler bei den Bündnisdetails:",
-                error
-            );
-
-
-            content.innerHTML =
-                `
-                <div class="empty-message">
-
-                    Bündnisdetails konnten
-                    nicht geladen werden.
-
-                    <br><br>
-
-                    ${verwaltungEscape(
-                        error.message ||
-                        "Unbekannter Fehler"
-                    )}
+                    <p>
+                        ${
+                            escapeHTML(
+                                buendnis.clan_description ||
+                                "–"
+                            )
+                        }
+                    </p>
 
                 </div>
-                `;
 
-        }
+                <div class="detail-text">
 
-    };
+                    <strong>Grund für die Bewerbung</strong>
 
-
-// ============================================================
-// BÜNDNISDETAILS SCHLIESSEN
-// ============================================================
-
-window.schliesseBuendnisDetails =
-    function() {
-
-        const panel =
-            document.getElementById(
-                "buendnisDetails"
-            );
-
-
-        if (panel) {
-
-            panel.classList.remove(
-                "active"
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// BÜNDNIS ANNEHMEN
-// ============================================================
-
-window.buendnisAnnehmen =
-    async function(id) {
-
-        if (
-            !confirm(
-                "Diesen Bündnisantrag wirklich annehmen?"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                data,
-                error: ladenFehler
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .select("*")
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .maybeSingle();
-
-
-            if (ladenFehler) {
-                throw ladenFehler;
-            }
-
-
-            if (!data) {
-
-                throw new Error(
-                    "Bündnisantrag wurde nicht gefunden."
-                );
-
-            }
-
-
-            if (
-                data.status !== "Offen"
-            ) {
-
-                throw new Error(
-                    "Dieser Bündnisantrag ist nicht mehr offen."
-                );
-
-            }
-
-
-            // =================================================
-            // BÜNDNIS-ID ERSTELLEN
-            // =================================================
-
-            const {
-                data: vorhandene,
-                error: nummerFehler
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .select("buendnis_id");
-
-
-            if (nummerFehler) {
-                throw nummerFehler;
-            }
-
-
-            let hoechsteNummer =
-                0;
-
-
-            (vorhandene || [])
-                .forEach(
-                    eintrag => {
-
-                        const wert =
-                            String(
-                                eintrag.buendnis_id ||
-                                ""
-                            );
-
-
-                        const match =
-                            wert.match(
-                                /^BND-(\d+)$/
-                            );
-
-
-                        if (match) {
-
-                            const nummer =
-                                Number(
-                                    match[1]
-                                );
-
-
-                            if (
-                                nummer >
-                                hoechsteNummer
-                            ) {
-
-                                hoechsteNummer =
-                                    nummer;
-
-                            }
-
+                    <p>
+                        ${
+                            escapeHTML(
+                                buendnis.reason ||
+                                "–"
+                            )
                         }
+                    </p>
 
+                </div>
+
+                <div class="detail-text">
+
+                    <strong>Gewünschte Zusammenarbeit</strong>
+
+                    <p>
+                        ${
+                            escapeHTML(
+                                buendnis.cooperation ||
+                                "–"
+                            )
+                        }
+                    </p>
+
+                </div>
+
+                <div class="detail-text">
+
+                    <strong>Gewünschte Vereinbarung</strong>
+
+                    <p>
+                        ${
+                            escapeHTML(
+                                buendnis.desired_agreement ||
+                                "–"
+                            )
+                        }
+                    </p>
+
+                </div>
+
+                <div class="detail-text">
+
+                    <strong>Antragstext</strong>
+
+                    <p>
+                        ${
+                            escapeHTML(
+                                buendnis.application_text ||
+                                "–"
+                            )
+                        }
+                    </p>
+
+                </div>
+
+                ${
+                    buendnis.agreement
+                        ? `
+                            <div class="detail-text">
+
+                                <strong>
+                                    Vereinbarung
+                                </strong>
+
+                                <p>
+                                    ${escapeHTML(
+                                        buendnis.agreement
+                                    )}
+                                </p>
+
+                            </div>
+                        `
+                        : ""
+                }
+
+                ${
+                    buendnis.decision_note
+                        ? `
+                            <div class="detail-text">
+
+                                <strong>
+                                    Entscheidungsnotiz
+                                </strong>
+
+                                <p>
+                                    ${escapeHTML(
+                                        buendnis.decision_note
+                                    )}
+                                </p>
+
+                            </div>
+                        `
+                        : ""
+                }
+
+                <div class="details-actions">
+
+                    ${
+                        buendnis.status === "Offen"
+                            ? `
+                                <button
+                                    class="verwaltung-button success"
+                                    onclick="buendnisAnnehmen('${escapeHTML(
+                                        buendnis.id
+                                    )}')"
+                                >
+                                    Bündnis annehmen
+                                </button>
+
+                                <button
+                                    class="verwaltung-button danger"
+                                    onclick="buendnisAblehnen('${escapeHTML(
+                                        buendnis.id
+                                    )}')"
+                                >
+                                    Bündnis ablehnen
+                                </button>
+                            `
+                            : ""
                     }
+
+                    ${
+                        buendnis.status === "Angenommen"
+                            ? `
+                                <button
+                                    class="verwaltung-button"
+                                    onclick="buendnisBearbeiten('${escapeHTML(
+                                        buendnis.id
+                                    )}')"
+                                >
+                                    Vereinbarung bearbeiten
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <button
+                        class="verwaltung-button danger"
+                        onclick="buendnisLoeschen('${escapeHTML(
+                            buendnis.id
+                        )}')"
+                    >
+                        Bündnis löschen
+                    </button>
+
+                    <button
+                        class="verwaltung-button"
+                        onclick="schliesseBuendnisDetails()"
+                    >
+                        Schließen
+                    </button>
+
+                </div>
+            `;
+
+            details.style.display =
+                "block";
+        };
+
+    // ---------------------------------------------------------
+    // Details schließen
+    // ---------------------------------------------------------
+
+    window.schliesseBuendnisDetails =
+        function() {
+
+            const details =
+                element("buendnisDetails");
+
+            if (details) {
+                details.style.display =
+                    "none";
+            }
+
+            aktuellesBuendnis =
+                null;
+        };
+
+    // ---------------------------------------------------------
+    // Nächste Bündnis-ID ermitteln
+    // ---------------------------------------------------------
+
+    async function ermittleNaechsteBuendnisID() {
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from("buendnisse")
+            .select("buendnis_id");
+
+        if (error) {
+            throw error;
+        }
+
+        let hoechsteNummer = 0;
+
+        (data || []).forEach(
+            eintrag => {
+
+                const wert =
+                    eintrag.buendnis_id;
+
+                if (
+                    typeof wert !== "string"
+                ) {
+                    return;
+                }
+
+                const match =
+                    wert.match(
+                        /^BND-(\d+)$/
+                    );
+
+                if (!match) {
+                    return;
+                }
+
+                const nummer =
+                    Number(match[1]);
+
+                if (
+                    Number.isFinite(nummer) &&
+                    nummer > hoechsteNummer
+                ) {
+                    hoechsteNummer =
+                        nummer;
+                }
+            }
+        );
+
+        const naechsteNummer =
+            hoechsteNummer + 1;
+
+        return (
+            "BND-" +
+            String(naechsteNummer)
+                .padStart(4, "0")
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Bündnis annehmen
+    // ---------------------------------------------------------
+
+    window.buendnisAnnehmen =
+        async function(id) {
+
+            const buendnis =
+                alleBuendnisse.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
                 );
 
+            if (!buendnis) {
 
-            const neueNummer =
-                hoechsteNummer + 1;
-
-
-            const buendnisId =
-                "BND-" +
-                String(
-                    neueNummer
-                ).padStart(
-                    4,
-                    "0"
+                zeigeFehler(
+                    "Das Bündnis wurde nicht gefunden."
                 );
 
+                return;
+            }
 
-            // =================================================
-            // ANNEHMEN
-            // =================================================
+            const bestaetigung =
+                confirm(
+                    `Bündnis mit „${
+                        buendnis.clan_name ||
+                        "unbekanntem Clan"
+                    }“ annehmen?`
+                );
 
-            const {
-                error
-            } =
-                await supabase
+            if (!bestaetigung) {
+                return;
+            }
+
+            try {
+
+                const buendnisID =
+                    await ermittleNaechsteBuendnisID();
+
+                const {
+                    error
+                } = await supabase
                     .from("buendnisse")
                     .update({
-
-                        status:
-                            "Angenommen",
-
-                        buendnis_id:
-                            buendnisId,
-
-                        processed_by:
-                            user.id,
-
+                        status: "Angenommen",
+                        buendnis_id: buendnisID,
+                        processed_by: user.id,
                         processed_at:
                             new Date().toISOString(),
-
                         active_since:
                             new Date()
                                 .toISOString()
                                 .split("T")[0],
-
-                        updated_at:
-                            new Date().toISOString(),
-
-                        discount_percent:
-                            data.discount_percent ??
-                            0,
-
-                        agreement:
-                            data.agreement ||
-                            null
-
-                    })
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "status",
-                        "Offen"
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert(
-                `Bündnis wurde angenommen.\n\nBündnis-ID: ${buendnisId}`
-            );
-
-
-            await ladeBuendnisse();
-
-
-            schliesseBuendnisDetails();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Annehmen des Bündnisses:",
-                error
-            );
-
-
-            alert(
-                "Das Bündnis konnte nicht angenommen werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// BÜNDNIS ABLEHNEN
-// ============================================================
-
-window.buendnisAblehnen =
-    async function(id) {
-
-        const notiz =
-            prompt(
-                "Optionale Begründung für die Ablehnung:"
-            );
-
-
-        if (
-            notiz === null
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            !confirm(
-                "Diesen Bündnisantrag wirklich ablehnen?"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .update({
-
-                        status:
-                            "Abgelehnt",
-
-                        processed_by:
-                            user.id,
-
-                        processed_at:
-                            new Date().toISOString(),
-
-                        decision_note:
-                            notiz.trim() ||
-                            null,
-
                         updated_at:
                             new Date().toISOString()
-
                     })
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "status",
-                        "Offen"
-                    );
+                    .eq("id", id);
 
+                if (error) {
+                    throw error;
+                }
 
-            if (error) {
-                throw error;
-            }
-
-
-            alert(
-                "Bündnisantrag wurde abgelehnt."
-            );
-
-
-            await ladeBuendnisse();
-
-
-            schliesseBuendnisDetails();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Ablehnen:",
-                error
-            );
-
-
-            alert(
-                "Der Bündnisantrag konnte nicht abgelehnt werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// BÜNDNIS BEARBEITEN
-// ============================================================
-
-window.buendnisBearbeiten =
-    async function(id) {
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .select("*")
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .maybeSingle();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            if (!data) {
-
-                throw new Error(
-                    "Bündnis wurde nicht gefunden."
+                zeigeErfolg(
+                    `Bündnis wurde angenommen. ID: ${buendnisID}`
                 );
 
+                window.schliesseBuendnisDetails();
+
+                await ladeBuendnisse();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Annehmen des Bündnisses:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Bündnis konnte nicht angenommen werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Bündnis ablehnen
+    // ---------------------------------------------------------
+
+    window.buendnisAblehnen =
+        async function(id) {
+
+            const buendnis =
+                alleBuendnisse.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!buendnis) {
+
+                zeigeFehler(
+                    "Das Bündnis wurde nicht gefunden."
+                );
+
+                return;
             }
 
-
-            const vereinbarung =
+            const notiz =
                 prompt(
-                    "Vereinbarung:",
-                    data.agreement ||
+                    "Warum wird das Bündnis abgelehnt?",
                     ""
                 );
 
-
-            if (
-                vereinbarung === null
-            ) {
-
+            if (notiz === null) {
                 return;
-
             }
 
+            try {
+
+                const {
+                    error
+                } = await supabase
+                    .from("buendnisse")
+                    .update({
+                        status: "Abgelehnt",
+                        decision_note:
+                            notiz.trim(),
+                        processed_by: user.id,
+                        processed_at:
+                            new Date().toISOString(),
+                        updated_at:
+                            new Date().toISOString()
+                    })
+                    .eq("id", id);
+
+                if (error) {
+                    throw error;
+                }
+
+                zeigeErfolg(
+                    "Bündnis wurde abgelehnt."
+                );
+
+                window.schliesseBuendnisDetails();
+
+                await ladeBuendnisse();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Ablehnen des Bündnisses:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Bündnis konnte nicht abgelehnt werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Bündnis bearbeiten
+    // ---------------------------------------------------------
+
+    window.buendnisBearbeiten =
+        async function(id) {
+
+            const buendnis =
+                alleBuendnisse.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!buendnis) {
+
+                zeigeFehler(
+                    "Das Bündnis wurde nicht gefunden."
+                );
+
+                return;
+            }
+
+            const vereinbarung =
+                prompt(
+                    "Vereinbarung / Abmachung:",
+                    buendnis.agreement || ""
+                );
+
+            if (vereinbarung === null) {
+                return;
+            }
 
             const rabatt =
                 prompt(
-                    "Rabatt in Prozent:",
-                    data.discount_percent ??
-                    0
+                    "Rabatt in Prozent (0–100):",
+                    buendnis.discount_percent ?? 0
                 );
 
-
-            if (
-                rabatt === null
-            ) {
-
+            if (rabatt === null) {
                 return;
-
             }
 
-
-            const rabattNummer =
+            const rabattZahl =
                 Number(
-                    String(
-                        rabatt
-                    ).replace(
-                        ",",
-                        "."
-                    )
+                    rabatt
+                        .replace(",", ".")
                 );
-
 
             if (
                 !Number.isFinite(
-                    rabattNummer
+                    rabattZahl
                 ) ||
-                rabattNummer < 0 ||
-                rabattNummer > 100
+                rabattZahl < 0 ||
+                rabattZahl > 100
             ) {
 
-                alert(
+                zeigeFehler(
                     "Der Rabatt muss zwischen 0 und 100 % liegen."
                 );
 
                 return;
-
             }
 
+            try {
 
-            const {
-                error: updateFehler
-            } =
-                await supabase
+                const {
+                    error
+                } = await supabase
                     .from("buendnisse")
                     .update({
-
                         agreement:
-                            vereinbarung.trim() ||
-                            null,
-
+                            vereinbarung.trim(),
                         discount_percent:
-                            rabattNummer,
-
+                            rabattZahl,
                         updated_at:
                             new Date().toISOString()
-
                     })
-                    .eq(
-                        "id",
-                        id
-                    );
+                    .eq("id", id);
 
-
-            if (updateFehler) {
-                throw updateFehler;
-            }
-
-
-            alert(
-                "Bündnisvereinbarung wurde gespeichert."
-            );
-
-
-            await ladeBuendnisse();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Bearbeiten des Bündnisses:",
-                error
-            );
-
-
-            alert(
-                "Das Bündnis konnte nicht bearbeitet werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// BÜNDNIS LÖSCHEN
-// ============================================================
-
-window.buendnisLoeschen =
-    async function(id) {
-
-        if (
-            !confirm(
-                "Dieses Bündnis bzw. diesen Antrag wirklich dauerhaft löschen?"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("buendnisse")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert(
-                "Bündnis wurde gelöscht."
-            );
-
-
-            await ladeBuendnisse();
-
-
-            schliesseBuendnisDetails();
-
-
-        } catch (error) {
-
-            console.error(
-                "Fehler beim Löschen des Bündnisses:",
-                error
-            );
-
-
-            alert(
-                "Das Bündnis konnte nicht gelöscht werden.\n\n" +
-                (
-                    error.message ||
-                    "Unbekannter Fehler"
-                )
-            );
-
-        }
-
-    };
-
-
-// ============================================================
-// NAVIGATION – BEREICHE BEIM ÖFFNEN LADEN
-// ============================================================
-
-const verwaltungsNavigation =
-    document.querySelectorAll(
-        ".nav-button"
-    );
-
-
-verwaltungsNavigation.forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            async () => {
-
-                const bereich =
-                    button.dataset.section;
-
-
-                if (
-                    bereich === "bewerbungen"
-                ) {
-
-                    await ladeBewerbungen();
-
+                if (error) {
+                    throw error;
                 }
 
+                zeigeErfolg(
+                    "Bündnis wurde erfolgreich bearbeitet."
+                );
 
-                if (
-                    bereich === "auftraege"
-                ) {
+                window.schliesseBuendnisDetails();
 
-                    if (
-                        aktuellerAuftragstyp
-                    ) {
+                await ladeBuendnisse();
 
-                        await ladeAuftraege(
-                            aktuellerAuftragstyp
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Bearbeiten des Bündnisses:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Bündnis konnte nicht bearbeitet werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Bündnis löschen
+    // ---------------------------------------------------------
+
+    window.buendnisLoeschen =
+        async function(id) {
+
+            const buendnis =
+                alleBuendnisse.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+            if (!buendnis) {
+
+                zeigeFehler(
+                    "Das Bündnis wurde nicht gefunden."
+                );
+
+                return;
+            }
+
+            if (
+                !confirm(
+                    `Bündnis „${
+                        buendnis.clan_name ||
+                        "unbekannt"
+                    }“ wirklich löschen?`
+                )
+            ) {
+                return;
+            }
+
+            try {
+
+                const {
+                    error
+                } = await supabase
+                    .from("buendnisse")
+                    .delete()
+                    .eq("id", id);
+
+                if (error) {
+                    throw error;
+                }
+
+                zeigeErfolg(
+                    "Bündnis wurde erfolgreich gelöscht."
+                );
+
+                window.schliesseBuendnisDetails();
+
+                await ladeBuendnisse();
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler beim Löschen des Bündnisses:",
+                    error
+                );
+
+                zeigeFehler(
+                    "Das Bündnis konnte nicht gelöscht werden.\n\n" +
+                    (
+                        error.message ||
+                        "Unbekannter Fehler"
+                    )
+                );
+            }
+        };
+
+    // ---------------------------------------------------------
+    // Bündnisse initial laden
+    // ---------------------------------------------------------
+
+    await ladeBuendnisse();
+
+        // =========================================================
+    // TEIL 7/7 – NAVIGATION & ABSCHLUSS
+    // =========================================================
+
+    // ---------------------------------------------------------
+    // Navigation zwischen den Verwaltungsbereichen
+    // ---------------------------------------------------------
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                async () => {
+
+                    const bereich =
+                        button.dataset.section;
+
+                    if (!bereich) {
+                        return;
+                    }
+
+                    // Alle Bereiche ausblenden
+                    document
+                        .querySelectorAll(
+                            ".verwaltung-section"
+                        )
+                        .forEach(section => {
+                            section.style.display =
+                                "none";
+                        });
+
+                    // Gewählten Bereich anzeigen
+                    const ziel =
+                        element(
+                            "section-" + bereich
+                        );
+
+                    if (ziel) {
+                        ziel.style.display =
+                            "block";
+                    }
+
+                    // Aktiven Button markieren
+                    document
+                        .querySelectorAll(
+                            ".nav-button"
+                        )
+                        .forEach(btn => {
+                            btn.classList.remove(
+                                "active"
+                            );
+                        });
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                    // -------------------------------------------------
+                    // Bereich bei Bedarf neu laden
+                    // -------------------------------------------------
+
+                    try {
+
+                        if (
+                            bereich ===
+                            "bewerbungen"
+                        ) {
+                            await ladeBewerbungen();
+                        }
+
+                        if (
+                            bereich ===
+                            "auftraege"
+                        ) {
+                            await ladeAuftraege(
+                                aktuelleAuftragsart
+                            );
+                        }
+
+                        if (
+                            bereich ===
+                            "mitarbeiter"
+                        ) {
+                            await ladeMitarbeiter();
+                        }
+
+                        if (
+                            bereich ===
+                            "preise"
+                        ) {
+                            await ladeItems();
+                        }
+
+                        if (
+                            bereich ===
+                            "buendnisse"
+                        ) {
+                            await ladeBuendnisse();
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            "Fehler beim Laden des Verwaltungsbereichs:",
+                            error
                         );
 
                     }
 
                 }
+            );
 
+        });
 
-                if (
-                    bereich === "mitarbeiter"
-                ) {
+    // ---------------------------------------------------------
+    // Standardbereich
+    // ---------------------------------------------------------
 
-                    await ladeMitarbeiter();
+    document
+        .querySelectorAll(
+            ".verwaltung-section"
+        )
+        .forEach(section => {
 
-                }
-
-
-                if (
-                    bereich === "preise"
-                ) {
-
-                    await ladeItems();
-
-                }
-
-
-                if (
-                    bereich === "buendnisse"
-                ) {
-
-                    await ladeBuendnisse();
-
-                }
-
+            if (
+                section.id !==
+                "section-bewerbungen"
+            ) {
+                section.style.display =
+                    "none";
             }
+
+        });
+
+    const ersterButton =
+        document.querySelector(
+            '.nav-button[data-section="bewerbungen"]'
         );
 
+    if (ersterButton) {
+        ersterButton.classList.add(
+            "active"
+        );
     }
-);
 
+    // ---------------------------------------------------------
+    // Letzte Sicherheitsprüfung
+    // ---------------------------------------------------------
 
-// ============================================================
-// STARTWERTE
-// ============================================================
+    console.log(
+        "EHRENMARKT Verwaltung vollständig geladen."
+    );
 
-ladeBewerbungen();
+    console.log(
+        "Angemeldeter Benutzer:",
+        user.id
+    );
 
-ladeMitarbeiter();
+    console.log(
+        "Verwaltungsmitarbeiter:",
+        aktuellerMitarbeiter
+    );
 
-ladeItems();
-
-ladeBuendnisse();
-
-
-// ============================================================
-// FERTIG
-// ============================================================
-
-console.log(
-    "Ehrenmarkt Verwaltung – alle Verwaltungsbereiche initialisiert."
-);
+});
