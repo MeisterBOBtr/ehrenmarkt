@@ -65,10 +65,13 @@ async function pruefeStadtleitung() {
 
     if (
         !employee ||
-        employee.role !== "Stadtleitung" ||
+        !["Leitung", "Stadtleitung"].includes(employee.rang) ||
         employee.is_active !== true
     ) {
-        alert("Keine Berechtigung. Nur die Stadtleitung darf Bewerbungen verwalten.");
+        alert(
+            "Keine Berechtigung. Nur Mitarbeiter mit dem Rang Leitung oder Stadtleitung dürfen Bewerbungen verwalten."
+        );
+
         window.location.href = "../HTML/startseite.html";
         return false;
     }
