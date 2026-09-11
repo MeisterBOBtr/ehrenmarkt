@@ -617,6 +617,7 @@ function verbindeAbmeldenButton() {
 
 
 // ============================================================
+// ============================================================
 // TEIL 2
 // PROFIL UND MITARBEITERDATEN
 // ============================================================
@@ -711,7 +712,10 @@ async function ladeMitarbeiterbereich(
             await mitarbeiterSupabase
                 .from("employees")
                 .select("*")
-                .eq("user_id", user.id)
+                .eq(
+                    "user_id",
+                    user.id
+                )
                 .maybeSingle();
 
 
@@ -728,6 +732,7 @@ async function ladeMitarbeiterbereich(
                 data || null;
         }
 
+
     } catch (error) {
 
         console.error(
@@ -736,6 +741,10 @@ async function ladeMitarbeiterbereich(
         );
     }
 
+
+    // --------------------------------------------------------
+    // MITARBEITERANZEIGE
+    // --------------------------------------------------------
 
     if (aktuellerMitarbeiter) {
 
@@ -933,6 +942,7 @@ async function aendereMitarbeiterStatus() {
             );
         }
 
+
     } catch (error) {
 
         console.error(
@@ -940,9 +950,11 @@ async function aendereMitarbeiterStatus() {
             error
         );
 
+
         zeigeFehler(
             "Der Mitarbeiterstatus konnte nicht geändert werden."
         );
+
 
     } finally {
 
@@ -979,7 +991,7 @@ function formatiereArbeitszeit(
 
 
     return `${stunden} Std. ${restMinuten} Min.`;
-}
+        }
 
 // ============================================================
 // STEMPELUHR
@@ -987,112 +999,261 @@ function formatiereArbeitszeit(
 
 async function einstempeln() {
 
-    if (!aktuellerMitarbeiter || !mitarbeiterSupabase) {
-        zeigeFehler("Mitarbeiterdaten konnten nicht geladen werden.");
+    if (
+        !aktuellerUser ||
+        !aktuellerMitarbeiter ||
+        !mitarbeiterSupabase
+    ) {
+        zeigeFehler(
+            "Mitarbeiterdaten konnten nicht geladen werden."
+        );
         return;
     }
+
 
     if (aktuellerMitarbeiter.clock_in) {
-        zeigeFehler("Du bist bereits eingestempelt.");
+
+        zeigeFehler(
+            "Du bist bereits eingestempelt."
+        );
+
         return;
     }
 
-    const jetzt = new Date().toISOString();
 
-    const { error } = await mitarbeiterSupabase
-        .from("employees")
-        .update({
-            clock_in: jetzt
-        })
-        .eq("user_id", aktuellerUser.id);
+    const jetzt =
+        new Date().toISOString();
 
-    if (error) {
-        console.error("Fehler beim Einstempeln:", error);
-        zeigeFehler("Einstempeln fehlgeschlagen.");
-        return;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .update({
+                    clock_in: jetzt,
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    "user_id",
+                    aktuellerUser.id
+                )
+                .select("*")
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Mitarbeiterdatensatz wurde nicht aktualisiert."
+            );
+        }
+
+
+        aktuellerMitarbeiter =
+            data;
+
+
+        versteckeFehler();
+
+        aktualisiereStempeluhrAnzeige();
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Einstempeln:",
+            error
+        );
+
+
+        zeigeFehler(
+            "Einstempeln fehlgeschlagen."
+        );
     }
-
-    aktuellerMitarbeiter.clock_in = jetzt;
-
-    aktualisiereStempeluhrAnzeige();
 }
 
+
+// ============================================================
+// AUSSTEMPELN
+// ============================================================
 
 async function ausstempeln() {
 
     if (
+        !aktuellerUser ||
         !aktuellerMitarbeiter ||
-        !aktuellerMitarbeiter.clock_in ||
         !mitarbeiterSupabase
     ) {
-        zeigeFehler("Du bist aktuell nicht eingestempelt.");
+
+        zeigeFehler(
+            "Mitarbeiterdaten konnten nicht geladen werden."
+        );
+
         return;
     }
 
-    const start = new Date(aktuellerMitarbeiter.clock_in);
-    const ende = new Date();
 
-    const minuten = Math.max(
-        1,
-        Math.floor((ende - start) / 60000)
-    );
+    if (!aktuellerMitarbeiter.clock_in) {
+
+        zeigeFehler(
+            "Du bist aktuell nicht eingestempelt."
+        );
+
+        return;
+    }
+
+
+    const start =
+        new Date(
+            aktuellerMitarbeiter.clock_in
+        );
+
+
+    const ende =
+        new Date();
+
+
+    const minuten =
+        Math.max(
+            1,
+            Math.floor(
+                (ende - start) / 60000
+            )
+        );
+
 
     const bisher =
-        Number(aktuellerMitarbeiter.total_work_minutes) || 0;
+        Number(
+            aktuellerMitarbeiter.total_work_minutes || 0
+        );
 
-    const gesamt = bisher + minuten;
 
-    const { error } = await mitarbeiterSupabase
-        .from("employees")
-        .update({
-            clock_in: null,
-            total_work_minutes: gesamt
-        })
-        .eq("user_id", aktuellerUser.id);
+    const gesamt =
+        bisher + minuten;
 
-    if (error) {
-        console.error("Fehler beim Ausstempeln:", error);
-        zeigeFehler("Ausstempeln fehlgeschlagen.");
-        return;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await mitarbeiterSupabase
+                .from("employees")
+                .update({
+                    clock_in: null,
+                    total_work_minutes:
+                        gesamt,
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    "user_id",
+                    aktuellerUser.id
+                )
+                .select("*")
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Mitarbeiterdatensatz wurde nicht aktualisiert."
+            );
+        }
+
+
+        aktuellerMitarbeiter =
+            data;
+
+
+        versteckeFehler();
+
+        aktualisiereStempeluhrAnzeige();
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Ausstempeln:",
+            error
+        );
+
+
+        zeigeFehler(
+            "Ausstempeln fehlgeschlagen."
+        );
     }
-
-    aktuellerMitarbeiter.clock_in = null;
-    aktuellerMitarbeiter.total_work_minutes = gesamt;
-
-    aktualisiereStempeluhrAnzeige();
 }
 
 
+// ============================================================
+// STEMPELUHR-ANZEIGE
+// ============================================================
+
 function aktualisiereStempeluhrAnzeige() {
 
-    const anzeige = element("arbeitszeitAnzeige");
-    const einButton = element("einstempelnButton");
-    const ausButton = element("ausstempelnButton");
+    const anzeige =
+        element("arbeitszeitAnzeige");
+
+
+    const einButton =
+        element("einstempelnButton");
+
+
+    const ausButton =
+        element("ausstempelnButton");
+
 
     if (!aktuellerMitarbeiter) {
         return;
     }
 
+
     if (anzeige) {
+
         anzeige.textContent =
             formatiereArbeitszeit(
-                aktuellerMitarbeiter.total_work_minutes
+                aktuellerMitarbeiter
+                    .total_work_minutes
             );
     }
 
+
     const eingestempelt =
-        Boolean(aktuellerMitarbeiter.clock_in);
+        Boolean(
+            aktuellerMitarbeiter.clock_in
+        );
+
 
     if (einButton) {
-        einButton.disabled = eingestempelt;
+
+        einButton.disabled =
+            eingestempelt;
     }
 
+
     if (ausButton) {
-        ausButton.disabled = !eingestempelt;
+
+        ausButton.disabled =
+            !eingestempelt;
     }
 }
 
-    
+
 // ============================================================
 // TEIL 3
 // VERFÜGBARKEIT
@@ -1136,6 +1297,10 @@ function aktualisiereVerfuegbarkeitsAnzeige() {
 }
 
 
+// ============================================================
+// VERFÜGBARKEIT ÄNDERN
+// ============================================================
+
 async function setzeVerfuegbarkeit(
     wert
 ) {
@@ -1168,7 +1333,8 @@ async function setzeVerfuegbarkeit(
                 .from("employees")
                 .update({
                     is_available: wert,
-                    updated_at: new Date().toISOString()
+                    updated_at:
+                        new Date().toISOString()
                 })
                 .eq(
                     "user_id",
@@ -1199,6 +1365,7 @@ async function setzeVerfuegbarkeit(
             error
         );
 
+
         zeigeFehler(
             "Die Verfügbarkeit konnte nicht geändert werden."
         );
@@ -1211,6 +1378,10 @@ async function setzeVerfuegbarkeit(
     }
 }
 
+
+// ============================================================
+// BUTTONS
+// ============================================================
 
 function verbindeMitarbeiterButtons() {
 
@@ -1235,7 +1406,8 @@ function verbindeMitarbeiterButtons() {
             async () => {
 
                 if (
-                    aktuellerMitarbeiter?.is_available === true
+                    aktuellerMitarbeiter
+                        ?.is_available === true
                 ) {
 
                     await setzeVerfuegbarkeit(
@@ -1249,33 +1421,36 @@ function verbindeMitarbeiterButtons() {
                     );
                 }
             };
+    }
 
-            const einstempelnButton =
+
+    const einstempelnButton =
         element("einstempelnButton");
+
 
     const ausstempelnButton =
         element("ausstempelnButton");
 
+
     if (einstempelnButton) {
+
         einstempelnButton.onclick =
             einstempeln;
     }
 
+
     if (ausstempelnButton) {
+
         ausstempelnButton.onclick =
             ausstempeln;
-    
     }
-}
-
+        }
 
 // ============================================================
 // EIGENE AUFTRÄGE
 // ============================================================
 
-async function ladeEigeneAuftraege(
-    user
-) {
+async function ladeEigeneAuftraege(user) {
 
     const container =
         element("eigeneAuftraege");
@@ -1304,6 +1479,7 @@ async function ladeEigeneAuftraege(
             logistikResult
         ] =
             await Promise.all([
+
                 mitarbeiterSupabase
                     .from("build_order_workers")
                     .select("*")
@@ -1492,12 +1668,14 @@ async function ladeEigeneAuftraege(
             }
         );
 
+
     } catch (error) {
 
         console.error(
             "Eigene Aufträge konnten nicht geladen werden:",
             error
         );
+
 
         container.innerHTML = `
             <div
@@ -1511,10 +1689,10 @@ async function ladeEigeneAuftraege(
             </div>
         `;
     }
-                        }
+}
+
 
 // ============================================================
-// TEIL 4
 // OFFENE VERSTÄRKUNG
 // ============================================================
 
@@ -1636,12 +1814,14 @@ async function ladeOffeneVerstaerkung() {
                 }
             );
 
+
     } catch (error) {
 
         console.error(
             "Fehler bei den Verstärkungsanfragen:",
             error
         );
+
 
         container.innerHTML = `
             <p>
@@ -1826,12 +2006,14 @@ async function uebernehmeVerstaerkung(
             aktuellerUser
         );
 
+
     } catch (error) {
 
         console.error(
             "Fehler beim Übernehmen der Verstärkung:",
             error
         );
+
 
         zeigeFehler(
             "Die Verstärkungsanfrage konnte nicht übernommen werden."
@@ -1847,6 +2029,7 @@ async function uebernehmeVerstaerkung(
         }
     }
 }
+
 
 // ============================================================
 // BENACHRICHTIGUNGEN
@@ -1911,6 +2094,9 @@ async function aktualisiereMitarbeiterbereich() {
             aktualisiereMitarbeiterAnzeige(
                 data
             );
+
+
+            aktualisiereStempeluhrAnzeige();
         }
 
 
@@ -1923,6 +2109,7 @@ async function aktualisiereMitarbeiterbereich() {
 
             ladeBenachrichtigungen()
         ]);
+
 
     } catch (error) {
 
@@ -1965,7 +2152,6 @@ function starteAutomatischeAktualisierung() {
 
 // ============================================================
 // START
-// NUR EIN EINZIGER DOMCONTENTLOADED
 // ============================================================
 
 async function starteMitarbeiterbereich() {
@@ -1978,10 +2164,6 @@ async function starteMitarbeiterbereich() {
     versteckeFehler();
 
 
-    // --------------------------------------------------------
-    // SUPABASE CLIENT
-    // --------------------------------------------------------
-
     mitarbeiterSupabase =
         window.supabaseClient;
 
@@ -1992,40 +2174,23 @@ async function starteMitarbeiterbereich() {
             "window.supabaseClient fehlt."
         );
 
+
         zeigeFehler(
             "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
         );
+
 
         return;
     }
 
 
-    // --------------------------------------------------------
-    // BUTTONS
-    // --------------------------------------------------------
-
     verbindeAbmeldenButton();
 
     verbindeMitarbeiterButtons();
 
-
-    // --------------------------------------------------------
-    // AUTH
-    // --------------------------------------------------------
-
     registriereAuthListener();
 
-
-    // --------------------------------------------------------
-    // SESSION
-    // --------------------------------------------------------
-
     await pruefeAnmeldung();
-
-
-    // --------------------------------------------------------
-    // AUTOMATISCHE AKTUALISIERUNG
-    // --------------------------------------------------------
 
     starteAutomatischeAktualisierung();
 
@@ -2035,6 +2200,10 @@ async function starteMitarbeiterbereich() {
     );
 }
 
+
+// ============================================================
+// START BEIM LADEN DER SEITE
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
