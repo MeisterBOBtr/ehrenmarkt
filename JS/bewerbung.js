@@ -1131,17 +1131,17 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        /*
-         * Supabase Client aus supabase.js
-         */
+        // Bewerbung sofort anzeigen
+        schrittAnzeigen(1);
 
+
+        // Supabase Client aus supabase.js übernehmen
         supabaseClient =
             window.supabaseClient;
 
 
-        if (
-            !supabaseClient
-        ) {
+        // Prüfen, ob Supabase verfügbar ist
+        if (!supabaseClient) {
 
             zeigeFehler(
                 "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
@@ -1152,31 +1152,23 @@ document.addEventListener(
         }
 
 
-        /*
-         * Angemeldeten Benutzer laden
-         */
-
+        // Angemeldeten Benutzer laden
         const angemeldet =
             await ladeAktuellenBenutzer();
 
 
+        // Wenn nicht angemeldet:
+        // Bewerbung bleibt trotzdem sichtbar.
+        // Die Anmeldung wird spätestens beim Absenden geprüft.
         if (!angemeldet) {
+
             return;
+
         }
 
 
-        /*
-         * Auth-Listener starten
-         */
-
+        // Auth-Listener starten
         registriereAuthListener();
-
-
-        /*
-         * Ersten Schritt anzeigen
-         */
-
-        schrittAnzeigen(1);
 
     }
 );
