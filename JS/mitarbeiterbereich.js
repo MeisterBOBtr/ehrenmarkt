@@ -2955,8 +2955,6 @@ window.finishLogisticsOrder = async function(id) {
         "EHRENMARKT Mitarbeiterbereich erfolgreich gestartet."
     );
 
-});
-
 // =====================================================
 // ENDE MITARBEITERBEREICH – TEIL 6
 // =====================================================
