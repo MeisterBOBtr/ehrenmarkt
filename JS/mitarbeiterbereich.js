@@ -101,43 +101,44 @@ if (ladebereich) {
 }
 
 
-    // =====================================================
-    // PROFIL
-    // =====================================================
+// =====================================================
+// MITARBEITERDATEN AUS EMPLOYEES
+// =====================================================
 
-    const employeeName =
+const usernameElement =
     document.getElementById("mitarbeiterUsername");
 
-const employeeRole =
-    document.getElementById("mitarbeiterRolle");
+const minecraftElement =
+    document.getElementById("mitarbeiterMinecraft");
 
-const employeeRank =
+const emailElement =
+    document.getElementById("mitarbeiterEmail");
+
+const rangElement =
     document.getElementById("mitarbeiterRang");
 
-const employeeStatus =
-    document.getElementById("statusText");
+const rolleElement =
+    document.getElementById("mitarbeiterRolle");
 
-    if (employeeName) {
-        employeeName.textContent =
-            employee.name || "-";
-    }
+if (usernameElement) {
+    usernameElement.textContent =
+        employee.name || "-";
+}
 
-    if (employeeRole) {
-        employeeRole.textContent =
-            employee.role || "-";
-    }
+if (rangElement) {
+    rangElement.textContent =
+        employee.rang || "-";
+}
 
-    if (employeeRank) {
-        employeeRank.textContent =
-            employee.rang || "-";
-    }
+if (rolleElement) {
+    rolleElement.textContent =
+        employee.role || "-";
+}
 
-    if (employeeStatus) {
-        employeeStatus.textContent =
-            employee.is_active
-                ? "Verfügbar"
-                : "Nicht verfügbar";
-    }
+if (emailElement) {
+    emailElement.textContent =
+        user.email || "-";
+}
 
 
     // =====================================================
