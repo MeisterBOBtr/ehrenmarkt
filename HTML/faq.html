@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – FAQ</title>
+
+
+    <style>
+
+        /* =========================================================
+           EHRENMARKT – FAQ
+           Teil 1/5
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #ead8ad;
+
+            background:
+
+                linear-gradient(
+                    rgba(8, 7, 6, 0.72),
+                    rgba(8, 7, 6, 0.90)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regel.png")
+
+                center top /
+                cover
+                fixed
+                no-repeat;
+
+            background-color: #0b0907;
+
+        }
+
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+
+                radial-gradient(
+                    circle at center,
+                    rgba(215, 173, 82, 0.08),
+                    transparent 58%
+                );
+
+            z-index: -1;
+
+        }
+
+
+        /* =========================================================
+           KOPFBEREICH
+        ========================================================= */
+
+        .topbar {
+
+            width: 100%;
+
+            padding:
+                20px
+                18px;
+
+            background:
+                rgba(10, 8, 7, 0.94);
+
+            border-bottom:
+                1px solid
+                rgba(215, 173, 82, 0.45);
+
+            box-shadow:
+                0 4px 22px
+                rgba(0, 0, 0, 0.55);
+
+        }
+
+
+        .topbar-inner {
+
+            width:
+                min(
+                    1200px,
+                    100%
+                );
+
+            margin: 0 auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .brand {
+
+            color: #d7ad52;
+
+            font-size: 26px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+                0 2px 5px
+                rgba(0, 0, 0, 0.8);
+
+        }
+
+
+        .brand span {
+
+            display: block;
+
+            margin-top: 5px;
+
+            color: #a78a52;
+
+            font-size: 12px;
+
+            font-weight: normal;
+
+            letter-spacing: 1.2px;
+
+            text-transform: none;
+
+        }
+
+
+        .back-button {
+
+            display: inline-block;
+
+            padding:
+                10px
+                18px;
+
+            color: #f1dfb0;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    rgba(91, 31, 24, 0.95),
+                    rgba(58, 19, 15, 0.95)
+                );
+
+            border:
+                1px solid
+                #a9823b;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 4px 12px
+                rgba(0, 0, 0, 0.4);
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .back-button:hover {
+
+            color: #fff0c9;
+
+            border-color:
+                #d7ad52;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* =========================================================
+           HAUPTBEREICH
+        ========================================================= */
+
+        main {
+
+            width:
+                min(
+                    1100px,
+                    calc(100% - 28px)
+                );
+
+            margin:
+                42px auto
+                70px;
+
+        }
+
+
+        /* =========================================================
+           FAQ-KOPF
+        ========================================================= */
+
+        .hero {
+
+            padding:
+                40px
+                25px;
+
+            margin-bottom:
+                26px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    rgba(25, 18, 13, 0.94),
+                    rgba(17, 12, 9, 0.94)
+                );
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.62);
+
+            border-radius: 12px;
+
+            box-shadow:
+
+                0 12px 35px
+                rgba(0, 0, 0, 0.55),
+
+                inset 0 0 25px
+                rgba(215, 173, 82, 0.04);
+
+        }
+
+
+        .hero-kicker {
+
+            margin-bottom: 9px;
+
+            color: #b48c47;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .hero h1 {
+
+            margin-bottom: 13px;
+
+            color: #e1bb65;
+
+            font-size:
+                clamp(
+                    36px,
+                    7vw,
+                    58px
+                );
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+                0 3px 8px
+                rgba(0, 0, 0, 0.9);
+
+        }
+
+
+        .hero-line {
+
+            width: 120px;
+
+            height: 1px;
+
+            margin:
+                0 auto
+                18px;
+
+            background:
+                #b88d39;
+
+        }
+
+
+        .hero p {
+
+            max-width: 780px;
+
+            margin: 0 auto;
+
+            color: #d6c49c;
+
+            font-size: 16px;
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =========================================================
+           FAQ-BEREICH
+        ========================================================= */
+
+        .faq-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 15px;
+
+        }
+
+
+        .faq-card {
+
+            padding:
+                23px
+                25px;
+
+            background:
+                linear-gradient(
+                    rgba(20, 15, 12, 0.95),
+                    rgba(13, 10, 8, 0.95)
+                );
+
+            border:
+                1px solid
+                rgba(168, 126, 50, 0.65);
+
+            border-radius: 10px;
+
+            box-shadow:
+
+                0 8px 25px
+                rgba(0, 0, 0, 0.45),
+
+                inset 0 0 18px
+                rgba(215, 173, 82, 0.035);
+
+        }
+
+
+        .faq-question {
+
+            color: #d7ad52;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            line-height: 1.4;
+
+        }
+
+
+        .faq-answer {
+
+            margin-top: 10px;
+
+            color: #d5c5a5;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+        }
+
+              /* =========================================================
+           FAQ – WEITERE FRAGEN
+        ========================================================= */
+
+        .faq-card strong {
+
+            color: #e0b85b;
+
+        }
+
+
+        .faq-card ul {
+
+            margin-top: 10px;
+
+            padding-left: 22px;
+
+            color: #d5c5a5;
+
+        }
+
+
+        .faq-card li {
+
+            margin-bottom: 7px;
+
+            line-height: 1.55;
+
+        }
+
+
+        /* =========================================================
+           TRENNLINIE / ORNAMENT
+        ========================================================= */
+
+        .ornament {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            margin:
+                26px auto
+                4px;
+
+            color: #b88d39;
+
+            font-size: 12px;
+
+        }
+
+
+        .ornament::before,
+        .ornament::after {
+
+            content: "";
+
+            width: 70px;
+
+            height: 1px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    transparent,
+                    #a9823b
+                );
+
+        }
+
+
+        .ornament::after {
+
+            background:
+                linear-gradient(
+                    to left,
+                    transparent,
+                    #a9823b
+                );
+
+        }
+
+
+        /* =========================================================
+           HINWEISBOX
+        ========================================================= */
+
+        .important {
+
+            margin-top: 16px;
+
+            padding:
+                15px
+                17px;
+
+            background:
+                rgba(86, 27, 21, 0.45);
+
+            border-left:
+                3px solid
+                #a53c2d;
+
+            border-radius: 5px;
+
+            color: #e1cd9f;
+
+            font-size: 14px;
+
+            line-height: 1.65;
+
+        }
+
+
+        .important strong {
+
+            color: #e0b85b;
+
+        }
+
+
+        /* =========================================================
+           ABSCHLUSS
+        ========================================================= */
+
+        .closing {
+
+            margin-top: 28px;
+
+            padding:
+                32px
+                24px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    rgba(31, 21, 15, 0.96),
+                    rgba(18, 13, 10, 0.96)
+                );
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.62);
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.5);
+
+        }
+
+
+        .closing h2 {
+
+            margin-bottom: 12px;
+
+            color: #d7ad52;
+
+            font-size: 29px;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 2px 5px
+                rgba(0, 0, 0, 0.8);
+
+        }
+
+
+        .closing p {
+
+            max-width: 720px;
+
+            margin: 0 auto;
+
+            color: #d7c6a0;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .action-area {
+
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 14px;
+
+            margin-top: 25px;
+
+        }
+
+
+        .action-button {
+
+            display: inline-block;
+
+            min-width: 190px;
+
+            padding:
+                13px
+                22px;
+
+            color: #f3dfad;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            background:
+                linear-gradient(
+                    rgba(92, 29, 22, 0.96),
+                    rgba(61, 20, 16, 0.96)
+                );
+
+            border:
+                1px solid
+                #b58a3c;
+
+            border-radius: 7px;
+
+            box-shadow:
+                0 5px 15px
+                rgba(0, 0, 0, 0.4);
+
+            transition:
+                0.2s ease;
+
+        }
+
+
+        .action-button:hover {
+
+            color: #fff1ca;
+
+            border-color:
+                #e0b95e;
+
+            background:
+                linear-gradient(
+                    rgba(116, 36, 27, 0.98),
+                    rgba(78, 23, 18, 0.98)
+                );
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .action-button.discord {
+
+            background:
+                linear-gradient(
+                    rgba(55, 45, 76, 0.96),
+                    rgba(36, 29, 53, 0.96)
+                );
+
+            border-color:
+                #9b7bc4;
+
+        }
+
+
+        .action-button.discord:hover {
+
+            background:
+                linear-gradient(
+                    rgba(74, 60, 103, 0.98),
+                    rgba(47, 38, 68, 0.98)
+                );
+
+            border-color:
+                #c1a5e4;
+
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+
+            padding:
+                25px
+                18px
+                35px;
+
+            text-align: center;
+
+            color: #927b50;
+
+            font-size: 13px;
+
+        }
+
+
+        footer strong {
+
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #c09a4e;
+
+            font-size: 17px;
+
+            letter-spacing: 2px;
+
+        }
+
+
+        footer span {
+
+            color: #806d49;
+
+        }
+
+              /* =========================================================
+           MOBILE DARSTELLUNG
+        ========================================================= */
+
+        @media (max-width: 760px) {
+
+            .topbar {
+
+                padding:
+                    17px
+                    14px;
+
+            }
+
+
+            .topbar-inner {
+
+                flex-direction: column;
+
+                text-align: center;
+
+                gap: 14px;
+
+            }
+
+
+            .brand {
+
+                font-size: 21px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .brand span {
+
+                font-size: 11px;
+
+            }
+
+
+            .back-button {
+
+                width: 100%;
+
+                max-width: 240px;
+
+            }
+
+
+            main {
+
+                width:
+                    calc(100% - 18px);
+
+                margin:
+                    25px auto
+                    45px;
+
+            }
+
+
+            .hero {
+
+                padding:
+                    29px
+                    16px;
+
+                margin-bottom:
+                    18px;
+
+            }
+
+
+            .hero-kicker {
+
+                font-size: 11px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size: 36px;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 14px;
+
+                line-height: 1.65;
+
+            }
+
+
+            .faq-list {
+
+                gap: 12px;
+
+            }
+
+
+            .faq-card {
+
+                padding:
+                    19px
+                    18px;
+
+            }
+
+
+            .faq-question {
+
+                font-size: 18px;
+
+                line-height: 1.45;
+
+            }
+
+
+            .faq-answer {
+
+                font-size: 14px;
+
+                line-height: 1.65;
+
+            }
+
+
+            .faq-card ul {
+
+                padding-left: 20px;
+
+            }
+
+
+            .faq-card li {
+
+                font-size: 14px;
+
+            }
+
+
+            .closing {
+
+                margin-top: 18px;
+
+                padding:
+                    27px
+                    17px;
+
+            }
+
+
+            .closing h2 {
+
+                font-size: 25px;
+
+            }
+
+
+            .closing p {
+
+                font-size: 14px;
+
+            }
+
+
+            .action-area {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+
+            .action-button {
+
+                width: 100%;
+
+                min-width: 0;
+
+            }
+
+
+            .ornament::before,
+            .ornament::after {
+
+                width: 45px;
+
+            }
+
+
+            footer {
+
+                padding:
+                    20px
+                    15px
+                    30px;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           SEHR KLEINE HANDYS
+        ========================================================= */
+
+        @media (max-width: 400px) {
+
+            .hero h1 {
+
+                font-size: 31px;
+
+            }
+
+
+            .faq-card {
+
+                padding:
+                    17px
+                    15px;
+
+            }
+
+
+            .faq-question {
+
+                font-size: 17px;
+
+            }
+
+
+            .closing {
+
+                padding:
+                    24px
+                    15px;
+
+            }
+
+        }
+
+
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         KOPFBEREICH
+    ========================================================= -->
+
+    <header class="topbar">
+
+        <div class="topbar-inner">
+
+
+            <div class="brand">
+
+                EHRENMARKT
+
+                <span>
+                    Gemeinsam bauen – gemeinsam wachsen
+                </span>
+
+            </div>
+
+
+            <a
+                href="regelwerk.html"
+                class="back-button"
+            >
+                ← Zum Regelwerk
+            </a>
+
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         HAUPTINHALT
+    ========================================================= -->
+
+    <main>
+
+
+        <section class="hero">
+
+            <div class="hero-kicker">
+                Ehrenmarkt
+            </div>
+
+
+            <h1>
+                FAQ
+            </h1>
+
+
+            <div class="hero-line"></div>
+
+
+            <p>
+                Hier findest du Antworten auf häufige Fragen
+                rund um den Ehrenmarkt, unsere Aufträge,
+                Bewerbungen und die Zusammenarbeit.
+            </p>
+
+        </section>
+
+
+        <section class="faq-list">
+
+                      <!-- =================================================
+                 FAQ 1
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Was ist der Ehrenmarkt?
+                </div>
+
+                <div class="faq-answer">
+
+                    Der Ehrenmarkt ist das Portal von Falkenstein
+                    für Aufträge, Dienstleistungen und die
+                    Zusammenarbeit mit Kunden und Partnern.
+
+                    <br><br>
+
+                    Hier können unter anderem Bauaufträge,
+                    Materialbestellungen, Redstone-Aufträge und
+                    Logistikaufträge erstellt und verwaltet werden.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 2
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie kann ich einen Auftrag erstellen?
+                </div>
+
+                <div class="faq-answer">
+
+                    Melde dich im Ehrenmarkt an und wähle den
+                    gewünschten Auftragsbereich aus.
+
+                    <br><br>
+
+                    Anschließend trägst du die benötigten Angaben
+                    ein und sendest den Auftrag ab.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 3
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Welche Aufträge bietet der Ehrenmarkt an?
+                </div>
+
+                <div class="faq-answer">
+
+                    Im Ehrenmarkt gibt es verschiedene Bereiche
+                    für unterschiedliche Leistungen.
+
+                    <ul>
+
+                        <li>
+                            Bauaufträge
+                        </li>
+
+                        <li>
+                            Materialbestellungen
+                        </li>
+
+                        <li>
+                            Redstone-Aufträge
+                        </li>
+
+                        <li>
+                            Logistikaufträge
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 4
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wer stellt die Materialien bei einem Bauauftrag?
+                </div>
+
+                <div class="faq-answer">
+
+                    Beim Erstellen eines Bauauftrags wird festgelegt,
+                    wer die benötigten Materialien bereitstellt.
+
+                    <br><br>
+
+                    <strong>Der Kunde:</strong><br>
+
+                    Der Kunde stellt die Materialien selbst bereit.
+                    In diesem Fall fällt kein Beschaffungszuschlag an.
+
+                    <br><br>
+
+                    <strong>Falkenstein:</strong><br>
+
+                    Falkenstein beschafft die benötigten Materialien.
+                    In diesem Fall werden die Materialkosten zuzüglich
+                    des festgelegten Beschaffungszuschlags berechnet.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 5
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie funktioniert eine Materialbestellung?
+                </div>
+
+                <div class="faq-answer">
+
+                    Über den Bereich für Materialbestellungen können
+                    benötigte Materialien ausgewählt und bestellt
+                    werden.
+
+                    <br><br>
+
+                    Die Bestellung wird anschließend über das
+                    Ehrenmarkt-System bearbeitet.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 6
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie funktioniert ein Redstone-Auftrag?
+                </div>
+
+                <div class="faq-answer">
+
+                    Bei einem Redstone-Auftrag können Redstone-
+                    Konstruktionen und entsprechende Arbeiten
+                    in Auftrag gegeben werden.
+
+                    <br><br>
+
+                    Die Kosten richten sich nach der jeweiligen
+                    Planung und dem benötigten Arbeitsaufwand.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 7
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie funktioniert ein Logistikauftrag?
+                </div>
+
+                <div class="faq-answer">
+
+                    Logistikaufträge dienen der Organisation von
+                    Transport, Lagerung und weiteren logistischen
+                    Leistungen innerhalb des Ehrenmarkts.
+
+                    <br><br>
+
+                    Die jeweiligen Kosten werden anhand der
+                    gewählten Leistungen berechnet.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 8
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie kann ich Mitarbeiter werden?
+                </div>
+
+                <div class="faq-answer">
+
+                    Wenn du Teil des Ehrenmarkts werden möchtest,
+                    kannst du dich über den Bewerbungsbereich
+                    bewerben.
+
+                    <br><br>
+
+                    Deine Bewerbung wird anschließend von der
+                    zuständigen Leitung geprüft.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 9
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie funktioniert eine Bewerbung?
+                </div>
+
+                <div class="faq-answer">
+
+                    Fülle das Bewerbungsformular vollständig und
+                    wahrheitsgemäß aus.
+
+                    <br><br>
+
+                    Nach dem Absenden wird deine Bewerbung von
+                    der zuständigen Leitung bearbeitet.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 10
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wie kann ich ein Bündnis mit Ehrenmarkt eingehen?
+                </div>
+
+                <div class="faq-answer">
+
+                    Interessierte Clans können über den
+                    Bündnisbereich einen Antrag stellen.
+
+                    <br><br>
+
+                    Der Antrag wird anschließend von der zuständigen
+                    Leitung geprüft und bearbeitet.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 11
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Wo sehe ich den Status meines Auftrags?
+                </div>
+
+                <div class="faq-answer">
+
+                    Deine Aufträge können nach der Anmeldung über
+                    den jeweiligen Bereich des Ehrenmarkt-Portals
+                    eingesehen werden.
+
+                    <br><br>
+
+                    Dort werden die verfügbaren Informationen und
+                    der aktuelle Bearbeitungsstand angezeigt.
+
+                </div>
+
+            </article>
+
+
+            <!-- =================================================
+                 FAQ 12
+            ================================================= -->
+
+            <article class="faq-card">
+
+                <div class="faq-question">
+                    Was mache ich, wenn ich einen Fehler entdecke?
+                </div>
+
+                <div class="faq-answer">
+
+                    Wenn dir ein Fehler im Portal auffällt oder etwas
+                    nicht wie erwartet funktioniert, melde ihn bitte
+                    der zuständigen Leitung.
+
+                    <br><br>
+
+                    Fehler sollten nicht absichtlich ausgenutzt werden.
+
+                </div>
+
+            </article>
+
+                  </section>
+
+
+        <!-- =====================================================
+             ABSCHLUSS
+        ===================================================== -->
+
+        <section class="closing">
+
+            <div class="ornament">
+                ◆
+            </div>
+
+
+            <h2>
+                Deine Frage war nicht dabei?
+            </h2>
+
+
+            <p>
+                Kein Problem. Wenn du weitere Fragen zum Ehrenmarkt,
+                unseren Aufträgen oder der Zusammenarbeit hast,
+                kannst du uns direkt auf unserem Discord-Server
+                erreichen.
+            </p>
+
+
+            <div class="important">
+
+                <strong>
+                    Weitere Fragen?
+                </strong>
+
+                <br>
+
+                Unser Discord ist der direkte Anlaufpunkt für
+                Fragen, Hilfe und den Austausch mit der
+                Ehrenmarkt-Gemeinschaft.
+
+            </div>
+
+
+            <!-- =================================================
+                 BUTTONS
+            ================================================= -->
+
+            <div class="action-area">
+
+
+                <a
+                    href="regelwerk.html"
+                    class="action-button"
+                >
+                    ← Zum Regelwerk
+                </a>
+
+
+                <a
+                    href="https://discord.gg/UTBkKqCvgH"
+                    class="action-button discord"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Zum Discord →
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ===================================================== -->
+
+    <footer>
+
+        <strong>
+            EHRENMARKT
+        </strong>
+
+        <span>
+            Gemeinsam bauen – gemeinsam wachsen
+        </span>
+
+    </footer>
+
+
+</body>
+
+</html>
