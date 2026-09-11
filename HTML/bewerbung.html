@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Bewerbung</title>
+
+
+    <style>
+
+        /* =====================================================
+           GRUND-DESIGN
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background-image:
+
+                linear-gradient(
+                    rgba(0, 0, 0, 0.58),
+                    rgba(0, 0, 0, 0.72)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewerbung.png");
+
+            background-size: cover;
+
+            background-position:
+                center;
+
+            background-attachment:
+                fixed;
+
+            background-repeat:
+                no-repeat;
+
+            color:
+                #ffffff;
+
+            min-height:
+                100vh;
+        }
+
+
+        /* =====================================================
+           HAUPTSEITE
+        ===================================================== */
+
+        .seite {
+
+            width:
+                100%;
+
+            max-width:
+                900px;
+
+            margin:
+                0 auto;
+
+            padding:
+                18px 14px 40px;
+        }
+
+
+        /* =====================================================
+           KOPF
+        ===================================================== */
+
+        .kopf {
+
+            text-align:
+                center;
+
+            margin-bottom:
+                18px;
+        }
+
+
+        .kopf-titel {
+
+            font-size:
+                28px;
+
+            font-weight:
+                bold;
+
+            color:
+                #d7ad52;
+
+            margin:
+                0 0 5px;
+        }
+
+
+        .kopf-untertitel {
+
+            color:
+                #aaa;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           KARTEN
+        ===================================================== */
+
+        .karte {
+
+            background:
+                rgba(15, 12, 10, 0.88);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.55);
+
+            border-radius:
+                12px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.45);
+
+            padding:
+                18px;
+
+            margin-bottom:
+                16px;
+        }
+
+
+        /* =====================================================
+           FORTSCHRITT
+        ===================================================== */
+
+        .fortschritt-kopf {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            margin-bottom:
+                9px;
+        }
+
+
+        .fortschritt-titel {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .fortschritt-schritt {
+
+            color:
+                #888;
+
+            font-size:
+                12px;
+        }
+
+
+        .fortschritt {
+
+            width:
+                100%;
+
+            height:
+                7px;
+
+            background:
+                rgba(255, 255, 255, 0.10);
+
+            border-radius:
+                10px;
+
+            overflow:
+                hidden;
+        }
+
+
+        .fortschritt-inhalt {
+
+            height:
+                100%;
+
+            width:
+                20%;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #d7ad52,
+                    #9b7025
+                );
+
+            transition:
+                width 0.25s ease;
+        }
+
+
+        /* =====================================================
+           SCHRITTE
+        ===================================================== */
+
+        .schritt {
+
+            display:
+                none;
+        }
+
+
+        .schritt.aktiv {
+
+            display:
+                block;
+        }
+
+
+        .schritt-nummer {
+
+            color:
+                #a97b27;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.5px;
+
+            margin-bottom:
+                5px;
+        }
+
+
+        h1,
+        h2,
+        h3 {
+
+            margin-top:
+                0;
+
+            color:
+                #d7ad52;
+        }
+
+
+        h2 {
+
+            font-size:
+                22px;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .beschreibung {
+
+            color:
+                #aaa;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.5;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        /* =====================================================
+           FORMULAR
+        ===================================================== */
+
+        .formular-gruppe {
+
+            margin-bottom:
+                17px;
+        }
+
+
+        .formular-gruppe label {
+
+            display:
+                block;
+
+            color:
+                #ddd;
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .pflicht {
+
+            color:
+                #b94a48;
+        }
+
+
+        input,
+        textarea,
+        select {
+
+            width:
+                100%;
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.30);
+
+            background:
+                rgba(0, 0, 0, 0.38);
+
+            color:
+                #ffffff;
+
+            border-radius:
+                7px;
+
+            padding:
+                11px 12px;
+
+            font-family:
+                inherit;
+
+            font-size:
+                14px;
+
+            outline:
+                none;
+        }
+
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+
+            border-color:
+                #d7ad52;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(215, 173, 82, 0.10);
+        }
+
+
+        textarea {
+
+            min-height:
+                125px;
+
+            resize:
+                vertical;
+        }
+
+
+        select option {
+
+            background:
+                #15120f;
+
+            color:
+                #ffffff;
+        }
+
+
+        .hinweis {
+
+            color:
+                #777;
+
+            font-size:
+                11px;
+
+            margin-top:
+                5px;
+        }
+
+
+        /* =====================================================
+           AUSWAHLKARTEN
+        ===================================================== */
+
+        .auswahl-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                9px;
+        }
+
+
+        .auswahl {
+
+            position:
+                relative;
+        }
+
+
+        .auswahl input {
+
+            position:
+                absolute;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+        }
+
+
+        .auswahl label {
+
+            display:
+                block;
+
+            padding:
+                13px;
+
+            min-height:
+                72px;
+
+            background:
+                rgba(0, 0, 0, 0.30);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.25);
+
+            border-radius:
+                8px;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.2s;
+        }
+
+
+        .auswahl label:hover {
+
+            border-color:
+                rgba(190, 145, 55, 0.65);
+        }
+
+
+        .auswahl input:checked + label {
+
+            background:
+                rgba(105, 25, 25, 0.55);
+
+            border-color:
+                #d7ad52;
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(215, 173, 82, 0.20);
+        }
+
+
+        .auswahl-titel {
+
+            color:
+                #ffffff;
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+
+            margin-bottom:
+                4px;
+        }
+
+
+        .auswahl-text {
+
+            color:
+                #888;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.4;
+        }
+
+
+        /* =====================================================
+           CHECKBOXEN
+        ===================================================== */
+
+        .checkbox-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                8px;
+        }
+
+
+        .checkbox {
+
+            position:
+                relative;
+        }
+
+
+        .checkbox input {
+
+            position:
+                absolute;
+
+            opacity:
+                0;
+        }
+
+
+        .checkbox label {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            min-height:
+                42px;
+
+            padding:
+                9px 11px;
+
+            background:
+                rgba(0, 0, 0, 0.30);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.25);
+
+            border-radius:
+                7px;
+
+            color:
+                #ccc;
+
+            cursor:
+                pointer;
+
+            font-size:
+                13px;
+        }
+
+
+        .checkbox input:checked + label {
+
+            background:
+                rgba(105, 25, 25, 0.48);
+
+            border-color:
+                #d7ad52;
+
+            color:
+                #ffffff;
+        }
+
+
+        /* =====================================================
+           ZUSAMMENFASSUNG
+        ===================================================== */
+
+        .zusammenfassung {
+
+            background:
+                rgba(0, 0, 0, 0.32);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.25);
+
+            border-radius:
+                8px;
+
+            overflow:
+                hidden;
+
+            margin-top:
+                18px;
+        }
+
+
+        .zusammenfassung-zeile {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            gap:
+                15px;
+
+            padding:
+                11px 12px;
+
+            border-bottom:
+                1px solid
+                rgba(255, 255, 255, 0.06);
+        }
+
+
+        .zusammenfassung-zeile:last-child {
+
+            border-bottom:
+                none;
+        }
+
+
+        .zusammenfassung-label {
+
+            color:
+                #888;
+
+            font-size:
+                12px;
+        }
+
+
+        .zusammenfassung-wert {
+
+            color:
+                #ffffff;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            text-align:
+                right;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .buttons {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            margin-top:
+                20px;
+        }
+
+
+        button,
+        .button {
+
+            display:
+                inline-block;
+
+            border:
+                1px solid
+                #a97b27;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #6f1d1d,
+                    #431010
+                );
+
+            color:
+                #ffffff;
+
+            padding:
+                10px 15px;
+
+            border-radius:
+                7px;
+
+            cursor:
+                pointer;
+
+            text-decoration:
+                none;
+
+            font-weight:
+                bold;
+
+            font-size:
+                14px;
+
+            transition:
+                0.2s;
+        }
+
+
+        button:hover,
+        .button:hover {
+
+            filter:
+                brightness(1.18);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        button:disabled {
+
+            opacity:
+                0.45;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
+        }
+
+
+        .button-zurueck {
+
+            flex:
+                1;
+        }
+
+
+        .button-weiter,
+        .button-absenden {
+
+            flex:
+                2;
+        }
+
+
+        /* =====================================================
+           FEHLERMELDUNG
+        ===================================================== */
+
+        .fehler {
+
+            display:
+                none;
+
+            background:
+                rgba(105, 25, 25, 0.45);
+
+            border:
+                1px solid
+                rgba(190, 145, 55, 0.50);
+
+            border-radius:
+                7px;
+
+            color:
+                #ffffff;
+
+            padding:
+                10px 12px;
+
+            margin-bottom:
+                15px;
+
+            font-size:
+                13px;
+        }
+
+
+        /* =====================================================
+           ABSCHLUSS
+        ===================================================== */
+
+        .erfolg {
+
+            text-align:
+                center;
+
+            padding:
+                15px 5px;
+        }
+
+
+        .erfolg-icon {
+
+            width:
+                64px;
+
+            height:
+                64px;
+
+            margin:
+                0 auto 15px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border:
+                1px solid
+                #a97b27;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(105, 25, 25, 0.45);
+
+            color:
+                #d7ad52;
+
+            font-size:
+                28px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .erfolg p {
+
+            color:
+                #aaa;
+
+            line-height:
+                1.6;
+
+            font-size:
+                14px;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+
+            text-align:
+                center;
+
+            color:
+                #888;
+
+            font-size:
+                12px;
+
+            padding:
+                10px 0;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE DESIGN
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .seite {
+
+                padding:
+                    10px 9px 30px;
+            }
+
+
+            .karte {
+
+                padding:
+                    14px;
+
+                border-radius:
+                    10px;
+            }
+
+
+            .kopf-titel {
+
+                font-size:
+                    23px;
+            }
+
+
+            h2 {
+
+                font-size:
+                    18px;
+            }
+
+        }
+
+
+        @media (max-width: 430px) {
+
+            .auswahl-grid,
+            .checkbox-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .buttons {
+
+                flex-direction:
+                    column-reverse;
+            }
+
+
+            button,
+            .button {
+
+                width:
+                    100%;
+
+                text-align:
+                    center;
+            }
+
+
+            .zusammenfassung-zeile {
+
+                flex-direction:
+                    column;
+
+                gap:
+                    4px;
+            }
+
+
+            .zusammenfassung-wert {
+
+                text-align:
+                    left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="seite">
+
+
+    <!-- =====================================================
+         KOPF
+    ===================================================== -->
+
+    <div class="kopf">
+
+        <div class="kopf-titel">
+            EHRENMARKT
+        </div>
+
+        <div class="kopf-untertitel">
+            Bewerbung um eine Mitarbeit
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FORTSCHRITT
+    ===================================================== -->
+
+    <div class="karte">
+
+        <div class="fortschritt-kopf">
+
+            <span class="fortschritt-titel">
+                Deine Bewerbung
+            </span>
+
+            <span
+                class="fortschritt-schritt"
+                id="fortschrittSchritt"
+            >
+                Schritt 1 von 5
+            </span>
+
+        </div>
+
+
+        <div class="fortschritt">
+
+            <div
+                class="fortschritt-inhalt"
+                id="fortschrittInhalt"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FEHLER
+    ===================================================== -->
+
+    <div
+        class="fehler"
+        id="fehler"
+    ></div>
+
+    <!-- =====================================================
+         SCHRITT 2
+    ===================================================== -->
+
+    <div class="karte schritt" data-schritt="2">
+
+        <div class="schritt-nummer">Schritt 2</div>
+
+        <h2>Deine Stärken</h2>
+
+        <p class="beschreibung">
+            Jeder Mitarbeiter bringt andere Fähigkeiten mit.
+            Wähle aus, wo deine Stärken liegen.
+        </p>
+
+        <div class="formular-gruppe">
+
+            <label>Deine Fachbereiche</label>
+
+            <div class="checkbox-grid">
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="bauen"
+                        value="Bauen"
+                    >
+                    <span>Bauen</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="landschaftsbau"
+                        value="Landschaftsbau"
+                    >
+                    <span>Landschaftsbau</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="redstone"
+                        value="Redstone"
+                    >
+                    <span>Redstone</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="farmer"
+                        value="Farmer"
+                    >
+                    <span>Farmer</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="lager"
+                        value="Lager & Logistik"
+                    >
+                    <span>Lager &amp; Logistik</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="handel"
+                        value="Handel"
+                    >
+                    <span>Handel</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="planung"
+                        value="Planung"
+                    >
+                    <span>Planung</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="checkbox"
+                        id="terraforming"
+                        value="Terraforming"
+                    >
+                    <span>Terraforming</span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="formular-gruppe">
+
+            <label for="additionalSkills">
+                Was kannst du besonders gut?
+            </label>
+
+            <textarea
+                id="additionalSkills"
+                placeholder="Erzähle uns etwas über deine Fähigkeiten..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="navigation-buttons">
+
+            <button
+                type="button"
+                class="button button-zurueck"
+                onclick="zurueck()"
+            >
+                Zurück
+            </button>
+
+            <button
+                type="button"
+                class="button button-weiter"
+                onclick="weiter()"
+            >
+                Weiter
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SCHRITT 3
+    ===================================================== -->
+
+    <div class="karte schritt" data-schritt="3">
+
+        <div class="schritt-nummer">Schritt 3</div>
+
+        <h2>Deine Erfahrung</h2>
+
+        <p class="beschreibung">
+            Erzähle uns, wie viel Erfahrung du in deinen
+            gewählten Bereichen mitbringst.
+        </p>
+
+
+        <div class="formular-gruppe">
+
+            <label>Wie würdest du deine Erfahrung einschätzen?</label>
+
+            <div class="radio-grid">
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="experience"
+                        id="erfahrung1"
+                        value="Anfänger"
+                    >
+                    <span>Anfänger</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="experience"
+                        id="erfahrung2"
+                        value="Fortgeschritten"
+                    >
+                    <span>Fortgeschritten</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="experience"
+                        id="erfahrung3"
+                        value="Sehr erfahren"
+                    >
+                    <span>Sehr erfahren</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="experience"
+                        id="erfahrung4"
+                        value="Profi"
+                    >
+                    <span>Profi</span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="formular-gruppe">
+
+            <label for="previousWork">
+                Hast du bereits ähnliche Projekte gemacht?
+            </label>
+
+            <textarea
+                id="previousWork"
+                placeholder="Erzähle uns von deinen bisherigen Projekten oder Erfahrungen..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="navigation-buttons">
+
+            <button
+                type="button"
+                class="button button-zurueck"
+                onclick="zurueck()"
+            >
+                Zurück
+            </button>
+
+            <button
+                type="button"
+                class="button button-weiter"
+                onclick="weiter()"
+            >
+                Weiter
+            </button>
+
+        </div>
+
+    </div>
+
+      <!-- =====================================================
+         SCHRITT 4
+    ===================================================== -->
+
+    <div class="karte schritt" data-schritt="4">
+
+        <div class="schritt-nummer">Schritt 4</div>
+
+        <h2>Dein Platz bei Ehrenmarkt</h2>
+
+        <p class="beschreibung">
+            In welchem Bereich möchtest du Ehrenmarkt unterstützen
+            und wie oft kannst du mitarbeiten?
+        </p>
+
+
+        <div class="formular-gruppe">
+
+            <label>Welche Rolle möchtest du übernehmen?</label>
+
+            <div class="radio-grid">
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle1"
+                        value="Baumeister"
+                    >
+                    <span>Baumeister</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle2"
+                        value="Landschaftsbauer"
+                    >
+                    <span>Landschaftsbauer</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle3"
+                        value="Farmer"
+                    >
+                    <span>Farmer</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle4"
+                        value="Lagerist"
+                    >
+                    <span>Lagerist</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle5"
+                        value="Händler"
+                    >
+                    <span>Händler</span>
+                </label>
+
+                <label class="auswahl">
+                    <input
+                        type="radio"
+                        name="desiredRole"
+                        id="rolle6"
+                        value="Redstone"
+                    >
+                    <span>Redstone</span>
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="formular-gruppe">
+
+            <label for="availability">
+                Wie oft kannst du mitarbeiten?
+            </label>
+
+            <select id="availability">
+
+                <option value="">
+                    Bitte auswählen
+                </option>
+
+                <option value="Gelegentlich">
+                    Gelegentlich
+                </option>
+
+                <option value="Mehrmals pro Woche">
+                    Mehrmals pro Woche
+                </option>
+
+                <option value="Fast täglich">
+                    Fast täglich
+                </option>
+
+                <option value="Sehr regelmäßig">
+                    Sehr regelmäßig
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="formular-gruppe">
+
+            <label for="unavailableTimes">
+                Gibt es Zeiten, in denen du nicht verfügbar bist?
+            </label>
+
+            <textarea
+                id="unavailableTimes"
+                placeholder="Zum Beispiel: Montag bis Freitag von 8 bis 15 Uhr..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="navigation-buttons">
+
+            <button
+                type="button"
+                class="button button-zurueck"
+                onclick="zurueck()"
+            >
+                Zurück
+            </button>
+
+            <button
+                type="button"
+                class="button button-weiter"
+                onclick="weiter()"
+            >
+                Weiter
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SCHRITT 5
+    ===================================================== -->
+
+    <div class="karte schritt" data-schritt="5">
+
+        <div class="schritt-nummer">Schritt 5</div>
+
+        <h2>Deine Motivation</h2>
+
+        <p class="beschreibung">
+            Jetzt fehlt nur noch deine persönliche Nachricht.
+            Warum möchtest du bei Ehrenmarkt mitarbeiten?
+        </p>
+
+
+        <div class="formular-gruppe">
+
+            <label for="applicationText">
+                Warum sollten wir dich aufnehmen?
+            </label>
+
+            <textarea
+                id="applicationText"
+                style="min-height:180px;"
+                placeholder="Erzähle uns, warum du zu Ehrenmarkt möchtest, was dich motiviert und was du beitragen kannst..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="zusammenfassung">
+
+            <h3>Deine Bewerbung im Überblick</h3>
+
+            <div class="zusammenfassung-zeile">
+                <span>Name</span>
+                <strong id="summaryName">–</strong>
+            </div>
+
+            <div class="zusammenfassung-zeile">
+                <span>Minecraft</span>
+                <strong id="summaryMinecraft">–</strong>
+            </div>
+
+            <div class="zusammenfassung-zeile">
+                <span>Gewünschte Rolle</span>
+                <strong id="summaryRole">–</strong>
+            </div>
+
+            <div class="zusammenfassung-zeile">
+                <span>Erfahrung</span>
+                <strong id="summaryExperience">–</strong>
+            </div>
+
+            <div class="zusammenfassung-zeile">
+                <span>Verfügbarkeit</span>
+                <strong id="summaryAvailability">–</strong>
+            </div>
+
+        </div>
+
+
+        <div class="navigation-buttons">
+
+            <button
+                type="button"
+                class="button button-zurueck"
+                onclick="zurueck()"
+            >
+                Zurück
+            </button>
+
+            <button
+                type="button"
+                class="button button-weiter"
+                onclick="bewerbungAbsenden()"
+            >
+                Bewerbung absenden
+            </button>
+
+        </div>
+
+    </div>
+
+      <!-- =====================================================
+         ERFOLGSSEITE
+    ===================================================== -->
+
+    <div class="karte schritt" id="erfolg">
+
+        <div class="erfolg">
+
+            <div class="erfolg-icon">
+                ✓
+            </div>
+
+            <h2>Bewerbung erfolgreich eingereicht!</h2>
+
+            <p>
+                Vielen Dank für deine Bewerbung bei Ehrenmarkt.
+                Deine Bewerbung wurde an die Stadtleitung übermittelt
+                und wird nun geprüft.
+            </p>
+
+            <div class="karte" style="margin-top:20px;">
+
+                <h3 style="margin-bottom:10px;">Was passiert jetzt?</h3>
+
+                <p>📋 Deine Bewerbung wird von der Stadtleitung geprüft.</p>
+
+                <p>👤 Nach der Annahme erhältst du automatisch deine Rolle und deinen Rang.</p>
+
+                <p>⚒️ Anschließend wirst du automatisch im Mitarbeiterbereich freigeschaltet.</p>
+
+            </div>
+
+            <button
+                type="button"
+                class="button"
+                style="margin-top:20px;width:100%;"
+            >
+                Zur Startseite
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOTER
+    ===================================================== -->
+
+    <div class="footer">
+        Ehrenmarkt • Bewerbungssystem V1
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+let aktuellerSchritt = 1;
+const gesamtSchritte = 5;
+
+const schritte =
+    document.querySelectorAll(".schritt");
+
+const fortschritt =
+    document.getElementById("fortschrittInhalt");
+
+const fortschrittText =
+    document.getElementById("fortschrittSchritt");
+
+const fehlerBox =
+    document.getElementById("fehler");
+
+
+function versteckeFehler() {
+
+    fehlerBox.style.display = "none";
+    fehlerBox.textContent = "";
+
+}
+
+function zeigeFehler(text) {
+
+    fehlerBox.style.display = "block";
+    fehlerBox.textContent = text;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   SCHRITT WECHSELN
+===================================================== */
+
+function schrittAnzeigen(nummer) {
+
+    schritte.forEach(element => {
+
+        element.classList.remove("aktiv");
+
+    });
+
+    document
+        .querySelector(
+            '.schritt[data-schritt="' + nummer + '"]'
+        )
+        .classList.add("aktiv");
+
+    aktuellerSchritt = nummer;
+
+    fortschritt.style.width =
+        (nummer / gesamtSchritte * 100) + "%";
+
+    fortschrittText.textContent =
+        "Schritt " +
+        nummer +
+        " von " +
+        gesamtSchritte;
+
+    versteckeFehler();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+      /* =====================================================
+       WEITER
+    ===================================================== */
+
+    function weiter() {
+
+        if (!validiereSchritt(aktuellerSchritt)) {
+            return;
+        }
+
+        if (aktuellerSchritt < gesamtSchritte) {
+
+            schrittAnzeigen(
+                aktuellerSchritt + 1
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ZURÜCK
+    ===================================================== */
+
+    function zurueck() {
+
+        if (aktuellerSchritt > 1) {
+
+            schrittAnzeigen(
+                aktuellerSchritt - 1
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RADIO-WERT AUSLESEN
+    ===================================================== */
+
+    function getRadioWert(name) {
+
+        const auswahl =
+            document.querySelector(
+                'input[name="' + name + '"]:checked'
+            );
+
+        return auswahl
+            ? auswahl.value
+            : "";
+
+    }
+
+
+    /* =====================================================
+       SCHRITT VALIDIEREN
+    ===================================================== */
+
+    function validiereSchritt(schritt) {
+
+        versteckeFehler();
+
+
+        /* SCHRITT 1 */
+
+        if (schritt === 1) {
+
+            const name =
+                document
+                    .getElementById("name")
+                    .value
+                    .trim();
+
+            const minecraftName =
+                document
+                    .getElementById("minecraftName")
+                    .value
+                    .trim();
+
+            const alter =
+                document
+                    .getElementById("alter")
+                    .value
+                    .trim();
+
+
+            if (!name) {
+
+                zeigeFehler(
+                    "Bitte gib deinen Namen ein."
+                );
+
+                return false;
+
+            }
+
+
+            if (!minecraftName) {
+
+                zeigeFehler(
+                    "Bitte gib deinen Minecraft-Namen ein."
+                );
+
+                return false;
+
+            }
+
+
+            if (!alter) {
+
+                zeigeFehler(
+                    "Bitte gib dein Alter ein."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        /* SCHRITT 3 */
+
+        if (schritt === 3) {
+
+            const erfahrung =
+                getRadioWert("experience");
+
+
+            if (!erfahrung) {
+
+                zeigeFehler(
+                    "Bitte wähle deine Erfahrung aus."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        /* SCHRITT 4 */
+
+        if (schritt === 4) {
+
+            const rolle =
+                getRadioWert("desiredRole");
+
+            const verfuegbarkeit =
+                document
+                    .getElementById("availability")
+                    .value;
+
+
+            if (!rolle) {
+
+                zeigeFehler(
+                    "Bitte wähle deine gewünschte Rolle aus."
+                );
+
+                return false;
+
+            }
+
+
+            if (!verfuegbarkeit) {
+
+                zeigeFehler(
+                    "Bitte wähle deine Verfügbarkeit aus."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        /* SCHRITT 5 */
+
+        if (schritt === 5) {
+
+            const motivation =
+                document
+                    .getElementById("applicationText")
+                    .value
+                    .trim();
+
+
+            if (!motivation) {
+
+                zeigeFehler(
+                    "Bitte schreibe etwas zu deiner Motivation."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        return true;
+
+    }
+
+
+    /* =====================================================
+       ZUSAMMENFASSUNG
+    ===================================================== */
+
+    function aktualisiereZusammenfassung() {
+
+        const name =
+            document
+                .getElementById("name")
+                .value
+                .trim();
+
+        const minecraftName =
+            document
+                .getElementById("minecraftName")
+                .value
+                .trim();
+
+        const rolle =
+            getRadioWert("desiredRole");
+
+        const erfahrung =
+            getRadioWert("experience");
+
+        const verfuegbarkeit =
+            document
+                .getElementById("availability")
+                .value;
+
+
+        document
+            .getElementById("summaryName")
+            .textContent =
+                name || "–";
+
+
+        document
+            .getElementById("summaryMinecraft")
+            .textContent =
+                minecraftName || "–";
+
+
+        document
+            .getElementById("summaryRole")
+            .textContent =
+                rolle || "–";
+
+
+        document
+            .getElementById("summaryExperience")
+            .textContent =
+                erfahrung || "–";
+
+
+        document
+            .getElementById("summaryAvailability")
+            .textContent =
+                verfuegbarkeit || "–";
+
+    }
+
+
+    /* =====================================================
+       BEWERBUNG ABSENDEN
+    ===================================================== */
+
+    function bewerbungAbsenden() {
+
+        if (!validiereSchritt(5)) {
+            return;
+        }
+
+
+        aktualisiereZusammenfassung();
+
+
+        schritte.forEach(element => {
+
+            element.classList.remove("aktiv");
+
+        });
+
+
+        document
+            .getElementById("erfolg")
+            .classList.add("aktiv");
+
+
+        fortschritt.style.width =
+            "100%";
+
+
+        fortschrittText.textContent =
+            "Bewerbung bereit";
+
+
+        versteckeFehler();
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* =====================================================
+       START
+    ===================================================== */
+
+    schrittAnzeigen(1);
+
+</script>
+
+</body>
+</html>
