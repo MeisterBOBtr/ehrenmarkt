@@ -1,641 +1,273 @@
-// ============================================================
-// EHRENMARKT
-// BEWERBUNGSVERWALTUNG
-// ============================================================
-
-let client = null;
+let supabaseClient = null;
 let aktuellerBenutzer = null;
 let aktuelleBewerbung = null;
 let bewerbungen = [];
 
-
-// ============================================================
-// FEHLERANZEIGE
-// ============================================================
-
 function zeigeFehler(text) {
+    const details = document.getElementById("detailsContent");
 
-    console.error("EHRENMARKT:", text);
-
-    alert(text);
-}
-
-
-// ============================================================
-// SUPABASE CLIENT
-// ============================================================
-
-function holeSupabaseClient() {
-
-    if (!client) {
-        client = window.supabaseClient;
+    if (details) {
+        details.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <h3>Fehler</h3>
+                <p>${esc(text)}</p>
+            </div>
+        `;
     }
 
-    return client;
+    console.error(text);
 }
 
+function esc(value) {
+    if (value === null || value === undefined) return "";
 
-// ============================================================
-// AKTUELLEN BENUTZER LADEN
-// ============================================================
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-async function ladeAktuellenBenutzer() {
+async function ladeBenutzer() {
+    const {
+        data: { user },
+        error
+    } = await supabaseClient.auth.getUser();
 
-    const supabase = holeSupabaseClient();
-
-    if (!supabase) {
-        zeigeFehler(
-            "Die Verbindung zum Ehrenmarkt-System konnte nicht hergestellt werden."
-        );
-
+    if (error) {
+        zeigeFehler(error.message);
         return null;
     }
 
-    try {
-
-        const {
-            data,
-            error
-        } = await supabase.auth.getUser();
-
-        if (error) {
-            throw error;
-        }
-
-        if (!data || !data.user) {
-
-            zeigeFehler(
-                "Du musst angemeldet sein, um die Bewerbungsverwaltung zu öffnen."
-            );
-
-            return null;
-        }
-
-        aktuellerBenutzer = data.user;
-
-        return data.user;
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Laden des Benutzers:",
-            error
-        );
-
-        zeigeFehler(
-            "Deine Anmeldung konnte nicht überprüft werden."
-        );
-
+    if (!user) {
+        window.location.href = "../HTML/registrieren.html";
         return null;
     }
+
+    aktuellerBenutzer = user;
+    return user;
 }
-
-
-// ============================================================
-// STADTLEITUNG PRÜFEN
-// ============================================================
 
 async function pruefeStadtleitung() {
+    const { data: employee, error } = await supabaseClient
+        .from("employees")
+        .select("id, role, rang, is_active")
+        .eq("user_id", aktuellerBenutzer.id)
+        .maybeSingle();
 
-    const supabase = holeSupabaseClient();
-
-    if (!supabase || !aktuellerBenutzer) {
+    if (error) {
+        console.error("Fehler bei Berechtigungsprüfung:", error);
+        zeigeFehler(error.message);
         return false;
     }
 
-    try {
-
-        const {
-            data,
-            error
-        } = await supabase
-            .from("employees")
-            .select("id, role, is_active")
-            .eq("user_id", aktuellerBenutzer.id)
-            .maybeSingle();
-
-        if (error) {
-            throw error;
-        }
-
-        if (!data) {
-
-            zeigeFehler(
-                "Du bist nicht als Mitarbeiter eingetragen."
-            );
-
-            return false;
-        }
-
-        if (data.role !== "Stadtleitung") {
-
-            zeigeFehler(
-                "Du hast keine Berechtigung für die Bewerbungsverwaltung."
-            );
-
-            return false;
-        }
-
-        if (data.is_active !== true) {
-
-            zeigeFehler(
-                "Dein Mitarbeiterkonto ist derzeit nicht aktiv."
-            );
-
-            return false;
-        }
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Fehler bei der Berechtigungsprüfung:",
-            error
-        );
-
-        zeigeFehler(
-            "Die Berechtigung für die Bewerbungsverwaltung konnte nicht geprüft werden."
-        );
-
+    if (
+        !employee ||
+        employee.role !== "Stadtleitung" ||
+        employee.is_active !== true
+    ) {
+        alert("Keine Berechtigung. Nur die Stadtleitung darf Bewerbungen verwalten.");
+        window.location.href = "../HTML/startseite.html";
         return false;
     }
+
+    return true;
 }
-
-
-// ============================================================
-// BEWERBUNGEN LADEN
-// ============================================================
 
 async function ladeBewerbungen() {
+    const { data, error } = await supabaseClient
+        .from("applications")
+        .select(`
+            id,
+            user_id,
+            name,
+            minecraft_name,
+            discord_id,
+            age,
+            experience,
+            previous_work,
+            desired_role,
+            additional_skills,
+            application_text,
+            availability,
+            unavailable_times,
+            status,
+            assigned_role,
+            assigned_rank,
+            processed_by,
+            processed_at,
+            decision_note,
+            created_at,
+            updated_at
+        `)
+        .order("created_at", { ascending: false });
 
-    const supabase = holeSupabaseClient();
-
-    if (!supabase) {
+    if (error) {
+        zeigeFehler("Bewerbungen konnten nicht geladen werden: " + error.message);
         return;
     }
 
-    const liste =
-        document.getElementById("applicationList");
+    bewerbungen = data || [];
 
-    if (liste) {
-
-        liste.innerHTML = `
-            <div class="application-list-empty">
-                <strong>Bewerbungen werden geladen...</strong>
-                Bitte einen Moment warten.
-            </div>
-        `;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabase
-            .from("applications")
-            .select(`
-                id,
-                user_id,
-                name,
-                minecraft_name,
-                discord_id,
-                age,
-                experience,
-                previous_work,
-                desired_role,
-                additional_skills,
-                application_text,
-                availability,
-                unavailable_times,
-                status,
-                assigned_role,
-                assigned_rank,
-                processed_by,
-                processed_at,
-                decision_note,
-                created_at,
-                updated_at
-            `)
-            .order("created_at", {
-                ascending: false
-            });
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        bewerbungen =
-            Array.isArray(data)
-                ? data
-                : [];
-
-
-        aktualisiereStatistik();
-
-        zeigeBewerbungsliste();
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Laden der Bewerbungen:",
-            error
-        );
-
-        if (liste) {
-
-            liste.innerHTML = `
-                <div class="application-list-empty">
-                    <strong>Fehler beim Laden</strong>
-                    Die Bewerbungen konnten nicht geladen werden.
-                </div>
-            `;
-        }
-
-        zeigeFehler(
-            "Die Bewerbungen konnten nicht geladen werden."
-        );
-    }
+    aktualisiereStatistik();
+    zeigeBewerbungsliste();
 }
-
-
-// ============================================================
-// STATISTIK AKTUALISIEREN
-// ============================================================
 
 function aktualisiereStatistik() {
+    const offen = bewerbungen.filter(
+        b => String(b.status).toLowerCase() === "offen"
+    ).length;
 
-    const offen =
-        bewerbungen.filter(
-            function (bewerbung) {
-                return bewerbung.status === "offen";
-            }
-        ).length;
+    const angenommen = bewerbungen.filter(
+        b => String(b.status).toLowerCase() === "angenommen"
+    ).length;
 
+    const abgelehnt = bewerbungen.filter(
+        b => String(b.status).toLowerCase() === "abgelehnt"
+    ).length;
 
-    const angenommen =
-        bewerbungen.filter(
-            function (bewerbung) {
-                return bewerbung.status === "angenommen";
-            }
-        ).length;
+    const statOffen = document.getElementById("statOffen");
+    const statAngenommen = document.getElementById("statAngenommen");
+    const statAbgelehnt = document.getElementById("statAbgelehnt");
 
-
-    const abgelehnt =
-        bewerbungen.filter(
-            function (bewerbung) {
-                return bewerbung.status === "abgelehnt";
-            }
-        ).length;
-
-
-    const statOffen =
-        document.getElementById("statOffen");
-
-    const statAngenommen =
-        document.getElementById("statAngenommen");
-
-    const statAbgelehnt =
-        document.getElementById("statAbgelehnt");
-
-
-    if (statOffen) {
-        statOffen.textContent = offen;
-    }
-
-    if (statAngenommen) {
-        statAngenommen.textContent = angenommen;
-    }
-
-    if (statAbgelehnt) {
-        statAbgelehnt.textContent = abgelehnt;
-    }
+    if (statOffen) statOffen.textContent = offen;
+    if (statAngenommen) statAngenommen.textContent = angenommen;
+    if (statAbgelehnt) statAbgelehnt.textContent = abgelehnt;
 }
-
-
-// ============================================================
-// STATUS-KLASSE
-// ============================================================
 
 function statusKlasse(status) {
+    const wert = String(status || "").toLowerCase();
 
-    if (status === "angenommen") {
-        return "status-angenommen";
-    }
+    if (wert === "angenommen") return "angenommen";
+    if (wert === "abgelehnt") return "abgelehnt";
 
-    if (status === "abgelehnt") {
-        return "status-abgelehnt";
-    }
-
-    return "status-offen";
+    return "offen";
 }
-
-
-// ============================================================
-// STATUS-TEXT
-// ============================================================
 
 function statusText(status) {
+    const wert = String(status || "").toLowerCase();
 
-    if (status === "angenommen") {
-        return "ANGENOMMEN";
-    }
+    if (wert === "angenommen") return "Angenommen";
+    if (wert === "abgelehnt") return "Abgelehnt";
 
-    if (status === "abgelehnt") {
-        return "ABGELEHNT";
-    }
-
-    return "OFFEN";
+    return "Offen";
 }
 
-
-// ============================================================
-// DATUM FORMATIEREN
-// ============================================================
-
 function formatiereDatum(datum) {
+    if (!datum) return "-";
 
-    if (!datum) {
-        return "–";
-    }
+    const date = new Date(datum);
 
-    const wert =
-        new Date(datum);
+    if (Number.isNaN(date.getTime())) return "-";
 
-    if (Number.isNaN(wert.getTime())) {
-        return "–";
-    }
-
-    return wert.toLocaleDateString(
-        "de-DE",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
-        }
-    );
-      }
-
-// ============================================================
-// BEWERBUNGSLISTE ANZEIGEN
-// ============================================================
+    return date.toLocaleString("de-DE", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+                        }
 
 function zeigeBewerbungsliste() {
+    const liste = document.getElementById("applicationList");
 
-    const liste =
-        document.getElementById("applicationList");
-
-    if (!liste) {
-        return;
-    }
-
+    if (!liste) return;
 
     if (bewerbungen.length === 0) {
-
         liste.innerHTML = `
-            <div class="application-list-empty">
-                <strong>Keine Bewerbungen vorhanden</strong>
-                Aktuell befinden sich keine Bewerbungen
-                in der Bewerbungsverwaltung.
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>Keine Bewerbungen</h3>
+                <p>Es sind derzeit keine Bewerbungen vorhanden.</p>
             </div>
         `;
-
         return;
     }
-
 
     liste.innerHTML = "";
 
+    bewerbungen.forEach(bewerbung => {
+        const item = document.createElement("div");
 
-    bewerbungen.forEach(
-        function (bewerbung) {
+        item.className = "application-item";
 
-            const item =
-                document.createElement("button");
-
-            item.type = "button";
-
-            item.className =
-                "application-item";
-
-
-            if (
-                aktuelleBewerbung &&
-                aktuelleBewerbung.id === bewerbung.id
-            ) {
-
-                item.classList.add("active");
-            }
-
-
-            item.innerHTML = `
-
-                <div class="application-name">
-                    ${esc(bewerbung.name || "Unbekannter Bewerber")}
+        item.innerHTML = `
+            <div class="application-item-top">
+                <div>
+                    <h3>${esc(bewerbung.name || "Unbekannt")}</h3>
+                    <p>${esc(bewerbung.minecraft_name || "-")}</p>
                 </div>
 
-                <div class="application-minecraft">
-                    Minecraft:
-                    ${esc(bewerbung.minecraft_name || "–")}
-                </div>
+                <span class="status ${statusKlasse(bewerbung.status)}">
+                    ${statusText(bewerbung.status)}
+                </span>
+            </div>
 
-                <div class="application-meta">
+            <div class="application-item-info">
+                <span>🎂 ${esc(bewerbung.age || "-")} Jahre</span>
+                <span>🎖️ ${esc(bewerbung.desired_role || "-")}</span>
+            </div>
 
-                    <span class="status ${statusKlasse(bewerbung.status)}">
-                        ${statusText(bewerbung.status)}
-                    </span>
+            <small>
+                Bewerbung: ${formatiereDatum(bewerbung.created_at)}
+            </small>
+        `;
 
-                    <span class="application-date">
-                        ${formatiereDatum(bewerbung.created_at)}
-                    </span>
+        item.addEventListener("click", () => {
+            zeigeBewerbungsdetails(bewerbung.id);
+        });
 
-                </div>
-            `;
-
-
-            item.addEventListener(
-                "click",
-                function () {
-
-                    oeffneBewerbung(
-                        bewerbung.id
-                    );
-                }
-            );
-
-
-            liste.appendChild(item);
-        }
-    );
-}
-
-
-// ============================================================
-// BEWERBUNG ÖFFNEN
-// ============================================================
-
-function oeffneBewerbung(id) {
-
-    const bewerbung =
-        bewerbungen.find(
-            function (eintrag) {
-                return eintrag.id === id;
-            }
-        );
-
-
-    if (!bewerbung) {
-        return;
-    }
-
-
-    aktuelleBewerbung =
-        bewerbung;
-
-
-    zeigeBewerbungsliste();
-
-    zeigeBewerbungsdetails(
-        bewerbung
-    );
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+        liste.appendChild(item);
     });
 }
 
+function zeigeBewerbungsdetails(id) {
+    const bewerbung = bewerbungen.find(
+        b => String(b.id) === String(id)
+    );
 
-// ============================================================
-// DETAILANSICHT
-// ============================================================
-
-function zeigeBewerbungsdetails(bewerbung) {
-
-    const container =
-        document.getElementById("detailsContent");
-
-    if (!container) {
+    if (!bewerbung) {
+        zeigeFehler("Bewerbung wurde nicht gefunden.");
         return;
     }
 
+    aktuelleBewerbung = bewerbung;
 
-    const fachbereiche =
-        formatiereFachbereiche(
-            bewerbung.additional_skills
-        );
+    const details = document.getElementById("detailsContent");
 
+    if (!details) return;
 
-    const bearbeitung =
-        bewerbung.status === "offen";
-
-
-    container.innerHTML = `
-
-        <div class="candidate-header">
-
+    details.innerHTML = `
+        <div class="detail-header">
             <div>
+                <span class="status ${statusKlasse(bewerbung.status)}">
+                    ${statusText(bewerbung.status)}
+                </span>
 
-                <div class="candidate-name">
-                    ${esc(bewerbung.name || "–")}
-                </div>
+                <h2>${esc(bewerbung.name || "Unbekannt")}</h2>
 
-                <div class="candidate-minecraft">
-                    Minecraft:
-                    ${esc(bewerbung.minecraft_name || "–")}
-                </div>
-
+                <p>
+                    Bewerbung vom ${formatiereDatum(bewerbung.created_at)}
+                </p>
             </div>
-
-            <span class="status ${statusKlasse(bewerbung.status)}">
-                ${statusText(bewerbung.status)}
-            </span>
-
         </div>
 
-
-        <div class="detail-section">
-
-            <div class="detail-section-title">
-                Identität
-            </div>
-
-            <div class="info-grid">
-
-                ${infoBox(
-                    "Name",
-                    bewerbung.name
-                )}
-
-                ${infoBox(
-                    "Minecraft-Name",
-                    bewerbung.minecraft_name
-                )}
-
-                ${infoBox(
-                    "Discord",
-                    bewerbung.discord_id
-                )}
-
-                ${infoBox(
-                    "Alter",
-                    bewerbung.age
-                        ? bewerbung.age + " Jahre"
-                        : "–"
-                )}
-
-            </div>
-
-        </div>
-
-
-        <div class="detail-section">
-
-            <div class="detail-section-title">
-                Fachbereiche & Stärken
-            </div>
-
-            <div class="skills-container">
-
-                ${fachbereiche}
-
-            </div>
-
-        </div>
-
-
-        <div class="detail-section">
-
-            <div class="detail-section-title">
-                Erfahrung
-            </div>
+        <div class="detail-grid">
 
             ${infoBox(
-                "Erfahrungsstufe",
-                bewerbung.experience
+                "Minecraft",
+                bewerbung.minecraft_name
             )}
 
-            <br>
-
-            ${textBox(
-                bewerbung.previous_work,
-                "Keine bisherigen Projekte oder Erfahrungen angegeben."
+            ${infoBox(
+                "Alter",
+                bewerbung.age ? bewerbung.age + " Jahre" : "-"
             )}
 
-        </div>
-
-
-        <div class="detail-section">
-
-            <div class="detail-section-title">
-                Gewünschte Position
-            </div>
+            ${infoBox(
+                "Discord",
+                bewerbung.discord_id
+            )}
 
             ${infoBox(
                 "Gewünschte Rolle",
@@ -644,766 +276,503 @@ function zeigeBewerbungsdetails(bewerbung) {
 
         </div>
 
+        ${textBox(
+            "Erfahrung",
+            bewerbung.experience
+        )}
 
-        <div class="detail-section">
+        ${textBox(
+            "Bisherige Tätigkeiten",
+            bewerbung.previous_work
+        )}
 
-            <div class="detail-section-title">
-                Verfügbarkeit
-            </div>
+        ${textBox(
+            "Zusätzliche Fähigkeiten",
+            formatiereFachbereiche(bewerbung.additional_skills)
+        )}
 
-            <div class="info-grid">
+        ${textBox(
+            "Verfügbarkeit",
+            bewerbung.availability
+        )}
 
-                ${infoBox(
-                    "Verfügbarkeit",
-                    bewerbung.availability
-                )}
+        ${textBox(
+            "Nicht verfügbare Zeiten",
+            bewerbung.unavailable_times
+        )}
 
-                ${infoBox(
-                    "Nicht verfügbar",
-                    bewerbung.unavailable_times
-                )}
-
-            </div>
-
-        </div>
-
-
-        <div class="detail-section">
-
-            <div class="detail-section-title">
-                Motivation
-            </div>
-
-            ${textBox(
-                bewerbung.application_text,
-                "Keine Motivation angegeben."
-            )}
-
-        </div>
-
+        ${textBox(
+            "Bewerbungstext",
+            bewerbung.application_text
+        )}
 
         ${
-            bearbeitung
-                ? erstelleEntscheidungsbereich(bewerbung)
-                : erstelleBearbeitungsInfo(bewerbung)
+            String(bewerbung.status).toLowerCase() === "offen"
+                ? erstelleEntscheidungsbereich()
+                : erstelleBearbeitungsInfo()
         }
-
     `;
-              }
 
-// ============================================================
-// ENTSCHEIDUNGSBEREICH
-// ============================================================
+    if (String(bewerbung.status).toLowerCase() === "offen") {
+        registriereEntscheidungsButtons();
+    }
+}
 
-function erstelleEntscheidungsbereich(bewerbung) {
-
+function infoBox(titel, wert) {
     return `
+        <div class="info-box">
+            <span>${esc(titel)}</span>
+            <strong>${esc(wert || "-")}</strong>
+        </div>
+    `;
+}
 
+function textBox(titel, wert) {
+    return `
+        <div class="text-box">
+            <h3>${esc(titel)}</h3>
+            <p>${esc(wert || "-")}</p>
+        </div>
+    `;
+}
+
+function erstelleEntscheidungsbereich() {
+    return `
         <div class="decision-panel">
 
-            <div class="decision-title">
-                Entscheidung
-            </div>
-
+            <h3>⚔️ Bewerbung bearbeiten</h3>
 
             <div class="form-group">
+                <label for="assignedRole">Rolle</label>
 
-                <label for="verwaltungRolle">
-                    Rolle bei Ehrenmarkt
-                </label>
-
-                <select id="verwaltungRolle">
-
-                    <option value="">
-                        Rolle auswählen
-                    </option>
-
-                    <option value="Baumeister">
-                        Baumeister
-                    </option>
-
-                    <option value="Landschaftsbauer">
-                        Landschaftsbauer
-                    </option>
-
-                    <option value="Farmer">
-                        Farmer
-                    </option>
-
-                    <option value="Lagerist">
-                        Lagerist
-                    </option>
-
-                    <option value="Händler">
-                        Händler
-                    </option>
-
-                    <option value="Redstone">
-                        Redstone
-                    </option>
-
+                <select id="assignedRole">
+                    <option value="">Rolle auswählen...</option>
+                    <option value="Baumeister">Baumeister</option>
+                    <option value="Landschaftsbauer">Landschaftsbauer</option>
+                    <option value="Farmer">Farmer</option>
+                    <option value="Lagerist">Lagerist</option>
+                    <option value="Händler">Händler</option>
+                    <option value="Redstone">Redstone</option>
                 </select>
-
             </div>
 
-
             <div class="form-group">
+                <label for="assignedRank">Rang</label>
 
-                <label for="verwaltungRang">
-                    Rang
-                </label>
-
-                <select id="verwaltungRang">
-
-                    <option value="">
-                        Rang auswählen
-                    </option>
-
-                    <option value="Mitarbeiter">
-                        Mitarbeiter
-                    </option>
-
-                    <option value="Erfahrener Mitarbeiter">
-                        Erfahrener Mitarbeiter
-                    </option>
-
-                    <option value="Teamleitung">
-                        Teamleitung
-                    </option>
-
+                <select id="assignedRank">
+                    <option value="">Rang auswählen...</option>
+                    <option value="Mitarbeiter">Mitarbeiter</option>
+                    <option value="Leitung">Leitung</option>
+                    <option value="Stadtleitung">Stadtleitung</option>
                 </select>
-
             </div>
 
-
             <div class="form-group">
-
-                <label for="verwaltungNotiz">
-                    Entscheidungsnotiz
-                </label>
+                <label for="decisionNote">Entscheidungsnotiz</label>
 
                 <textarea
-                    id="verwaltungNotiz"
-                    placeholder="Optionaler Kommentar zur Entscheidung..."
+                    id="decisionNote"
+                    rows="4"
+                    placeholder="Optional..."
                 ></textarea>
-
             </div>
-
 
             <div class="decision-buttons">
 
                 <button
                     type="button"
-                    class="decision-button accept-button"
-                    id="bewerbungAnnehmenButton"
+                    id="acceptApplication"
+                    class="btn-accept"
                 >
-                    ✓ Bewerbung annehmen
+                    ✅ Bewerbung annehmen
                 </button>
-
 
                 <button
                     type="button"
-                    class="decision-button reject-button"
-                    id="bewerbungAblehnenButton"
+                    id="rejectApplication"
+                    class="btn-reject"
                 >
-                    ✕ Bewerbung ablehnen
+                    ❌ Bewerbung ablehnen
+                </button>
+
+                <button
+                    type="button"
+                    id="deleteApplication"
+                    class="btn-delete"
+                >
+                    🗑️ Bewerbung löschen
                 </button>
 
             </div>
 
-
-            <div class="preview-note">
-
-                <strong>Hinweis:</strong>
-
-                Bei einer Annahme wird in diesem Schritt zunächst
-                nur die Bewerbung bearbeitet.
-                Die automatische Anlage des Mitarbeiters in
-                <b>employees</b> bauen wir anschließend sicher ein.
-
-            </div>
+            <p class="preview-note">
+                Bei einer Annahme wird automatisch ein Mitarbeiter
+                mit der ausgewählten Rolle und dem Rang angelegt.
+            </p>
 
         </div>
-
     `;
 }
 
-
-// ============================================================
-// BEREITS BEARBEITETE BEWERBUNG
-// ============================================================
-
-function erstelleBearbeitungsInfo(bewerbung) {
-
+function erstelleBearbeitungsInfo() {
     return `
-
         <div class="decision-panel">
 
-            <div class="decision-title">
-                Bearbeitungsinformationen
-            </div>
+            <h3>
+                ${
+                    String(aktuelleBewerbung.status).toLowerCase()
+                    === "angenommen"
+                        ? "✅ Bewerbung angenommen"
+                        : "❌ Bewerbung abgelehnt"
+                }
+            </h3>
 
+            ${
+                aktuelleBewerbung.assigned_role
+                    ? `
+                        <p>
+                            <strong>Rolle:</strong>
+                            ${esc(aktuelleBewerbung.assigned_role)}
+                        </p>
+                    `
+                    : ""
+            }
 
-            <div class="info-grid">
+            ${
+                aktuelleBewerbung.assigned_rank
+                    ? `
+                        <p>
+                            <strong>Rang:</strong>
+                            ${esc(aktuelleBewerbung.assigned_rank)}
+                        </p>
+                    `
+                    : ""
+            }
 
-                ${infoBox(
-                    "Zugewiesene Rolle",
-                    bewerbung.assigned_role
-                )}
+            ${
+                aktuelleBewerbung.decision_note
+                    ? `
+                        <div class="text-box">
+                            <h3>Entscheidungsnotiz</h3>
+                            <p>${esc(aktuelleBewerbung.decision_note)}</p>
+                        </div>
+                    `
+                    : ""
+            }
 
-                ${infoBox(
-                    "Zugewiesener Rang",
-                    bewerbung.assigned_rank
-                )}
+            <p>
+                Bearbeitet am:
+                ${formatiereDatum(aktuelleBewerbung.processed_at)}
+            </p>
 
-                ${infoBox(
-                    "Bearbeitet am",
-                    formatiereDatum(
-                        bewerbung.processed_at
-                    )
-                )}
-
-            </div>
-
-
-            <br>
-
-
-            ${textBox(
-                bewerbung.decision_note,
-                "Keine Entscheidungsnotiz vorhanden."
-            )}
+            ${
+                String(aktuelleBewerbung.status).toLowerCase() !== "angenommen"
+                    ? `
+                        <button
+                            type="button"
+                            id="deleteApplication"
+                            class="btn-delete"
+                        >
+                            🗑️ Bewerbung löschen
+                        </button>
+                    `
+                    : ""
+            }
 
         </div>
-
     `;
 }
 
-
-// ============================================================
-// ENTSCHEIDUNG AKTIVIEREN
-// ============================================================
-
 function registriereEntscheidungsButtons() {
+    const acceptButton =
+        document.getElementById("acceptApplication");
 
-    const annehmen =
-        document.getElementById(
-            "bewerbungAnnehmenButton"
-        );
+    const rejectButton =
+        document.getElementById("rejectApplication");
 
-    const ablehnen =
-        document.getElementById(
-            "bewerbungAblehnenButton"
-        );
+    const deleteButton =
+        document.getElementById("deleteApplication");
 
-
-    if (annehmen) {
-
-        annehmen.addEventListener(
+    if (acceptButton) {
+        acceptButton.addEventListener(
             "click",
-            function () {
-
-                bearbeiteBewerbung(
-                    "angenommen"
-                );
-            }
+            () => bearbeiteBewerbung("angenommen")
         );
     }
 
-
-    if (ablehnen) {
-
-        ablehnen.addEventListener(
+    if (rejectButton) {
+        rejectButton.addEventListener(
             "click",
-            function () {
+            () => bearbeiteBewerbung("abgelehnt")
+        );
+    }
 
-                bearbeiteBewerbung(
-                    "abgelehnt"
-                );
-            }
+    if (deleteButton) {
+        deleteButton.addEventListener(
+            "click",
+            loescheBewerbung
         );
     }
 }
 
-
-// ============================================================
-// ENTSCHEIDUNG DURCHFÜHREN
-// ============================================================
-
 async function bearbeiteBewerbung(status) {
-
-    if (!aktuelleBewerbung) {
-
-        zeigeFehler(
-            "Bitte wähle zuerst eine Bewerbung aus."
-        );
-
-        return;
-    }
-
+    if (!aktuelleBewerbung) return;
 
     if (
-        aktuelleBewerbung.status !== "offen"
+        String(aktuelleBewerbung.status).toLowerCase() !== "offen"
     ) {
-
-        zeigeFehler(
-            "Diese Bewerbung wurde bereits bearbeitet."
-        );
-
+        alert("Diese Bewerbung wurde bereits bearbeitet.");
         return;
     }
-
-
-    const supabase =
-        holeSupabaseClient();
-
-
-    if (!supabase) {
-
-        zeigeFehler(
-            "Die Verbindung zum Ehrenmarkt-System konnte nicht hergestellt werden."
-        );
-
-        return;
-    }
-
-
-    const rolleElement =
-        document.getElementById(
-            "verwaltungRolle"
-        );
-
-    const rangElement =
-        document.getElementById(
-            "verwaltungRang"
-        );
-
-    const notizElement =
-        document.getElementById(
-            "verwaltungNotiz"
-        );
-
 
     const rolle =
-        rolleElement
-            ? rolleElement.value.trim()
-            : "";
+        document.getElementById("assignedRole")?.value || "";
 
     const rang =
-        rangElement
-            ? rangElement.value.trim()
-            : "";
+        document.getElementById("assignedRank")?.value || "";
 
     const notiz =
-        notizElement
-            ? notizElement.value.trim()
-            : "";
+        document.getElementById("decisionNote")?.value.trim() || "";
 
-
-    if (
-        status === "angenommen"
-    ) {
-
+    if (status === "angenommen") {
         if (!rolle) {
-
-            zeigeFehler(
-                "Bitte wähle zuerst eine Rolle aus."
-            );
-
+            alert("Bitte zuerst eine Rolle auswählen.");
             return;
         }
-
 
         if (!rang) {
-
-            zeigeFehler(
-                "Bitte wähle zuerst einen Rang aus."
-            );
-
+            alert("Bitte zuerst einen Rang auswählen.");
             return;
         }
-    }
 
+        const bestaetigt = confirm(
+            `Bewerbung wirklich annehmen?\n\n` +
+            `Rolle: ${rolle}\n` +
+            `Rang: ${rang}\n\n` +
+            `Dabei wird automatisch ein Mitarbeiter angelegt.`
+        );
 
-    const bestaetigung =
-        status === "angenommen"
-            ? "Möchtest du diese Bewerbung wirklich annehmen?"
-            : "Möchtest du diese Bewerbung wirklich ablehnen?";
+        if (!bestaetigt) return;
 
+        await nehmeBewerbungAn(
+            rolle,
+            rang,
+            notiz
+        );
 
-    if (!confirm(bestaetigung)) {
         return;
     }
 
+    if (status === "abgelehnt") {
+        const bestaetigt = confirm(
+            "Bewerbung wirklich ablehnen?"
+        );
 
-    try {
+        if (!bestaetigt) return;
 
-        const updateDaten = {
+        await lehneBewerbungAb(notiz);
+    }
+                                }
 
-            status: status,
+async function nehmeBewerbungAn(rolle, rang, notiz) {
+    const jetzt = new Date().toISOString();
 
-            processed_by:
-                aktuellerBenutzer.id,
-
-            processed_at:
-                new Date().toISOString(),
-
-            decision_note:
-                notiz || null
-        };
-
-
-        if (status === "angenommen") {
-
-            updateDaten.assigned_role =
-                rolle;
-
-            updateDaten.assigned_rank =
-                rang;
-
-        } else {
-
-            updateDaten.assigned_role =
-                null;
-
-            updateDaten.assigned_rank =
-                null;
-        }
-
-
-        const {
-            data,
-            error
-        } = await supabase
-            .from("applications")
-            .update(updateDaten)
-            .eq(
-                "id",
-                aktuelleBewerbung.id
-            )
+    const { data: neuerMitarbeiter, error: employeeError } =
+        await supabaseClient
+            .from("employees")
+            .insert({
+                user_id: aktuelleBewerbung.user_id,
+                name: aktuelleBewerbung.name,
+                role: rolle,
+                rang: rang,
+                is_active: true,
+                is_available: false
+            })
             .select()
             .single();
 
-
-        if (error) {
-            throw error;
-        }
-
-
-        aktuelleBewerbung =
-            data;
-
-
-        const index =
-            bewerbungen.findIndex(
-                function (eintrag) {
-                    return eintrag.id === data.id;
-                }
-            );
-
-
-        if (index !== -1) {
-            bewerbungen[index] =
-                data;
-        }
-
-
-        aktualisiereStatistik();
-
-        zeigeBewerbungsliste();
-
-        zeigeBewerbungsdetails(
-            data
+    if (employeeError) {
+        console.error(
+            "Fehler beim Erstellen des Mitarbeiters:",
+            employeeError
         );
-
-
-        registriereEntscheidungsButtons();
-
 
         alert(
-            status === "angenommen"
-                ? "Die Bewerbung wurde angenommen."
-                : "Die Bewerbung wurde abgelehnt."
+            "Mitarbeiter konnte nicht angelegt werden:\n\n" +
+            employeeError.message
         );
 
+        return;
+    }
 
-    } catch (error) {
+    const { error: applicationError } =
+        await supabaseClient
+            .from("applications")
+            .update({
+                status: "angenommen",
+                assigned_role: rolle,
+                assigned_rank: rang,
+                processed_by: aktuellerBenutzer.id,
+                processed_at: jetzt,
+                decision_note: notiz || null,
+                updated_at: jetzt
+            })
+            .eq("id", aktuelleBewerbung.id);
 
+    if (applicationError) {
         console.error(
-            "Fehler beim Bearbeiten der Bewerbung:",
+            "Fehler beim Aktualisieren der Bewerbung:",
+            applicationError
+        );
+
+        alert(
+            "Der Mitarbeiter wurde erstellt, aber die Bewerbung konnte nicht aktualisiert werden:\n\n" +
+            applicationError.message
+        );
+
+        return;
+    }
+
+    alert(
+        "✅ Bewerbung angenommen!\n\n" +
+        "Der Mitarbeiter wurde automatisch angelegt."
+    );
+
+    await ladeBewerbungen();
+
+    zeigeBewerbungsdetails(aktuelleBewerbung.id);
+}
+
+async function lehneBewerbungAb(notiz) {
+    const jetzt = new Date().toISOString();
+
+    const { error } = await supabaseClient
+        .from("applications")
+        .update({
+            status: "abgelehnt",
+            assigned_role: null,
+            assigned_rank: null,
+            processed_by: aktuellerBenutzer.id,
+            processed_at: jetzt,
+            decision_note: notiz || null,
+            updated_at: jetzt
+        })
+        .eq("id", aktuelleBewerbung.id);
+
+    if (error) {
+        console.error(
+            "Fehler beim Ablehnen:",
             error
         );
 
-
-        zeigeFehler(
-            "Die Bewerbung konnte nicht bearbeitet werden."
+        alert(
+            "Bewerbung konnte nicht abgelehnt werden:\n\n" +
+            error.message
         );
+
+        return;
     }
-          }
 
-// ============================================================
-// INFO-BOX
-// ============================================================
+    alert("❌ Bewerbung wurde abgelehnt.");
 
-function infoBox(label, value) {
+    await ladeBewerbungen();
 
-    const angezeigterWert =
-        value !== null &&
-        value !== undefined &&
-        String(value).trim() !== ""
-            ? String(value)
-            : "–";
-
-
-    return `
-
-        <div class="info-box">
-
-            <div class="info-label">
-                ${esc(label)}
-            </div>
-
-            <div class="info-value">
-                ${esc(angezeigterWert)}
-            </div>
-
-        </div>
-
-    `;
+    zeigeBewerbungsdetails(aktuelleBewerbung.id);
 }
 
+async function loescheBewerbung() {
+    if (!aktuelleBewerbung) return;
 
-// ============================================================
-// TEXTBOX
-// ============================================================
+    const bestaetigt = confirm(
+        "⚠️ Bewerbung wirklich endgültig löschen?\n\n" +
+        "Die Bewerbung wird aus der Datenbank entfernt und " +
+        "kann danach nicht wiederhergestellt werden."
+    );
 
-function textBox(text, leerText) {
+    if (!bestaetigt) return;
 
-    const inhalt =
-        text !== null &&
-        text !== undefined &&
-        String(text).trim() !== ""
-            ? String(text)
-            : leerText;
+    const id = aktuelleBewerbung.id;
 
+    const { error } = await supabaseClient
+        .from("applications")
+        .delete()
+        .eq("id", id);
 
-    return `
+    if (error) {
+        console.error(
+            "Fehler beim Löschen:",
+            error
+        );
 
-        <div class="text-box">
-            ${esc(inhalt)}
-        </div>
+        alert(
+            "Bewerbung konnte nicht gelöscht werden:\n\n" +
+            error.message
+        );
 
-    `;
-}
+        return;
+    }
 
+    aktuelleBewerbung = null;
 
-// ============================================================
-// FACHBEREICHE
-// ============================================================
+    alert("🗑️ Bewerbung wurde endgültig gelöscht.");
 
-function formatiereFachbereiche(wert) {
+    await ladeBewerbungen();
 
-    if (
-        wert === null ||
-        wert === undefined ||
-        String(wert).trim() === ""
-    ) {
+    const details = document.getElementById("detailsContent");
 
-        return `
-            <span class="skill-tag">
-                Keine Angaben
-            </span>
+    if (details) {
+        details.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>Bewerbung gelöscht</h3>
+                <p>Wähle links eine Bewerbung aus.</p>
+            </div>
         `;
     }
+}
 
+function formatiereFachbereiche(value) {
+    if (!value) return "-";
 
-    let werte = [];
+    if (Array.isArray(value)) {
+        return value.join(", ");
+    }
 
+    try {
+        const parsed = JSON.parse(value);
 
-    if (Array.isArray(wert)) {
-
-        werte = wert;
-
-    } else {
-
-        const text =
-            String(wert).trim();
-
-
-        try {
-
-            const parsed =
-                JSON.parse(text);
-
-            if (Array.isArray(parsed)) {
-                werte = parsed;
-            } else {
-                werte = text.split(",");
-            }
-
-        } catch {
-
-            werte =
-                text.includes(",")
-                    ? text.split(",")
-                    : [text];
+        if (Array.isArray(parsed)) {
+            return parsed.join(", ");
         }
+    } catch (e) {
+        // Kein JSON – normaler Text
     }
 
-
-    werte =
-        werte
-            .map(
-                function (eintrag) {
-                    return String(eintrag).trim();
-                }
-            )
-            .filter(Boolean);
-
-
-    if (werte.length === 0) {
-
-        return `
-            <span class="skill-tag">
-                Keine Angaben
-            </span>
-        `;
-    }
-
-
-    return werte
-        .map(
-            function (eintrag) {
-
-                return `
-                    <span class="skill-tag">
-                        ${esc(eintrag)}
-                    </span>
-                `;
-            }
-        )
-        .join("");
+    return String(value);
 }
-
-
-// ============================================================
-// HTML SICHER AUSGEBEN
-// ============================================================
-
-function esc(wert) {
-
-    if (
-        wert === null ||
-        wert === undefined
-    ) {
-        return "";
-    }
-
-
-    return String(wert)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-// ============================================================
-// NACH DETAIL-RENDERING BUTTONS REGISTRIEREN
-// ============================================================
-
-const originalZeigeBewerbungsdetails =
-    zeigeBewerbungsdetails;
-
-
-// ============================================================
-// INITIALISIERUNG
-// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    async () => {
 
-        console.log(
-            "EHRENMARKT: Bewerbungsverwaltung wird gestartet."
-        );
+        supabaseClient = window.supabaseClient;
 
-
-        client =
-            window.supabaseClient;
-
-
-        if (!client) {
-
+        if (!supabaseClient) {
             zeigeFehler(
-                "Das Ehrenmarkt-System konnte nicht geladen werden."
+                "Supabase wurde nicht geladen."
             );
-
             return;
         }
 
+        const user = await ladeBenutzer();
 
-        const user =
-            await ladeAktuellenBenutzer();
-
-
-        if (!user) {
-            return;
-        }
-
+        if (!user) return;
 
         const darfVerwalten =
             await pruefeStadtleitung();
 
-
-        if (!darfVerwalten) {
-            return;
-        }
-
+        if (!darfVerwalten) return;
 
         await ladeBewerbungen();
-    }
-);
-
-
-// ============================================================
-// BUTTONS NACH DETAILANSICHT VERBINDEN
-// ============================================================
-
-const beobachter =
-    new MutationObserver(
-        function () {
-
-            if (
-                aktuelleBewerbung &&
-                aktuelleBewerbung.status === "offen"
-            ) {
-
-                registriereEntscheidungsButtons();
-            }
-        }
-    );
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const details =
-            document.getElementById(
-                "detailsContent"
-            );
-
-        if (details) {
-
-            beobachter.observe(
-                details,
-                {
-                    childList: true,
-                    subtree: true
-                }
-            );
-        }
     }
 );
