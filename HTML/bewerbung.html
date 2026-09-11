@@ -1090,6 +1090,110 @@
     ></div>
 
     <!-- =====================================================
+     SCHRITT 1
+===================================================== -->
+
+<div class="karte schritt" data-schritt="1">
+
+    <div class="schritt-nummer">
+        Schritt 1
+    </div>
+
+    <h2>
+        Deine Identität
+    </h2>
+
+    <p class="beschreibung">
+        Erzähle uns zunächst, wer du bist.
+        Diese Angaben benötigen wir für deine Bewerbung.
+    </p>
+
+
+    <div class="formular-gruppe">
+
+        <label for="name">
+            Dein Name
+            <span class="pflicht">*</span>
+        </label>
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Dein Name"
+            autocomplete="name"
+        >
+
+    </div>
+
+
+    <div class="formular-gruppe">
+
+        <label for="minecraftName">
+            Minecraft-Name
+            <span class="pflicht">*</span>
+        </label>
+
+        <input
+            type="text"
+            id="minecraftName"
+            placeholder="Dein Minecraft-Name"
+        >
+
+    </div>
+
+
+    <div class="formular-gruppe">
+
+        <label for="discordId">
+            Discord
+        </label>
+
+        <input
+            type="text"
+            id="discordId"
+            placeholder="Dein Discord-Name oder deine Discord-ID"
+        >
+
+        <div class="hinweis">
+            Optional – erleichtert uns die Kontaktaufnahme.
+        </div>
+
+    </div>
+
+
+    <div class="formular-gruppe">
+
+        <label for="alter">
+            Alter
+            <span class="pflicht">*</span>
+        </label>
+
+        <input
+            type="number"
+            id="alter"
+            min="1"
+            max="120"
+            placeholder="Dein Alter"
+        >
+
+    </div>
+
+
+    <div class="navigation-buttons">
+
+        <button
+            type="button"
+            class="button button-weiter"
+            onclick="weiter()"
+        >
+            Weiter
+        </button>
+
+    </div>
+
+</div>
+
+    <!-- =====================================================
          SCHRITT 2
     ===================================================== -->
 
