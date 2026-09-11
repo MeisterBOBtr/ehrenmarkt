@@ -1013,6 +1013,22 @@ async function einstempeln() {
 
     if (aktuellerMitarbeiter.clock_in) {
 
+    async function einstempeln() {
+
+    if (
+        !aktuellerUser ||
+        !aktuellerMitarbeiter ||
+        !mitarbeiterSupabase
+    ) {
+        zeigeFehler(
+            "Mitarbeiterdaten konnten nicht geladen werden."
+        );
+        return;
+    }
+
+
+    if (aktuellerMitarbeiter.clock_in) {
+
         zeigeFehler(
             "Du bist bereits eingestempelt."
         );
@@ -1027,50 +1043,47 @@ async function einstempeln() {
 
     try {
 
-        const {
-            data,
-            error
-        } =
+        const { error } =
             await mitarbeiterSupabase
                 .from("employees")
                 .update({
-                    clock_in: jetzt,
-                    updated_at:
-                        new Date().toISOString()
+                    clock_in: jetzt
                 })
                 .eq(
                     "user_id",
                     aktuellerUser.id
-                )
-                .select("*")
-                .maybeSingle();
+                );
 
 
         if (error) {
-            throw error;
-        }
 
-
-        if (!data) {
-
-            throw new Error(
-                "Mitarbeiterdatensatz wurde nicht aktualisiert."
+            console.error(
+                "Supabase Einstempeln Fehler:",
+                error
             );
+
+            zeigeFehler(
+                "Einstempeln fehlgeschlagen."
+            );
+
+            return;
         }
 
 
-        aktuellerMitarbeiter =
-            data;
+        aktuellerMitarbeiter.clock_in =
+            jetzt;
 
 
         versteckeFehler();
 
+
         aktualisiereStempeluhrAnzeige();
+
 
     } catch (error) {
 
         console.error(
-            "Fehler beim Einstempeln:",
+            "Einstempeln Fehler:",
             error
         );
 
@@ -1079,7 +1092,7 @@ async function einstempeln() {
             "Einstempeln fehlgeschlagen."
         );
     }
-}
+    }
 
 
 // ============================================================
