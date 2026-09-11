@@ -4,59 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ehrenmarkt – Kundenkonto</title>
+    <title>EHRENMARKT – Anmeldung</title>
 
     <style>
         * {
             box-sizing: border-box;
+        }
+
+        body {
             margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            width: 100%;
-            min-height: 100%;
-        }
-
-        body {
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px 12px;
-
-            font-family: Georgia, "Times New Roman", serif;
-            color: #f2e6cf;
-
-            background-image:
+            font-family: Arial, sans-serif;
+            color: #f1e5c5;
+            background:
                 linear-gradient(
-                    rgba(5, 7, 12, 0.35),
-                    rgba(5, 7, 12, 0.72)
+                    rgba(5, 5, 5, 0.72),
+                    rgba(5, 5, 5, 0.88)
                 ),
-                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regrestrieren.png");
-
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewerbung.png")
+                center / cover fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .register-box {
+        .container {
             width: 100%;
-            max-width: 450px;
-
-            padding: 30px 25px;
-
-            background: rgba(15, 14, 16, 0.95);
-
-            border: 2px solid #b88a3b;
-            border-radius: 15px;
-
-            box-shadow:
-                0 15px 50px rgba(0, 0, 0, 0.80),
-                inset 0 0 30px rgba(184, 138, 59, 0.08);
+            max-width: 480px;
+            background: rgba(15, 12, 10, 0.94);
+            border: 1px solid #d7ad52;
+            border-radius: 16px;
+            padding: 32px 24px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.75);
         }
 
         .logo {
@@ -65,230 +45,148 @@
         }
 
         .logo h1 {
-            color: #d6ad52;
-            font-size: 38px;
-            letter-spacing: 2px;
-
-            text-shadow:
-                0 2px 6px #000;
+            margin: 0;
+            color: #d7ad52;
+            font-size: 32px;
+            letter-spacing: 3px;
         }
 
         .logo p {
-            margin-top: 7px;
-            color: #c8b99e;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        .linie {
-            width: 100%;
-            height: 1px;
-            margin: 23px 0;
-            background: #8f6b32;
-        }
-
-        .modus {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 22px;
-        }
-
-        .modus-button {
-            padding: 11px 8px;
-            background: #17120d;
-            color: #bcae98;
-            border: 1px solid #6f552d;
-            border-radius: 8px;
-            font-family: inherit;
+            margin: 8px 0 28px;
+            color: #b9aa88;
             font-size: 14px;
-            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #5e4a2c;
+            background: rgba(30, 24, 19, 0.9);
+            color: #cdbb96;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: bold;
         }
 
-        .modus-button.aktiv {
-            background: linear-gradient(#c79b48, #8f6b32);
-            color: #fff;
-            border-color: #e1bd6b;
+        .tab.active {
+            background: #3b2b18;
+            border-color: #d7ad52;
+            color: #d7ad52;
         }
 
-        .bereich {
+        .formular {
             display: none;
         }
 
-        .bereich.aktiv {
+        .formular.active {
             display: block;
-        }
-
-        .hinweis {
-            margin-bottom: 22px;
-            padding: 12px;
-
-            background: rgba(184, 138, 59, 0.08);
-            border: 1px solid #6f552d;
-            border-radius: 8px;
-
-            color: #c8b99e;
-            text-align: center;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .feld {
-            margin-bottom: 17px;
         }
 
         label {
             display: block;
-            margin-bottom: 7px;
-
-            color: #d6ad52;
-            font-size: 15px;
+            margin: 15px 0 7px;
+            color: #d7ad52;
             font-weight: bold;
+            font-size: 14px;
         }
 
         input {
             width: 100%;
-            padding: 14px;
-
-            background: #0f0c09;
-            color: #ffffff;
-
-            border: 1px solid #6f552d;
+            padding: 13px;
+            border: 1px solid #5e4a2c;
             border-radius: 8px;
-
+            background: rgba(8, 8, 8, 0.9);
+            color: #fff;
             outline: none;
-
-            font-family: inherit;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         input:focus {
-            border-color: #d6ad52;
-
-            box-shadow:
-                0 0 10px rgba(214, 173, 82, 0.25);
+            border-color: #d7ad52;
         }
 
-        input::placeholder {
-            color: #8f8475;
-        }
-
-        .register-button {
+        .haupt-button {
             width: 100%;
-
+            margin-top: 24px;
             padding: 14px;
-            margin-top: 4px;
-
-            background:
-                linear-gradient(
-                    #c79b48,
-                    #8f6b32
-                );
-
-            color: #ffffff;
-
-            border: 1px solid #e1bd6b;
+            border: 1px solid #d7ad52;
             border-radius: 8px;
-
-            font-family: inherit;
-            font-size: 17px;
+            background: #3b2b18;
+            color: #d7ad52;
             font-weight: bold;
-
+            font-size: 16px;
             cursor: pointer;
-
-            box-shadow:
-                0 4px 10px rgba(0, 0, 0, 0.4);
         }
 
-        .register-button:active {
-            transform: scale(0.99);
+        .haupt-button:hover {
+            background: #4a351d;
         }
 
-        .register-button:disabled {
+        .haupt-button:disabled {
             opacity: 0.6;
-            cursor: wait;
+            cursor: not-allowed;
         }
 
-        #meldung {
-            min-height: 24px;
-            margin-top: 15px;
-
+        .meldung {
+            display: none;
+            margin-top: 18px;
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-            color: #d9a477;
+        .meldung.erfolg {
+            display: block;
+            border: 1px solid #58733f;
+            background: rgba(40, 65, 30, 0.45);
+            color: #cce6ad;
+        }
+
+        .meldung.fehler {
+            display: block;
+            border: 1px solid #8b3f35;
+            background: rgba(90, 25, 20, 0.45);
+            color: #f0b0a8;
+        }
+
+        .hinweis {
+            margin-top: 20px;
+            padding: 12px;
+            border-left: 3px solid #d7ad52;
+            background: rgba(40, 30, 20, 0.5);
+            color: #b9aa88;
             font-size: 13px;
             line-height: 1.5;
         }
 
-        .links {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .links p {
-            margin: 12px 0;
-
-            color: #bcae98;
-            font-size: 13px;
-        }
-
-        .links a {
-            color: #d6ad52;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-
         .zurueck {
-            color: #bcae98 !important;
+            display: block;
+            margin-top: 22px;
+            text-align: center;
+            color: #b9aa88;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 15px 10px;
-                background-attachment: scroll;
-            }
+        .zurueck:hover {
+            color: #d7ad52;
+        }
 
-            .register-box {
-                max-width: 100%;
-                padding: 25px 19px;
-                border-radius: 13px;
+        @media (max-width: 500px) {
+            .container {
+                padding: 26px 18px;
             }
 
             .logo h1 {
-                font-size: 31px;
-            }
-
-            .logo p {
-                font-size: 13px;
-            }
-
-                    input {
-                padding: 13px;
-                font-size: 16px;
-            }
-
-            .register-button {
-                padding: 13px;
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .register-box {
-                padding: 22px 15px;
-            }
-
-            .logo h1 {
-                font-size: 28px;
-            }
-
-            .linie {
-                margin: 19px 0;
+                font-size: 27px;
             }
         }
     </style>
@@ -296,586 +194,478 @@
 
 <body>
 
-    <main class="register-box">
+<div class="container">
 
-        <div class="logo">
-            <h1>Ehrenmarkt</h1>
-            <p>Kundenkonto</p>
+    <div class="logo">
+        <h1>EHRENMARKT</h1>
+        <p>Zentrale Anmeldung</p>
+    </div>
+
+    <div class="tabs">
+        <button
+            type="button"
+            class="tab active"
+            id="loginTab"
+            onclick="zeigeFormular('login')">
+            Anmelden
+        </button>
+
+        <button
+            type="button"
+            class="tab"
+            id="registerTab"
+            onclick="zeigeFormular('register')">
+            Registrieren
+        </button>
+    </div>
+
+
+    <!-- =====================================================
+         ANMELDEN
+         ===================================================== -->
+
+    <div
+        id="loginForm"
+        class="formular active">
+
+        <label for="loginEmail">
+            E-Mail
+        </label>
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="deine@email.de"
+            autocomplete="email"
+        >
+
+        <label for="loginPassword">
+            Passwort
+        </label>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Passwort"
+            autocomplete="current-password"
+        >
+
+        <button
+            type="button"
+            class="haupt-button"
+            id="loginButton"
+            onclick="handleLogin()">
+            Anmelden
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         REGISTRIEREN
+         ===================================================== -->
+
+    <div
+        id="registerForm"
+        class="formular">
+
+        <label for="registerEmail">
+            E-Mail
+        </label>
+
+        <input
+            type="email"
+            id="registerEmail"
+            placeholder="deine@email.de"
+            autocomplete="email"
+        >
+
+        <label for="registerPassword">
+            Passwort
+        </label>
+
+        <input
+            type="password"
+            id="registerPassword"
+            placeholder="Mindestens 6 Zeichen"
+            autocomplete="new-password"
+        >
+
+        <label for="registerPassword2">
+            Passwort wiederholen
+        </label>
+
+        <input
+            type="password"
+            id="registerPassword2"
+            placeholder="Passwort wiederholen"
+            autocomplete="new-password"
+        >
+
+        <button
+            type="button"
+            class="haupt-button"
+            id="registerButton"
+            onclick="handleRegister()">
+            Konto erstellen
+        </button>
+
+        <div class="hinweis">
+            Nach der Registrierung bist du zunächst als Kunde
+            im EHRENMARKT-System angelegt. Eine Bewerbung als
+            Mitarbeiter kann später aus dem Kundenbereich
+            eingereicht werden.
         </div>
 
-        <div class="linie"></div>
+    </div>
 
-        <div class="modus">
-            <button
-                type="button"
-                class="modus-button aktiv"
-                id="registrierenModus"
-            >
-                Registrieren
-            </button>
 
-            <button
-                type="button"
-                class="modus-button"
-                id="anmeldenModus"
-            >
-                Anmelden
-            </button>
-        </div>
+    <div id="meldung" class="meldung"></div>
 
-        <!-- REGISTRIERUNG -->
-        <section id="registrierenBereich" class="bereich aktiv">
+    <a
+        href="startseite.html"
+        class="zurueck">
+        Zur Startseite
+    </a>
 
-            <div class="hinweis">
-                Ein Kundenkonto ist freiwillig.
-                <br>
-                Du kannst auch ohne Kundenkonto Aufträge erstellen.
-            </div>
+</div>
 
-            <form id="registerForm">
 
-                <div class="feld">
-                    <label for="registerEmail">
-                        E-Mail-Adresse
-                    </label>
+<!-- =========================================================
+     SUPABASE
+     ========================================================= -->
 
-                    <input
-                        type="email"
-                        id="registerEmail"
-                        placeholder="Deine E-Mail-Adresse"
-                        autocomplete="email"
-                        required
-                    >
-                </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-                <div class="feld">
-                    <label for="registerPasswort">
-                        Passwort
-                    </label>
+<script src="../supabase.js"></script>
 
-                    <input
-                        type="password"
-                        id="registerPasswort"
-                        placeholder="Dein Passwort"
-                        autocomplete="new-password"
-                        required
-                    >
-                </div>
+<script src="../auth.js"></script>
 
-                <div class="feld">
-                    <label for="passwortWiederholen">
-                        Passwort wiederholen
-                    </label>
 
-                    <input
-                        type="password"
-                        id="passwortWiederholen"
-                        placeholder="Passwort wiederholen"
-                        autocomplete="new-password"
-                        required
-                    >
-                </div>
-
-                <button
-                    type="submit"
-                    class="register-button"
-                    id="registerButton"
-                >
-                    ⚜ Kundenkonto erstellen ⚜
-                </button>
-
-            </form>
-        </section>
-
-        <!-- ANMELDUNG -->
-        <section id="anmeldenBereich" class="bereich">
-
-            <div class="hinweis">
-                Melde dich mit der E-Mail-Adresse und dem Passwort
-                deines Ehrenmarkt-Kontos an.
-            </div>
-
-            <form id="loginForm">
-
-                <div class="feld">
-                    <label for="loginEmail">
-                        E-Mail-Adresse
-                    </label>
-
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="Deine E-Mail-Adresse"
-                        autocomplete="email"
-                        required
-                    >
-                </div>
-
-                <div class="feld">
-                    <label for="loginPasswort">
-                        Passwort
-                    </label>
-
-                    <input
-                        type="password"
-                        id="loginPasswort"
-                        placeholder="Dein Passwort"
-                        autocomplete="current-password"
-                        required
-                    >
-                </div>
-
-                <button
-                    type="submit"
-                    class="register-button"
-                    id="loginButton"
-                >
-                    ⚜ Anmelden ⚜
-                </button>
-
-            </form>
-        </section>
-
-        <div id="meldung"></div>
-
-        <div class="links">
-
-            <p>
-                <a href="kundenbereich.html" class="zurueck">
-                    ← Zum Kundenbereich
-                </a>
-            </p>
-
-            <p>
-                <a href="startseite.html" class="zurueck">
-                    ← Zurück zum Ehrenmarkt
-                </a>
-            </p>
-
-        </div>
-
-    </main>
-
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase.js"></script>
-
-    <script>
-
+<script>
     // ========================================================
-    // ELEMENTE
+    // FORMULAR WECHSELN
     // ========================================================
 
-    const registerForm =
-        document.getElementById("registerForm");
+    function zeigeFormular(formular) {
 
-    const loginForm =
-        document.getElementById("loginForm");
+        const loginForm =
+            document.getElementById("loginForm");
 
-    const registerButton =
-        document.getElementById("registerButton");
+        const registerForm =
+            document.getElementById("registerForm");
 
-    const loginButton =
-        document.getElementById("loginButton");
+        const loginTab =
+            document.getElementById("loginTab");
 
-    const meldung =
-        document.getElementById("meldung");
-
-    const registrierenModus =
-        document.getElementById("registrierenModus");
-
-    const anmeldenModus =
-        document.getElementById("anmeldenModus");
-
-    const registrierenBereich =
-        document.getElementById("registrierenBereich");
-
-    const anmeldenBereich =
-        document.getElementById("anmeldenBereich");
+        const registerTab =
+            document.getElementById("registerTab");
 
 
-    // ========================================================
-    // MELDUNG
-    // ========================================================
+        if (formular === "login") {
 
-    function zeigeMeldung(text) {
+            loginForm.classList.add("active");
+            registerForm.classList.remove("active");
 
-        if (meldung) {
-            meldung.textContent = text;
-        }
-
-    }
-
-
-    // ========================================================
-    // MODUS WECHSELN
-    // ========================================================
-
-    function zeigeModus(modus) {
-
-        zeigeMeldung("");
-
-        if (modus === "anmelden") {
-
-            registrierenBereich.classList.remove("aktiv");
-            anmeldenBereich.classList.add("aktiv");
-
-            registrierenModus.classList.remove("aktiv");
-            anmeldenModus.classList.add("aktiv");
+            loginTab.classList.add("active");
+            registerTab.classList.remove("active");
 
         } else {
 
-            anmeldenBereich.classList.remove("aktiv");
-            registrierenBereich.classList.add("aktiv");
+            registerForm.classList.add("active");
+            loginForm.classList.remove("active");
 
-            anmeldenModus.classList.remove("aktiv");
-            registrierenModus.classList.add("aktiv");
-
+            registerTab.classList.add("active");
+            loginTab.classList.remove("active");
         }
 
+        entferneMeldung();
     }
 
 
     // ========================================================
-    // MODUS-BUTTONS
+    // MELDUNGEN
     // ========================================================
 
-    registrierenModus.addEventListener(
-        "click",
-        function () {
+    function zeigeMeldung(text, typ) {
 
-            zeigeModus("registrieren");
+        const meldung =
+            document.getElementById("meldung");
 
+        meldung.textContent = text;
+
+        meldung.className =
+            "meldung " + typ;
+    }
+
+
+    function entferneMeldung() {
+
+        const meldung =
+            document.getElementById("meldung");
+
+        meldung.textContent = "";
+        meldung.className = "meldung";
+    }
+
+
+    // ========================================================
+    // ANMELDEN
+    // ========================================================
+
+    async function handleLogin() {
+
+        const email =
+            document.getElementById("loginEmail")
+                .value
+                .trim();
+
+        const passwort =
+            document.getElementById("loginPassword")
+                .value;
+
+
+        if (!email || !passwort) {
+
+            zeigeMeldung(
+                "Bitte E-Mail und Passwort eingeben.",
+                "fehler"
+            );
+
+            return;
         }
-    );
 
 
-    anmeldenModus.addEventListener(
-        "click",
-        function () {
+        const button =
+            document.getElementById("loginButton");
 
-            zeigeModus("anmelden");
-
-        }
-    );
+        button.disabled = true;
+        button.textContent = "Anmeldung läuft...";
 
 
-    // ========================================================
-    // REGISTRIERUNG
-    // ========================================================
+        try {
 
-    registerForm.addEventListener(
-        "submit",
-        async function (event) {
-
-            event.preventDefault();
-
-            const email =
-                document
-                    .getElementById("registerEmail")
-                    .value
-                    .trim();
-
-            const passwort =
-                document
-                    .getElementById("registerPasswort")
-                    .value;
-
-            const passwortWiederholen =
-                document
-                    .getElementById("passwortWiederholen")
-                    .value;
+            const erfolgreich =
+                await anmelden(
+                    email,
+                    passwort
+                );
 
 
-            if (passwort !== passwortWiederholen) {
+            if (!erfolgreich) {
 
                 zeigeMeldung(
-                    "Die Passwörter stimmen nicht überein."
+                    "Die Anmeldung ist fehlgeschlagen. Bitte überprüfe deine E-Mail und dein Passwort.",
+                    "fehler"
                 );
 
                 return;
             }
 
 
-            registerButton.disabled = true;
-
             zeigeMeldung(
-                "Registrierung läuft..."
+                "✓ Erfolgreich angemeldet. Du wirst weitergeleitet...",
+                "erfolg"
             );
 
 
-            try {
-
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient.auth.signUp({
-                        email: email,
-                        password: passwort
-                    });
-
-
-                if (error) {
-                    throw error;
-                }
-
-
-                if (!data.user) {
-
-                    throw new Error(
-                        "Das Benutzerkonto konnte nicht erstellt werden."
-                    );
-
-                }
-
-                            // =================================================
-                // PROFIL ERSTELLEN
-                // =================================================
-
-                const {
-                    error: profilFehler
-                } =
-                    await supabaseClient
-                        .from("profiles")
-                        .insert({
-                            id: data.user.id,
-                            user_type: "kunde",
-                            rang: "Kunde",
-                            rolle: null
-                        });
-
-
-                if (profilFehler) {
-
-                    console.error(
-                        "Profil konnte nicht erstellt werden:",
-                        profilFehler
-                    );
-
-                    throw new Error(
-                        "Das Kundenprofil konnte nicht erstellt werden."
-                    );
-
-                }
-
-
-                // =================================================
-                // DIREKTE SESSION
-                // =================================================
-
-                if (data.session) {
-
-                    zeigeMeldung(
-                        "Registrierung erfolgreich. " +
-                        "Kundenbereich wird geöffnet..."
-                    );
-
-                    window.location.href =
-                        "kundenbereich.html";
-
-                    return;
-                }
-
-
-                // =================================================
-                // E-MAIL-BESTÄTIGUNG
-                // =================================================
-
-                zeigeMeldung(
-                    "✓ Registrierung erfolgreich! " +
-                    "Bitte bestätige zuerst deine E-Mail-Adresse. " +
-                    "Danach kannst du dich über „Anmelden“ einloggen."
-                );
-
-
-                zeigeModus("anmelden");
-
-
-                const loginEmail =
-                    document.getElementById("loginEmail");
-
-
-                if (loginEmail) {
-                    loginEmail.value = email;
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Registrierung fehlgeschlagen:",
-                    error
-                );
-
-                zeigeMeldung(
-                    error.message ||
-                    "Die Registrierung ist fehlgeschlagen."
-                );
-
-
-            } finally {
-
-                registerButton.disabled = false;
-
-            }
-
-        }
-    );
-
-
-    // ========================================================
-    // ANMELDUNG
-    // ========================================================
-
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
-
-            event.preventDefault();
-
-
-            const email =
-                document
-                    .getElementById("loginEmail")
-                    .value
-                    .trim();
-
-            const passwort =
-                document
-                    .getElementById("loginPasswort")
-                    .value;
-
-
-            loginButton.disabled = true;
-
-
-            zeigeMeldung(
-                "Anmeldung läuft..."
-            );
-
-
-            try {
-
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: passwort
-                    });
-
-
-                if (error) {
-                    throw error;
-                }
-
-
-                if (!data.session) {
-
-                    throw new Error(
-                        "Anmeldung erfolgreich, aber es wurde keine Sitzung erstellt."
-                    );
-
-                }
-
-                            // =================================================
-                // ZIELBEREICH ERMITTELN
-                // =================================================
-
-                const parameter =
-                    new URLSearchParams(
-                        window.location.search
-                    );
-
-
-                const bereich =
-                    parameter.get("bereich");
-
-
-                // =================================================
-                // MITARBEITERBEREICH
-                // =================================================
-
-                if (bereich === "mitarbeiter") {
-
-                    zeigeMeldung(
-                        "✓ Anmeldung erfolgreich. " +
-                        "Mitarbeiterbereich wird geöffnet..."
-                    );
-
-
-                    window.location.href =
-                        "mitarbeiterbereich.html";
-
-                    return;
-                }
-
-
-                // =================================================
-                // STANDARD → KUNDENBEREICH
-                // =================================================
-
-                zeigeMeldung(
-                    "✓ Anmeldung erfolgreich. " +
-                    "Kundenbereich wird geöffnet..."
-                );
-
+            /*
+             * WICHTIG:
+             *
+             * Es gibt nur EINE Anmeldung.
+             *
+             * Die Startseite entscheidet später automatisch,
+             * ob der Benutzer Kunde oder Mitarbeiter ist.
+             */
+
+            setTimeout(() => {
 
                 window.location.href =
-                    "kundenbereich.html";
+                    "startseite.html";
 
+            }, 500);
+
+
+        } catch (error) {
+
+            console.error(
+                "Login-Fehler:",
+                error
+            );
+
+            zeigeMeldung(
+                "Bei der Anmeldung ist ein Fehler aufgetreten.",
+                "fehler"
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Anmelden";
+        }
+    }
+
+
+    // ========================================================
+    // REGISTRIEREN
+    // ========================================================
+
+    async function handleRegister() {
+
+        const email =
+            document.getElementById("registerEmail")
+                .value
+                .trim();
+
+        const passwort =
+            document.getElementById("registerPassword")
+                .value;
+
+        const passwort2 =
+            document.getElementById("registerPassword2")
+                .value;
+
+
+        if (!email || !passwort || !passwort2) {
+
+            zeigeMeldung(
+                "Bitte alle Felder ausfüllen.",
+                "fehler"
+            );
+
+            return;
+        }
+
+
+        if (passwort !== passwort2) {
+
+            zeigeMeldung(
+                "Die Passwörter stimmen nicht überein.",
+                "fehler"
+            );
+
+            return;
+        }
+
+
+        if (passwort.length < 6) {
+
+            zeigeMeldung(
+                "Das Passwort muss mindestens 6 Zeichen lang sein.",
+                "fehler"
+            );
+
+            return;
+        }
+
+
+        const button =
+            document.getElementById("registerButton");
+
+        button.disabled = true;
+        button.textContent = "Konto wird erstellt...";
+
+
+        try {
+
+            const erfolgreich =
+                await registrieren(
+                    email,
+                    passwort
+                );
+
+
+            if (!erfolgreich) {
+
+                zeigeMeldung(
+                    "Die Registrierung ist fehlgeschlagen. Bitte überprüfe deine Angaben.",
+                    "fehler"
+                );
+
+                return;
+            }
+
+
+            zeigeMeldung(
+                "✓ Registrierung erfolgreich. Bitte melde dich jetzt an.",
+                "erfolg"
+            );
+
+
+            document.getElementById(
+                "loginEmail"
+            ).value = email;
+
+
+            document.getElementById(
+                "loginPassword"
+            ).value = "";
+
+
+            zeigeFormular("login");
+
+
+        } catch (error) {
+
+            console.error(
+                "Registrierungs-Fehler:",
+                error
+            );
+
+            zeigeMeldung(
+                "Bei der Registrierung ist ein Fehler aufgetreten.",
+                "fehler"
+            );
+
+        } finally {
+
+            button.disabled = false;
+            button.textContent = "Konto erstellen";
+        }
+    }
+
+
+    // ========================================================
+    // BEREITS ANGEMELDET?
+    // ========================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            try {
+
+                const user =
+                    await aktuellerBenutzer();
+
+
+                if (user) {
+
+                    zeigeMeldung(
+                        "Du bist bereits angemeldet. Du wirst zur Startseite weitergeleitet...",
+                        "erfolg"
+                    );
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "startseite.html";
+
+                    }, 500);
+                }
 
             } catch (error) {
 
                 console.error(
-                    "Anmeldung fehlgeschlagen:",
+                    "Session-Prüfung fehlgeschlagen:",
                     error
                 );
-
-
-                let text =
-                    error.message ||
-                    "Die Anmeldung ist fehlgeschlagen.";
-
-
-                if (
-                    text
-                        .toLowerCase()
-                        .includes("email not confirmed")
-                ) {
-
-                    text =
-                        "Bitte bestätige zuerst deine E-Mail-Adresse.";
-
-                }
-
-
-                zeigeMeldung(text);
-
-
-            } finally {
-
-                loginButton.disabled = false;
-
             }
-
         }
     );
 
-            // ========================================================
-    // KEINE AUTOMATISCHE SESSION-WEITERLEITUNG
-    // ========================================================
-    //
-    // Absichtlich keine getSession()-Weiterleitung hier.
-    //
-    // Dadurch bleibt die Login-Seite geöffnet und du kannst
-    // E-Mail und Passwort selbst eingeben.
-    //
-    // Die Weiterleitung erfolgt NUR nachdem du auf
-    // "Anmelden" geklickt hast.
-    //
-
-
 </script>
+
+</body>
+</html>
