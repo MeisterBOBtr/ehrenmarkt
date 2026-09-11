@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Verwaltung</title>
+
+    <style>
+
+        /* =====================================================
+           GRUNDLAGE
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #f0e4c5;
+
+            background:
+                linear-gradient(
+                    rgba(8, 7, 6, 0.84),
+                    rgba(8, 7, 6, 0.92)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Verwaltung.png")
+                center center / cover fixed no-repeat;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           SEITEN-CONTAINER
+        ===================================================== */
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+
+            padding: 22px;
+
+            background:
+                rgba(15, 12, 10, 0.94);
+
+            border: 1px solid #8f6d32;
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.55);
+
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #d7ad52;
+
+            font-size: 34px;
+
+            margin-bottom: 8px;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .header p {
+            color: #cdbd9b;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           ZUGRIFFSHINWEIS
+        ===================================================== */
+
+        .access-info {
+            max-width: 1400px;
+            margin: 0 auto 20px auto;
+
+            padding: 13px 18px;
+
+            background:
+                rgba(85, 20, 20, 0.42);
+
+            border:
+                1px solid #7d3030;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            color: #dfc998;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .navigation {
+            width: 100%;
+            max-width: 1400px;
+
+            margin: 0 auto 20px auto;
+
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+        .nav-button {
+            flex: 1 1 170px;
+
+            min-height: 48px;
+
+            border:
+                1px solid #8f6d32;
+
+            border-radius: 10px;
+
+            background:
+                rgba(15, 12, 10, 0.94);
+
+            color: #d7ad52;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background:
+                rgba(80, 24, 24, 0.9);
+
+            border-color:
+                #d7ad52;
+
+            transform:
+                translateY(-1px);
+        }
+
+        .nav-button.active {
+            background:
+                rgba(112, 30, 30, 0.9);
+
+            border-color:
+                #d7ad52;
+
+            color:
+                #f4dfaa;
+        }
+
+
+        /* =====================================================
+           HAUPTBEREICH
+        ===================================================== */
+
+        .content {
+            width: 100%;
+            max-width: 1400px;
+
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           VERWALTUNGS-BEREICH
+        ===================================================== */
+
+        .admin-section {
+            display: none;
+
+            width: 100%;
+
+            padding: 22px;
+
+            background:
+                rgba(15, 12, 10, 0.94);
+
+            border:
+                1px solid #8f6d32;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.55);
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .section-title {
+            color: #d7ad52;
+
+            font-size: 26px;
+
+            margin-bottom: 8px;
+
+            border-bottom:
+                1px solid #634c25;
+
+            padding-bottom: 12px;
+        }
+
+        .section-description {
+            color: #cdbd9b;
+
+            font-size: 14px;
+
+            margin-bottom: 20px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           STATISTIK-KARTEN
+        ===================================================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 14px;
+
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            padding: 18px;
+
+            background:
+                rgba(25, 20, 16, 0.95);
+
+            border:
+                1px solid #654e29;
+
+            border-radius: 11px;
+
+            text-align: center;
+        }
+
+        .stat-card .number {
+            display: block;
+
+            color: #d7ad52;
+
+            font-size: 28px;
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            color: #bfae89;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           LISTEN
+        ===================================================== */
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .list-item {
+            padding: 18px;
+
+            background:
+                rgba(25, 20, 16, 0.96);
+
+            border:
+                1px solid #5f4926;
+
+            border-radius: 11px;
+        }
+
+        .list-item h3 {
+            color: #d7ad52;
+
+            font-size: 18px;
+
+            margin-bottom: 7px;
+        }
+
+        .list-item p {
+            color: #c7b898;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            margin-bottom: 5px;
+        }
+
+        .empty-message {
+            padding: 30px 20px;
+
+            text-align: center;
+
+            color: #9f9175;
+
+            border:
+                1px dashed #5f4926;
+
+            border-radius: 10px;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 14px;
+        }
+
+        .action-button {
+            min-height: 40px;
+
+            padding: 9px 15px;
+
+            border:
+                1px solid #80602c;
+
+            border-radius: 8px;
+
+            background:
+                #241d16;
+
+            color: #d7ad52;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: 13px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background:
+                #522323;
+
+            border-color:
+                #d7ad52;
+        }
+
+        .action-button.danger {
+            color: #e59a8c;
+
+            border-color:
+                #74352d;
+        }
+
+        .action-button.success {
+            color: #d8c17e;
+
+            border-color:
+                #796331;
+        }
+
+
+        /* =====================================================
+           AUFTRAGS-KATEGORIEN
+        ===================================================== */
+
+        .order-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+        .order-card {
+            padding: 18px;
+
+            background:
+                rgba(25, 20, 16, 0.96);
+
+            border:
+                1px solid #654e29;
+
+            border-radius: 11px;
+        }
+
+        .order-card h3 {
+            color: #d7ad52;
+
+            margin-bottom: 8px;
+        }
+
+        .order-card p {
+            color: #bfae89;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+              /* =====================================================
+           MITARBEITER
+        ===================================================== */
+
+        .employee-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+        .employee-card {
+            padding: 18px;
+
+            background:
+                rgba(25, 20, 16, 0.96);
+
+            border:
+                1px solid #654e29;
+
+            border-radius: 11px;
+        }
+
+        .employee-card h3 {
+            color: #d7ad52;
+
+            margin-bottom: 8px;
+        }
+
+        .employee-card p {
+            color: #c7b898;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+
+        /* =====================================================
+           PREISVERWALTUNG
+        ===================================================== */
+
+        .price-tools {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+        .search-input {
+            flex: 1 1 240px;
+
+            min-height: 44px;
+
+            padding: 10px 13px;
+
+            background:
+                rgba(8, 7, 6, 0.85);
+
+            border:
+                1px solid #654e29;
+
+            border-radius: 8px;
+
+            color: #eee1c2;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color:
+                #d7ad52;
+        }
+
+        .items-table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+        .items-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 650px;
+        }
+
+        .items-table th {
+            padding: 13px;
+
+            text-align: left;
+
+            color: #d7ad52;
+
+            background:
+                rgba(80, 24, 24, 0.6);
+
+            border-bottom:
+                1px solid #765b2c;
+        }
+
+        .items-table td {
+            padding: 12px;
+
+            color: #c7b898;
+
+            border-bottom:
+                1px solid #3e3223;
+        }
+
+        .items-table tr:hover td {
+            background:
+                rgba(70, 50, 25, 0.2);
+        }
+
+
+        /* =====================================================
+           BÜNDNISSE
+        ===================================================== */
+
+        .alliance-status {
+            display: inline-block;
+
+            padding: 4px 9px;
+
+            border-radius: 6px;
+
+            font-size: 12px;
+
+            border:
+                1px solid #70592c;
+        }
+
+        .alliance-status.open {
+            color: #e0c27d;
+        }
+
+        .alliance-status.accepted {
+            color: #b8d49d;
+        }
+
+        .alliance-status.rejected {
+            color: #d8998e;
+        }
+
+
+        /* =====================================================
+           DETAILBEREICH
+        ===================================================== */
+
+        .detail-panel {
+            display: none;
+
+            margin-top: 18px;
+
+            padding: 18px;
+
+            background:
+                rgba(8, 7, 6, 0.75);
+
+            border:
+                1px solid #654e29;
+
+            border-radius: 10px;
+        }
+
+        .detail-panel.active {
+            display: block;
+        }
+
+
+        /* =====================================================
+           MELDUNGEN
+        ===================================================== */
+
+        .message {
+            display: none;
+
+            margin-bottom: 15px;
+
+            padding: 13px 15px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+        }
+
+        .message.success {
+            background:
+                rgba(50, 80, 35, 0.35);
+
+            border:
+                1px solid #607844;
+
+            color:
+                #c6d8a9;
+        }
+
+        .message.error {
+            background:
+                rgba(100, 30, 30, 0.35);
+
+            border:
+                1px solid #7d3030;
+
+            color:
+                #e4aaa0;
+        }
+
+
+        /* =====================================================
+           LADEANIMATION
+        ===================================================== */
+
+        .loading {
+            padding: 35px;
+
+            text-align: center;
+
+            color: #bca875;
+        }
+
+
+        /* =====================================================
+           ZURÜCK BUTTON
+        ===================================================== */
+
+        .back-area {
+            width: 100%;
+            max-width: 1400px;
+
+            margin: 20px auto 0 auto;
+
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-block;
+
+            padding: 12px 24px;
+
+            background:
+                rgba(15, 12, 10, 0.94);
+
+            border:
+                1px solid #80602c;
+
+            border-radius: 9px;
+
+            color: #d7ad52;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .back-button:hover {
+            background:
+                rgba(80, 24, 24, 0.9);
+
+            border-color:
+                #d7ad52;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        footer {
+            width: 100%;
+            max-width: 1400px;
+
+            margin: 25px auto 0 auto;
+
+            padding: 15px;
+
+            text-align: center;
+
+            color: #8f8067;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .order-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .employee-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 18px 14px;
+            }
+
+            .header h1 {
+                font-size: 27px;
+            }
+
+            .header p {
+                font-size: 13px;
+            }
+
+            .navigation {
+                gap: 7px;
+            }
+
+            .nav-button {
+                flex:
+                    1 1 calc(50% - 7px);
+
+                font-size: 13px;
+
+                min-height: 44px;
+            }
+
+            .admin-section {
+                padding: 15px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns:
+                    1fr 1fr;
+
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 14px 8px;
+            }
+
+            .stat-card .number {
+                font-size: 23px;
+            }
+
+            .stat-card .label {
+                font-size: 11px;
+            }
+
+            .list-item,
+            .order-card,
+            .employee-card {
+                padding: 14px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .action-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <h1>EHRENMARKT – VERWALTUNG</h1>
+
+        <p>
+            Zentrale Verwaltung der Stadt Ehrenmarkt
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         ZUGRIFFSHINWEIS
+    ====================================================== -->
+
+    <div
+        id="accessMessage"
+        class="access-info"
+    >
+        Zugriff wird überprüft...
+    </div>
+
+
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
+
+    <nav class="navigation">
+
+        <button
+            type="button"
+            class="nav-button active"
+            data-section="bewerbungen"
+        >
+            Bewerbungen
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            data-section="auftraege"
+        >
+            Aufträge
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            data-section="mitarbeiter"
+        >
+            Mitarbeiter
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            data-section="preise"
+        >
+            Preisverwaltung
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            data-section="buendnisse"
+        >
+            Bündnisse
+        </button>
+
+    </nav>
+
+
+    <!-- =====================================================
+         HAUPTINHALT
+    ====================================================== -->
+
+    <main class="content">
+
+              <!-- =================================================
+             BEWERBUNGEN
+        ================================================== -->
+
+        <section
+            id="section-bewerbungen"
+            class="admin-section active"
+        >
+
+            <h2 class="section-title">
+                Bewerbungen
+            </h2>
+
+            <p class="section-description">
+                Hier können Bewerbungen eingesehen,
+                bearbeitet, angenommen oder abgelehnt werden.
+                Bei einer Annahme kann anschließend ein
+                Mitarbeiter angelegt werden.
+            </p>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <span
+                        id="bewerbungenOffen"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Offen
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="bewerbungenAngenommen"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Angenommen
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="bewerbungenAbgelehnt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Abgelehnt
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="bewerbungenGesamt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Gesamt
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="bewerbungenMessage"
+                class="message"
+            ></div>
+
+
+            <div
+                id="bewerbungenListe"
+                class="list-container"
+            >
+
+                <div class="loading">
+                    Bewerbungen werden geladen...
+                </div>
+
+            </div>
+
+
+            <div
+                id="bewerbungDetails"
+                class="detail-panel"
+            >
+
+                <h3>
+                    Bewerbungsdetails
+                </h3>
+
+                <div
+                    id="bewerbungDetailsContent"
+                >
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             AUFTRÄGE
+        ================================================== -->
+
+        <section
+            id="section-auftraege"
+            class="admin-section"
+        >
+
+            <h2 class="section-title">
+                Auftragsverwaltung
+            </h2>
+
+            <p class="section-description">
+                Hier werden alle Auftragsarten der Stadt
+                zentral verwaltet. Mitarbeiter werden hier
+                nicht zugewiesen – sie nehmen ihre Aufträge
+                selbst im Mitarbeiterbereich an.
+            </p>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <span
+                        id="auftraegeOffen"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Offen
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="auftraegeBearbeitung"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        In Bearbeitung
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="auftraegeAbgeschlossen"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Abgeschlossen
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="auftraegeGesamt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Gesamt
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-grid">
+
+
+                <div class="order-card">
+
+                    <h3>
+                        Bauaufträge
+                    </h3>
+
+                    <p>
+                        Bauaufträge anzeigen, bearbeiten,
+                        Status verwalten und löschen.
+                    </p>
+
+                    <div class="button-row">
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            id="bauauftraegeAnzeigen"
+                        >
+                            Bauaufträge anzeigen
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-card">
+
+                    <h3>
+                        Materialbestellungen
+                    </h3>
+
+                    <p>
+                        Materialbestellungen anzeigen,
+                        bearbeiten, Status verwalten
+                        und löschen.
+                    </p>
+
+                    <div class="button-row">
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            id="materialauftraegeAnzeigen"
+                        >
+                            Materialbestellungen anzeigen
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-card">
+
+                    <h3>
+                        Redstone-Aufträge
+                    </h3>
+
+                    <p>
+                        Redstone-Aufträge anzeigen,
+                        bearbeiten, Status verwalten
+                        und löschen.
+                    </p>
+
+                    <div class="button-row">
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            id="redstoneAuftraegeAnzeigen"
+                        >
+                            Redstone-Aufträge anzeigen
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-card">
+
+                    <h3>
+                        Logistikaufträge
+                    </h3>
+
+                    <p>
+                        Logistikaufträge anzeigen,
+                        bearbeiten, Status verwalten
+                        und löschen.
+                    </p>
+
+                    <div class="button-row">
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            id="logistikAuftraegeAnzeigen"
+                        >
+                            Logistikaufträge anzeigen
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="auftraegeMessage"
+                class="message"
+            ></div>
+
+
+            <div
+                id="auftraegeListe"
+                class="list-container"
+                style="margin-top: 20px;"
+            >
+
+                <div class="empty-message">
+                    Wähle oben eine Auftragsart aus.
+                </div>
+
+            </div>
+
+
+            <div
+                id="auftragDetails"
+                class="detail-panel"
+            >
+
+                <h3>
+                    Auftragsdetails
+                </h3>
+
+                <div
+                    id="auftragDetailsContent"
+                >
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MITARBEITER
+        ================================================== -->
+
+        <section
+            id="section-mitarbeiter"
+            class="admin-section"
+        >
+
+            <h2 class="section-title">
+                Mitarbeiterverwaltung
+            </h2>
+
+            <p class="section-description">
+                Hier können Mitarbeiter eingesehen und
+                verwaltet werden. Dazu gehören unter anderem
+                Rolle, Rang und Aktivstatus.
+            </p>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <span
+                        id="mitarbeiterAktiv"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Aktiv
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="mitarbeiterInaktiv"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Inaktiv
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="mitarbeiterGesamt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Gesamt
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="mitarbeiterVerfuegbar"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Verfügbar
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="mitarbeiterMessage"
+                class="message"
+            ></div>
+
+
+            <div
+                id="mitarbeiterListe"
+                class="employee-grid"
+            >
+
+                <div class="loading">
+                    Mitarbeiter werden geladen...
+                </div>
+
+            </div>
+
+
+            <div
+                id="mitarbeiterDetails"
+                class="detail-panel"
+            >
+
+                <h3>
+                    Mitarbeiterdetails
+                </h3>
+
+                <div
+                    id="mitarbeiterDetailsContent"
+                >
+                </div>
+
+            </div>
+
+  </section>
+
+              <!-- =================================================
+             PREISVERWALTUNG
+        ================================================== -->
+
+        <section
+            id="section-preise"
+            class="admin-section"
+        >
+
+            <h2 class="section-title">
+                Preisverwaltung
+            </h2>
+
+            <p class="section-description">
+                Die Preisverwaltung verwendet die bereits
+                vorhandene Tabelle <strong>items</strong>.
+                Preise und Itemdaten können hier später
+                bearbeitet, neue Items hinzugefügt und
+                vorhandene Items gelöscht werden.
+            </p>
+
+
+            <div
+                id="preiseMessage"
+                class="message"
+            ></div>
+
+
+            <div class="price-tools">
+
+                <input
+                    type="search"
+                    id="itemSuche"
+                    class="search-input"
+                    placeholder="Item suchen..."
+                    autocomplete="off"
+                >
+
+
+                <button
+                    type="button"
+                    class="action-button success"
+                    id="neuesItemButton"
+                >
+                    + Item hinzufügen
+                </button>
+
+            </div>
+
+
+            <div class="items-table-wrapper">
+
+                <table class="items-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Item
+                            </th>
+
+                            <th>
+                                Kategorie
+                            </th>
+
+                            <th>
+                                Preis
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Aktionen
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="itemsListe">
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="loading"
+                            >
+                                Items werden geladen...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div
+                id="itemDetails"
+                class="detail-panel"
+            >
+
+                <h3>
+                    Item bearbeiten
+                </h3>
+
+                <div
+                    id="itemDetailsContent"
+                >
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BÜNDNISSE
+        ================================================== -->
+
+        <section
+            id="section-buendnisse"
+            class="admin-section"
+        >
+
+            <h2 class="section-title">
+                Bündnisverwaltung
+            </h2>
+
+            <p class="section-description">
+                Hier können eingegangene Bündnisanträge
+                geprüft und Bündnisse angenommen oder
+                abgelehnt werden. Aktive Bündnisse können
+                später mit Vereinbarungen und Rabatten
+                verwaltet werden.
+            </p>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <span
+                        id="buendnisseOffen"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Offene Anträge
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="buendnisseAktiv"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Aktive Bündnisse
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="buendnisseAbgelehnt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Abgelehnt
+                    </span>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span
+                        id="buendnisseGesamt"
+                        class="number"
+                    >
+                        0
+                    </span>
+
+                    <span class="label">
+                        Gesamt
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="buendnisseMessage"
+                class="message"
+            ></div>
+
+
+            <div
+                id="buendnisseListe"
+                class="list-container"
+            >
+
+                <div class="loading">
+                    Bündnisse werden geladen...
+                </div>
+
+            </div>
+
+
+            <div
+                id="buendnisDetails"
+                class="detail-panel"
+            >
+
+                <h3>
+                    Bündnisdetails
+                </h3>
+
+                <div
+                    id="buendnisDetailsContent"
+                >
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         ZURÜCK
+    ====================================================== -->
+
+    <div class="back-area">
+
+        <a
+            href="../HTML/startseite.html"
+            class="back-button"
+        >
+            ← Zur Startseite
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        Ehrenmarkt © 2026
+
+    </footer>
+
+
+</div>
+
+
+<!-- =========================================================
+     SCRIPTS
+========================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../supabase.js"></script>
+
+<script src="../JS/verwaltung.js"></script>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-button"
+            );
+
+
+        const sections =
+            document.querySelectorAll(
+                ".admin-section"
+            );
+
+
+        buttons.forEach(
+            (button) => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const target =
+                            button.dataset.section;
+
+
+                        buttons.forEach(
+                            (item) => {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        sections.forEach(
+                            (section) => {
+
+                                section.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        const section =
+                            document.getElementById(
+                                "section-" + target
+                            );
+
+
+                        if (section) {
+
+                            section.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+</body>
+</html>
