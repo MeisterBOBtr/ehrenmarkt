@@ -15,9 +15,6 @@ let aktuellerUser = null;
 // ELEMENTE
 // ============================================================
 
-const schritte =
-    document.querySelectorAll(".schritt");
-
 const fortschritt =
     document.getElementById("fortschrittInhalt");
 
@@ -65,6 +62,9 @@ function versteckeFehler() {
 // ============================================================
 
 function schrittAnzeigen(nummer) {
+
+    const schritte =
+        document.querySelectorAll(".schritt");
 
     schritte.forEach((element) => {
 
