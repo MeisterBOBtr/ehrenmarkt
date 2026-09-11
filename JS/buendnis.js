@@ -1,115 +1,94 @@
-// ============================================
+// ============================================================
 // EHRENMARKT – BÜNDNIS
-// buendnis.js – Teil 1 von 4
-// ============================================
+// buendnis.js
+// ============================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // --------------------------------------------
-    // Supabase
-    // --------------------------------------------
-
-    const supabase = window.supabaseClient;
-
-    if (!supabase) {
-        console.error("Supabase wurde nicht gefunden.");
-        zeigeFehler("Die Verbindung zum System konnte nicht hergestellt werden.");
-        return;
-    }
-
-    // --------------------------------------------
-    // Elemente
-    // --------------------------------------------
+    console.log("Ehrenmarkt Bündnis – JavaScript gestartet.");
 
     const formular = document.getElementById("buendnisForm");
+    const absendenButton = document.getElementById("absendenButton");
+
+    const erfolg = document.getElementById("erfolg");
+    const fehler = document.getElementById("fehler");
+
+    // --------------------------------------------------------
+    // Prüfen, ob Formular vorhanden ist
+    // --------------------------------------------------------
 
     if (!formular) {
-        console.error("Das Bündnisformular wurde nicht gefunden.");
+        console.error("Bündnisformular wurde nicht gefunden.");
         return;
     }
 
-    const erfolgMeldung = document.getElementById("erfolgMeldung");
-    const fehlerMeldung = document.getElementById("fehlerMeldung");
-
-    // --------------------------------------------
+    // --------------------------------------------------------
     // Hilfsfunktionen
-    // --------------------------------------------
+    // --------------------------------------------------------
 
-    window.zeigeFehler = function (nachricht) {
-        if (fehlerMeldung) {
-            fehlerMeldung.textContent = nachricht;
-            fehlerMeldung.style.display = "block";
+    function zeigeFehler(nachricht) {
+
+        if (fehler) {
+            fehler.textContent = nachricht;
+            fehler.style.display = "block";
         }
 
-        if (erfolgMeldung) {
-            erfolgMeldung.style.display = "none";
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    };
-
-    window.zeigeErfolg = function (nachricht) {
-        if (erfolgMeldung) {
-            erfolgMeldung.textContent = nachricht;
-            erfolgMeldung.style.display = "block";
-        }
-
-        if (fehlerMeldung) {
-            fehlerMeldung.style.display = "none";
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    };
-
-    function versteckeMeldungen() {
-        if (erfolgMeldung) {
-            erfolgMeldung.style.display = "none";
-        }
-
-        if (fehlerMeldung) {
-            fehlerMeldung.style.display = "none";
+        if (erfolg) {
+            erfolg.style.display = "none";
         }
     }
 
-    // --------------------------------------------
-    // Aktuelle Anmeldung prüfen
-    // --------------------------------------------
 
-    let user = null;
+    function zeigeErfolg(nachricht) {
+
+        if (erfolg) {
+            erfolg.textContent = nachricht;
+            erfolg.style.display = "block";
+        }
+
+        if (fehler) {
+            fehler.style.display = "none";
+        }
+    }
+
+
+    function versteckeMeldungen() {
+
+        if (fehler) {
+            fehler.style.display = "none";
+        }
+
+        if (erfolg) {
+            erfolg.style.display = "none";
+        }
+    }
+
+
+    // --------------------------------------------------------
+    // Aktuelle Anmeldung prüfen
+    // --------------------------------------------------------
+
+    let session = null;
 
     try {
+
         const {
-            data: { session },
+            data,
             error
-        } = await supabase.auth.getSession();
+        } = await supabaseClient.auth.getSession();
 
         if (error) {
             throw error;
         }
 
-        if (!session || !session.user) {
-            zeigeFehler(
-                "Du musst angemeldet sein, um einen Bündnisantrag zu stellen."
-            );
-
-            formular.querySelectorAll("input, textarea, select, button")
-                .forEach(element => {
-                    element.disabled = true;
-                });
-
-            return;
-        }
-
-        user = session.user;
+        session = data?.session || null;
 
     } catch (error) {
-        console.error("Fehler beim Prüfen der Anmeldung:", error);
+
+        console.error(
+            "Fehler beim Prüfen der Anmeldung:",
+            error
+        );
 
         zeigeFehler(
             "Die Anmeldung konnte nicht überprüft werden."
@@ -118,203 +97,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // --------------------------------------------
-    // Bereits vorhandene Anträge laden
-    // --------------------------------------------
 
-    try {
-        const { data, error } = await supabase
-            .from("buendnisse")
-            .select("*")
-            .eq("user_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
+    // --------------------------------------------------------
+    // Benutzer muss angemeldet sein
+    // --------------------------------------------------------
 
-        if (error) {
-            throw error;
+    if (!session?.user) {
+
+        zeigeFehler(
+            "Du musst angemeldet sein, um einen Bündnisantrag zu stellen."
+        );
+
+        if (absendenButton) {
+            absendenButton.disabled = true;
         }
 
-        console.log(
-            "Eigene Bündnisanträge:",
-            data || []
-        );
-
-    } catch (error) {
-        console.error(
-            "Fehler beim Laden der Bündnisanträge:",
-            error
-        );
+        return;
     }
 
-    // --------------------------------------------
-    // Formular vorbereiten
-    // --------------------------------------------
 
-    versteckeMeldungen();
+    const user = session.user;
 
     console.log(
-        "Bündnisbereich erfolgreich geladen.",
+        "Ehrenmarkt Bündnis – Benutzer:",
         user.id
     );
 
-});
 
-// ============================================
-// BÜNDNIS – TEIL 2 VON 4
-// Formularwerte auslesen und prüfen
-// ============================================
-
-    function wert(id) {
-        const element = document.getElementById(id);
-
-        if (!element) {
-            return "";
-        }
-
-        return element.value.trim();
-    }
-
-    function zahlWert(id) {
-        const element = document.getElementById(id);
-
-        if (!element || element.value === "") {
-            return null;
-        }
-
-        const zahl = parseInt(element.value, 10);
-
-        return Number.isNaN(zahl) ? null : zahl;
-    }
-
-    function datumWert(id) {
-        const element = document.getElementById(id);
-
-        if (!element || !element.value) {
-            return null;
-        }
-
-        return element.value;
-    }
-
-    function checkboxAktiv(id) {
-        const element = document.getElementById(id);
-
-        return element ? element.checked : false;
-    }
-
-    // --------------------------------------------
-    // Formular überprüfen
-    // --------------------------------------------
-
-    function pruefeFormular() {
-
-        const clanName = wert("clanName");
-        const clanBeschreibung = wert("clanDescription");
-
-        const kontaktName = wert("contactName");
-        const minecraftName = wert("minecraftName");
-
-        const grund = wert("reason");
-
-        if (!clanName) {
-            zeigeFehler("Bitte gib den Namen deines Clans an.");
-            return false;
-        }
-
-        if (!clanBeschreibung) {
-            zeigeFehler(
-                "Bitte beschreibe deinen Clan kurz."
-            );
-            return false;
-        }
-
-        if (!kontaktName) {
-            zeigeFehler(
-                "Bitte gib einen Ansprechpartner an."
-            );
-            return false;
-        }
-
-        if (!minecraftName) {
-            zeigeFehler(
-                "Bitte gib deinen Minecraft-Namen an."
-            );
-            return false;
-        }
-
-        if (!grund) {
-            zeigeFehler(
-                "Bitte erkläre, warum dein Clan ein Bündnis mit Ehrenmarkt eingehen möchte."
-            );
-            return false;
-        }
-
-        if (!checkboxAktiv("bestaetigung")) {
-            zeigeFehler(
-                "Bitte bestätige die Angaben, bevor du den Bündnisantrag absendest."
-            );
-            return false;
-        }
-
-        return true;
-    }
-
-    // --------------------------------------------
-    // Daten für Supabase vorbereiten
-    // --------------------------------------------
-
-    function erstelleAntragsDaten() {
-
-        return {
-            user_id: user.id,
-
-            clan_name: wert("clanName"),
-            clan_tag: wert("clanTag") || null,
-            clan_description: wert("clanDescription"),
-            clan_member_count: zahlWert("clanMemberCount"),
-            clan_since: datumWert("clanSince"),
-            clan_discord: wert("clanDiscord") || null,
-
-            contact_name: wert("contactName"),
-            minecraft_name: wert("minecraftName"),
-            discord_name: wert("discordName") || null,
-            clan_role: wert("clanRole") || null,
-
-            reason: wert("reason"),
-            cooperation: wert("cooperation") || null,
-            desired_agreement: wert("desiredAgreement") || null,
-            application_text: wert("applicationText") || null,
-
-            status: "Offen"
-        };
-    }
-
-    // --------------------------------------------
-    // Eingaben automatisch bereinigen
-    // --------------------------------------------
-
-    const clanMemberCount =
-        document.getElementById("clanMemberCount");
-
-    if (clanMemberCount) {
-        clanMemberCount.addEventListener("input", () => {
-
-            if (clanMemberCount.value < 0) {
-                clanMemberCount.value = 0;
-            }
-
-            if (clanMemberCount.value.includes(".")) {
-                clanMemberCount.value =
-                    clanMemberCount.value.split(".")[0];
-            }
-
-        });
-    }
-
-    // --------------------------------------------
-    // Absenden vorbereiten
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // FORMULAR ABSENDEN
+    // --------------------------------------------------------
 
     formular.addEventListener("submit", async (event) => {
 
@@ -322,65 +134,253 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         versteckeMeldungen();
 
-        if (!pruefeFormular()) {
-            return;
+        // ----------------------------------------------------
+        // Button deaktivieren
+        // ----------------------------------------------------
+
+        if (absendenButton) {
+
+            absendenButton.disabled = true;
+            absendenButton.textContent =
+                "⏳ Antrag wird gesendet...";
         }
 
-        const antragsDaten = erstelleAntragsDaten();
-
-        console.log(
-            "Vorbereitete Bündnisdaten:",
-            antragsDaten
-        );
-
-        // Speicherung erfolgt in Teil 3.
-    });
-
-// ============================================
-// BÜNDNIS – TEIL 3 VON 4
-// Antrag in Supabase speichern
-// ============================================
-
-    async function sendeBündnisantrag() {
-
-        const antragsDaten = erstelleAntragsDaten();
 
         try {
 
-            const { data, error } = await supabase
+            // ------------------------------------------------
+            // Werte aus Formular lesen
+            // ------------------------------------------------
+
+            const clanName =
+                document.getElementById("clanName")?.value.trim() || "";
+
+            const clanTag =
+                document.getElementById("clanTag")?.value.trim() || "";
+
+            const clanDescription =
+                document.getElementById("clanDescription")?.value.trim() || "";
+
+            const clanMemberCountValue =
+                document.getElementById("clanMemberCount")?.value.trim() || "";
+
+            const clanSince =
+                document.getElementById("clanSince")?.value || "";
+
+            const clanDiscord =
+                document.getElementById("clanDiscord")?.value.trim() || "";
+
+            const contactName =
+                document.getElementById("contactName")?.value.trim() || "";
+
+            const minecraftName =
+                document.getElementById("minecraftName")?.value.trim() || "";
+
+            const discordName =
+                document.getElementById("discordName")?.value.trim() || "";
+
+            const clanRole =
+                document.getElementById("clanRole")?.value.trim() || "";
+
+            const reason =
+                document.getElementById("reason")?.value.trim() || "";
+
+            const cooperation =
+                document.getElementById("cooperation")?.value.trim() || "";
+
+            const desiredAgreement =
+                document.getElementById("desiredAgreement")?.value.trim() || "";
+
+            const applicationText =
+                document.getElementById("applicationText")?.value.trim() || "";
+
+            const bestaetigung =
+                document.getElementById("bestaetigung")?.checked || false;
+
+
+            // ------------------------------------------------
+            // Pflichtfelder prüfen
+            // ------------------------------------------------
+
+            if (!clanName) {
+                throw new Error(
+                    "Bitte gib den Namen deines Clans ein."
+                );
+            }
+
+
+            if (!clanDescription) {
+                throw new Error(
+                    "Bitte beschreibe deinen Clan."
+                );
+            }
+
+
+            if (!contactName) {
+                throw new Error(
+                    "Bitte gib einen Ansprechpartner an."
+                );
+            }
+
+
+            if (!minecraftName) {
+                throw new Error(
+                    "Bitte gib deinen Minecraft-Namen an."
+                );
+            }
+
+
+            if (!reason) {
+                throw new Error(
+                    "Bitte gib an, warum du ein Bündnis mit Ehrenmarkt möchtest."
+                );
+            }
+
+
+            if (!bestaetigung) {
+                throw new Error(
+                    "Bitte bestätige die Angaben vor dem Absenden."
+                );
+            }
+
+
+            // ------------------------------------------------
+            // Mitgliederzahl
+            // ------------------------------------------------
+
+            let clanMemberCount = null;
+
+            if (clanMemberCountValue !== "") {
+
+                clanMemberCount =
+                    Number(clanMemberCountValue);
+
+                if (
+                    !Number.isInteger(clanMemberCount) ||
+                    clanMemberCount < 0
+                ) {
+
+                    throw new Error(
+                        "Die Mitgliederzahl muss eine gültige Zahl sein."
+                    );
+                }
+            }
+
+
+            // ------------------------------------------------
+            // Daten für Supabase
+            // ------------------------------------------------
+
+            const neuerAntrag = {
+
+                user_id: user.id,
+
+                clan_name: clanName,
+
+                clan_tag:
+                    clanTag || null,
+
+                clan_description:
+                    clanDescription,
+
+                clan_member_count:
+                    clanMemberCount,
+
+                clan_since:
+                    clanSince || null,
+
+                clan_discord:
+                    clanDiscord || null,
+
+                contact_name:
+                    contactName,
+
+                minecraft_name:
+                    minecraftName,
+
+                discord_name:
+                    discordName || null,
+
+                clan_role:
+                    clanRole || null,
+
+                reason:
+                    reason,
+
+                cooperation:
+                    cooperation || null,
+
+                desired_agreement:
+                    desiredAgreement || null,
+
+                application_text:
+                    applicationText || null,
+
+                status:
+                    "Offen"
+            };
+
+
+            console.log(
+                "Bündnisantrag wird gespeichert:",
+                neuerAntrag
+            );
+
+
+            // ------------------------------------------------
+            // In Supabase speichern
+            // ------------------------------------------------
+
+            const {
+                data,
+                error
+            } = await supabaseClient
                 .from("buendnisse")
-                .insert(antragsDaten)
-                .select("*")
+                .insert(neuerAntrag)
+                .select()
                 .single();
 
+
             if (error) {
-                throw error;
+
+                console.error(
+                    "Supabase Fehler beim Bündnisantrag:",
+                    error
+                );
+
+                throw new Error(
+                    "Der Bündnisantrag konnte nicht gespeichert werden.\n\n" +
+                    error.message
+                );
             }
+
+
+            // ------------------------------------------------
+            // Erfolgreich
+            // ------------------------------------------------
 
             console.log(
                 "Bündnisantrag erfolgreich gespeichert:",
                 data
             );
 
+
             zeigeErfolg(
                 "Dein Bündnisantrag wurde erfolgreich eingereicht."
             );
 
+
+            // ------------------------------------------------
             // Formular zurücksetzen
+            // ------------------------------------------------
+
             formular.reset();
 
-            // Nach erfolgreicher Absendung
-            // Buttons wieder normal aktivieren
-            const absendenButton =
-                formular.querySelector('button[type="submit"]');
 
-            if (absendenButton) {
-                absendenButton.disabled = false;
-                absendenButton.textContent =
-                    "🤝 Bündnisantrag stellen";
-            }
+            // ------------------------------------------------
+            // Erfolgsseite öffnen
+            // ------------------------------------------------
 
-            // Nach kurzer Zeit zur Erfolgsseite
             setTimeout(() => {
 
                 window.location.href =
@@ -388,128 +388,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }, 1200);
 
+
         } catch (error) {
 
             console.error(
-                "Fehler beim Speichern des Bündnisantrags:",
+                "Fehler beim Absenden des Bündnisantrags:",
                 error
             );
 
+
             zeigeFehler(
-                "Der Bündnisantrag konnte nicht gespeichert werden.\n\n" +
-                (error.message || "Unbekannter Fehler")
+                error.message ||
+                "Der Bündnisantrag konnte nicht gesendet werden."
             );
 
-            const absendenButton =
-                formular.querySelector('button[type="submit"]');
+
+            // Button wieder aktivieren
 
             if (absendenButton) {
+
                 absendenButton.disabled = false;
+
                 absendenButton.textContent =
                     "🤝 Bündnisantrag stellen";
             }
         }
-    }
-
-    // --------------------------------------------
-    // Absendevorgang aus Teil 2 erweitern
-    // --------------------------------------------
-
-    formular.addEventListener("submit", async (event) => {
-
-        event.preventDefault();
-
-        versteckeMeldungen();
-
-        if (!pruefeFormular()) {
-            return;
-        }
-
-        const absendenButton =
-            formular.querySelector('button[type="submit"]');
-
-        if (absendenButton) {
-            absendenButton.disabled = true;
-            absendenButton.textContent =
-                "⏳ Antrag wird gesendet...";
-        }
-
-        await sendeBündnisantrag();
-    });
-
-// ============================================
-// BÜNDNIS – TEIL 4 VON 4
-// Abschluss, Navigation und Fehlerbehandlung
-// ============================================
-
-    // --------------------------------------------
-    // Zurück-Button
-    // --------------------------------------------
-
-    const zurueckButton =
-        document.getElementById("zurueckButton");
-
-    if (zurueckButton) {
-
-        zurueckButton.addEventListener("click", () => {
-
-            window.location.href =
-                "../HTML/kundenbereich.html";
-
-        });
-
-    }
-
-    // --------------------------------------------
-    // Erfolgsseite absichern
-    // --------------------------------------------
-
-    window.zeigeBündnisErfolg = function () {
-
-        zeigeErfolg(
-            "Der Bündnisantrag wurde erfolgreich eingereicht."
-        );
-
-    };
-
-    // --------------------------------------------
-    // Auth-Status überwachen
-    // --------------------------------------------
-
-    supabase.auth.onAuthStateChange((event, session) => {
-
-        if (event === "SIGNED_OUT") {
-
-            console.log(
-                "Benutzer wurde abgemeldet."
-            );
-
-            window.location.href =
-                "../HTML/registrieren.html";
-
-        }
 
     });
 
-    // --------------------------------------------
-    // Abschlussmeldung
-    // --------------------------------------------
 
     console.log(
-        "===================================="
-    );
-
-    console.log(
-        "EHRENMARKT – Bündnisbereich aktiv"
-    );
-
-    console.log(
-        "Angemeldeter Benutzer:",
-        user?.id
-    );
-
-    console.log(
-        "===================================="
+        "Ehrenmarkt Bündnis – Formular bereit."
     );
 
 });
