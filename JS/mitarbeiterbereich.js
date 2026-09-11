@@ -1041,17 +1041,18 @@ async function einstempeln() {
 
         if (error) {
 
-            console.error(
-                "Supabase Einstempeln Fehler:",
-                error
-            );
+    console.error(
+        "SUPABASE EINSTEMPELN FEHLER:",
+        error
+    );
 
-            zeigeFehler(
-                "Einstempeln fehlgeschlagen."
-            );
+    zeigeFehler(
+        "Einstempeln fehlgeschlagen: " +
+        (error.message || "Unbekannter Fehler")
+    );
 
-            return;
-        }
+    return;
+}
 
 
         aktuellerMitarbeiter.clock_in =
