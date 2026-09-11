@@ -122,22 +122,8 @@ function zeigeSchritt(nummer) {
 // ============================================================
 
 function weiter() {
+
     console.log("WEITER WURDE GEDRÜCKT");
-
-    const schritt1 = document.querySelector('[data-schritt="1"]');
-    const schritt2 = document.querySelector('[data-schritt="2"]');
-
-    if (schritt1) {
-        schritt1.style.display = "none";
-    }
-
-    if (schritt2) {
-        schritt2.style.display = "block";
-        schritt2.classList.add("aktiv");
-    }
-
-    aktuellerSchritt = 2;
-}
 
     if (!validiereSchritt(aktuellerSchritt)) {
         return;
