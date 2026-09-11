@@ -11,15 +11,53 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    const {
-        data: { user },
-        error: userError
-    } = await supabase.auth.getUser();
+    // ============================================================
+// BESTEHENDE LOGIN-SESSION PRÜFEN
+// ============================================================
 
-    if (userError || !user) {
-        window.location.href = "registrieren.html";
-        return;
-    }
+const {
+    data: sessionData,
+    error: sessionError
+} = await supabase.auth.getSession();
+
+if (sessionError) {
+
+    console.error(
+        "Fehler beim Laden der Login-Session:",
+        sessionError
+    );
+
+    window.location.href =
+        "registrieren.html";
+
+    return;
+}
+
+const user =
+    sessionData?.session?.user || null;
+
+
+// ============================================================
+// NICHT ANGEMELDET
+// ============================================================
+
+if (!user) {
+
+    window.location.href =
+        "registrieren.html";
+
+    return;
+}
+
+
+// ============================================================
+// ANGEMELDET
+// ============================================================
+
+console.log(
+    "Bestehende EHRENMARKT-Session erkannt:",
+    user.email
+);
 
 
     // =====================================================
