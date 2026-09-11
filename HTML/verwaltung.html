@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -27,6 +29,7 @@
         }
 
         body {
+
             min-height: 100vh;
 
             font-family:
@@ -38,8 +41,8 @@
 
             background:
                 linear-gradient(
-                    rgba(8, 7, 6, 0.84),
-                    rgba(8, 7, 6, 0.92)
+                    rgba(7, 6, 5, 0.80),
+                    rgba(7, 6, 5, 0.91)
                 ),
                 url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Verwaltung.png")
                 center center / cover fixed no-repeat;
@@ -49,13 +52,26 @@
 
 
         /* =====================================================
-           SEITEN-CONTAINER
+           SEITE
         ===================================================== */
 
         .page {
+
             width: 100%;
             min-height: 100vh;
-            padding: 20px;
+
+            padding:
+                18px;
+        }
+
+
+        .container {
+
+            width: 100%;
+            max-width: 1450px;
+
+            margin:
+                0 auto;
         }
 
 
@@ -64,67 +80,104 @@
         ===================================================== */
 
         .header {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 20px auto;
 
-            padding: 22px;
+            padding:
+                24px 20px;
+
+            margin-bottom:
+                14px;
+
+            text-align:
+                center;
 
             background:
-                rgba(15, 12, 10, 0.94);
+                linear-gradient(
+                    180deg,
+                    rgba(22,17,13,0.97),
+                    rgba(12,10,8,0.97)
+                );
 
-            border: 1px solid #8f6d32;
-            border-radius: 14px;
+            border:
+                1px solid #8d6a30;
+
+            border-radius:
+                14px;
 
             box-shadow:
-                0 8px 30px rgba(0, 0, 0, 0.55);
+                0 8px 35px
+                rgba(0,0,0,0.60);
 
-            text-align: center;
         }
+
 
         .header h1 {
-            color: #d7ad52;
 
-            font-size: 34px;
+            color:
+                #d7ad52;
 
-            margin-bottom: 8px;
+            font-size:
+                clamp(24px, 4vw, 36px);
 
-            letter-spacing: 1px;
+            letter-spacing:
+                1px;
 
             text-shadow:
-                0 2px 5px rgba(0, 0, 0, 0.8);
+                0 2px 6px
+                rgba(0,0,0,0.9);
+
+            margin-bottom:
+                7px;
         }
 
-        .header p {
-            color: #cdbd9b;
 
-            font-size: 15px;
+        .header p {
+
+            color:
+                #bca982;
+
+            font-size:
+                14px;
         }
 
 
         /* =====================================================
-           ZUGRIFFSHINWEIS
+           ZUGRIFF
         ===================================================== */
 
         .access-info {
-            max-width: 1400px;
-            margin: 0 auto 20px auto;
 
-            padding: 13px 18px;
+            padding:
+                11px 16px;
+
+            margin-bottom:
+                14px;
+
+            text-align:
+                center;
 
             background:
-                rgba(85, 20, 20, 0.42);
+                linear-gradient(
+                    90deg,
+                    rgba(80,22,22,0.82),
+                    rgba(110,28,28,0.62),
+                    rgba(80,22,22,0.82)
+                );
 
             border:
-                1px solid #7d3030;
+                1px solid #793030;
 
-            border-radius: 10px;
+            border-radius:
+                9px;
 
-            text-align: center;
+            color:
+                #e0c98e;
 
-            color: #dfc998;
+            font-size:
+                13px;
 
-            font-size: 14px;
+            box-shadow:
+                0 4px 18px
+                rgba(0,0,0,0.4);
         }
 
 
@@ -133,548 +186,337 @@
         ===================================================== */
 
         .navigation {
-            width: 100%;
-            max-width: 1400px;
 
-            margin: 0 auto 20px auto;
+            display:
+                grid;
 
-            display: flex;
-            flex-wrap: wrap;
+            grid-template-columns:
+                repeat(5, 1fr);
 
-            gap: 10px;
+            gap:
+                8px;
+
+            margin-bottom:
+                15px;
         }
 
-        .nav-button {
-            flex: 1 1 170px;
 
-            min-height: 48px;
+        .nav-button {
+
+            min-height:
+                48px;
+
+            padding:
+                10px 8px;
 
             border:
-                1px solid #8f6d32;
+                1px solid #755727;
 
-            border-radius: 10px;
+            border-radius:
+                9px;
 
             background:
-                rgba(15, 12, 10, 0.94);
+                linear-gradient(
+                    180deg,
+                    rgba(20,16,12,0.97),
+                    rgba(10,9,7,0.97)
+                );
 
-            color: #d7ad52;
+            color:
+                #d7ad52;
 
             font-family:
                 Georgia,
                 "Times New Roman",
                 serif;
 
-            font-size: 15px;
-            font-weight: bold;
+            font-weight:
+                bold;
 
-            cursor: pointer;
+            font-size:
+                14px;
+
+            cursor:
+                pointer;
 
             transition:
-                background 0.2s ease,
-                border-color 0.2s ease,
-                transform 0.2s ease;
+                all 0.2s ease;
         }
 
+
         .nav-button:hover {
-            background:
-                rgba(80, 24, 24, 0.9);
 
             border-color:
                 #d7ad52;
+
+            background:
+                rgba(83,25,25,0.95);
 
             transform:
                 translateY(-1px);
         }
 
+
         .nav-button.active {
+
             background:
-                rgba(112, 30, 30, 0.9);
+                linear-gradient(
+                    180deg,
+                    rgba(125,35,35,0.98),
+                    rgba(91,24,24,0.98)
+                );
 
             border-color:
                 #d7ad52;
 
             color:
-                #f4dfaa;
+                #f7e4ad;
+
+            box-shadow:
+                0 3px 14px
+                rgba(0,0,0,0.5);
         }
 
 
         /* =====================================================
-           HAUPTBEREICH
+           HAUPTINHALT
         ===================================================== */
 
         .content {
-            width: 100%;
-            max-width: 1400px;
 
-            margin: 0 auto;
+            width: 100%;
         }
 
 
         /* =====================================================
-           VERWALTUNGS-BEREICH
+           VERWALTUNGS-BEREICHE
         ===================================================== */
 
         .admin-section {
-            display: none;
+
+            display:
+                none;
 
             width: 100%;
 
-            padding: 22px;
+            padding:
+                22px;
 
             background:
-                rgba(15, 12, 10, 0.94);
+                linear-gradient(
+                    180deg,
+                    rgba(18,14,11,0.96),
+                    rgba(11,9,7,0.95)
+                );
 
             border:
-                1px solid #8f6d32;
+                1px solid #765a2c;
 
-            border-radius: 14px;
+            border-radius:
+                14px;
 
             box-shadow:
-                0 8px 30px rgba(0, 0, 0, 0.55);
+                0 8px 35px
+                rgba(0,0,0,0.58);
+
+            animation:
+                sectionFade
+                0.2s
+                ease;
         }
+
 
         .admin-section.active {
-            display: block;
+
+            display:
+                block;
         }
 
-        .section-title {
-            color: #d7ad52;
 
-            font-size: 26px;
+        @keyframes sectionFade {
 
-            margin-bottom: 8px;
+            from {
+                opacity: 0;
+                transform:
+                    translateY(5px);
+            }
 
-            border-bottom:
-                1px solid #634c25;
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
 
-            padding-bottom: 12px;
-        }
-
-        .section-description {
-            color: #cdbd9b;
-
-            font-size: 14px;
-
-            margin-bottom: 20px;
-
-            line-height: 1.5;
         }
 
 
         /* =====================================================
-           STATISTIK-KARTEN
+           ÜBERSCHRIFTEN
+        ===================================================== */
+
+        .section-title {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                clamp(21px, 3vw, 27px);
+
+            padding-bottom:
+                10px;
+
+            margin-bottom:
+                9px;
+
+            border-bottom:
+                1px solid #574321;
+        }
+
+
+        .section-description {
+
+            color:
+                #bca982;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.55;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        /* =====================================================
+           STATISTIK
         ===================================================== */
 
         .stats-grid {
-            display: grid;
+
+            display:
+                grid;
 
             grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+                repeat(4, 1fr);
 
-            gap: 14px;
+            gap:
+                10px;
 
-            margin-bottom: 22px;
+            margin-bottom:
+                20px;
         }
+
 
         .stat-card {
-            padding: 18px;
+
+            min-height:
+                82px;
+
+            padding:
+                14px 8px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            text-align:
+                center;
 
             background:
-                rgba(25, 20, 16, 0.95);
+                linear-gradient(
+                    180deg,
+                    rgba(31,24,18,0.96),
+                    rgba(20,16,12,0.96)
+                );
 
             border:
-                1px solid #654e29;
+                1px solid #5f4927;
 
-            border-radius: 11px;
+            border-radius:
+                10px;
 
-            text-align: center;
+            box-shadow:
+                inset 0 1px
+                rgba(255,255,255,0.025);
         }
+
 
         .stat-card .number {
-            display: block;
 
-            color: #d7ad52;
+            color:
+                #d7ad52;
 
-            font-size: 28px;
-            font-weight: bold;
+            font-size:
+                25px;
 
-            margin-bottom: 5px;
+            font-weight:
+                bold;
+
+            margin-bottom:
+                4px;
         }
+
 
         .stat-card .label {
-            color: #bfae89;
 
-            font-size: 13px;
+            color:
+                #b7a57f;
+
+            font-size:
+                11px;
         }
 
 
         /* =====================================================
-           LISTEN
-        ===================================================== */
-
-        .list-container {
-            display: flex;
-            flex-direction: column;
-
-            gap: 12px;
-        }
-
-        .list-item {
-            padding: 18px;
-
-            background:
-                rgba(25, 20, 16, 0.96);
-
-            border:
-                1px solid #5f4926;
-
-            border-radius: 11px;
-        }
-
-        .list-item h3 {
-            color: #d7ad52;
-
-            font-size: 18px;
-
-            margin-bottom: 7px;
-        }
-
-        .list-item p {
-            color: #c7b898;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            margin-bottom: 5px;
-        }
-
-        .empty-message {
-            padding: 30px 20px;
-
-            text-align: center;
-
-            color: #9f9175;
-
-            border:
-                1px dashed #5f4926;
-
-            border-radius: 10px;
-        }
-
-
-        /* =====================================================
-           BUTTONS
-        ===================================================== */
-
-        .button-row {
-            display: flex;
-            flex-wrap: wrap;
-
-            gap: 8px;
-
-            margin-top: 14px;
-        }
-
-        .action-button {
-            min-height: 40px;
-
-            padding: 9px 15px;
-
-            border:
-                1px solid #80602c;
-
-            border-radius: 8px;
-
-            background:
-                #241d16;
-
-            color: #d7ad52;
-
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            font-size: 13px;
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        .action-button:hover {
-            background:
-                #522323;
-
-            border-color:
-                #d7ad52;
-        }
-
-        .action-button.danger {
-            color: #e59a8c;
-
-            border-color:
-                #74352d;
-        }
-
-        .action-button.success {
-            color: #d8c17e;
-
-            border-color:
-                #796331;
-        }
-
-
-        /* =====================================================
-           AUFTRAGS-KATEGORIEN
-        ===================================================== */
-
-        .order-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 14px;
-        }
-
-        .order-card {
-            padding: 18px;
-
-            background:
-                rgba(25, 20, 16, 0.96);
-
-            border:
-                1px solid #654e29;
-
-            border-radius: 11px;
-        }
-
-        .order-card h3 {
-            color: #d7ad52;
-
-            margin-bottom: 8px;
-        }
-
-        .order-card p {
-            color: #bfae89;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-        }
-
-              /* =====================================================
-           MITARBEITER
-        ===================================================== */
-
-        .employee-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-
-            gap: 14px;
-        }
-
-        .employee-card {
-            padding: 18px;
-
-            background:
-                rgba(25, 20, 16, 0.96);
-
-            border:
-                1px solid #654e29;
-
-            border-radius: 11px;
-        }
-
-        .employee-card h3 {
-            color: #d7ad52;
-
-            margin-bottom: 8px;
-        }
-
-        .employee-card p {
-            color: #c7b898;
-
-            font-size: 14px;
-
-            margin-bottom: 5px;
-        }
-
-
-        /* =====================================================
-           PREISVERWALTUNG
-        ===================================================== */
-
-        .price-tools {
-            display: flex;
-            flex-wrap: wrap;
-
-            gap: 10px;
-
-            margin-bottom: 18px;
-        }
-
-        .search-input {
-            flex: 1 1 240px;
-
-            min-height: 44px;
-
-            padding: 10px 13px;
-
-            background:
-                rgba(8, 7, 6, 0.85);
-
-            border:
-                1px solid #654e29;
-
-            border-radius: 8px;
-
-            color: #eee1c2;
-
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
-
-            outline: none;
-        }
-
-        .search-input:focus {
-            border-color:
-                #d7ad52;
-        }
-
-        .items-table-wrapper {
-            width: 100%;
-
-            overflow-x: auto;
-        }
-
-        .items-table {
-            width: 100%;
-
-            border-collapse: collapse;
-
-            min-width: 650px;
-        }
-
-        .items-table th {
-            padding: 13px;
-
-            text-align: left;
-
-            color: #d7ad52;
-
-            background:
-                rgba(80, 24, 24, 0.6);
-
-            border-bottom:
-                1px solid #765b2c;
-        }
-
-        .items-table td {
-            padding: 12px;
-
-            color: #c7b898;
-
-            border-bottom:
-                1px solid #3e3223;
-        }
-
-        .items-table tr:hover td {
-            background:
-                rgba(70, 50, 25, 0.2);
-        }
-
-
-        /* =====================================================
-           BÜNDNISSE
-        ===================================================== */
-
-        .alliance-status {
-            display: inline-block;
-
-            padding: 4px 9px;
-
-            border-radius: 6px;
-
-            font-size: 12px;
-
-            border:
-                1px solid #70592c;
-        }
-
-        .alliance-status.open {
-            color: #e0c27d;
-        }
-
-        .alliance-status.accepted {
-            color: #b8d49d;
-        }
-
-        .alliance-status.rejected {
-            color: #d8998e;
-        }
-
-
-        /* =====================================================
-           DETAILBEREICH
-        ===================================================== */
-
-        .detail-panel {
-            display: none;
-
-            margin-top: 18px;
-
-            padding: 18px;
-
-            background:
-                rgba(8, 7, 6, 0.75);
-
-            border:
-                1px solid #654e29;
-
-            border-radius: 10px;
-        }
-
-        .detail-panel.active {
-            display: block;
-        }
-
-
-        /* =====================================================
-           MELDUNGEN
+           NACHRICHTEN
         ===================================================== */
 
         .message {
-            display: none;
 
-            margin-bottom: 15px;
+            display:
+                none;
 
-            padding: 13px 15px;
+            padding:
+                11px 14px;
 
-            border-radius: 8px;
+            margin-bottom:
+                14px;
 
-            font-size: 14px;
+            border-radius:
+                8px;
+
+            font-size:
+                13px;
         }
 
+
         .message.success {
+
             background:
-                rgba(50, 80, 35, 0.35);
+                rgba(55,85,38,0.35);
 
             border:
                 1px solid #607844;
 
             color:
-                #c6d8a9;
+                #c9dcae;
         }
 
+
         .message.error {
+
             background:
-                rgba(100, 30, 30, 0.35);
+                rgba(100,30,30,0.38);
 
             border:
                 1px solid #7d3030;
@@ -685,58 +527,639 @@
 
 
         /* =====================================================
-           LADEANIMATION
+           ALLGEMEINE LISTEN
         ===================================================== */
 
+        .list-container {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                10px;
+        }
+
+
+        .list-item {
+
+            padding:
+                15px;
+
+            background:
+                rgba(25,20,16,0.97);
+
+            border:
+                1px solid #594522;
+
+            border-radius:
+                10px;
+
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .list-item:hover {
+
+            border-color:
+                #8b6b31;
+
+            background:
+                rgba(34,27,20,0.98);
+        }
+
+
+        .list-item h3 {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                17px;
+
+            margin-bottom:
+                6px;
+        }
+
+
+        .list-item p {
+
+            color:
+                #c2b28f;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+
+            margin-bottom:
+                4px;
+        }
+
+
+        .empty-message {
+
+            padding:
+                28px 18px;
+
+            text-align:
+                center;
+
+            color:
+                #96886e;
+
+            border:
+                1px dashed #5c4827;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(12,10,8,0.5);
+        }
+
+
         .loading {
-            padding: 35px;
 
-            text-align: center;
+            padding:
+                28px;
 
-            color: #bca875;
+            text-align:
+                center;
+
+            color:
+                #bda978;
         }
 
 
         /* =====================================================
-           ZURÜCK BUTTON
+           BUTTONS
         ===================================================== */
 
-        .back-area {
-            width: 100%;
-            max-width: 1400px;
+        .button-row {
 
-            margin: 20px auto 0 auto;
+            display:
+                flex;
 
-            text-align: center;
+            flex-wrap:
+                wrap;
+
+            gap:
+                7px;
+
+            margin-top:
+                12px;
         }
 
-        .back-button {
-            display: inline-block;
 
-            padding: 12px 24px;
+        .action-button {
 
-            background:
-                rgba(15, 12, 10, 0.94);
+            min-height:
+                38px;
+
+            padding:
+                8px 13px;
 
             border:
-                1px solid #80602c;
+                1px solid #765829;
 
-            border-radius: 9px;
+            border-radius:
+                7px;
 
-            color: #d7ad52;
+            background:
+                #211a14;
 
-            text-decoration: none;
+            color:
+                #d7ad52;
 
-            font-weight: bold;
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
 
             transition:
-                background 0.2s ease,
-                border-color 0.2s ease;
+                all 0.18s ease;
         }
 
-        .back-button:hover {
+
+        .action-button:hover {
+
             background:
-                rgba(80, 24, 24, 0.9);
+                #552323;
+
+            border-color:
+                #d7ad52;
+        }
+
+
+        .action-button.success {
+
+            color:
+                #d6dcae;
+
+            border-color:
+                #68753c;
+        }
+
+
+        .action-button.danger {
+
+            color:
+                #e39a8c;
+
+            border-color:
+                #74352d;
+        }
+
+
+        /* =====================================================
+           DETAILBEREICHE
+        ===================================================== */
+
+        .detail-panel {
+
+            display:
+                none;
+
+            margin-top:
+                15px;
+
+            padding:
+                17px;
+
+            background:
+                rgba(7,6,5,0.78);
+
+            border:
+                1px solid #654e29;
+
+            border-radius:
+                10px;
+        }
+
+
+        .detail-panel.active {
+
+            display:
+                block;
+        }
+
+
+        /* =====================================================
+           AUFTRÄGE
+        ===================================================== */
+
+        .order-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                12px;
+        }
+
+
+        .order-card {
+
+            padding:
+                16px;
+
+            background:
+                rgba(26,21,16,0.97);
+
+            border:
+                1px solid #5e4927;
+
+            border-radius:
+                10px;
+        }
+
+
+        .order-card h3 {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                17px;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .order-card p {
+
+            color:
+                #bba980;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           MITARBEITER
+        ===================================================== */
+
+        .employee-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                12px;
+        }
+
+
+        .employee-card {
+
+            padding:
+                16px;
+
+            background:
+                rgba(26,21,16,0.97);
+
+            border:
+                1px solid #5e4927;
+
+            border-radius:
+                10px;
+        }
+
+
+        .employee-card h3 {
+
+            color:
+                #d7ad52;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .employee-card p {
+
+            color:
+                #c2b28f;
+
+            font-size:
+                13px;
+
+            margin-bottom:
+                4px;
+        }
+
+
+            /* =====================================================
+           PREISVERWALTUNG
+        ===================================================== */
+
+        .price-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+            padding-bottom: 15px;
+
+            border-bottom:
+                1px solid #574321;
+        }
+
+
+        .price-header-text h2 {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                25px;
+
+            margin-bottom:
+                5px;
+        }
+
+
+        .price-header-text p {
+
+            color:
+                #bca982;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           PREIS-TABS
+        ===================================================== */
+
+        .price-tabs {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap:
+                8px;
+
+            margin-bottom:
+                18px;
+        }
+
+
+        .price-tab {
+
+            min-height:
+                45px;
+
+            padding:
+                9px 10px;
+
+            border:
+                1px solid #654e29;
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(13,11,9,0.95);
+
+            color:
+                #c8b487;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-weight:
+                bold;
+
+            font-size:
+                13px;
+
+            cursor:
+                pointer;
+
+            transition:
+                all 0.2s ease;
+        }
+
+
+        .price-tab:hover {
+
+            border-color:
+                #a17b36;
+
+            color:
+                #e2c77f;
+        }
+
+
+        .price-tab.active {
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #762727,
+                    #501c1c
+                );
+
+            border-color:
+                #d7ad52;
+
+            color:
+                #f2dca0;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.4);
+        }
+
+
+        /* =====================================================
+           PREIS-WERKZEUGE
+        ===================================================== */
+
+        .price-filter-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                minmax(200px, 1.6fr)
+                repeat(3, minmax(130px, 1fr))
+                auto;
+
+            gap:
+                9px;
+
+            margin-bottom:
+                18px;
+        }
+
+
+        .price-field {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                5px;
+        }
+
+
+        .price-field label {
+
+            color:
+                #cbb77f;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .price-input,
+        .price-select {
+
+            width:
+                100%;
+
+            min-height:
+                43px;
+
+            padding:
+                9px 11px;
+
+            background:
+                rgba(7,6,5,0.94);
+
+            border:
+                1px solid #604a27;
+
+            border-radius:
+                7px;
+
+            color:
+                #eee1c2;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size:
+                13px;
+
+            outline:
+                none;
+        }
+
+
+        .price-input:focus,
+        .price-select:focus {
+
+            border-color:
+                #d7ad52;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(215,173,82,0.08);
+        }
+
+
+        .price-select option {
+
+            background:
+                #17120e;
+
+            color:
+                #eee1c2;
+        }
+
+
+        .reset-filter {
+
+            align-self:
+                end;
+
+            min-height:
+                43px;
+
+            padding:
+                9px 13px;
+
+            border:
+                1px solid #793030;
+
+            border-radius:
+                7px;
+
+            background:
+                #501c1c;
+
+            color:
+                #e1bf83;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+        }
+
+
+        .reset-filter:hover {
+
+            background:
+                #712929;
 
             border-color:
                 #d7ad52;
@@ -744,44 +1167,956 @@
 
 
         /* =====================================================
-           FOOTER
+           PREIS-STATISTIK
         ===================================================== */
 
-        footer {
-            width: 100%;
-            max-width: 1400px;
+        .price-stats {
 
-            margin: 25px auto 0 auto;
+            display:
+                grid;
 
-            padding: 15px;
+            grid-template-columns:
+                repeat(4, 1fr);
 
-            text-align: center;
+            gap:
+                10px;
 
-            color: #8f8067;
+            margin-bottom:
+                18px;
+        }
 
-            font-size: 12px;
+
+        .price-stat {
+
+            min-height:
+                92px;
+
+            padding:
+                14px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(29,23,17,0.98),
+                    rgba(17,13,10,0.98)
+                );
+
+            border:
+                1px solid #73582a;
+
+            border-radius:
+                9px;
+        }
+
+
+        .price-stat-title {
+
+            color:
+                #c6b37e;
+
+            font-size:
+                12px;
+
+            margin-bottom:
+                7px;
+        }
+
+
+        .price-stat-number {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                25px;
+
+            font-weight:
+                bold;
+
+            margin-bottom:
+                3px;
+        }
+
+
+        .price-stat-info {
+
+            color:
+                #938468;
+
+            font-size:
+                11px;
         }
 
 
         /* =====================================================
-           MOBILE
+           ITEM-TABELLE
         ===================================================== */
 
-        @media (max-width: 900px) {
+        .items-table-wrapper {
 
-            .stats-grid {
+            width:
+                100%;
+
+            overflow-x:
+                auto;
+
+            border:
+                1px solid #654e29;
+
+            border-radius:
+                9px;
+
+            background:
+                rgba(9,8,6,0.88);
+        }
+
+
+        .items-table {
+
+            width:
+                100%;
+
+            min-width:
+                850px;
+
+            border-collapse:
+                collapse;
+        }
+
+
+        .items-table th {
+
+            padding:
+                13px 12px;
+
+            text-align:
+                left;
+
+            white-space:
+                nowrap;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #521c1c,
+                    #3d1717
+                );
+
+            color:
+                #e0bd70;
+
+            font-size:
+                12px;
+
+            border-bottom:
+                1px solid #8a652e;
+        }
+
+
+        .items-table td {
+
+            padding:
+                12px;
+
+            color:
+                #c8b897;
+
+            font-size:
+                12px;
+
+            vertical-align:
+                middle;
+
+            border-bottom:
+                1px solid #34291d;
+        }
+
+
+        .items-table tbody tr {
+
+            transition:
+                background 0.15s ease;
+        }
+
+
+        .items-table tbody tr:hover {
+
+            background:
+                rgba(90,62,27,0.16);
+        }
+
+
+        .items-table tbody tr:last-child td {
+
+            border-bottom:
+                none;
+        }
+
+
+        .item-name {
+
+            color:
+                #e0c47b;
+
+            font-weight:
+                bold;
+
+            font-size:
+                13px;
+        }
+
+
+        .item-category {
+
+            color:
+                #ad9b78;
+        }
+
+
+        .item-price {
+
+            color:
+                #d9bd72;
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .offer-price {
+
+            color:
+                #df9c73;
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .normal-price {
+
+            color:
+                #a99a7b;
+
+            white-space:
+                nowrap;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .item-status {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-width:
+                75px;
+
+            padding:
+                5px 8px;
+
+            border-radius:
+                6px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .item-status.normal {
+
+            background:
+                rgba(75,65,45,0.35);
+
+            border:
+                1px solid #665634;
+
+            color:
+                #c5b58e;
+        }
+
+
+        .item-status.angebot {
+
+            background:
+                rgba(105,34,27,0.42);
+
+            border:
+                1px solid #8c4a35;
+
+            color:
+                #e4b077;
+        }
+
+
+        .item-status.abgelaufen {
+
+            background:
+                rgba(65,55,45,0.3);
+
+            border:
+                1px solid #5b5144;
+
+            color:
+                #928675;
+        }
+
+
+        /* =====================================================
+           AKTIONEN IN DER TABELLE
+        ===================================================== */
+
+        .table-actions {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                5px;
+        }
+
+
+        .table-action {
+
+            padding:
+                6px 9px;
+
+            border:
+                1px solid #65502a;
+
+            border-radius:
+                6px;
+
+            background:
+                #211a14;
+
+            color:
+                #d5b96f;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+        }
+
+
+        .table-action:hover {
+
+            background:
+                #542323;
+
+            border-color:
+                #d7ad52;
+        }
+
+
+        .table-action.offer {
+
+            color:
+                #e2ad75;
+
+            border-color:
+                #7b4630;
+        }
+
+
+        .table-action.delete {
+
+            color:
+                #dc968a;
+
+            border-color:
+                #6f302b;
+        }
+
+
+        /* =====================================================
+           ANGEBOTSBEREICH
+        ===================================================== */
+
+        .offer-management {
+
+            margin-top:
+                18px;
+
+            padding:
+                18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30,22,17,0.97),
+                    rgba(13,10,8,0.97)
+                );
+
+            border:
+                1px solid #795d2b;
+
+            border-radius:
+                10px;
+        }
+
+
+        .offer-management h3 {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                19px;
+
+            margin-bottom:
+                6px;
+        }
+
+
+        .offer-management-description {
+
+            color:
+                #a99877;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+
+            margin-bottom:
+                16px;
+        }
+
+
+        .offer-form-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                12px;
+        }
+
+
+        .offer-form-field {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                6px;
+        }
+
+
+        .offer-form-field.full {
+
+            grid-column:
+                1 / -1;
+        }
+
+
+        .offer-form-field label {
+
+            color:
+                #d0bb83;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .offer-form-field input,
+        .offer-form-field select {
+
+            min-height:
+                42px;
+
+            padding:
+                9px 11px;
+
+            background:
+                rgba(7,6,5,0.95);
+
+            border:
+                1px solid #604a27;
+
+            border-radius:
+                7px;
+
+            color:
+                #eee1c2;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            outline:
+                none;
+        }
+
+
+        .offer-duration {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap:
+                7px;
+        }
+
+
+        .duration-option {
+
+            min-height:
+                40px;
+
+            border:
+                1px solid #604a27;
+
+            border-radius:
+                7px;
+
+            background:
+                #19140f;
+
+            color:
+                #c9b582;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+        }
+
+
+        .duration-option:hover {
+
+            border-color:
+                #a27c38;
+        }
+
+
+        .duration-option.active {
+
+            background:
+                #642323;
+
+            border-color:
+                #d7ad52;
+
+            color:
+                #f0d596;
+        }
+
+
+        .offer-info {
+
+            padding:
+                11px 13px;
+
+            margin-top:
+                13px;
+
+            background:
+                rgba(90,65,28,0.16);
+
+            border:
+                1px solid #6b5428;
+
+            border-radius:
+                7px;
+
+            color:
+                #c8b27c;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           PAGINATION
+        ===================================================== */
+
+        .table-footer {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            margin-top:
+                12px;
+        }
+
+
+        .table-count {
+
+            color:
+                #aa9978;
+
+            font-size:
+                12px;
+        }
+
+
+        .pagination {
+
+            display:
+                flex;
+
+            gap:
+                5px;
+        }
+
+
+        .page-button {
+
+            min-width:
+                38px;
+
+            height:
+                36px;
+
+            border:
+                1px solid #594522;
+
+            border-radius:
+                6px;
+
+            background:
+                #19140f;
+
+            color:
+                #c8b47d;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            cursor:
+                pointer;
+        }
+
+
+        .page-button:hover,
+        .page-button.active {
+
+            background:
+                #612323;
+
+            border-color:
+                #d7ad52;
+
+            color:
+                #f0d596;
+        }
+
+
+        /* =====================================================
+           NEUES ITEM / BEARBEITEN
+        ===================================================== */
+
+        .item-editor {
+
+            display:
+                none;
+
+            margin-top:
+                18px;
+
+            padding:
+                20px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(27,21,16,0.98),
+                    rgba(12,10,8,0.98)
+                );
+
+            border:
+                1px solid #765a2b;
+
+            border-radius:
+                10px;
+        }
+
+
+        .item-editor.active {
+
+            display:
+                block;
+        }
+
+
+        .editor-title {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            padding-bottom:
+                12px;
+
+            margin-bottom:
+                16px;
+
+            border-bottom:
+                1px solid #4f3d22;
+        }
+
+
+        .editor-title h3 {
+
+            color:
+                #d7ad52;
+
+            font-size:
+                19px;
+        }
+
+
+        .editor-close {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            border:
+                1px solid #674d29;
+
+            border-radius:
+                6px;
+
+            background:
+                #1b1510;
+
+            color:
+                #d0b875;
+
+            font-size:
+                18px;
+
+            cursor:
+                pointer;
+        }
+
+
+        .editor-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                13px;
+        }
+
+
+        .editor-field {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                6px;
+        }
+
+
+        .editor-field.full {
+
+            grid-column:
+                1 / -1;
+        }
+
+
+        .editor-field label {
+
+            color:
+                #d0bb83;
+
+            font-size:
+                12px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .editor-field input,
+        .editor-field select,
+        .editor-field textarea {
+
+            width:
+                100%;
+
+            min-height:
+                42px;
+
+            padding:
+                9px 11px;
+
+            resize:
+                vertical;
+
+            background:
+                rgba(7,6,5,0.95);
+
+            border:
+                1px solid #604a27;
+
+            border-radius:
+                7px;
+
+            color:
+                #eee1c2;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            outline:
+                none;
+        }
+
+
+        .editor-field textarea {
+
+            min-height:
+                85px;
+        }
+
+
+        .editor-actions {
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                8px;
+
+            margin-top:
+                17px;
+
+            padding-top:
+                14px;
+
+            border-top:
+                1px solid #49371f;
+        }
+
+
+        /* =====================================================
+   MOBILE PREISVERWALTUNG
+===================================================== */
+            @media (max-width: 900px) {
+
+            .price-filter-grid {
+
                 grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
+                    repeat(2, 1fr);
             }
 
-            .order-grid {
+            .price-filter-grid
+            .price-field:first-child {
+
+                grid-column:
+                    1 / -1;
+            }
+
+            .price-stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .offer-form-grid,
+            .editor-grid {
+
                 grid-template-columns:
                     1fr;
             }
 
-            .employee-grid {
-                grid-template-columns:
-                    1fr;
+            .offer-form-field.full,
+            .editor-field.full {
+
+                grid-column:
+                    auto;
             }
 
         }
@@ -789,79 +2124,92 @@
 
         @media (max-width: 600px) {
 
-            .page {
-                padding: 10px;
+            .price-header {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
             }
 
-            .header {
-                padding: 18px 14px;
+            .price-tabs {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
 
-            .header h1 {
-                font-size: 27px;
+            .price-filter-grid {
+
+                grid-template-columns:
+                    1fr;
             }
 
-            .header p {
-                font-size: 13px;
+            .price-filter-grid
+            .price-field:first-child {
+
+                grid-column:
+                    auto;
             }
 
-            .navigation {
-                gap: 7px;
-            }
+            .price-stats {
 
-            .nav-button {
-                flex:
-                    1 1 calc(50% - 7px);
-
-                font-size: 13px;
-
-                min-height: 44px;
-            }
-
-            .admin-section {
-                padding: 15px;
-            }
-
-            .section-title {
-                font-size: 22px;
-            }
-
-            .stats-grid {
                 grid-template-columns:
                     1fr 1fr;
-
-                gap: 8px;
             }
 
-            .stat-card {
-                padding: 14px 8px;
+            .price-stat {
+
+                min-height:
+                    78px;
+
+                padding:
+                    11px 9px;
             }
 
-            .stat-card .number {
-                font-size: 23px;
+            .price-stat-number {
+
+                font-size:
+                    21px;
             }
 
-            .stat-card .label {
-                font-size: 11px;
+            .offer-duration {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
 
-            .list-item,
-            .order-card,
-            .employee-card {
-                padding: 14px;
+            .offer-duration
+            .duration-option:last-child {
+
+                grid-column:
+                    1 / -1;
             }
 
-            .button-row {
-                flex-direction: column;
+            .table-footer {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
             }
 
-            .action-button {
-                width: 100%;
+            .pagination {
+
+                justify-content:
+                    center;
             }
 
         }
 
+
+        /* =====================================================
+           ENDE STYLE
+        ===================================================== */
+
     </style>
+
 </head>
 
 
@@ -870,870 +2218,1311 @@
 
 <div class="page">
 
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <header class="header">
-
-        <h1>EHRENMARKT – VERWALTUNG</h1>
-
-        <p>
-            Zentrale Verwaltung der Stadt Ehrenmarkt
-        </p>
-
-    </header>
+    <div class="container">
 
 
-    <!-- =====================================================
-         ZUGRIFFSHINWEIS
-    ====================================================== -->
+        <!-- =================================================
+             HEADER
+        ================================================= -->
 
-    <div
-        id="accessMessage"
-        class="access-info"
-    >
-        Zugriff wird überprüft...
-    </div>
+        <header class="header">
+
+            <h1>
+                EHRENMARKT – VERWALTUNG
+            </h1>
+
+            <p>
+                Zentrale Verwaltung der Stadt Ehrenmarkt
+            </p>
+
+        </header>
 
 
-    <!-- =====================================================
-         NAVIGATION
-    ====================================================== -->
+        <!-- =================================================
+             ZUGRIFF
+        ================================================= -->
 
-    <nav class="navigation">
-
-        <button
-            type="button"
-            class="nav-button active"
-            data-section="bewerbungen"
+        <div
+            id="accessMessage"
+            class="access-info"
         >
-            Bewerbungen
-        </button>
+            Zugriff wird überprüft...
+        </div>
 
 
-        <button
-            type="button"
-            class="nav-button"
-            data-section="auftraege"
-        >
-            Aufträge
-        </button>
+        <!-- =================================================
+             NAVIGATION
+        ================================================= -->
 
+        <nav class="navigation">
 
-        <button
-            type="button"
-            class="nav-button"
-            data-section="mitarbeiter"
-        >
-            Mitarbeiter
-        </button>
-
-
-        <button
-            type="button"
-            class="nav-button"
-            data-section="preise"
-        >
-            Preisverwaltung
-        </button>
-
-
-        <button
-            type="button"
-            class="nav-button"
-            data-section="buendnisse"
-        >
-            Bündnisse
-        </button>
-
-    </nav>
-
-
-    <!-- =====================================================
-         HAUPTINHALT
-    ====================================================== -->
-
-    <main class="content">
-
-              <!-- =================================================
-             BEWERBUNGEN
-        ================================================== -->
-
-        <section
-            id="section-bewerbungen"
-            class="admin-section active"
-        >
-
-            <h2 class="section-title">
+            <button
+                type="button"
+                class="nav-button active"
+                data-section="bewerbungen"
+            >
                 Bewerbungen
-            </h2>
+            </button>
 
-            <p class="section-description">
-                Hier können Bewerbungen eingesehen,
-                bearbeitet, angenommen oder abgelehnt werden.
-                Bei einer Annahme kann anschließend ein
-                Mitarbeiter angelegt werden.
-            </p>
-
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <span
-                        id="bewerbungenOffen"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Offen
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="bewerbungenAngenommen"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Angenommen
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="bewerbungenAbgelehnt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Abgelehnt
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="bewerbungenGesamt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Gesamt
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="bewerbungenMessage"
-                class="message"
-            ></div>
-
-
-            <div
-                id="bewerbungenListe"
-                class="list-container"
+            <button
+                type="button"
+                class="nav-button"
+                data-section="auftraege"
             >
+                Aufträge
+            </button>
 
-                <div class="loading">
-                    Bewerbungen werden geladen...
-                </div>
-
-            </div>
-
-
-            <div
-                id="bewerbungDetails"
-                class="detail-panel"
+            <button
+                type="button"
+                class="nav-button"
+                data-section="mitarbeiter"
             >
-
-                <h3>
-                    Bewerbungsdetails
-                </h3>
-
-                <div
-                    id="bewerbungDetailsContent"
-                >
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             AUFTRÄGE
-        ================================================== -->
-
-        <section
-            id="section-auftraege"
-            class="admin-section"
-        >
-
-            <h2 class="section-title">
-                Auftragsverwaltung
-            </h2>
-
-            <p class="section-description">
-                Hier werden alle Auftragsarten der Stadt
-                zentral verwaltet. Mitarbeiter werden hier
-                nicht zugewiesen – sie nehmen ihre Aufträge
-                selbst im Mitarbeiterbereich an.
-            </p>
-
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <span
-                        id="auftraegeOffen"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Offen
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="auftraegeBearbeitung"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        In Bearbeitung
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="auftraegeAbgeschlossen"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Abgeschlossen
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="auftraegeGesamt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Gesamt
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="order-grid">
-
-
-                <div class="order-card">
-
-                    <h3>
-                        Bauaufträge
-                    </h3>
-
-                    <p>
-                        Bauaufträge anzeigen, bearbeiten,
-                        Status verwalten und löschen.
-                    </p>
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            id="bauauftraegeAnzeigen"
-                        >
-                            Bauaufträge anzeigen
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="order-card">
-
-                    <h3>
-                        Materialbestellungen
-                    </h3>
-
-                    <p>
-                        Materialbestellungen anzeigen,
-                        bearbeiten, Status verwalten
-                        und löschen.
-                    </p>
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            id="materialauftraegeAnzeigen"
-                        >
-                            Materialbestellungen anzeigen
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="order-card">
-
-                    <h3>
-                        Redstone-Aufträge
-                    </h3>
-
-                    <p>
-                        Redstone-Aufträge anzeigen,
-                        bearbeiten, Status verwalten
-                        und löschen.
-                    </p>
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            id="redstoneAuftraegeAnzeigen"
-                        >
-                            Redstone-Aufträge anzeigen
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="order-card">
-
-                    <h3>
-                        Logistikaufträge
-                    </h3>
-
-                    <p>
-                        Logistikaufträge anzeigen,
-                        bearbeiten, Status verwalten
-                        und löschen.
-                    </p>
-
-                    <div class="button-row">
-
-                        <button
-                            type="button"
-                            class="action-button"
-                            id="logistikAuftraegeAnzeigen"
-                        >
-                            Logistikaufträge anzeigen
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="auftraegeMessage"
-                class="message"
-            ></div>
-
-
-            <div
-                id="auftraegeListe"
-                class="list-container"
-                style="margin-top: 20px;"
+                Mitarbeiter
+            </button>
+
+            <button
+                type="button"
+                class="nav-button"
+                data-section="preise"
             >
-
-                <div class="empty-message">
-                    Wähle oben eine Auftragsart aus.
-                </div>
-
-            </div>
-
-
-            <div
-                id="auftragDetails"
-                class="detail-panel"
-            >
-
-                <h3>
-                    Auftragsdetails
-                </h3>
-
-                <div
-                    id="auftragDetailsContent"
-                >
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             MITARBEITER
-        ================================================== -->
-
-        <section
-            id="section-mitarbeiter"
-            class="admin-section"
-        >
-
-            <h2 class="section-title">
-                Mitarbeiterverwaltung
-            </h2>
-
-            <p class="section-description">
-                Hier können Mitarbeiter eingesehen und
-                verwaltet werden. Dazu gehören unter anderem
-                Rolle, Rang und Aktivstatus.
-            </p>
-
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <span
-                        id="mitarbeiterAktiv"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Aktiv
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="mitarbeiterInaktiv"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Inaktiv
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="mitarbeiterGesamt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Gesamt
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="mitarbeiterVerfuegbar"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Verfügbar
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="mitarbeiterMessage"
-                class="message"
-            ></div>
-
-
-            <div
-                id="mitarbeiterListe"
-                class="employee-grid"
-            >
-
-                <div class="loading">
-                    Mitarbeiter werden geladen...
-                </div>
-
-            </div>
-
-
-            <div
-                id="mitarbeiterDetails"
-                class="detail-panel"
-            >
-
-                <h3>
-                    Mitarbeiterdetails
-                </h3>
-
-                <div
-                    id="mitarbeiterDetailsContent"
-                >
-                </div>
-
-            </div>
-
-  </section>
-
-              <!-- =================================================
-             PREISVERWALTUNG
-        ================================================== -->
-
-        <section
-            id="section-preise"
-            class="admin-section"
-        >
-
-            <h2 class="section-title">
                 Preisverwaltung
-            </h2>
+            </button>
 
-            <p class="section-description">
-                Die Preisverwaltung verwendet die bereits
-                vorhandene Tabelle <strong>items</strong>.
-                Preise und Itemdaten können hier später
-                bearbeitet, neue Items hinzugefügt und
-                vorhandene Items gelöscht werden.
-            </p>
-
-
-            <div
-                id="preiseMessage"
-                class="message"
-            ></div>
-
-
-            <div class="price-tools">
-
-                <input
-                    type="search"
-                    id="itemSuche"
-                    class="search-input"
-                    placeholder="Item suchen..."
-                    autocomplete="off"
-                >
-
-
-                <button
-                    type="button"
-                    class="action-button success"
-                    id="neuesItemButton"
-                >
-                    + Item hinzufügen
-                </button>
-
-            </div>
-
-
-            <div class="items-table-wrapper">
-
-                <table class="items-table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Item
-                            </th>
-
-                            <th>
-                                Kategorie
-                            </th>
-
-                            <th>
-                                Preis
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Aktionen
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="itemsListe">
-
-                        <tr>
-
-                            <td
-                                colspan="5"
-                                class="loading"
-                            >
-                                Items werden geladen...
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <div
-                id="itemDetails"
-                class="detail-panel"
+            <button
+                type="button"
+                class="nav-button"
+                data-section="buendnisse"
             >
+                Bündnisse
+            </button>
 
-                <h3>
-                    Item bearbeiten
-                </h3>
-
-                <div
-                    id="itemDetailsContent"
-                >
-                </div>
-
-            </div>
-
-        </section>
-
+        </nav>
 
 
         <!-- =================================================
-             BÜNDNISSE
-        ================================================== -->
+             HAUPTINHALT
+        ================================================= -->
 
-        <section
-            id="section-buendnisse"
-            class="admin-section"
-        >
-
-            <h2 class="section-title">
-                Bündnisverwaltung
-            </h2>
-
-            <p class="section-description">
-                Hier können eingegangene Bündnisanträge
-                geprüft und Bündnisse angenommen oder
-                abgelehnt werden. Aktive Bündnisse können
-                später mit Vereinbarungen und Rabatten
-                verwaltet werden.
-            </p>
+        <main class="content">
 
 
-            <div class="stats-grid">
+            <!-- =================================================
+                 BEWERBUNGEN
+            ================================================= -->
 
-                <div class="stat-card">
-
-                    <span
-                        id="buendnisseOffen"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Offene Anträge
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="buendnisseAktiv"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Aktive Bündnisse
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="buendnisseAbgelehnt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Abgelehnt
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <span
-                        id="buendnisseGesamt"
-                        class="number"
-                    >
-                        0
-                    </span>
-
-                    <span class="label">
-                        Gesamt
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="buendnisseMessage"
-                class="message"
-            ></div>
-
-
-            <div
-                id="buendnisseListe"
-                class="list-container"
+            <section
+                id="section-bewerbungen"
+                class="admin-section active"
             >
 
-                <div class="loading">
-                    Bündnisse werden geladen...
+                <h2 class="section-title">
+                    Bewerbungsverwaltung
+                </h2>
+
+                <p class="section-description">
+                    Hier können Bewerbungen eingesehen,
+                    bearbeitet, angenommen oder abgelehnt werden.
+                </p>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <span
+                            id="bewerbungenOffen"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Offen
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="bewerbungenAngenommen"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Angenommen
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="bewerbungenAbgelehnt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Abgelehnt
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="bewerbungenGesamt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Gesamt
+                        </span>
+
+                    </div>
+
                 </div>
 
-            </div>
-
-
-            <div
-                id="buendnisDetails"
-                class="detail-panel"
-            >
-
-                <h3>
-                    Bündnisdetails
-                </h3>
 
                 <div
-                    id="buendnisDetailsContent"
+                    id="bewerbungenMessage"
+                    class="message"
+                ></div>
+
+
+                <div
+                    id="bewerbungenListe"
+                    class="list-container"
                 >
+
+                    <div class="loading">
+                        Bewerbungen werden geladen...
+                    </div>
+
                 </div>
 
-            </div>
 
-        </section>
+                <div
+                    id="bewerbungDetails"
+                    class="detail-panel"
+                >
+
+                    <h3>
+                        Bewerbungsdetails
+                    </h3>
+
+                    <div
+                        id="bewerbungDetailsContent"
+                    ></div>
+
+                </div>
+
+            </section>
 
 
-    </main>
+            <!-- =================================================
+                 AUFTRÄGE
+            ================================================= -->
+
+            <section
+                id="section-auftraege"
+                class="admin-section"
+            >
+
+                <h2 class="section-title">
+                    Auftragsverwaltung
+                </h2>
+
+                <p class="section-description">
+                    Hier werden alle Auftragsarten zentral
+                    verwaltet. Mitarbeiter werden hier nicht
+                    zugewiesen – sie nehmen ihre Aufträge
+                    selbst im Mitarbeiterbereich an.
+                </p>
 
 
-    <!-- =====================================================
-         ZURÜCK
-    ====================================================== -->
+                <div class="stats-grid">
 
-    <div class="back-area">
+                    <div class="stat-card">
 
-        <a
-            href="../HTML/startseite.html"
-            class="back-button"
+                        <span
+                            id="auftraegeOffen"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Offen
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="auftraegeBearbeitung"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            In Bearbeitung
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="auftraegeAbgeschlossen"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Abgeschlossen
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="auftraegeGesamt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Gesamt
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-grid">
+
+
+                    <div class="order-card">
+
+                        <h3>
+                            Bauaufträge
+                        </h3>
+
+                        <p>
+                            Bauaufträge anzeigen,
+                            bearbeiten, Status verwalten
+                            und löschen.
+                        </p>
+
+                        <div class="button-row">
+
+                            <button
+                                type="button"
+                                class="action-button"
+                                id="bauauftraegeAnzeigen"
+                            >
+                                Bauaufträge anzeigen
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-card">
+
+                        <h3>
+                            Materialbestellungen
+                        </h3>
+
+                        <p>
+                            Materialbestellungen anzeigen,
+                            bearbeiten, Status verwalten
+                            und löschen.
+                        </p>
+
+                        <div class="button-row">
+
+                            <button
+                                type="button"
+                                class="action-button"
+                                id="materialauftraegeAnzeigen"
+                            >
+                                Materialbestellungen anzeigen
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-card">
+
+                        <h3>
+                            Redstone-Aufträge
+                        </h3>
+
+                        <p>
+                            Redstone-Aufträge anzeigen,
+                            bearbeiten, Status verwalten
+                            und löschen.
+                        </p>
+
+                        <div class="button-row">
+
+                            <button
+                                type="button"
+                                class="action-button"
+                                id="redstoneAuftraegeAnzeigen"
+                            >
+                                Redstone-Aufträge anzeigen
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-card">
+
+                        <h3>
+                            Logistikaufträge
+                        </h3>
+
+                        <p>
+                            Logistikaufträge anzeigen,
+                            bearbeiten, Status verwalten
+                            und löschen.
+                        </p>
+
+                        <div class="button-row">
+
+                            <button
+                                type="button"
+                                class="action-button"
+                                id="logistikAuftraegeAnzeigen"
+                            >
+                                Logistikaufträge anzeigen
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="auftraegeMessage"
+                    class="message"
+                ></div>
+
+
+                <div
+                    id="auftraegeListe"
+                    class="list-container"
+                >
+
+                    <div class="empty-message">
+                        Wähle oben eine Auftragsart aus.
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="auftragDetails"
+                    class="detail-panel"
+                >
+
+                    <h3>
+                        Auftragsdetails
+                    </h3>
+
+                    <div
+                        id="auftragDetailsContent"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MITARBEITER
+            ================================================= -->
+
+            <section
+                id="section-mitarbeiter"
+                class="admin-section"
+            >
+
+                <h2 class="section-title">
+                    Mitarbeiterverwaltung
+                </h2>
+
+                <p class="section-description">
+                    Hier können Mitarbeiter eingesehen und
+                    verwaltet werden. Dazu gehören unter anderem
+                    Rolle, Rang und Aktivstatus.
+                </p>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <span
+                            id="mitarbeiterAktiv"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Aktiv
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="mitarbeiterInaktiv"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Inaktiv
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="mitarbeiterGesamt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Gesamt
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="mitarbeiterVerfuegbar"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Verfügbar
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="mitarbeiterMessage"
+                    class="message"
+                ></div>
+
+
+                <div
+                    id="mitarbeiterListe"
+                    class="employee-grid"
+                >
+
+                    <div class="loading">
+                        Mitarbeiter werden geladen...
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="mitarbeiterDetails"
+                    class="detail-panel"
+                >
+
+                    <h3>
+                        Mitarbeiterdetails
+                    </h3>
+
+                    <div
+                        id="mitarbeiterDetailsContent"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PREISVERWALTUNG
+            ================================================= -->
+
+            <section
+                id="section-preise"
+                class="admin-section"
+            >
+
+                <div class="price-header">
+
+                    <div class="price-header-text">
+
+                        <h2>
+                            Preisverwaltung
+                        </h2>
+
+                        <p>
+                            Items verwalten, Preise ändern
+                            und zeitlich begrenzte Angebote
+                            erstellen.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="action-button success"
+                        id="neuesItemButton"
+                    >
+                        + Neues Item hinzufügen
+                    </button>
+
+                </div>
+
+
+                <!-- PREIS-TABS -->
+
+                <div class="price-tabs">
+
+                    <button
+                        type="button"
+                        class="price-tab active"
+                        data-price-tab="alle"
+                    >
+                        Alle Items
+                    </button>
+
+                    <button
+                        type="button"
+                        class="price-tab"
+                        data-price-tab="angebote"
+                    >
+                        Nur Angebote
+                    </button>
+
+                    <button
+                        type="button"
+                        class="price-tab"
+                        data-price-tab="normal"
+                    >
+                        Normale Items
+                    </button>
+
+                    <button
+                        type="button"
+                        class="price-tab"
+                        data-price-tab="abgelaufen"
+                    >
+                        Abgelaufene Angebote
+                    </button>
+
+                </div>
+
+
+                                <!-- =================================================
+                     SUCHE / FILTER
+                ================================================== -->
+
+                <div class="price-filter-grid">
+
+                    <div class="price-field">
+
+                        <label for="itemSuche">
+                            Item suchen
+                        </label>
+
+                        <input
+                            type="search"
+                            id="itemSuche"
+                            class="price-input"
+                            placeholder="Item suchen..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <div class="price-field">
+
+                        <label for="itemKategorieFilter">
+                            Kategorie
+                        </label>
+
+                        <select
+                            id="itemKategorieFilter"
+                            class="price-select"
+                        >
+
+                            <option value="">
+                                Alle Kategorien
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="price-field">
+
+                        <label for="itemAngebotFilter">
+                            Angebotsstatus
+                        </label>
+
+                        <select
+                            id="itemAngebotFilter"
+                            class="price-select"
+                        >
+
+                            <option value="">
+                                Alle anzeigen
+                            </option>
+
+                            <option value="aktiv">
+                                Aktive Angebote
+                            </option>
+
+                            <option value="normal">
+                                Normale Items
+                            </option>
+
+                            <option value="abgelaufen">
+                                Abgelaufene Angebote
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="price-field">
+
+                        <label for="itemSortierung">
+                            Sortierung
+                        </label>
+
+                        <select
+                            id="itemSortierung"
+                            class="price-select"
+                        >
+
+                            <option value="name_asc">
+                                Name (A-Z)
+                            </option>
+
+                            <option value="name_desc">
+                                Name (Z-A)
+                            </option>
+
+                            <option value="price_asc">
+                                Preis aufsteigend
+                            </option>
+
+                            <option value="price_desc">
+                                Preis absteigend
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="reset-filter"
+                        id="itemFilterReset"
+                    >
+                        Filter zurücksetzen
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     PREIS-STATISTIK
+                ================================================== -->
+
+                <div class="price-stats">
+
+                    <div class="price-stat">
+
+                        <div class="price-stat-title">
+                            Gesamt Items
+                        </div>
+
+                        <div
+                            class="price-stat-number"
+                            id="itemsGesamt"
+                        >
+                            0
+                        </div>
+
+                        <div class="price-stat-info">
+                            Alle verwalteten Items
+                        </div>
+
+                    </div>
+
+
+                    <div class="price-stat">
+
+                        <div class="price-stat-title">
+                            Aktive Angebote
+                        </div>
+
+                        <div
+                            class="price-stat-number"
+                            id="itemsAktiveAngebote"
+                        >
+                            0
+                        </div>
+
+                        <div class="price-stat-info">
+                            Aktuell im Angebot
+                        </div>
+
+                    </div>
+
+
+                    <div class="price-stat">
+
+                        <div class="price-stat-title">
+                            Läuft bald ab
+                        </div>
+
+                        <div
+                            class="price-stat-number"
+                            id="itemsLaufenBaldAb"
+                        >
+                            0
+                        </div>
+
+                        <div class="price-stat-info">
+                            Angebote bis 7 Tage
+                        </div>
+
+                    </div>
+
+
+                    <div class="price-stat">
+
+                        <div class="price-stat-title">
+                            Abgelaufene Angebote
+                        </div>
+
+                        <div
+                            class="price-stat-number"
+                            id="itemsAbgelaufen"
+                        >
+                            0
+                        </div>
+
+                        <div class="price-stat-info">
+                            Bereits abgelaufen
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     MELDUNG
+                ================================================== -->
+
+                <div
+                    id="preiseMessage"
+                    class="message"
+                ></div>
+
+
+                <!-- =================================================
+                     ITEM-TABELLE
+                ================================================== -->
+
+                <div class="items-table-wrapper">
+
+                    <table class="items-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Item
+                                </th>
+
+                                <th>
+                                    Kategorie
+                                </th>
+
+                                <th>
+                                    Normalpreis
+                                </th>
+
+                                <th>
+                                    Angebotspreis
+                                </th>
+
+                                <th>
+                                    Laufzeit
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Aktionen
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="itemsListe">
+
+                            <tr>
+
+                                <td
+                                    colspan="7"
+                                    class="loading"
+                                >
+                                    Items werden geladen...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- =================================================
+                     TABELLEN-FUSS
+                ================================================== -->
+
+                <div class="table-footer">
+
+                    <div
+                        class="table-count"
+                        id="itemsAnzeige"
+                    >
+                        Zeige 0 Items
+                    </div>
+
+                    <div
+                        class="pagination"
+                        id="itemsPagination"
+                    ></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ITEM DETAILS
+                ================================================== -->
+
+                <div
+                    id="itemDetails"
+                    class="detail-panel"
+                >
+
+                    <h3>
+                        Item bearbeiten
+                    </h3>
+
+                    <div
+                        id="itemDetailsContent"
+                    ></div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ANGEBOT ERSTELLEN
+                ================================================== -->
+
+                <div
+                    id="angebotBereich"
+                    class="offer-management"
+                >
+
+                    <h3>
+                        Angebot erstellen
+                    </h3>
+
+                    <p class="offer-management-description">
+                        Wähle ein vorhandenes Item aus und
+                        erstelle ein zeitlich begrenztes Angebot.
+                        Zur Verfügung stehen 1, 3, 7, 14 oder 30 Tage.
+                    </p>
+
+
+                    <div class="offer-form-grid">
+
+
+                        <div class="offer-form-field">
+
+                            <label for="angebotItem">
+                                Item
+                            </label>
+
+                            <select
+                                id="angebotItem"
+                            >
+
+                                <option value="">
+                                    Item auswählen
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="offer-form-field">
+
+                            <label for="angebotPreis">
+                                Angebotspreis
+                            </label>
+
+                            <input
+                                type="number"
+                                id="angebotPreis"
+                                min="0"
+                                step="0.01"
+                                placeholder="Angebotspreis in $"
+                            >
+
+                        </div>
+
+
+                        <div class="offer-form-field full">
+
+                            <label>
+                                Laufzeit
+                            </label>
+
+                            <div
+                                class="offer-duration"
+                                id="angebotLaufzeit"
+                            >
+
+                                <button
+                                    type="button"
+                                    class="duration-option"
+                                    data-duration="1"
+                                >
+                                    1 Tag
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="duration-option"
+                                    data-duration="3"
+                                >
+                                    3 Tage
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="duration-option"
+                                    data-duration="7"
+                                >
+                                    7 Tage
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="duration-option"
+                                    data-duration="14"
+                                >
+                                    14 Tage
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="duration-option"
+                                    data-duration="30"
+                                >
+                                    30 Tage
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="offer-form-field full">
+
+                            <div class="offer-info">
+
+                                Das Angebot startet beim Erstellen
+                                automatisch und endet nach der
+                                ausgewählten Laufzeit.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="editor-actions">
+
+                        <button
+                            type="button"
+                            class="action-button success"
+                            id="angebotErstellenButton"
+                        >
+                            Angebot erstellen
+                        </button>
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            id="angebotZuruecksetzenButton"
+                        >
+                            Zurücksetzen
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 BÜNDNISSE
+            ================================================== -->
+
+            <section
+                id="section-buendnisse"
+                class="admin-section"
+            >
+
+                <h2 class="section-title">
+                    Bündnisverwaltung
+                </h2>
+
+                <p class="section-description">
+                    Hier können Bündnisanträge geprüft,
+                    angenommen, abgelehnt und bestehende
+                    Bündnisse verwaltet werden.
+                </p>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <span
+                            id="buendnisseOffen"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Offen
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="buendnisseAktiv"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Aktiv
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="buendnisseAbgelehnt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Abgelehnt
+                        </span>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <span
+                            id="buendnisseGesamt"
+                            class="number"
+                        >
+                            0
+                        </span>
+
+                        <span class="label">
+                            Gesamt
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="buendnisseMessage"
+                    class="message"
+                ></div>
+
+
+                <div
+                    id="buendnisseListe"
+                    class="list-container"
+                >
+
+                    <div class="loading">
+                        Bündnisse werden geladen...
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="buendnisDetails"
+                    class="detail-panel"
+                >
+
+                    <h3>
+                        Bündnisdetails
+                    </h3>
+
+                    <div
+                        id="buendnisDetailsContent"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+
+        <!-- =================================================
+             ZUR STARTSEITE
+        ================================================== -->
+
+        <div
+            style="
+                text-align:center;
+                margin-top:20px;
+            "
         >
-            ← Zur Startseite
-        </a>
+
+            <a
+                href="../HTML/startseite.html"
+                class="action-button"
+                style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    text-decoration:none;
+                "
+            >
+                ← Zur Startseite
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer
+            style="
+                text-align:center;
+                padding:22px 10px 10px;
+                color:#8f8168;
+                font-size:11px;
+            "
+        >
+
+            Ehrenmarkt © 2026
+
+        </footer>
+
 
     </div>
-
-
-    <!-- =====================================================
-         FOOTER
-    ====================================================== -->
-
-    <footer>
-
-        Ehrenmarkt © 2026
-
-    </footer>
-
 
 </div>
 
 
 <!-- =========================================================
-     SCRIPTS
-========================================================== -->
+     SUPABASE
+========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1742,91 +3531,6 @@
 <script src="../JS/verwaltung.js"></script>
 
 
-<!-- =========================================================
-     NAVIGATION
-========================================================== -->
-
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        const buttons =
-            document.querySelectorAll(
-                ".nav-button"
-            );
-
-
-        const sections =
-            document.querySelectorAll(
-                ".admin-section"
-            );
-
-
-        buttons.forEach(
-            (button) => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const target =
-                            button.dataset.section;
-
-
-                        buttons.forEach(
-                            (item) => {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                        sections.forEach(
-                            (section) => {
-
-                                section.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                        button.classList.add(
-                            "active"
-                        );
-
-
-                        const section =
-                            document.getElementById(
-                                "section-" + target
-                            );
-
-
-                        if (section) {
-
-                            section.classList.add(
-                                "active"
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
-    }
-);
-
-</script>
-
-
 </body>
+
 </html>
