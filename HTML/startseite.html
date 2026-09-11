@@ -1,14 +1,337 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ehrenmarkt – Startseite</title>
+
+    <title>Ehrenmarkt - Startseite</title>
 </head>
 
 <body>
 
-    <h1>Willkommen im Ehrenmarkt</h1>
+    <h1>EHRENMARKT</h1>
+
+    <div id="status">
+        Anmeldung wird geprüft...
+    </div>
+
+
+    <!-- =====================================================
+         KUNDENBEREICH
+         ===================================================== -->
+
+    <h2>Kundenbereich</h2>
+
+    <p>
+        <a href="kundenbereich.html">
+            Kundenbereich
+        </a>
+    </p>
+
+    <p>
+        <a href="bewerbung.html">
+            Bewerbung einreichen
+        </a>
+    </p>
+
+
+    <!-- =====================================================
+         AUFTRÄGE
+         ===================================================== -->
+
+    <h2>Aufträge</h2>
+
+    <p>
+        <a href="bauauftrag.html">
+            Bauauftrag
+        </a>
+    </p>
+
+    <p>
+        <a href="materialauftrag.html">
+            Materialauftrag
+        </a>
+    </p>
+
+    <p>
+        <a href="redstoneauftrag.html">
+            Redstoneauftrag
+        </a>
+    </p>
+
+    <p>
+        <a href="logistikauftrag.html">
+            Logistikauftrag
+        </a>
+    </p>
+
+
+    <!-- =====================================================
+         MITARBEITERBEREICH
+         ===================================================== -->
+
+    <div id="mitarbeiterBereich" style="display:none;">
+
+        <h2>Mitarbeiterbereich</h2>
+
+        <p>
+            <a href="mitarbeiterbereich.html">
+                Mitarbeiterbereich
+            </a>
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         ANMELDUNG
+         ===================================================== -->
+
+    <div id="anmeldungBereich">
+
+        <p>
+            <a href="registrieren.html">
+                Anmelden / Registrieren
+            </a>
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         ABMELDEN
+         ===================================================== -->
+
+    <div id="abmeldenBereich" style="display:none;">
+
+        <button
+            type="button"
+            onclick="ehrenmarktAbmelden()">
+            Abmelden
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUPABASE
+         ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+    <script src="../auth.js"></script>
+
+
+    <script>
+
+        // ====================================================
+        // STARTSEITE INITIALISIEREN
+        // ====================================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                await pruefeAnmeldung();
+
+            }
+        );
+
+
+        // ====================================================
+        // ANMELDUNG PRÜFEN
+        // ====================================================
+
+        async function pruefeAnmeldung() {
+
+            const status =
+                document.getElementById("status");
+
+            const mitarbeiterBereich =
+                document.getElementById(
+                    "mitarbeiterBereich"
+                );
+
+            const anmeldungBereich =
+                document.getElementById(
+                    "anmeldungBereich"
+                );
+
+            const abmeldenBereich =
+                document.getElementById(
+                    "abmeldenBereich"
+                );
+
+
+            // -----------------------------------------------
+            // Supabase prüfen
+            // -----------------------------------------------
+
+            if (!window.supabaseClient) {
+
+                status.textContent =
+                    "Supabase konnte nicht geladen werden.";
+
+                return;
+            }
+
+
+            try {
+
+                // -------------------------------------------
+                // Bestehende Session verwenden
+                // -------------------------------------------
+
+                const {
+                    data: {
+                        user
+                    },
+                    error
+                } =
+                    await window.supabaseClient.auth.getUser();
+
+
+                // -------------------------------------------
+                // NICHT ANGEMELDET
+                // -------------------------------------------
+
+                if (error || !user) {
+
+                    status.textContent =
+                        "Nicht angemeldet.";
+
+                    anmeldungBereich.style.display =
+                        "block";
+
+                    abmeldenBereich.style.display =
+                        "none";
+
+                    mitarbeiterBereich.style.display =
+                        "none";
+
+                    return;
+                }
+
+
+                // -------------------------------------------
+                // ANGEMELDET
+                // -------------------------------------------
+
+                status.textContent =
+                    "Angemeldet als: " +
+                    (user.email || "Benutzer");
+
+
+                anmeldungBereich.style.display =
+                    "none";
+
+                abmeldenBereich.style.display =
+                    "block";
+
+
+                // -------------------------------------------
+                // MITARBEITER PRÜFEN
+                // -------------------------------------------
+
+                const {
+                    data: employee,
+                    error: employeeError
+                } =
+                    await window.supabaseClient
+                        .from("employees")
+                        .select(
+                            "id, name, role, rang, is_active"
+                        )
+                        .eq(
+                            "user_id",
+                            user.id
+                        )
+                        .eq(
+                            "is_active",
+                            true
+                        )
+                        .maybeSingle();
+
+
+                // -------------------------------------------
+                // MITARBEITER
+                // -------------------------------------------
+
+                if (
+                    !employeeError &&
+                    employee
+                ) {
+
+                    mitarbeiterBereich.style.display =
+                        "block";
+
+
+                    status.textContent =
+                        "Angemeldet als: " +
+                        (employee.name ||
+                            user.email) +
+                        " | " +
+                        (employee.role || "Mitarbeiter") +
+                        " | Rang: " +
+                        (employee.rang || "-");
+
+                }
+
+
+                // -------------------------------------------
+                // NORMALER KUNDE
+                // -------------------------------------------
+
+                else {
+
+                    mitarbeiterBereich.style.display =
+                        "none";
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Fehler bei der Anmeldung:",
+                    error
+                );
+
+                status.textContent =
+                    "Fehler bei der Prüfung der Anmeldung.";
+
+            }
+        }
+
+
+        // ====================================================
+        // ABMELDEN
+        // ====================================================
+
+        async function ehrenmarktAbmelden() {
+
+            const erfolgreich =
+                await abmelden();
+
+
+            if (erfolgreich) {
+
+                window.location.href =
+                    "registrieren.html";
+
+            } else {
+
+                alert(
+                    "Die Abmeldung ist fehlgeschlagen."
+                );
+            }
+        }
+
+    </script>
 
 </body>
+
 </html>
