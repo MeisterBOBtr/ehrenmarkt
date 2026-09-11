@@ -4,7 +4,6 @@
 // ============================================================
 
 let aktuellerSchritt = 1;
-
 const gesamtSchritte = 5;
 
 let supabaseClient = null;
@@ -12,24 +11,13 @@ let aktuellerUser = null;
 
 
 // ============================================================
-// ELEMENTE
-// ============================================================
-
-const fortschritt =
-    document.getElementById("fortschrittInhalt");
-
-const fortschrittText =
-    document.getElementById("fortschrittSchritt");
-
-const fehlerBox =
-    document.getElementById("fehler");
-
-
-// ============================================================
 // FEHLERMELDUNG
 // ============================================================
 
 function zeigeFehler(text) {
+
+    const fehlerBox =
+        document.getElementById("fehler");
 
     if (!fehlerBox) {
         alert(text);
@@ -48,6 +36,9 @@ function zeigeFehler(text) {
 
 function versteckeFehler() {
 
+    const fehlerBox =
+        document.getElementById("fehler");
+
     if (!fehlerBox) {
         return;
     }
@@ -61,107 +52,72 @@ function versteckeFehler() {
 // SCHRITT ANZEIGEN
 // ============================================================
 
-function schrittAnzeigen(nummer) {
+function zeigeSchritt(nummer) {
 
-    // Alle Schritte erst jetzt aus dem HTML holen
+    if (nummer < 1 || nummer > gesamtSchritte) {
+        return;
+    }
+
+    aktuellerSchritt = nummer;
+
     const schritte =
         document.querySelectorAll(".schritt");
 
+    schritte.forEach(function(element, index) {
 
-    // Fortschrittsanzeige erst jetzt aus dem HTML holen
-    const fortschritt =
-        document.getElementById("fortschrittInhalt");
+        if (index + 1 === aktuellerSchritt) {
 
+            element.classList.add("aktiv");
+            element.style.display = "block";
 
-    const fortschrittText =
-        document.getElementById("fortschrittSchritt");
+        } else {
 
+            element.classList.remove("aktiv");
+            element.style.display = "none";
 
-    // Alle Schritte ausblenden
-    schritte.forEach((element) => {
-
-        element.classList.remove("aktiv");
+        }
 
     });
 
 
-    // Gewünschten Schritt suchen
-    const ziel =
-        document.querySelector(
-            '.schritt[data-schritt="' +
-            nummer +
-            '"]'
-        );
+    // Fortschrittsbalken
+    const fortschritt =
+        document.getElementById("fortschrittInhalt");
 
-
-    // Falls der Schritt nicht existiert
-    if (!ziel) {
-
-        console.error(
-            "Bewerbungsschritt nicht gefunden:",
-            nummer
-        );
-
-        return;
-
-    }
-
-
-    // Gewünschten Schritt anzeigen
-    ziel.classList.add("aktiv");
-
-
-    // Aktuellen Schritt speichern
-    aktuellerSchritt =
-        nummer;
-
-
-    // Fortschrittsbalken aktualisieren
     if (fortschritt) {
 
         fortschritt.style.width =
-            (
-                nummer /
-                gesamtSchritte *
-                100
-            ) + "%";
+            (aktuellerSchritt / gesamtSchritte * 100) + "%";
 
     }
 
 
-    // Text "Schritt X von 5" aktualisieren
+    // Fortschrittstext
+    const fortschrittText =
+        document.getElementById("fortschrittSchritt");
+
     if (fortschrittText) {
 
         fortschrittText.textContent =
             "Schritt " +
-            nummer +
+            aktuellerSchritt +
             " von " +
             gesamtSchritte;
 
     }
 
 
-    // Zusammenfassung bei Schritt 5 aktualisieren
-    if (nummer === 5) {
-
+    // Zusammenfassung in Schritt 5
+    if (aktuellerSchritt === 5) {
         aktualisiereZusammenfassung();
-
     }
 
-
-    // Fehlermeldung ausblenden
     versteckeFehler();
 
-
-    // Nach oben scrollen
     window.scrollTo({
-
         top: 0,
-
         behavior: "smooth"
-
     });
-
 }
 
 
@@ -171,26 +127,17 @@ function schrittAnzeigen(nummer) {
 
 function weiter() {
 
-    if (
-        !validiereSchritt(
-            aktuellerSchritt
-        )
-    ) {
+    if (!validiereSchritt(aktuellerSchritt)) {
         return;
     }
 
+    if (aktuellerSchritt < gesamtSchritte) {
 
-    if (
-        aktuellerSchritt <
-        gesamtSchritte
-    ) {
-
-        schrittAnzeigen(
+        zeigeSchritt(
             aktuellerSchritt + 1
         );
 
     }
-
 }
 
 
@@ -200,61 +147,76 @@ function weiter() {
 
 function zurueck() {
 
-    if (
-        aktuellerSchritt > 1
-    ) {
+    if (aktuellerSchritt > 1) {
 
-        schrittAnzeigen(
+        zeigeSchritt(
             aktuellerSchritt - 1
         );
 
     }
-
 }
 
 
 // ============================================================
-// RADIO-WERT
+// RADIO-WERT AUSLESEN
 // ============================================================
 
 function getRadioWert(name) {
 
-    const auswahl =
+    const radio =
         document.querySelector(
-            'input[name="' +
-            name +
-            '"]:checked'
+            'input[name="' + name + '"]:checked'
         );
 
-
-    return auswahl
-        ? auswahl.value
+    return radio
+        ? radio.value
         : "";
-
 }
 
 
 // ============================================================
-// AUSGEWÄHLTE FACHBEREICHE
+// FACHBEREICHE AUSLESEN
 // ============================================================
 
 function getFachbereiche() {
 
-    const checkboxen =
-        document.querySelectorAll(
-            '.checkbox-grid input[type="checkbox"]:checked'
-        );
+    const checkboxIds = [
+
+        "bauen",
+        "landschaftsbau",
+        "redstone",
+        "farmer",
+        "lager",
+        "handel",
+        "planung",
+        "terraforming"
+
+    ];
+
+    const fachbereiche = [];
 
 
-    return Array.from(
-        checkboxen
-    ).map(
-        checkbox =>
-            checkbox.value
-    );
+    checkboxIds.forEach(function(id) {
 
+        const checkbox =
+            document.getElementById(id);
+
+        if (
+            checkbox &&
+            checkbox.checked
+        ) {
+
+            fachbereiche.push(
+                checkbox.value
+            );
+
+        }
+
+    });
+
+
+    return fachbereiche;
 }
-
 
 // ============================================================
 // SCHRITT 1 VALIDIEREN
@@ -268,13 +230,11 @@ function validiereSchritt1() {
             ?.value
             .trim();
 
-
     const minecraftName =
         document
             .getElementById("minecraftName")
             ?.value
             .trim();
-
 
     const alter =
         document
@@ -348,7 +308,6 @@ function validiereSchritt1() {
 
 
     return true;
-
 }
 
 
@@ -362,9 +321,7 @@ function validiereSchritt2() {
         getFachbereiche();
 
 
-    if (
-        fachbereiche.length === 0
-    ) {
+    if (fachbereiche.length === 0) {
 
         zeigeFehler(
             "Bitte wähle mindestens einen Fachbereich aus."
@@ -375,7 +332,6 @@ function validiereSchritt2() {
 
 
     return true;
-
 }
 
 
@@ -386,9 +342,7 @@ function validiereSchritt2() {
 function validiereSchritt3() {
 
     const erfahrung =
-        getRadioWert(
-            "experience"
-        );
+        getRadioWert("experience");
 
 
     if (!erfahrung) {
@@ -402,7 +356,6 @@ function validiereSchritt3() {
 
 
     return true;
-
 }
 
 
@@ -413,10 +366,7 @@ function validiereSchritt3() {
 function validiereSchritt4() {
 
     const rolle =
-        getRadioWert(
-            "desiredRole"
-        );
-
+        getRadioWert("desiredRole");
 
     const verfuegbarkeit =
         document
@@ -445,7 +395,6 @@ function validiereSchritt4() {
 
 
     return true;
-
 }
 
 
@@ -476,9 +425,7 @@ function validiereSchritt5() {
     }
 
 
-    if (
-        motivation.length < 20
-    ) {
+    if (motivation.length < 20) {
 
         zeigeFehler(
             "Bitte schreibe etwas ausführlicher über deine Motivation."
@@ -493,7 +440,6 @@ function validiereSchritt5() {
 
 
     return true;
-
 }
 
 
@@ -532,7 +478,6 @@ function validiereSchritt(schritt) {
 
 
     return true;
-
 }
 
 
@@ -548,25 +493,17 @@ function aktualisiereZusammenfassung() {
             ?.value
             .trim();
 
-
     const minecraftName =
         document
             .getElementById("minecraftName")
             ?.value
             .trim();
 
-
     const rolle =
-        getRadioWert(
-            "desiredRole"
-        );
-
+        getRadioWert("desiredRole");
 
     const erfahrung =
-        getRadioWert(
-            "experience"
-        );
-
+        getRadioWert("experience");
 
     const verfuegbarkeit =
         document
@@ -579,24 +516,20 @@ function aktualisiereZusammenfassung() {
             "summaryName"
         );
 
-
     const summaryMinecraft =
         document.getElementById(
             "summaryMinecraft"
         );
-
 
     const summaryRole =
         document.getElementById(
             "summaryRole"
         );
 
-
     const summaryExperience =
         document.getElementById(
             "summaryExperience"
         );
-
 
     const summaryAvailability =
         document.getElementById(
@@ -642,15 +575,21 @@ function aktualisiereZusammenfassung() {
             verfuegbarkeit || "–";
 
     }
-
 }
-
 
 // ============================================================
 // SUPABASE BENUTZER LADEN
 // ============================================================
 
 async function ladeAktuellenBenutzer() {
+
+    if (!supabaseClient) {
+
+        supabaseClient =
+            window.supabaseClient;
+
+    }
+
 
     if (!supabaseClient) {
 
@@ -708,867 +647,9 @@ async function ladeAktuellenBenutzer() {
 
 
         return false;
-
     }
-
 }
 
-
-// ============================================================
-// BEWERBUNG AN SUPABASE SENDEN
-// ============================================================
-
-async function bewerbungAbsenden() {
-
-    if (
-        !validiereSchritt5()
-    ) {
-        return;
-    }
-
-
-    if (
-        !supabaseClient
-    ) {
-
-        zeigeFehler(
-            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-        );
-
-        return;
-    }
-
-
-    if (
-        !aktuellerUser
-    ) {
-
-        const angemeldet =
-            await ladeAktuellenBenutzer();
-
-
-        if (!angemeldet) {
-            return;
-        }
-
-    }
-
-
-    const name =
-        document
-            .getElementById("name")
-            .value
-            .trim();
-
-
-    const minecraftName =
-        document
-            .getElementById("minecraftName")
-            .value
-            .trim();
-
-
-    const discordId =
-        document
-            .getElementById("discordId")
-            .value
-            .trim();
-
-
-    const alter =
-        Number(
-            document
-                .getElementById("alter")
-                .value
-                .trim()
-        );
-
-
-    const erfahrung =
-        getRadioWert(
-            "experience"
-        );
-
-
-    const previousWork =
-        document
-            .getElementById("previousWork")
-            .value
-            .trim();
-
-
-    const rolle =
-        getRadioWert(
-            "desiredRole"
-        );
-
-
-    const availability =
-        document
-            .getElementById("availability")
-            .value;
-
-
-    const unavailableTimes =
-        document
-            .getElementById("unavailableTimes")
-            .value
-            .trim();
-
-
-    const applicationText =
-        document
-            .getElementById("applicationText")
-            .value
-            .trim();
-
-
-    const additionalSkills =
-        document
-            .getElementById("additionalSkills")
-            .value
-            .trim();
-
-
-    const fachbereiche =
-        getFachbereiche();
-
-
-    /*
-     * Button suchen
-     */
-
-    const absendenButton =
-        document.querySelector(
-            '[onclick="bewerbungAbsenden()"]'
-        );
-
-
-    const alterButtonText =
-        absendenButton
-            ? absendenButton.textContent
-            : "";
-
-
-    if (absendenButton) {
-
-        absendenButton.disabled =
-            true;
-
-        absendenButton.textContent =
-            "Bewerbung wird gesendet...";
-
-    }
-
-
-    versteckeFehler();
-
-
-    try {
-
-        /*
-         * Prüfen, ob bereits eine offene Bewerbung existiert
-         */
-
-        const {
-            data: vorhandeneBewerbungen,
-            error: pruefFehler
-        } =
-            await supabaseClient
-                .from("applications")
-                .select("id, status")
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                )
-                .eq(
-                    "status",
-                    "offen"
-                );
-
-
-        if (pruefFehler) {
-            throw pruefFehler;
-        }
-
-
-        if (
-            vorhandeneBewerbungen &&
-            vorhandeneBewerbungen.length > 0
-        ) {
-
-            zeigeFehler(
-                "Du hast bereits eine offene Bewerbung. Bitte warte, bis diese geprüft wurde."
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Bewerbung erstellen
-         */
-
-        const {
-            data: neueBewerbung,
-            error
-        } =
-            await supabaseClient
-                .from("applications")
-                .insert({
-
-                    user_id:
-                        aktuellerUser.id,
-
-                    name:
-                        name,
-
-                    minecraft_name:
-                        minecraftName,
-
-                    discord_id:
-                        discordId || null,
-
-                    age:
-                        alter,
-
-                    experience:
-                        erfahrung,
-
-                    previous_work:
-                        previousWork || null,
-
-                    desired_role:
-                        rolle,
-
-                    additional_skills:
-                        fachbereiche,
-
-                    application_text:
-                        applicationText +
-                        (
-                            additionalSkills
-                                ? "\n\nBesondere Fähigkeiten:\n" +
-                                  additionalSkills
-                                : ""
-                        ),
-
-                    availability:
-                        availability,
-
-                    unavailable_times:
-                        unavailableTimes || null,
-
-                    status:
-                        "offen"
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        console.log(
-            "Ehrenmarkt Bewerbung gespeichert:",
-            neueBewerbung
-        );
-
-
-        /*
-         * Erfolg anzeigen
-         */
-
-        schritte.forEach(
-            element => {
-                element.classList.remove(
-                    "aktiv"
-                );
-            }
-        );
-
-
-        const erfolg =
-            document.getElementById(
-                "erfolg"
-            );
-
-
-        if (erfolg) {
-
-            erfolg.classList.add(
-                "aktiv"
-            );
-
-        }
-
-
-        if (fortschritt) {
-
-            fortschritt.style.width =
-                "100%";
-
-        }
-
-
-        if (fortschrittText) {
-
-            fortschrittText.textContent =
-                "Bewerbung eingereicht";
-
-        }
-
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-
-    } catch (error) {
-
-        console.error(
-            "Ehrenmarkt Bewerbung Fehler:",
-            error
-        );
-
-
-        let meldung =
-            "Die Bewerbung konnte nicht gespeichert werden.";
-
-
-        if (
-            error?.message
-        ) {
-
-            console.error(
-                "Supabase Fehlermeldung:",
-                error.message
-            );
-
-        }
-
-
-        zeigeFehler(
-            meldung
-        );
-
-
-    } finally {
-
-        if (absendenButton) {
-
-            absendenButton.disabled =
-                false;
-
-            absendenButton.textContent =
-                alterButtonText ||
-                "Bewerbung absenden";
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// AUTH LISTENER
-// ============================================================
-
-function registriereAuthListener() {
-
-    if (
-        !supabaseClient
-    ) {
-        return;
-    }
-
-
-    supabaseClient
-        .auth
-        .onAuthStateChange(
-            (
-                event,
-                session
-            ) => {
-
-                if (
-                    session?.user
-                ) {
-
-                    aktuellerUser =
-                        session.user;
-
-                }
-
-
-                if (
-                    event ===
-                    "SIGNED_OUT"
-                ) {
-
-                    aktuellerUser =
-                        null;
-
-                }
-
-            }
-        );
-
-}
-
-
-// ============================================================
-// START
-// ============================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        // Bewerbung sofort anzeigen
-        schrittAnzeigen(1);
-
-
-        // Supabase Client aus supabase.js übernehmen
-        supabaseClient =
-            window.supabaseClient;
-
-
-        // Prüfen, ob Supabase verfügbar ist
-        if (!supabaseClient) {
-
-            zeigeFehler(
-                "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-            );
-
-            return;
-
-        }
-
-
-        // Angemeldeten Benutzer laden
-        const angemeldet =
-            await ladeAktuellenBenutzer();
-
-
-        // Wenn nicht angemeldet:
-        // Bewerbung bleibt trotzdem sichtbar.
-        // Die Anmeldung wird spätestens beim Absenden geprüft.
-        if (!angemeldet) {
-
-            return;
-
-        }
-
-
-        // Auth-Listener starten
-        registriereAuthListener();
-
-    }
-);
-
-// ============================================================
-// SCHRITT 1 VALIDIEREN
-// ============================================================
-
-function validiereSchritt1() {
-
-    const name =
-        document
-            .getElementById("name")
-            ?.value
-            .trim();
-
-    const minecraftName =
-        document
-            .getElementById("minecraftName")
-            ?.value
-            .trim();
-
-    const alter =
-        document
-            .getElementById("alter")
-            ?.value
-            .trim();
-
-
-    if (!name) {
-
-        zeigeFehler(
-            "Bitte gib deinen Namen ein."
-        );
-
-        document
-            .getElementById("name")
-            ?.focus();
-
-        return false;
-    }
-
-
-    if (!minecraftName) {
-
-        zeigeFehler(
-            "Bitte gib deinen Minecraft-Namen ein."
-        );
-
-        document
-            .getElementById("minecraftName")
-            ?.focus();
-
-        return false;
-    }
-
-
-    if (!alter) {
-
-        zeigeFehler(
-            "Bitte gib dein Alter ein."
-        );
-
-        document
-            .getElementById("alter")
-            ?.focus();
-
-        return false;
-    }
-
-
-    const alterZahl =
-        Number(alter);
-
-
-    if (
-        !Number.isInteger(alterZahl) ||
-        alterZahl < 1 ||
-        alterZahl > 120
-    ) {
-
-        zeigeFehler(
-            "Bitte gib ein gültiges Alter ein."
-        );
-
-        document
-            .getElementById("alter")
-            ?.focus();
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// SCHRITT 2 VALIDIEREN
-// ============================================================
-
-function validiereSchritt2() {
-
-    const fachbereiche =
-        getFachbereiche();
-
-
-    if (
-        fachbereiche.length === 0
-    ) {
-
-        zeigeFehler(
-            "Bitte wähle mindestens einen Fachbereich aus."
-        );
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// SCHRITT 3 VALIDIEREN
-// ============================================================
-
-function validiereSchritt3() {
-
-    const erfahrung =
-        getRadioWert(
-            "experience"
-        );
-
-
-    if (!erfahrung) {
-
-        zeigeFehler(
-            "Bitte wähle deine Erfahrung aus."
-        );
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// SCHRITT 4 VALIDIEREN
-// ============================================================
-
-function validiereSchritt4() {
-
-    const rolle =
-        getRadioWert(
-            "desiredRole"
-        );
-
-
-    const verfuegbarkeit =
-        document
-            .getElementById("availability")
-            ?.value;
-
-
-    if (!rolle) {
-
-        zeigeFehler(
-            "Bitte wähle deine gewünschte Rolle aus."
-        );
-
-        return false;
-    }
-
-
-    if (!verfuegbarkeit) {
-
-        zeigeFehler(
-            "Bitte wähle deine Verfügbarkeit aus."
-        );
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// SCHRITT 5 VALIDIEREN
-// ============================================================
-
-function validiereSchritt5() {
-
-    const motivation =
-        document
-            .getElementById("applicationText")
-            ?.value
-            .trim();
-
-
-    if (!motivation) {
-
-        zeigeFehler(
-            "Bitte schreibe etwas zu deiner Motivation."
-        );
-
-        document
-            .getElementById("applicationText")
-            ?.focus();
-
-        return false;
-    }
-
-
-    if (
-        motivation.length < 20
-    ) {
-
-        zeigeFehler(
-            "Bitte schreibe etwas ausführlicher über deine Motivation."
-        );
-
-        document
-            .getElementById("applicationText")
-            ?.focus();
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// SCHRITT VALIDIEREN
-// ============================================================
-
-function validiereSchritt(schritt) {
-
-    versteckeFehler();
-
-
-    if (schritt === 1) {
-
-        return validiereSchritt1();
-
-    }
-
-
-    if (schritt === 2) {
-
-        return validiereSchritt2();
-
-    }
-
-
-    if (schritt === 3) {
-
-        return validiereSchritt3();
-
-    }
-
-
-    if (schritt === 4) {
-
-        return validiereSchritt4();
-
-    }
-
-
-    if (schritt === 5) {
-
-        return validiereSchritt5();
-
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// ZUSAMMENFASSUNG AKTUALISIEREN
-// ============================================================
-
-function aktualisiereZusammenfassung() {
-
-    const name =
-        document
-            .getElementById("name")
-            ?.value
-            .trim();
-
-
-    const minecraftName =
-        document
-            .getElementById("minecraftName")
-            ?.value
-            .trim();
-
-
-    const rolle =
-        getRadioWert(
-            "desiredRole"
-        );
-
-
-    const erfahrung =
-        getRadioWert(
-            "experience"
-        );
-
-
-    const verfuegbarkeit =
-        document
-            .getElementById("availability")
-            ?.value;
-
-
-    const summaryName =
-        document.getElementById(
-            "summaryName"
-        );
-
-
-    const summaryMinecraft =
-        document.getElementById(
-            "summaryMinecraft"
-        );
-
-
-    const summaryRole =
-        document.getElementById(
-            "summaryRole"
-        );
-
-
-    const summaryExperience =
-        document.getElementById(
-            "summaryExperience"
-        );
-
-
-    const summaryAvailability =
-        document.getElementById(
-            "summaryAvailability"
-        );
-
-
-    if (summaryName) {
-
-        summaryName.textContent =
-            name || "–";
-
-    }
-
-
-    if (summaryMinecraft) {
-
-        summaryMinecraft.textContent =
-            minecraftName || "–";
-
-    }
-
-
-    if (summaryRole) {
-
-        summaryRole.textContent =
-            rolle || "–";
-
-    }
-
-
-    if (summaryExperience) {
-
-        summaryExperience.textContent =
-            erfahrung || "–";
-
-    }
-
-
-    if (summaryAvailability) {
-
-        summaryAvailability.textContent =
-            verfuegbarkeit || "–";
-
-    }
-
-}
 
 // ============================================================
 // BEWERBUNGSDATEN SAMMELN
@@ -1606,9 +687,7 @@ function sammleBewerbungsdaten() {
 
 
     const erfahrung =
-        getRadioWert(
-            "experience"
-        );
+        getRadioWert("experience");
 
 
     const previousWork =
@@ -1619,9 +698,7 @@ function sammleBewerbungsdaten() {
 
 
     const desiredRole =
-        getRadioWert(
-            "desiredRole"
-        );
+        getRadioWert("desiredRole");
 
 
     const availability =
@@ -1657,7 +734,7 @@ function sammleBewerbungsdaten() {
 
     return {
 
-        name,
+        name: name,
 
         minecraft_name:
             minecraftName,
@@ -1692,139 +769,7 @@ function sammleBewerbungsdaten() {
             unavailableTimes || null
 
     };
-
 }
-
-
-// ============================================================
-// FACHBEREICHE AUSLESEN
-// ============================================================
-
-function getFachbereiche() {
-
-    const checkboxIds = [
-
-        "bauen",
-        "landschaftsbau",
-        "redstone",
-        "farmer",
-        "lager",
-        "handel",
-        "planung",
-        "terraforming"
-
-    ];
-
-
-    const fachbereiche = [];
-
-
-    checkboxIds.forEach(
-        function (id) {
-
-            const checkbox =
-                document.getElementById(id);
-
-
-            if (
-                checkbox &&
-                checkbox.checked
-            ) {
-
-                fachbereiche.push(
-                    checkbox.value
-                );
-
-            }
-
-        }
-    );
-
-
-    return fachbereiche;
-
-}
-
-
-// ============================================================
-// RADIO-WERT AUSLESEN
-// ============================================================
-
-function getRadioWert(name) {
-
-    const radio =
-        document.querySelector(
-            `input[name="${name}"]:checked`
-        );
-
-
-    return radio
-        ? radio.value
-        : "";
-
-}
-
-
-// ============================================================
-// FEHLERMELDUNG
-// ============================================================
-
-function zeigeFehler(text) {
-
-    const fehler =
-        document.getElementById("fehler");
-
-
-    if (!fehler) {
-
-        alert(text);
-
-        return;
-
-    }
-
-
-    fehler.textContent =
-        text;
-
-
-    fehler.style.display =
-        "block";
-
-
-    fehler.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-
-}
-
-
-// ============================================================
-// FEHLERMELDUNG AUSBLENDEN
-// ============================================================
-
-function versteckeFehler() {
-
-    const fehler =
-        document.getElementById("fehler");
-
-
-    if (!fehler) {
-
-        return;
-
-    }
-
-
-    fehler.textContent =
-        "";
-
-
-    fehler.style.display =
-        "none";
-
-          }
 
 // ============================================================
 // BEWERBUNG ABSENDEN
@@ -1836,11 +781,12 @@ async function bewerbungAbsenden() {
 
 
     // Letzten Schritt prüfen
-    if (!validiereSchritt(5)) {
+    if (!validiereSchritt5()) {
         return;
     }
 
 
+    // Supabase Client holen
     const client =
         window.supabaseClient;
 
@@ -1856,16 +802,42 @@ async function bewerbungAbsenden() {
 
 
     // Eingeloggten Benutzer holen
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } =
-        await client.auth.getUser();
+    let user;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await client
+                .auth
+                .getUser();
 
 
-    if (userError || !user) {
+        if (error) {
+            throw error;
+        }
+
+
+        user = data?.user;
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Abrufen des Benutzers:",
+            error
+        );
+
+        zeigeFehler(
+            "Deine Anmeldung konnte nicht überprüft werden."
+        );
+
+        return;
+    }
+
+
+    if (!user) {
 
         zeigeFehler(
             "Du bist nicht eingeloggt. Bitte melde dich zuerst an."
@@ -1875,91 +847,94 @@ async function bewerbungAbsenden() {
     }
 
 
+    aktuellerUser =
+        user;
+
+
     // Prüfen, ob bereits eine offene Bewerbung existiert
-    const {
-        data: bestehendeBewerbungen,
-        error: pruefError
-    } =
-        await client
-            .from("applications")
-            .select("id, status")
-            .eq("user_id", user.id)
-            .eq("status", "offen")
-            .limit(1);
+    try {
+
+        const {
+            data: bestehendeBewerbungen,
+            error: pruefError
+        } =
+            await client
+                .from("applications")
+                .select("id, status")
+                .eq("user_id", user.id)
+                .eq("status", "offen")
+                .limit(1);
 
 
-    if (pruefError) {
+        if (pruefError) {
+            throw pruefError;
+        }
 
-        console.error(
-            "Fehler beim Prüfen der Bewerbung:",
-            pruefError
+
+        if (
+            bestehendeBewerbungen &&
+            bestehendeBewerbungen.length > 0
+        ) {
+
+            zeigeFehler(
+                "Du hast bereits eine offene Bewerbung."
+            );
+
+            return;
+        }
+
+
+        // Bewerbungsdaten sammeln
+        const bewerbung =
+            sammleBewerbungsdaten();
+
+
+        bewerbung.user_id =
+            user.id;
+
+
+        bewerbung.status =
+            "offen";
+
+
+        // Bewerbung speichern
+        const {
+            error: insertError
+        } =
+            await client
+                .from("applications")
+                .insert([
+                    bewerbung
+                ]);
+
+
+        if (insertError) {
+            throw insertError;
+        }
+
+
+        console.log(
+            "Ehrenmarkt Bewerbung erfolgreich gespeichert."
         );
 
-        zeigeFehler(
-            "Die Bewerbung konnte nicht geprüft werden. Bitte versuche es später erneut."
-        );
 
-        return;
-    }
+        // Erfolg anzeigen
+        zeigeBewerbungErfolg();
 
 
-    if (
-        bestehendeBewerbungen &&
-        bestehendeBewerbungen.length > 0
-    ) {
-
-        zeigeFehler(
-            "Du hast bereits eine offene Bewerbung."
-        );
-
-        return;
-    }
-
-
-    // Bewerbungsdaten sammeln
-    const bewerbung =
-        sammleBewerbungsdaten();
-
-
-    // User-ID ergänzen
-    bewerbung.user_id =
-        user.id;
-
-
-    // Status setzen
-    bewerbung.status =
-        "offen";
-
-
-    // Bewerbung an Supabase senden
-    const {
-        error: insertError
-    } =
-        await client
-            .from("applications")
-            .insert([
-                bewerbung
-            ]);
-
-
-    if (insertError) {
+    } catch (error) {
 
         console.error(
             "Fehler beim Absenden der Bewerbung:",
-            insertError
+            error
         );
+
 
         zeigeFehler(
             "Die Bewerbung konnte nicht abgesendet werden. Bitte versuche es erneut."
         );
 
-        return;
     }
-
-
-    // Erfolgreich
-    window.location.href = "bewerbung_erfolgreich.html";
-
 }
 
 
@@ -1994,6 +969,10 @@ function zeigeBewerbungErfolg() {
         erfolg.style.display =
             "block";
 
+        erfolg.classList.add(
+            "aktiv"
+        );
+
 
         erfolg.scrollIntoView({
             behavior: "smooth",
@@ -2002,6 +981,33 @@ function zeigeBewerbungErfolg() {
 
     }
 
+
+    const fortschritt =
+        document.getElementById(
+            "fortschrittInhalt"
+        );
+
+
+    if (fortschritt) {
+
+        fortschritt.style.width =
+            "100%";
+
+    }
+
+
+    const fortschrittSchritt =
+        document.getElementById(
+            "fortschrittSchritt"
+        );
+
+
+    if (fortschrittSchritt) {
+
+        fortschrittSchritt.textContent =
+            "Bewerbung eingereicht";
+
+    }
 }
 
 // ============================================================
@@ -2012,7 +1018,7 @@ function zeigeSchritt(neuerSchritt) {
 
     if (
         neuerSchritt < 1 ||
-        neuerSchritt > 5
+        neuerSchritt > gesamtSchritte
     ) {
         return;
     }
@@ -2029,14 +1035,24 @@ function zeigeSchritt(neuerSchritt) {
 
 
     schritte.forEach(
-        function (element, index) {
+        function(element, index) {
 
-            if (index + 1 === aktuellerSchritt) {
+            if (
+                index + 1 === aktuellerSchritt
+            ) {
+
+                element.classList.add(
+                    "aktiv"
+                );
 
                 element.style.display =
                     "block";
 
             } else {
+
+                element.classList.remove(
+                    "aktiv"
+                );
 
                 element.style.display =
                     "none";
@@ -2047,16 +1063,10 @@ function zeigeSchritt(neuerSchritt) {
     );
 
 
-    // Fortschrittsanzeige
+    // Fortschrittsbalken
     const fortschritt =
         document.getElementById(
             "fortschrittInhalt"
-        );
-
-
-    const fortschrittSchritt =
-        document.getElementById(
-            "fortschrittSchritt"
         );
 
 
@@ -2068,15 +1078,22 @@ function zeigeSchritt(neuerSchritt) {
     }
 
 
+    // Fortschrittstext
+    const fortschrittSchritt =
+        document.getElementById(
+            "fortschrittSchritt"
+        );
+
+
     if (fortschrittSchritt) {
 
         fortschrittSchritt.textContent =
-            `Schritt ${aktuellerSchritt} von 5`;
+            `Schritt ${aktuellerSchritt} von ${gesamtSchritte}`;
 
     }
 
 
-    // Auf Schritt 5 die Zusammenfassung aktualisieren
+    // Bei Schritt 5 Zusammenfassung aktualisieren
     if (
         aktuellerSchritt === 5
     ) {
@@ -2113,7 +1130,7 @@ function weiter() {
 
 
     if (
-        aktuellerSchritt < 5
+        aktuellerSchritt < gesamtSchritte
     ) {
 
         zeigeSchritt(
@@ -2164,28 +1181,103 @@ async function pruefeAnmeldung() {
     }
 
 
-    const {
-        data: {
-            user
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await client
+                .auth
+                .getUser();
+
+
+        if (error) {
+            throw error;
         }
-    } =
-        await client.auth.getUser();
 
 
-    if (!user) {
+        const user =
+            data?.user;
+
+
+        if (!user) {
+
+            zeigeFehler(
+                "Bitte melde dich zuerst im Ehrenmarkt an."
+            );
+
+            return false;
+        }
+
+
+        aktuellerUser =
+            user;
+
+
+        supabaseClient =
+            client;
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Fehler bei der Anmeldung:",
+            error
+        );
+
 
         zeigeFehler(
-            "Bitte melde dich zuerst im Ehrenmarkt an."
+            "Deine Anmeldung konnte nicht überprüft werden."
         );
 
         return false;
     }
 
-
-    return true;
-
 }
 
+
+// ============================================================
+// AUTH LISTENER
+// ============================================================
+
+function registriereAuthListener() {
+
+    const client =
+        window.supabaseClient;
+
+
+    if (!client) {
+        return;
+    }
+
+
+    client.auth.onAuthStateChange(
+        function(event, session) {
+
+            if (session?.user) {
+
+                aktuellerUser =
+                    session.user;
+
+            }
+
+
+            if (
+                event === "SIGNED_OUT"
+            ) {
+
+                aktuellerUser =
+                    null;
+
+            }
+
+        }
+    );
+
+}
 
 // ============================================================
 // START
@@ -2193,9 +1285,16 @@ async function pruefeAnmeldung() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    async function() {
 
-        // Ersten Schritt anzeigen
+        // Supabase Client übernehmen
+        supabaseClient =
+            window.supabaseClient;
+
+
+        // ERSTEN SCHRITT SOFORT ANZEIGEN
+        // Dadurch bleibt die Bewerbung sichtbar,
+        // auch wenn Supabase noch geprüft wird.
         zeigeSchritt(1);
 
 
@@ -2203,7 +1302,11 @@ document.addEventListener(
         await pruefeAnmeldung();
 
 
-        // Bei Änderungen Zusammenfassung vorbereiten
+        // Auth-Listener starten
+        registriereAuthListener();
+
+
+        // Zusammenfassung bei Änderungen aktualisieren
         const eingaben =
             document.querySelectorAll(
                 "input, select, textarea"
@@ -2211,11 +1314,11 @@ document.addEventListener(
 
 
         eingaben.forEach(
-            function (element) {
+            function(element) {
 
                 element.addEventListener(
                     "change",
-                    function () {
+                    function() {
 
                         aktualisiereZusammenfassung();
 
@@ -2225,7 +1328,7 @@ document.addEventListener(
 
                 element.addEventListener(
                     "input",
-                    function () {
+                    function() {
 
                         aktualisiereZusammenfassung();
 
@@ -2237,3 +1340,8 @@ document.addEventListener(
 
     }
 );
+
+
+// ============================================================
+// ENDE BEWERBUNGSSYSTEM
+// ============================================================
