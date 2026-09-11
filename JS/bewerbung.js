@@ -6,8 +6,8 @@
 let aktuellerSchritt = 1;
 const gesamtSchritte = 5;
 
-let supabaseClient = null;
 let aktuellerUser = null;
+let client = null;
 
 
 // ============================================================
@@ -60,9 +60,8 @@ function zeigeSchritt(nummer) {
 
     schritte.forEach(function(element) {
 
-        const schrittNummer = Number(
-            element.getAttribute("data-schritt")
-        );
+        const schrittNummer =
+            Number(element.getAttribute("data-schritt"));
 
         if (schrittNummer === aktuellerSchritt) {
 
@@ -123,7 +122,7 @@ function zeigeSchritt(nummer) {
 
 function weiter() {
 
-    console.log("WEITER WURDE GEDRÜCKT");
+    console.log("EHRENMARKT: WEITER");
 
     if (!validiereSchritt(aktuellerSchritt)) {
         return;
@@ -140,6 +139,8 @@ function weiter() {
 // ============================================================
 
 function zurueck() {
+
+    console.log("EHRENMARKT: ZURÜCK");
 
     if (aktuellerSchritt > 1) {
         zeigeSchritt(aktuellerSchritt - 1);
@@ -246,7 +247,6 @@ function validiereSchritt1() {
 
 
     const alterZahl = Number(alter);
-
 
     if (
         !Number.isInteger(alterZahl) ||
@@ -404,7 +404,6 @@ function validiereSchritt(schritt) {
 
     versteckeFehler();
 
-
     switch (schritt) {
 
         case 1:
@@ -425,7 +424,7 @@ function validiereSchritt(schritt) {
         default:
             return true;
     }
-    }
+}
 
 // ============================================================
 // ZUSAMMENFASSUNG AKTUALISIEREN
@@ -499,7 +498,8 @@ function aktualisiereZusammenfassung() {
 function sammleBewerbungsdaten() {
 
     const name =
-        document.getElementById("name")?.value.trim() || "";
+        document.getElementById("name")
+            ?.value.trim() || "";
 
     const minecraftName =
         document.getElementById("minecraftName")
@@ -604,29 +604,42 @@ function pruefeBewerbungsdaten() {
 
 
     if (!daten.name) {
-        zeigeFehler("Dein Name fehlt.");
+
+        zeigeFehler(
+            "Dein Name fehlt."
+        );
+
         return false;
     }
 
 
     if (!daten.minecraft_name) {
+
         zeigeFehler(
             "Dein Minecraft-Name fehlt."
         );
+
         return false;
     }
 
 
-    if (!daten.age || !Number.isInteger(daten.age)) {
+    if (
+        !daten.age ||
+        !Number.isInteger(daten.age)
+    ) {
+
         zeigeFehler(
             "Bitte gib ein gültiges Alter ein."
         );
+
         return false;
     }
 
 
-    if (!daten.additional_skills ||
-        daten.additional_skills.length === 0) {
+    if (
+        !daten.additional_skills ||
+        daten.additional_skills.length === 0
+    ) {
 
         zeigeFehler(
             "Bitte wähle mindestens einen Fachbereich aus."
@@ -637,6 +650,7 @@ function pruefeBewerbungsdaten() {
 
 
     if (!daten.experience) {
+
         zeigeFehler(
             "Bitte wähle deine Erfahrung aus."
         );
@@ -646,6 +660,7 @@ function pruefeBewerbungsdaten() {
 
 
     if (!daten.desired_role) {
+
         zeigeFehler(
             "Bitte wähle eine gewünschte Rolle aus."
         );
@@ -655,6 +670,7 @@ function pruefeBewerbungsdaten() {
 
 
     if (!daten.availability) {
+
         zeigeFehler(
             "Bitte wähle deine Verfügbarkeit aus."
         );
@@ -663,8 +679,10 @@ function pruefeBewerbungsdaten() {
     }
 
 
-    if (!daten.application_text ||
-        daten.application_text.trim().length < 20) {
+    if (
+        !daten.application_text ||
+        daten.application_text.trim().length < 20
+    ) {
 
         zeigeFehler(
             "Bitte schreibe mindestens 20 Zeichen zu deiner Motivation."
@@ -683,13 +701,11 @@ function pruefeBewerbungsdaten() {
 
 async function ladeAktuellenBenutzer() {
 
-    if (!supabaseClient) {
-        supabaseClient =
-            window.supabaseClient;
+    if (!client) {
+        client = window.supabaseClient;
     }
 
-
-    if (!supabaseClient) {
+    if (!client) {
 
         zeigeFehler(
             "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
@@ -704,7 +720,7 @@ async function ladeAktuellenBenutzer() {
         const {
             data,
             error
-        } = await supabaseClient
+        } = await client
             .auth
             .getUser();
 
@@ -737,11 +753,9 @@ async function ladeAktuellenBenutzer() {
             error
         );
 
-
         zeigeFehler(
             "Deine Anmeldung konnte nicht überprüft werden."
         );
-
 
         return false;
     }
@@ -757,7 +771,7 @@ async function bewerbungAbsenden() {
     versteckeFehler();
 
 
-    // Alle Daten vor dem Absenden prüfen
+    // Daten prüfen
 
     if (!pruefeBewerbungsdaten()) {
         return;
@@ -766,7 +780,7 @@ async function bewerbungAbsenden() {
 
     // Supabase Client holen
 
-    const client =
+    client =
         window.supabaseClient;
 
 
@@ -782,56 +796,13 @@ async function bewerbungAbsenden() {
 
     // Eingeloggten Benutzer holen
 
-    let user;
+    const angemeldet =
+        await ladeAktuellenBenutzer();
 
 
-    try {
-
-        const {
-            data,
-            error
-        } = await client
-            .auth
-            .getUser();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        user =
-            data?.user;
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Abrufen des Benutzers:",
-            error
-        );
-
-
-        zeigeFehler(
-            "Deine Anmeldung konnte nicht überprüft werden."
-        );
-
+    if (!angemeldet) {
         return;
     }
-
-
-    if (!user) {
-
-        zeigeFehler(
-            "Du bist nicht eingeloggt. Bitte melde dich zuerst an."
-        );
-
-        return;
-    }
-
-
-    aktuellerUser =
-        user;
 
 
     // Prüfen, ob bereits eine offene Bewerbung existiert
@@ -844,7 +815,7 @@ async function bewerbungAbsenden() {
         } = await client
             .from("applications")
             .select("id, status")
-            .eq("user_id", user.id)
+            .eq("user_id", aktuellerUser.id)
             .eq("status", "offen")
             .limit(1);
 
@@ -873,19 +844,15 @@ async function bewerbungAbsenden() {
             sammleBewerbungsdaten();
 
 
-        // Benutzer-ID hinzufügen
-
         bewerbung.user_id =
-            user.id;
+            aktuellerUser.id;
 
-
-        // Status festlegen
 
         bewerbung.status =
             "offen";
 
 
-        // Bewerbung in Supabase speichern
+        // Bewerbung speichern
 
         const {
             error: insertError
@@ -923,7 +890,7 @@ async function bewerbungAbsenden() {
             "Die Bewerbung konnte nicht abgesendet werden. Bitte versuche es erneut."
         );
     }
-                }
+}
 
 // ============================================================
 // ERFOLGSMELDUNG ANZEIGEN
@@ -938,7 +905,7 @@ function zeigeBewerbungErfolg() {
         document.querySelectorAll(".schritt");
 
 
-    // Alle Bewerbungsschritte ausblenden
+    // Alle Schritte ausblenden
 
     schritte.forEach(function(element) {
 
@@ -962,7 +929,7 @@ function zeigeBewerbungErfolg() {
     }
 
 
-    // Fortschrittsbalken auf 100 %
+    // Fortschrittsbalken
 
     const fortschritt =
         document.getElementById("fortschrittInhalt");
@@ -972,7 +939,7 @@ function zeigeBewerbungErfolg() {
     }
 
 
-    // Fortschrittstext ändern
+    // Fortschrittstext
 
     const fortschrittSchritt =
         document.getElementById("fortschrittSchritt");
@@ -996,13 +963,14 @@ function zurStartseite() {
 
 
 // ============================================================
-// AUTHENTIFIZIERUNG PRÜFEN
+// AUTHENTIFIZIERUNG
 // ============================================================
 
 async function pruefeAnmeldung() {
 
-    const client =
-        window.supabaseClient;
+    if (!client) {
+        client = window.supabaseClient;
+    }
 
 
     if (!client) {
@@ -1047,9 +1015,6 @@ async function pruefeAnmeldung() {
         aktuellerUser =
             user;
 
-        supabaseClient =
-            client;
-
 
         return true;
 
@@ -1077,8 +1042,9 @@ async function pruefeAnmeldung() {
 
 function registriereAuthListener() {
 
-    const client =
-        window.supabaseClient;
+    if (!client) {
+        client = window.supabaseClient;
+    }
 
 
     if (!client) {
@@ -1103,63 +1069,68 @@ function registriereAuthListener() {
             }
         }
     );
-            }
+}
+
 
 // ============================================================
-// EHRENMARKT BEWERBUNG
 // INITIALISIERUNG
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
 
-    console.log("Ehrenmarkt Bewerbung wird gestartet...");
+        console.log(
+            "Ehrenmarkt Bewerbung wird gestartet..."
+        );
 
 
-    // Supabase laden
+        // Supabase Client laden
 
-    if (window.supabaseClient) {
-
-        supabaseClient =
+        client =
             window.supabaseClient;
 
-    } else {
 
-        console.error(
-            "Supabase Client nicht gefunden."
+        if (!client) {
+
+            console.error(
+                "Supabase Client nicht gefunden."
+            );
+
+
+            zeigeFehler(
+                "Das Ehrenmarkt-System konnte nicht geladen werden."
+            );
+
+            return;
+        }
+
+
+        // Auth Listener
+
+        registriereAuthListener();
+
+
+        // Anmeldung prüfen
+
+        const angemeldet =
+            await pruefeAnmeldung();
+
+
+        if (!angemeldet) {
+            return;
+        }
+
+
+        // Mit Schritt 1 starten
+
+        aktuellerSchritt = 1;
+
+        zeigeSchritt(1);
+
+
+        console.log(
+            "Ehrenmarkt Bewerbung bereit."
         );
-
-        zeigeFehler(
-            "Das Ehrenmarkt-System konnte nicht geladen werden."
-        );
-
-        return;
     }
-
-
-    // Auth Listener starten
-
-    registriereAuthListener();
-
-
-    // Benutzer prüfen
-
-    const angemeldet =
-        await pruefeAnmeldung();
-
-
-    if (!angemeldet) {
-        return;
-    }
-
-
-    // Immer mit Schritt 1 starten
-
-    aktuellerSchritt = 1;
-
-    zeigeSchritt(1);
-
-
-    console.log(
-        "Ehrenmarkt Bewerbung bereit."
-    );
-});
+);
