@@ -982,6 +982,117 @@ function formatiereArbeitszeit(
 }
 
 // ============================================================
+// STEMPELUHR
+// ============================================================
+
+async function einstempeln() {
+
+    if (!aktuellerMitarbeiter || !mitarbeiterSupabase) {
+        zeigeFehler("Mitarbeiterdaten konnten nicht geladen werden.");
+        return;
+    }
+
+    if (aktuellerMitarbeiter.clock_in) {
+        zeigeFehler("Du bist bereits eingestempelt.");
+        return;
+    }
+
+    const jetzt = new Date().toISOString();
+
+    const { error } = await mitarbeiterSupabase
+        .from("employees")
+        .update({
+            clock_in: jetzt
+        })
+        .eq("user_id", aktuellerUser.id);
+
+    if (error) {
+        console.error("Fehler beim Einstempeln:", error);
+        zeigeFehler("Einstempeln fehlgeschlagen.");
+        return;
+    }
+
+    aktuellerMitarbeiter.clock_in = jetzt;
+
+    aktualisiereStempeluhrAnzeige();
+}
+
+
+async function ausstempeln() {
+
+    if (
+        !aktuellerMitarbeiter ||
+        !aktuellerMitarbeiter.clock_in ||
+        !mitarbeiterSupabase
+    ) {
+        zeigeFehler("Du bist aktuell nicht eingestempelt.");
+        return;
+    }
+
+    const start = new Date(aktuellerMitarbeiter.clock_in);
+    const ende = new Date();
+
+    const minuten = Math.max(
+        1,
+        Math.floor((ende - start) / 60000)
+    );
+
+    const bisher =
+        Number(aktuellerMitarbeiter.total_work_minutes) || 0;
+
+    const gesamt = bisher + minuten;
+
+    const { error } = await mitarbeiterSupabase
+        .from("employees")
+        .update({
+            clock_in: null,
+            total_work_minutes: gesamt
+        })
+        .eq("user_id", aktuellerUser.id);
+
+    if (error) {
+        console.error("Fehler beim Ausstempeln:", error);
+        zeigeFehler("Ausstempeln fehlgeschlagen.");
+        return;
+    }
+
+    aktuellerMitarbeiter.clock_in = null;
+    aktuellerMitarbeiter.total_work_minutes = gesamt;
+
+    aktualisiereStempeluhrAnzeige();
+}
+
+
+function aktualisiereStempeluhrAnzeige() {
+
+    const anzeige = element("arbeitszeitAnzeige");
+    const einButton = element("einstempelnButton");
+    const ausButton = element("ausstempelnButton");
+
+    if (!aktuellerMitarbeiter) {
+        return;
+    }
+
+    if (anzeige) {
+        anzeige.textContent =
+            formatierenArbeitszeit(
+                aktuellerMitarbeiter.total_work_minutes
+            );
+    }
+
+    const eingestempelt =
+        Boolean(aktuellerMitarbeiter.clock_in);
+
+    if (einButton) {
+        einButton.disabled = eingestempelt;
+    }
+
+    if (ausButton) {
+        ausButton.disabled = !eingestempelt;
+    }
+}
+
+// ============================================================
 // TEIL 3
 // VERFÜGBARKEIT
 // ============================================================
