@@ -1,4 +1,3 @@
-let supabaseClient = null;
 let aktuellerBenutzer = null;
 let aktuelleBewerbung = null;
 let bewerbungen = [];
