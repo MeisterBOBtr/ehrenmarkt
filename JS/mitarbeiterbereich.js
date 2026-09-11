@@ -81,6 +81,27 @@ console.log(
 
 
     // =====================================================
+// MITARBEITERBEREICH ANZEIGEN
+// =====================================================
+
+const gastBereich = document.getElementById("gastBereich");
+const mitarbeiterBereich = document.getElementById("mitarbeiterBereich");
+const ladebereich = document.getElementById("ladebereich");
+
+if (gastBereich) {
+    gastBereich.style.display = "none";
+}
+
+if (mitarbeiterBereich) {
+    mitarbeiterBereich.style.display = "block";
+}
+
+if (ladebereich) {
+    ladebereich.style.display = "none";
+}
+
+
+    // =====================================================
     // PROFIL
     // =====================================================
 
