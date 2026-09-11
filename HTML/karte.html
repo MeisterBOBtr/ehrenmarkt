@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ehrenmarkt – Ingame-Karte</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #f1e4c4;
+
+            background:
+                linear-gradient(
+                    rgba(8, 6, 5, 0.78),
+                    rgba(8, 6, 5, 0.88)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Stadt.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+
+        /* =====================================================
+           HAUPTBEREICH
+           ===================================================== */
+
+        .page {
+            width: 100%;
+            max-width: 1250px;
+
+            margin: 0 auto;
+
+            padding:
+                35px 20px 60px;
+        }
+
+
+        /* =====================================================
+           HERO
+           ===================================================== */
+
+        .hero {
+            text-align: center;
+
+            padding:
+                35px 20px;
+
+            margin-bottom: 30px;
+
+            background:
+                rgba(15, 12, 10, 0.90);
+
+            border:
+                1px solid #d7ad52;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.55);
+        }
+
+
+        .hero h1 {
+            margin: 0 0 10px;
+
+            color: #d7ad52;
+
+            font-size:
+                clamp(30px, 7vw, 52px);
+
+            text-shadow:
+                2px 2px 5px #000;
+        }
+
+
+        .hero p {
+            margin: 0;
+
+            color: #d8ccb0;
+
+            font-size: 17px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           ABSCHNITTE
+           ===================================================== */
+
+        .section {
+            margin-bottom: 30px;
+
+            padding: 25px;
+
+            background:
+                rgba(15, 12, 10, 0.88);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.65);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.45);
+        }
+
+
+        .section h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+
+            color: #d7ad52;
+
+            font-size: 28px;
+
+            border-bottom:
+                1px solid rgba(215, 173, 82, 0.45);
+
+            padding-bottom: 10px;
+        }
+
+
+        .section-text {
+            color: #d8ccb0;
+
+            line-height: 1.7;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           WICHTIGE LINKS
+           ===================================================== */
+
+        .links-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px, 1fr)
+                );
+
+            gap: 18px;
+        }
+
+
+        .link-card {
+            display: block;
+
+            padding: 22px;
+
+            text-decoration: none;
+
+            color: #f1e4c4;
+
+            background:
+                rgba(10, 8, 7, 0.92);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.55);
+
+            border-radius: 12px;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .link-card:hover {
+            transform:
+                translateY(-3px);
+
+            border-color:
+                #d7ad52;
+
+            background:
+                rgba(25, 19, 14, 0.96);
+        }
+
+
+        .link-card h3 {
+            margin:
+                0 0 8px;
+
+            color:
+                #d7ad52;
+
+            font-size:
+                21px;
+        }
+
+
+        .link-card p {
+            margin: 0;
+
+            color:
+                #cfc3a8;
+
+            line-height:
+                1.5;
+        }
+
+
+        /* =====================================================
+           STANDORTE
+           ===================================================== */
+
+        #standorteContainer {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(280px, 1fr)
+                );
+
+            gap: 20px;
+        }
+
+
+        .standort-card {
+            padding: 20px;
+
+            background:
+                rgba(10, 8, 7, 0.94);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.55);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 5px 18px rgba(0, 0, 0, 0.4);
+        }
+
+
+        .standort-header {
+            margin-bottom: 15px;
+
+            padding-bottom: 12px;
+
+            border-bottom:
+                1px solid
+                rgba(215, 173, 82, 0.35);
+        }
+
+
+        .standort-header h3 {
+            margin:
+                0 0 8px;
+
+            color:
+                #d7ad52;
+
+            font-size:
+                23px;
+        }
+
+
+        .standort-kategorie {
+            display: inline-block;
+
+            padding:
+                4px 9px;
+
+            color:
+                #f1e4c4;
+
+            background:
+                rgba(120, 30, 20, 0.65);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.35);
+
+            border-radius:
+                6px;
+
+            font-size:
+                13px;
+        }
+
+
+        .standort-content {
+            color:
+                #d8ccb0;
+
+            line-height:
+                1.6;
+        }
+
+
+        .standort-info {
+            margin-bottom:
+                8px;
+        }
+
+
+        .standort-info strong {
+            color:
+                #d7ad52;
+        }
+
+
+        .standort-info code {
+            padding:
+                3px 7px;
+
+            color:
+                #f1e4c4;
+
+            background:
+                rgba(0, 0, 0, 0.45);
+
+            border-radius:
+                5px;
+        }
+
+
+        .standort-description {
+            margin-top:
+                14px;
+
+            padding-top:
+                12px;
+
+            border-top:
+                1px solid
+                rgba(215, 173, 82, 0.2);
+
+            color:
+                #cfc3a8;
+        }
+
+
+        /* =====================================================
+           LEER / LADEN / FEHLER
+           ===================================================== */
+
+        .loading,
+        .empty-message,
+        .error-message {
+            grid-column:
+                1 / -1;
+
+            padding:
+                25px;
+
+            text-align:
+                center;
+
+            background:
+                rgba(10, 8, 7, 0.9);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.4);
+
+            border-radius:
+                10px;
+
+            color:
+                #d8ccb0;
+        }
+
+
+        .empty-message h3 {
+            margin-top:
+                0;
+
+            color:
+                #d7ad52;
+        }
+
+
+        .error-message {
+            border-color:
+                rgba(150, 40, 30, 0.8);
+
+            color:
+                #e6b8ae;
+        }
+
+
+        /* =====================================================
+           VERWALTUNG
+           ===================================================== */
+
+        #verwaltungBereich {
+            display: none;
+        }
+
+
+        .verwaltung-buttons {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 12px;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        button {
+            padding:
+                11px 18px;
+
+            border:
+                1px solid #d7ad52;
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(90, 25, 18, 0.85);
+
+            color:
+                #f1e4c4;
+
+            font-family:
+                inherit;
+
+            font-size:
+                15px;
+
+            cursor:
+                pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        button:hover {
+            background:
+                rgba(120, 35, 22, 0.95);
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        button.secondary {
+            background:
+                rgba(40, 35, 28, 0.9);
+
+            border-color:
+                rgba(215, 173, 82, 0.5);
+        }
+
+
+        button.danger {
+            background:
+                rgba(110, 25, 20, 0.9);
+
+            border-color:
+                #a84a3d;
+        }
+
+
+        /* =====================================================
+           FORMULARE
+           ===================================================== */
+
+        .management-form {
+            display: none;
+
+            margin-top:
+                20px;
+
+            padding:
+                22px;
+
+            background:
+                rgba(8, 7, 6, 0.92);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.45);
+
+            border-radius:
+                12px;
+        }
+
+
+        .management-form.active {
+            display: block;
+        }
+
+
+        .management-form h3 {
+            margin-top:
+                0;
+
+            color:
+                #d7ad52;
+        }
+
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(220px, 1fr)
+                );
+
+            gap:
+                15px;
+        }
+
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+        }
+
+
+        .form-group.full {
+            grid-column:
+                1 / -1;
+        }
+
+
+        label {
+            color:
+                #d7ad52;
+
+            font-weight:
+                bold;
+
+            font-size:
+                14px;
+        }
+
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+
+            padding:
+                11px 12px;
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.4);
+
+            border-radius:
+                7px;
+
+            background:
+                rgba(20, 16, 13, 0.95);
+
+            color:
+                #f1e4c4;
+
+            font-family:
+                inherit;
+
+            font-size:
+                15px;
+
+            outline:
+                none;
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color:
+                #d7ad52;
+        }
+
+
+        textarea {
+            min-height:
+                100px;
+
+            resize:
+                vertical;
+        }
+
+
+        .form-actions {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap:
+                10px;
+
+            margin-top:
+                20px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding:
+                    20px 12px 40px;
+            }
+
+
+            .section {
+                padding:
+                    18px;
+            }
+
+
+            .hero {
+                padding:
+                    25px 15px;
+            }
+
+
+            .hero p {
+                font-size:
+                    15px;
+            }
+
+
+            .section h2 {
+                font-size:
+                    24px;
+            }
+
+
+            .links-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            #standorteContainer {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .verwaltung-buttons {
+                flex-direction:
+                    column;
+            }
+
+
+            button {
+                width:
+                    100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main class="page">
+
+        <!-- =================================================
+             HERO
+             ================================================= -->
+
+        <section class="hero">
+
+            <h1>Ingame-Karte</h1>
+
+            <p>
+                Wichtige Standorte, Shops, Partner und
+                weitere Orte auf OPSUCHT.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             WICHTIGE LINKS
+             ================================================= -->
+
+        <section class="section">
+
+            <h2>Wichtige Links</h2>
+
+            <div class="links-grid">
+
+                <a
+                    class="link-card"
+                    href="https://discord.gg/opsucht"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    <h3>OPSUCHT.NET</h3>
+
+                    <p>
+                        Zum offiziellen OPSUCHT Discord.
+                    </p>
+
+                </a>
+
+
+                <a
+                    class="link-card"
+                    href="https://discord.gg/UTBkKqCvgH"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+
+                    <h3>Falkenstein</h3>
+
+                    <p>
+                        Zum Falkenstein Discord.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             INGAME STANDORTE
+             ================================================= -->
+
+        <section class="section">
+
+            <h2>Ingame-Standorte</h2>
+
+            <p class="section-text">
+                Hier findest du wichtige Orte des Ehrenmarktes,
+                Partner, Bündnisse, Shops und weitere
+                interessante Standorte auf OPSUCHT.
+            </p>
+
+            <div id="standorteContainer">
+
+                <div class="loading">
+                    Ingame-Standorte werden geladen...
+                </div>
+
+            </div>
+
+  </section>
+
+              <!-- =================================================
+             VERWALTUNG
+             Nur für Leitung / Stadtleitung
+             ================================================= -->
+
+        <section
+            class="section"
+            id="verwaltungBereich"
+        >
+
+            <h2>Standortverwaltung</h2>
+
+            <p class="section-text">
+                Hier können berechtigte Mitarbeiter
+                Ingame-Standorte hinzufügen, bearbeiten
+                oder entfernen.
+            </p>
+
+
+            <div class="verwaltung-buttons">
+
+                <button
+                    type="button"
+                    id="addStandortButton"
+                >
+                    Standort hinzufügen
+                </button>
+
+
+                <button
+                    type="button"
+                    id="editStandortButton"
+                >
+                    Standort bearbeiten
+                </button>
+
+
+                <button
+                    type="button"
+                    id="deleteStandortButton"
+                    class="danger"
+                >
+                    Standort löschen
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 STANDORT HINZUFÜGEN
+                 ================================================= -->
+
+            <div
+                class="management-form"
+                id="addStandortForm"
+            >
+
+                <h3>
+                    Neuen Standort hinzufügen
+                </h3>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="standortName">
+                            Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="standortName"
+                            placeholder="z. B. Ehrenmarkt Hauptsitz"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="standortKategorie">
+                            Kategorie *
+                        </label>
+
+                        <select
+                            id="standortKategorie"
+                            required
+                        >
+
+                            <option value="Ehrenmarkt">
+                                Ehrenmarkt
+                            </option>
+
+                            <option value="Hauptsitz">
+                                Hauptsitz
+                            </option>
+
+                            <option value="Partner">
+                                Partner
+                            </option>
+
+                            <option value="Bündnis">
+                                Bündnis
+                            </option>
+
+                            <option value="Shop">
+                                Shop
+                            </option>
+
+                            <option value="Sonstiges">
+                                Sonstiges
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="standortBetreiber">
+                            Betreiber
+                        </label>
+
+                        <input
+                            type="text"
+                            id="standortBetreiber"
+                            placeholder="z. B. MeisterBOBtr"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="standortCB">
+                            CityBuild *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="standortCB"
+                            placeholder="z. B. CB1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="standortSW">
+                            /sw-Befehl
+                        </label>
+
+                        <input
+                            type="text"
+                            id="standortSW"
+                            placeholder="z. B. /sw ehrenmarkt"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="standortKoordinaten">
+                            Koordinaten
+                        </label>
+
+                        <input
+                            type="text"
+                            id="standortKoordinaten"
+                            placeholder="z. B. X: 1200 Y: 65 Z: -450"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="standortBeschreibung">
+                            Beschreibung / Werbung
+                        </label>
+
+                        <textarea
+                            id="standortBeschreibung"
+                            placeholder="Beschreibung des Standortes oder Werbung..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="saveStandortButton"
+                    >
+                        Standort speichern
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="cancelAddStandort"
+                        class="secondary"
+                    >
+                        Abbrechen
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 STANDORT BEARBEITEN
+                 ================================================= -->
+
+            <div
+                class="management-form"
+                id="editStandortForm"
+            >
+
+                <h3>
+                    Standort bearbeiten
+                </h3>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group full">
+
+                        <label for="editStandortSelect">
+                            Standort auswählen
+                        </label>
+
+                        <select
+                            id="editStandortSelect"
+                        >
+
+                            <option value="">
+                                -- Standort auswählen --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortName">
+                            Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editStandortName"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortKategorie">
+                            Kategorie *
+                        </label>
+
+                        <select
+                            id="editStandortKategorie"
+                            required
+                        >
+
+                            <option value="Ehrenmarkt">
+                                Ehrenmarkt
+                            </option>
+
+                            <option value="Hauptsitz">
+                                Hauptsitz
+                            </option>
+
+                            <option value="Partner">
+                                Partner
+                            </option>
+
+                            <option value="Bündnis">
+                                Bündnis
+                            </option>
+
+                            <option value="Shop">
+                                Shop
+                            </option>
+
+                            <option value="Sonstiges">
+                                Sonstiges
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortBetreiber">
+                            Betreiber
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editStandortBetreiber"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortCB">
+                            CityBuild *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editStandortCB"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortSW">
+                            /sw-Befehl
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editStandortSW"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editStandortKoordinaten">
+                            Koordinaten
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editStandortKoordinaten"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="editStandortBeschreibung">
+                            Beschreibung / Werbung
+                        </label>
+
+                        <textarea
+                            id="editStandortBeschreibung"
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="saveEditStandortButton"
+                    >
+                        Änderungen speichern
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="cancelEditStandort"
+                        class="secondary"
+                    >
+                        Abbrechen
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             HINWEIS
+             ================================================= -->
+
+        <section class="section">
+
+            <h2>Hinweis</h2>
+
+            <p class="section-text">
+                Die Angaben zu den Ingame-Standorten können
+                sich ändern. Bitte überprüfe den jeweiligen
+                CityBuild und den angegebenen /sw-Befehl
+                vor deinem Besuch.
+            </p>
+
+        </section>
+
+
+    </main>
+
+      <!-- =====================================================
+         SCRIPTS
+         ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../supabase.js"></script>
+
+    <script src="../JS/karte.js"></script>
+
+</body>
+</html>
