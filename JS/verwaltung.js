@@ -4749,7 +4749,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             content.innerHTML = `
 
-                <div class="item-editor">
+                <div class="item-editor active">
 
                     <div class="editor-title">
                         Item bearbeiten
@@ -5510,7 +5510,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         content.innerHTML = `
 
-            <div class="item-editor">
+            <div class="item-editor active">
 
                 <div class="editor-title">
                     Neues Item hinzufügen
