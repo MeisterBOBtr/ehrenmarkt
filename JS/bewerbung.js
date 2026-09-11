@@ -63,9 +63,21 @@ function versteckeFehler() {
 
 function schrittAnzeigen(nummer) {
 
+    // Alle Schritte erst jetzt aus dem HTML holen
     const schritte =
         document.querySelectorAll(".schritt");
 
+
+    // Fortschrittsanzeige erst jetzt aus dem HTML holen
+    const fortschritt =
+        document.getElementById("fortschrittInhalt");
+
+
+    const fortschrittText =
+        document.getElementById("fortschrittSchritt");
+
+
+    // Alle Schritte ausblenden
     schritte.forEach((element) => {
 
         element.classList.remove("aktiv");
@@ -73,6 +85,7 @@ function schrittAnzeigen(nummer) {
     });
 
 
+    // Gewünschten Schritt suchen
     const ziel =
         document.querySelector(
             '.schritt[data-schritt="' +
@@ -81,23 +94,29 @@ function schrittAnzeigen(nummer) {
         );
 
 
+    // Falls der Schritt nicht existiert
     if (!ziel) {
+
         console.error(
             "Bewerbungsschritt nicht gefunden:",
             nummer
         );
 
         return;
+
     }
 
 
+    // Gewünschten Schritt anzeigen
     ziel.classList.add("aktiv");
 
 
+    // Aktuellen Schritt speichern
     aktuellerSchritt =
         nummer;
 
 
+    // Fortschrittsbalken aktualisieren
     if (fortschritt) {
 
         fortschritt.style.width =
@@ -110,6 +129,7 @@ function schrittAnzeigen(nummer) {
     }
 
 
+    // Text "Schritt X von 5" aktualisieren
     if (fortschrittText) {
 
         fortschrittText.textContent =
@@ -121,6 +141,7 @@ function schrittAnzeigen(nummer) {
     }
 
 
+    // Zusammenfassung bei Schritt 5 aktualisieren
     if (nummer === 5) {
 
         aktualisiereZusammenfassung();
@@ -128,12 +149,17 @@ function schrittAnzeigen(nummer) {
     }
 
 
+    // Fehlermeldung ausblenden
     versteckeFehler();
 
 
+    // Nach oben scrollen
     window.scrollTo({
+
         top: 0,
+
         behavior: "smooth"
+
     });
 
 }
