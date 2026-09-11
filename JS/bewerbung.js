@@ -1,6 +1,6 @@
 // ============================================================
 // EHRENMARKT
-// BEWERBUNGSSYSTEM
+// BEWERBUNGSSYSTEM V1
 // ============================================================
 
 let aktuellerSchritt = 1;
@@ -15,9 +15,7 @@ let aktuellerUser = null;
 // ============================================================
 
 function zeigeFehler(text) {
-
-    const fehlerBox =
-        document.getElementById("fehler");
+    const fehlerBox = document.getElementById("fehler");
 
     if (!fehlerBox) {
         alert(text);
@@ -35,9 +33,7 @@ function zeigeFehler(text) {
 
 
 function versteckeFehler() {
-
-    const fehlerBox =
-        document.getElementById("fehler");
+    const fehlerBox = document.getElementById("fehler");
 
     if (!fehlerBox) {
         return;
@@ -60,12 +56,15 @@ function zeigeSchritt(nummer) {
 
     aktuellerSchritt = nummer;
 
-    const schritte =
-        document.querySelectorAll(".schritt");
+    const schritte = document.querySelectorAll(".schritt");
 
-    schritte.forEach(function(element, index) {
+    schritte.forEach(function(element) {
 
-        if (index + 1 === aktuellerSchritt) {
+        const schrittNummer = Number(
+            element.getAttribute("data-schritt")
+        );
+
+        if (schrittNummer === aktuellerSchritt) {
 
             element.classList.add("aktiv");
             element.style.display = "block";
@@ -74,40 +73,37 @@ function zeigeSchritt(nummer) {
 
             element.classList.remove("aktiv");
             element.style.display = "none";
-
         }
-
     });
 
 
     // Fortschrittsbalken
+
     const fortschritt =
         document.getElementById("fortschrittInhalt");
 
     if (fortschritt) {
-
         fortschritt.style.width =
-            (aktuellerSchritt / gesamtSchritte * 100) + "%";
-
+            ((aktuellerSchritt / gesamtSchritte) * 100) + "%";
     }
 
 
     // Fortschrittstext
+
     const fortschrittText =
         document.getElementById("fortschrittSchritt");
 
     if (fortschrittText) {
-
         fortschrittText.textContent =
             "Schritt " +
             aktuellerSchritt +
             " von " +
             gesamtSchritte;
-
     }
 
 
-    // Zusammenfassung in Schritt 5
+    // Zusammenfassung bei Schritt 5
+
     if (aktuellerSchritt === 5) {
         aktualisiereZusammenfassung();
     }
@@ -132,11 +128,7 @@ function weiter() {
     }
 
     if (aktuellerSchritt < gesamtSchritte) {
-
-        zeigeSchritt(
-            aktuellerSchritt + 1
-        );
-
+        zeigeSchritt(aktuellerSchritt + 1);
     }
 }
 
@@ -148,14 +140,9 @@ function weiter() {
 function zurueck() {
 
     if (aktuellerSchritt > 1) {
-
-        zeigeSchritt(
-            aktuellerSchritt - 1
-        );
-
+        zeigeSchritt(aktuellerSchritt - 1);
     }
 }
-
 
 // ============================================================
 // RADIO-WERT AUSLESEN
@@ -163,14 +150,11 @@ function zurueck() {
 
 function getRadioWert(name) {
 
-    const radio =
-        document.querySelector(
-            'input[name="' + name + '"]:checked'
-        );
+    const radio = document.querySelector(
+        'input[name="' + name + '"]:checked'
+    );
 
-    return radio
-        ? radio.value
-        : "";
+    return radio ? radio.value : "";
 }
 
 
@@ -181,7 +165,6 @@ function getRadioWert(name) {
 function getFachbereiche() {
 
     const checkboxIds = [
-
         "bauen",
         "landschaftsbau",
         "redstone",
@@ -190,33 +173,23 @@ function getFachbereiche() {
         "handel",
         "planung",
         "terraforming"
-
     ];
 
     const fachbereiche = [];
-
 
     checkboxIds.forEach(function(id) {
 
         const checkbox =
             document.getElementById(id);
 
-        if (
-            checkbox &&
-            checkbox.checked
-        ) {
-
-            fachbereiche.push(
-                checkbox.value
-            );
-
+        if (checkbox && checkbox.checked) {
+            fachbereiche.push(checkbox.value);
         }
-
     });
-
 
     return fachbereiche;
 }
+
 
 // ============================================================
 // SCHRITT 1 VALIDIEREN
@@ -225,22 +198,13 @@ function getFachbereiche() {
 function validiereSchritt1() {
 
     const name =
-        document
-            .getElementById("name")
-            ?.value
-            .trim();
+        document.getElementById("name")?.value.trim();
 
     const minecraftName =
-        document
-            .getElementById("minecraftName")
-            ?.value
-            .trim();
+        document.getElementById("minecraftName")?.value.trim();
 
     const alter =
-        document
-            .getElementById("alter")
-            ?.value
-            .trim();
+        document.getElementById("alter")?.value.trim();
 
 
     if (!name) {
@@ -249,9 +213,7 @@ function validiereSchritt1() {
             "Bitte gib deinen Namen ein."
         );
 
-        document
-            .getElementById("name")
-            ?.focus();
+        document.getElementById("name")?.focus();
 
         return false;
     }
@@ -263,9 +225,7 @@ function validiereSchritt1() {
             "Bitte gib deinen Minecraft-Namen ein."
         );
 
-        document
-            .getElementById("minecraftName")
-            ?.focus();
+        document.getElementById("minecraftName")?.focus();
 
         return false;
     }
@@ -277,16 +237,13 @@ function validiereSchritt1() {
             "Bitte gib dein Alter ein."
         );
 
-        document
-            .getElementById("alter")
-            ?.focus();
+        document.getElementById("alter")?.focus();
 
         return false;
     }
 
 
-    const alterZahl =
-        Number(alter);
+    const alterZahl = Number(alter);
 
 
     if (
@@ -299,9 +256,7 @@ function validiereSchritt1() {
             "Bitte gib ein gültiges Alter ein."
         );
 
-        document
-            .getElementById("alter")
-            ?.focus();
+        document.getElementById("alter")?.focus();
 
         return false;
     }
@@ -369,9 +324,7 @@ function validiereSchritt4() {
         getRadioWert("desiredRole");
 
     const verfuegbarkeit =
-        document
-            .getElementById("availability")
-            ?.value;
+        document.getElementById("availability")?.value;
 
 
     if (!rolle) {
@@ -405,10 +358,8 @@ function validiereSchritt4() {
 function validiereSchritt5() {
 
     const motivation =
-        document
-            .getElementById("applicationText")
-            ?.value
-            .trim();
+        document.getElementById("applicationText")
+            ?.value.trim();
 
 
     if (!motivation) {
@@ -452,34 +403,27 @@ function validiereSchritt(schritt) {
     versteckeFehler();
 
 
-    if (schritt === 1) {
-        return validiereSchritt1();
+    switch (schritt) {
+
+        case 1:
+            return validiereSchritt1();
+
+        case 2:
+            return validiereSchritt2();
+
+        case 3:
+            return validiereSchritt3();
+
+        case 4:
+            return validiereSchritt4();
+
+        case 5:
+            return validiereSchritt5();
+
+        default:
+            return true;
     }
-
-
-    if (schritt === 2) {
-        return validiereSchritt2();
     }
-
-
-    if (schritt === 3) {
-        return validiereSchritt3();
-    }
-
-
-    if (schritt === 4) {
-        return validiereSchritt4();
-    }
-
-
-    if (schritt === 5) {
-        return validiereSchritt5();
-    }
-
-
-    return true;
-}
-
 
 // ============================================================
 // ZUSAMMENFASSUNG AKTUALISIEREN
@@ -488,16 +432,10 @@ function validiereSchritt(schritt) {
 function aktualisiereZusammenfassung() {
 
     const name =
-        document
-            .getElementById("name")
-            ?.value
-            .trim();
+        document.getElementById("name")?.value.trim();
 
     const minecraftName =
-        document
-            .getElementById("minecraftName")
-            ?.value
-            .trim();
+        document.getElementById("minecraftName")?.value.trim();
 
     const rolle =
         getRadioWert("desiredRole");
@@ -506,75 +444,235 @@ function aktualisiereZusammenfassung() {
         getRadioWert("experience");
 
     const verfuegbarkeit =
-        document
-            .getElementById("availability")
-            ?.value;
+        document.getElementById("availability")?.value;
 
 
     const summaryName =
-        document.getElementById(
-            "summaryName"
-        );
+        document.getElementById("summaryName");
 
     const summaryMinecraft =
-        document.getElementById(
-            "summaryMinecraft"
-        );
+        document.getElementById("summaryMinecraft");
 
     const summaryRole =
-        document.getElementById(
-            "summaryRole"
-        );
+        document.getElementById("summaryRole");
 
     const summaryExperience =
-        document.getElementById(
-            "summaryExperience"
-        );
+        document.getElementById("summaryExperience");
 
     const summaryAvailability =
-        document.getElementById(
-            "summaryAvailability"
-        );
+        document.getElementById("summaryAvailability");
 
 
     if (summaryName) {
-
         summaryName.textContent =
             name || "–";
-
     }
-
 
     if (summaryMinecraft) {
-
         summaryMinecraft.textContent =
             minecraftName || "–";
-
     }
-
 
     if (summaryRole) {
-
         summaryRole.textContent =
             rolle || "–";
-
     }
-
 
     if (summaryExperience) {
-
         summaryExperience.textContent =
             erfahrung || "–";
-
     }
-
 
     if (summaryAvailability) {
-
         summaryAvailability.textContent =
             verfuegbarkeit || "–";
-
     }
+}
+
+
+// ============================================================
+// BEWERBUNGSDATEN SAMMELN
+// ============================================================
+
+function sammleBewerbungsdaten() {
+
+    const name =
+        document.getElementById("name")?.value.trim() || "";
+
+    const minecraftName =
+        document.getElementById("minecraftName")
+            ?.value.trim() || "";
+
+    const discordId =
+        document.getElementById("discordId")
+            ?.value.trim() || "";
+
+    const alter =
+        Number(
+            document.getElementById("alter")?.value
+        );
+
+    const erfahrung =
+        getRadioWert("experience");
+
+    const previousWork =
+        document.getElementById("previousWork")
+            ?.value.trim() || "";
+
+    const desiredRole =
+        getRadioWert("desiredRole");
+
+    const availability =
+        document.getElementById("availability")
+            ?.value || "";
+
+    const unavailableTimes =
+        document.getElementById("unavailableTimes")
+            ?.value.trim() || "";
+
+    const applicationText =
+        document.getElementById("applicationText")
+            ?.value.trim() || "";
+
+    const additionalSkills =
+        getFachbereiche();
+
+    const besondereFaehigkeiten =
+        document.getElementById("additionalSkills")
+            ?.value.trim() || "";
+
+
+    let kompletterText =
+        applicationText;
+
+
+    if (besondereFaehigkeiten) {
+
+        kompletterText +=
+            "\n\nBesondere Fähigkeiten:\n" +
+            besondereFaehigkeiten;
+    }
+
+
+    return {
+
+        name: name,
+
+        minecraft_name:
+            minecraftName,
+
+        discord_id:
+            discordId || null,
+
+        age:
+            alter,
+
+        experience:
+            erfahrung || null,
+
+        previous_work:
+            previousWork || null,
+
+        desired_role:
+            desiredRole || null,
+
+        additional_skills:
+            additionalSkills,
+
+        application_text:
+            kompletterText,
+
+        availability:
+            availability || null,
+
+        unavailable_times:
+            unavailableTimes || null
+    };
+}
+
+
+// ============================================================
+// BEWERBUNGSDATEN PRÜFEN
+// ============================================================
+
+function pruefeBewerbungsdaten() {
+
+    const daten =
+        sammleBewerbungsdaten();
+
+
+    if (!daten.name) {
+        zeigeFehler("Dein Name fehlt.");
+        return false;
+    }
+
+
+    if (!daten.minecraft_name) {
+        zeigeFehler(
+            "Dein Minecraft-Name fehlt."
+        );
+        return false;
+    }
+
+
+    if (!daten.age || !Number.isInteger(daten.age)) {
+        zeigeFehler(
+            "Bitte gib ein gültiges Alter ein."
+        );
+        return false;
+    }
+
+
+    if (!daten.additional_skills ||
+        daten.additional_skills.length === 0) {
+
+        zeigeFehler(
+            "Bitte wähle mindestens einen Fachbereich aus."
+        );
+
+        return false;
+    }
+
+
+    if (!daten.experience) {
+        zeigeFehler(
+            "Bitte wähle deine Erfahrung aus."
+        );
+
+        return false;
+    }
+
+
+    if (!daten.desired_role) {
+        zeigeFehler(
+            "Bitte wähle eine gewünschte Rolle aus."
+        );
+
+        return false;
+    }
+
+
+    if (!daten.availability) {
+        zeigeFehler(
+            "Bitte wähle deine Verfügbarkeit aus."
+        );
+
+        return false;
+    }
+
+
+    if (!daten.application_text ||
+        daten.application_text.trim().length < 20) {
+
+        zeigeFehler(
+            "Bitte schreibe mindestens 20 Zeichen zu deiner Motivation."
+        );
+
+        return false;
+    }
+
+
+    return true;
 }
 
 // ============================================================
@@ -584,10 +682,8 @@ function aktualisiereZusammenfassung() {
 async function ladeAktuellenBenutzer() {
 
     if (!supabaseClient) {
-
         supabaseClient =
             window.supabaseClient;
-
     }
 
 
@@ -606,10 +702,9 @@ async function ladeAktuellenBenutzer() {
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .auth
-                .getUser();
+        } = await supabaseClient
+            .auth
+            .getUser();
 
 
         if (error) {
@@ -652,126 +747,6 @@ async function ladeAktuellenBenutzer() {
 
 
 // ============================================================
-// BEWERBUNGSDATEN SAMMELN
-// ============================================================
-
-function sammleBewerbungsdaten() {
-
-    const name =
-        document
-            .getElementById("name")
-            ?.value
-            .trim() || "";
-
-
-    const minecraftName =
-        document
-            .getElementById("minecraftName")
-            ?.value
-            .trim() || "";
-
-
-    const discordId =
-        document
-            .getElementById("discordId")
-            ?.value
-            .trim() || "";
-
-
-    const alter =
-        Number(
-            document
-                .getElementById("alter")
-                ?.value
-        );
-
-
-    const erfahrung =
-        getRadioWert("experience");
-
-
-    const previousWork =
-        document
-            .getElementById("previousWork")
-            ?.value
-            .trim() || "";
-
-
-    const desiredRole =
-        getRadioWert("desiredRole");
-
-
-    const availability =
-        document
-            .getElementById("availability")
-            ?.value || "";
-
-
-    const unavailableTimes =
-        document
-            .getElementById("unavailableTimes")
-            ?.value
-            .trim() || "";
-
-
-    const applicationText =
-        document
-            .getElementById("applicationText")
-            ?.value
-            .trim() || "";
-
-
-    const additionalSkills =
-        getFachbereiche();
-
-
-    const besondereFaehigkeiten =
-        document
-            .getElementById("additionalSkills")
-            ?.value
-            .trim() || "";
-
-
-    return {
-
-        name: name,
-
-        minecraft_name:
-            minecraftName,
-
-        discord_id:
-            discordId || null,
-
-        age:
-            alter,
-
-        experience:
-            erfahrung || null,
-
-        previous_work:
-            previousWork || null,
-
-        desired_role:
-            desiredRole || null,
-
-        additional_skills:
-            additionalSkills,
-
-        application_text:
-            besondereFaehigkeiten
-                ? `${applicationText}\n\nBesondere Fähigkeiten:\n${besondereFaehigkeiten}`
-                : applicationText,
-
-        availability:
-            availability || null,
-
-        unavailable_times:
-            unavailableTimes || null
-
-    };
-}
-
-// ============================================================
 // BEWERBUNG ABSENDEN
 // ============================================================
 
@@ -780,13 +755,15 @@ async function bewerbungAbsenden() {
     versteckeFehler();
 
 
-    // Letzten Schritt prüfen
-    if (!validiereSchritt5()) {
+    // Alle Daten vor dem Absenden prüfen
+
+    if (!pruefeBewerbungsdaten()) {
         return;
     }
 
 
     // Supabase Client holen
+
     const client =
         window.supabaseClient;
 
@@ -802,17 +779,18 @@ async function bewerbungAbsenden() {
 
 
     // Eingeloggten Benutzer holen
+
     let user;
+
 
     try {
 
         const {
             data,
             error
-        } =
-            await client
-                .auth
-                .getUser();
+        } = await client
+            .auth
+            .getUser();
 
 
         if (error) {
@@ -820,7 +798,9 @@ async function bewerbungAbsenden() {
         }
 
 
-        user = data?.user;
+        user =
+            data?.user;
+
 
     } catch (error) {
 
@@ -828,6 +808,7 @@ async function bewerbungAbsenden() {
             "Fehler beim Abrufen des Benutzers:",
             error
         );
+
 
         zeigeFehler(
             "Deine Anmeldung konnte nicht überprüft werden."
@@ -852,18 +833,18 @@ async function bewerbungAbsenden() {
 
 
     // Prüfen, ob bereits eine offene Bewerbung existiert
+
     try {
 
         const {
             data: bestehendeBewerbungen,
             error: pruefError
-        } =
-            await client
-                .from("applications")
-                .select("id, status")
-                .eq("user_id", user.id)
-                .eq("status", "offen")
-                .limit(1);
+        } = await client
+            .from("applications")
+            .select("id, status")
+            .eq("user_id", user.id)
+            .eq("status", "offen")
+            .limit(1);
 
 
         if (pruefError) {
@@ -885,27 +866,32 @@ async function bewerbungAbsenden() {
 
 
         // Bewerbungsdaten sammeln
+
         const bewerbung =
             sammleBewerbungsdaten();
 
+
+        // Benutzer-ID hinzufügen
 
         bewerbung.user_id =
             user.id;
 
 
+        // Status festlegen
+
         bewerbung.status =
             "offen";
 
 
-        // Bewerbung speichern
+        // Bewerbung in Supabase speichern
+
         const {
             error: insertError
-        } =
-            await client
-                .from("applications")
-                .insert([
-                    bewerbung
-                ]);
+        } = await client
+            .from("applications")
+            .insert([
+                bewerbung
+            ]);
 
 
         if (insertError) {
@@ -919,6 +905,7 @@ async function bewerbungAbsenden() {
 
 
         // Erfolg anzeigen
+
         zeigeBewerbungErfolg();
 
 
@@ -933,10 +920,8 @@ async function bewerbungAbsenden() {
         zeigeFehler(
             "Die Bewerbung konnte nicht abgesendet werden. Bitte versuche es erneut."
         );
-
     }
-}
-
+                }
 
 // ============================================================
 // ERFOLGSMELDUNG ANZEIGEN
@@ -944,220 +929,67 @@ async function bewerbungAbsenden() {
 
 function zeigeBewerbungErfolg() {
 
-    const formular =
-        document.getElementById(
-            "bewerbungsFormular"
-        );
-
-
     const erfolg =
-        document.getElementById(
-            "erfolg"
-        );
+        document.getElementById("erfolg");
+
+    const schritte =
+        document.querySelectorAll(".schritt");
 
 
-    if (formular) {
+    // Alle Bewerbungsschritte ausblenden
 
-        formular.style.display =
-            "none";
+    schritte.forEach(function(element) {
 
-    }
+        element.classList.remove("aktiv");
+        element.style.display = "none";
 
+    });
+
+
+    // Erfolgsseite anzeigen
 
     if (erfolg) {
 
-        erfolg.style.display =
-            "block";
-
-        erfolg.classList.add(
-            "aktiv"
-        );
-
+        erfolg.classList.add("aktiv");
+        erfolg.style.display = "block";
 
         erfolg.scrollIntoView({
             behavior: "smooth",
             block: "center"
         });
-
     }
 
+
+    // Fortschrittsbalken auf 100 %
 
     const fortschritt =
-        document.getElementById(
-            "fortschrittInhalt"
-        );
-
+        document.getElementById("fortschrittInhalt");
 
     if (fortschritt) {
-
-        fortschritt.style.width =
-            "100%";
-
+        fortschritt.style.width = "100%";
     }
 
 
-    const fortschrittSchritt =
-        document.getElementById(
-            "fortschrittSchritt"
-        );
+    // Fortschrittstext ändern
 
+    const fortschrittSchritt =
+        document.getElementById("fortschrittSchritt");
 
     if (fortschrittSchritt) {
-
         fortschrittSchritt.textContent =
             "Bewerbung eingereicht";
-
     }
 }
 
-// ============================================================
-// SCHRITT WECHSELN
-// ============================================================
-
-function zeigeSchritt(neuerSchritt) {
-
-    if (
-        neuerSchritt < 1 ||
-        neuerSchritt > gesamtSchritte
-    ) {
-        return;
-    }
-
-
-    aktuellerSchritt =
-        neuerSchritt;
-
-
-    const schritte =
-        document.querySelectorAll(
-            ".schritt"
-        );
-
-
-    schritte.forEach(
-        function(element, index) {
-
-            if (
-                index + 1 === aktuellerSchritt
-            ) {
-
-                element.classList.add(
-                    "aktiv"
-                );
-
-                element.style.display =
-                    "block";
-
-            } else {
-
-                element.classList.remove(
-                    "aktiv"
-                );
-
-                element.style.display =
-                    "none";
-
-            }
-
-        }
-    );
-
-
-    // Fortschrittsbalken
-    const fortschritt =
-        document.getElementById(
-            "fortschrittInhalt"
-        );
-
-
-    if (fortschritt) {
-
-        fortschritt.style.width =
-            `${aktuellerSchritt * 20}%`;
-
-    }
-
-
-    // Fortschrittstext
-    const fortschrittSchritt =
-        document.getElementById(
-            "fortschrittSchritt"
-        );
-
-
-    if (fortschrittSchritt) {
-
-        fortschrittSchritt.textContent =
-            `Schritt ${aktuellerSchritt} von ${gesamtSchritte}`;
-
-    }
-
-
-    // Bei Schritt 5 Zusammenfassung aktualisieren
-    if (
-        aktuellerSchritt === 5
-    ) {
-
-        aktualisiereZusammenfassung();
-
-    }
-
-
-    versteckeFehler();
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
 
 // ============================================================
-// WEITER
+// ZUR STARTSEITE
 // ============================================================
 
-function weiter() {
+function zurStartseite() {
 
-    if (
-        !validiereSchritt(
-            aktuellerSchritt
-        )
-    ) {
-        return;
-    }
-
-
-    if (
-        aktuellerSchritt < gesamtSchritte
-    ) {
-
-        zeigeSchritt(
-            aktuellerSchritt + 1
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// ZURÜCK
-// ============================================================
-
-function zurueck() {
-
-    if (
-        aktuellerSchritt > 1
-    ) {
-
-        zeigeSchritt(
-            aktuellerSchritt - 1
-        );
-
-    }
-
+    window.location.href =
+        "startseite.html";
 }
 
 
@@ -1186,10 +1018,9 @@ async function pruefeAnmeldung() {
         const {
             data,
             error
-        } =
-            await client
-                .auth
-                .getUser();
+        } = await client
+            .auth
+            .getUser();
 
 
         if (error) {
@@ -1214,12 +1045,12 @@ async function pruefeAnmeldung() {
         aktuellerUser =
             user;
 
-
         supabaseClient =
             client;
 
 
         return true;
+
 
     } catch (error) {
 
@@ -1235,7 +1066,6 @@ async function pruefeAnmeldung() {
 
         return false;
     }
-
 }
 
 
@@ -1261,87 +1091,73 @@ function registriereAuthListener() {
 
                 aktuellerUser =
                     session.user;
-
             }
 
 
-            if (
-                event === "SIGNED_OUT"
-            ) {
+            if (event === "SIGNED_OUT") {
 
                 aktuellerUser =
                     null;
-
             }
-
         }
     );
-
-}
+            }
 
 // ============================================================
-// START
+// EHRENMARKT BEWERBUNG
+// INITIALISIERUNG
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async function() {
+document.addEventListener("DOMContentLoaded", async function () {
 
-        // Supabase Client übernehmen
+    console.log("Ehrenmarkt Bewerbung wird gestartet...");
+
+
+    // Supabase laden
+
+    if (window.supabaseClient) {
+
         supabaseClient =
             window.supabaseClient;
 
+    } else {
 
-        // ERSTEN SCHRITT SOFORT ANZEIGEN
-        // Dadurch bleibt die Bewerbung sichtbar,
-        // auch wenn Supabase noch geprüft wird.
-        zeigeSchritt(1);
+        console.error(
+            "Supabase Client nicht gefunden."
+        );
+
+        zeigeFehler(
+            "Das Ehrenmarkt-System konnte nicht geladen werden."
+        );
+
+        return;
+    }
 
 
-        // Anmeldung prüfen
+    // Auth Listener starten
+
+    registriereAuthListener();
+
+
+    // Benutzer prüfen
+
+    const angemeldet =
         await pruefeAnmeldung();
 
 
-        // Auth-Listener starten
-        registriereAuthListener();
-
-
-        // Zusammenfassung bei Änderungen aktualisieren
-        const eingaben =
-            document.querySelectorAll(
-                "input, select, textarea"
-            );
-
-
-        eingaben.forEach(
-            function(element) {
-
-                element.addEventListener(
-                    "change",
-                    function() {
-
-                        aktualisiereZusammenfassung();
-
-                    }
-                );
-
-
-                element.addEventListener(
-                    "input",
-                    function() {
-
-                        aktualisiereZusammenfassung();
-
-                    }
-                );
-
-            }
-        );
-
+    if (!angemeldet) {
+        return;
     }
-);
 
 
-// ============================================================
-// ENDE BEWERBUNGSSYSTEM
-// ============================================================
+    // Immer mit Schritt 1 starten
+
+    aktuellerSchritt = 1;
+
+    zeigeSchritt(1);
+
+
+    console.log(
+        "Ehrenmarkt Bewerbung bereit."
+    );
+});
