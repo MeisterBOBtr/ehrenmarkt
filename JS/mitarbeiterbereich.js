@@ -1,1599 +1,1974 @@
-// ============================================================
-// EHRENMARKT – MITARBEITERBEREICH
-// TEIL 1–4 KOMPLETT
-// ============================================================
+document.addEventListener("DOMContentLoaded", async () => {
 
-"use strict";
+    const supabase = window.supabaseClient;
 
-// ============================================================
-// SUPABASE
-// ============================================================
+    // =====================================================
+    // BENUTZER PRÜFEN
+    // =====================================================
 
-let mitarbeiterSupabase = null;
-
-
-// ============================================================
-// GLOBALE VARIABLEN
-// ============================================================
-
-let aktuellerUser = null;
-let aktuellesProfil = null;
-let aktuellerMitarbeiter = null;
-
-let authSubscription = null;
-let aktualisierungsTimer = null;
-
-
-// ============================================================
-// ERLAUBTE RÄNGE
-// ============================================================
-
-const ERLAUBTE_MITARBEITER_RAEGE = [
-    "Mitarbeiter",
-    "Leitung",
-    "Stadtleitung"
-];
-
-
-// ============================================================
-// HILFSFUNKTIONEN
-// ============================================================
-
-function element(id) {
-    return document.getElementById(id);
-}
-
-
-function setText(id, text) {
-    const el = element(id);
-
-    if (el) {
-        el.textContent =
-            text === null || text === undefined
-                ? ""
-                : String(text);
-    }
-}
-
-
-function anzeigen(id) {
-    const el = element(id);
-
-    if (el) {
-        el.style.display = "";
-    }
-}
-
-
-function verstecken(id) {
-    const el = element(id);
-
-    if (el) {
-        el.style.display = "none";
-    }
-}
-
-
-function zeigeFehler(text) {
-    const fehler = element("fehler");
-
-    if (!fehler) {
+    if (!supabase) {
+        alert("Supabase konnte nicht geladen werden.");
         return;
     }
 
-    fehler.textContent = text || "";
-    fehler.style.display = text ? "block" : "none";
-}
-
-
-function versteckeFehler() {
-    const fehler = element("fehler");
-
-    if (fehler) {
-        fehler.textContent = "";
-        fehler.style.display = "none";
-    }
-}
-
-
-function escapeHtml(wert) {
-    if (
-        wert === null ||
-        wert === undefined
-    ) {
-        return "";
-    }
-
-    return String(wert)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-// ============================================================
-// ANZEIGE – NICHT ANGEMELDET
-// ============================================================
-
-function zeigeGastbereich(
-    nachricht = "Du bist aktuell nicht angemeldet."
-) {
-
-    const gastBereich =
-        element("gastBereich");
-
-    const mitarbeiterBereich =
-        element("mitarbeiterBereich");
-
-    const ladebereich =
-        element("ladebereich");
-
-    const abmeldenButton =
-        element("abmeldenButton");
-
-
-    if (ladebereich) {
-        ladebereich.style.display = "none";
-    }
-
-
-    if (mitarbeiterBereich) {
-        mitarbeiterBereich.style.display = "none";
-    }
-
-
-    if (gastBereich) {
-
-        gastBereich.style.display = "block";
-
-        const texte =
-            gastBereich.querySelectorAll("p");
-
-        if (texte.length > 0) {
-
-            texte[0].textContent =
-                nachricht;
-        }
-    }
-
-
-    if (abmeldenButton) {
-        abmeldenButton.style.display = "none";
-    }
-}
-
-
-// ============================================================
-// ANZEIGE – KEIN ZUGRIFF
-// ============================================================
-
-function zeigeKeinZugriff() {
-
-    const gastBereich =
-        element("gastBereich");
-
-    const mitarbeiterBereich =
-        element("mitarbeiterBereich");
-
-    const ladebereich =
-        element("ladebereich");
-
-    const abmeldenButton =
-        element("abmeldenButton");
-
-
-    if (ladebereich) {
-        ladebereich.style.display = "none";
-    }
-
-
-    if (mitarbeiterBereich) {
-        mitarbeiterBereich.style.display = "none";
-    }
-
-
-    if (abmeldenButton) {
-        abmeldenButton.style.display = "none";
-    }
-
-
-    if (gastBereich) {
-
-        gastBereich.style.display = "block";
-
-        gastBereich.innerHTML = `
-            <h2>Kein Zugriff</h2>
-
-            <p>
-                Dein Rang besitzt keinen Zugriff
-                auf den Mitarbeiterbereich.
-            </p>
-
-            <p style="color:#aaa;">
-                Zugriff haben nur Mitarbeiter,
-                Leitung und Stadtleitung.
-            </p>
-
-            <a
-                href="kundenbereich.html"
-                class="button"
-            >
-                Zum Kundenbereich
-            </a>
-        `;
-    }
-}
-
-
-// ============================================================
-// ANZEIGE – MITARBEITERBEREICH
-// ============================================================
-
-function zeigeMitarbeiterbereich() {
-
-    const gastBereich =
-        element("gastBereich");
-
-    const mitarbeiterBereich =
-        element("mitarbeiterBereich");
-
-    const ladebereich =
-        element("ladebereich");
-
-    const abmeldenButton =
-        element("abmeldenButton");
-
-
-    if (ladebereich) {
-        ladebereich.style.display = "none";
-    }
-
-
-    if (gastBereich) {
-        gastBereich.style.display = "none";
-    }
-
-
-    if (mitarbeiterBereich) {
-        mitarbeiterBereich.style.display = "block";
-    }
-
-
-    if (abmeldenButton) {
-        abmeldenButton.style.display = "";
-    }
-}
-
-
-// ============================================================
-// TEIL 1
-// ANMELDUNG UND ZUGRIFFSKONTROLLE
-// ============================================================
-
-async function pruefeMitarbeiterZugriff(user) {
-
-    if (!user) {
-
-        aktuellerUser = null;
-        aktuellesProfil = null;
-        aktuellerMitarbeiter = null;
-
-        zeigeGastbereich();
-
-        return false;
-    }
-
-
-    aktuellerUser = user;
-
-
-    try {
-
-        const {
-            data: profil,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("profiles")
-                .select("*")
-                .eq("id", user.id)
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Profil konnte nicht geladen werden:",
-                error
-            );
-
-            zeigeFehler(
-                "Dein Profil konnte nicht geladen werden."
-            );
-
-            zeigeGastbereich(
-                "Dein Profil konnte nicht geladen werden."
-            );
-
-            return false;
-        }
-
-
-        if (!profil) {
-
-            console.error(
-                "Kein Profil für Benutzer gefunden."
-            );
-
-            zeigeFehler(
-                "Für dein Konto wurde kein Profil gefunden."
-            );
-
-            zeigeGastbereich(
-                "Für dein Konto wurde kein Profil gefunden."
-            );
-
-            return false;
-        }
-
-
-        aktuellesProfil = profil;
-
-
-        const rang =
-            String(
-                profil.rang || ""
-            ).trim();
-
-
-        console.log(
-            "Ehrenmarkt Mitarbeiterbereich – Rang:",
-            rang
-        );
-
-
-        if (
-            !ERLAUBTE_MITARBEITER_RAEGE
-                .includes(rang)
-        ) {
-
-            console.log(
-                "Zugriff verweigert:",
-                rang
-            );
-
-            versteckeFehler();
-
-            zeigeKeinZugriff();
-
-            return false;
-        }
-
-
-        versteckeFehler();
-
-        zeigeMitarbeiterbereich();
-
-
-        await ladeMitarbeiterbereich(
-            user,
-            profil
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Fehler bei der Zugriffskontrolle:",
-            error
-        );
-
-        zeigeFehler(
-            "Der Mitarbeiterbereich konnte nicht geladen werden."
-        );
-
-        return false;
-    }
-}
-
-
-// ============================================================
-// SESSION PRÜFEN
-// ============================================================
-
-async function pruefeAnmeldung() {
-
-    if (!mitarbeiterSupabase) {
-
-        console.error(
-            "Supabase Client nicht vorhanden."
-        );
-
-        zeigeFehler(
-            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
-        );
-
+    const {
+        data: { user },
+        error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+        window.location.href = "registrieren.html";
         return;
     }
 
 
-    try {
+    // =====================================================
+    // MITARBEITER LADEN
+    // =====================================================
 
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .auth
-                .getSession();
+    const {
+        data: employee,
+        error: employeeError
+    } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
 
-
-        if (error) {
-            throw error;
-        }
-
-
-        const session =
-            data?.session;
-
-
-        if (!session?.user) {
-
-            console.log(
-                "Ehrenmarkt: Kein Benutzer angemeldet."
-            );
-
-            aktuellerUser = null;
-            aktuellesProfil = null;
-            aktuellerMitarbeiter = null;
-
-            zeigeGastbereich();
-
-            return;
-        }
-
-
-        console.log(
-            "Ehrenmarkt: Benutzer angemeldet:",
-            session.user.email
-        );
-
-
-        await pruefeMitarbeiterZugriff(
-            session.user
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Prüfen der Session:",
-            error
-        );
-
-        zeigeFehler(
-            "Die Anmeldung konnte nicht überprüft werden."
-        );
-    }
-}
-
-
-// ============================================================
-// ABMELDEN
-// ============================================================
-
-async function abmelden() {
-
-    if (!mitarbeiterSupabase) {
+    if (employeeError || !employee) {
+        alert("Du bist kein Mitarbeiter.");
+        window.location.href = "startseite.html";
         return;
     }
 
 
-    try {
-
-        const {
-            error
-        } =
-            await mitarbeiterSupabase
-                .auth
-                .signOut();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        aktuellerUser = null;
-        aktuellesProfil = null;
-        aktuellerMitarbeiter = null;
-
-
-        window.location.href =
-            "registrieren.html";
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Abmelden:",
-            error
-        );
-
-        zeigeFehler(
-            "Du konntest nicht abgemeldet werden."
-        );
-    }
-}
-
-
-// ============================================================
-// AUTH LISTENER
-// ============================================================
-
-function registriereAuthListener() {
-
-    if (!mitarbeiterSupabase) {
-        return;
-    }
-
-
-    if (authSubscription) {
-        return;
-    }
-
-
-    const result =
-        mitarbeiterSupabase
-            .auth
-            .onAuthStateChange(
-                (event, session) => {
-
-                    console.log(
-                        "Ehrenmarkt Auth:",
-                        event
-                    );
-
-
-                    if (
-                        event === "SIGNED_OUT"
-                    ) {
-
-                        aktuellerUser = null;
-                        aktuellesProfil = null;
-                        aktuellerMitarbeiter = null;
-
-                        zeigeGastbereich();
-
-                        return;
-                    }
-
-
-                    if (
-                        (
-                            event === "SIGNED_IN" ||
-                            event === "TOKEN_REFRESHED"
-                        ) &&
-                        session?.user
-                    ) {
-
-                        aktuellerUser =
-                            session.user;
-
-
-                        void pruefeMitarbeiterZugriff(
-                            session.user
-                        );
-                    }
-                }
-            );
-
-
-    authSubscription =
-        result?.data?.subscription || null;
-}
-
-
-// ============================================================
-// BUTTON – ABMELDEN
-// ============================================================
-
-function verbindeAbmeldenButton() {
-
-    const button =
-        element("abmeldenButton");
-
-
-    if (!button) {
-        return;
-    }
-
-
-    button.onclick =
-        abmelden;
-}
-
-
-// ============================================================
-// ============================================================
-// TEIL 2
-// PROFIL UND MITARBEITERDATEN
-// ============================================================
-
-async function ladeMitarbeiterbereich(
-    user,
-    profil
-) {
-
-    // --------------------------------------------------------
+    // =====================================================
     // PROFIL
-    // --------------------------------------------------------
+    // =====================================================
 
-    const username =
-        profil.username ||
-        user.user_metadata?.username ||
-        "Unbekannt";
+    const employeeName =
+        document.getElementById("employeeName");
 
+    const employeeRole =
+        document.getElementById("employeeRole");
 
-    const minecraftName =
-        profil.minecraft_name ||
-        profil.minecraft ||
-        user.user_metadata?.minecraft_name ||
-        "Nicht hinterlegt";
+    const employeeRank =
+        document.getElementById("employeeRank");
 
+    const employeeStatus =
+        document.getElementById("employeeStatus");
 
-    const email =
-        user.email ||
-        profil.email ||
-        "Keine E-Mail";
-
-
-    const rang =
-        profil.rang ||
-        "Mitarbeiter";
-
-
-    const rolle =
-        profil.rolle ||
-        "Keine Rolle hinterlegt";
-
-
-    setText(
-        "mitarbeiterBegruessung",
-        `Willkommen zurück, ${username}!`
-    );
-
-
-    setText(
-        "mitarbeiterUsername",
-        username
-    );
-
-
-    setText(
-        "mitarbeiterMinecraft",
-        minecraftName
-    );
-
-
-    setText(
-        "mitarbeiterEmail",
-        email
-    );
-
-
-    setText(
-        "mitarbeiterRang",
-        rang
-    );
-
-
-    setText(
-        "mitarbeiterRolle",
-        rolle
-    );
-
-
-    // --------------------------------------------------------
-    // EMPLOYEES DATENSATZ
-    // --------------------------------------------------------
-
-    aktuellerMitarbeiter = null;
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .select("*")
-                .eq(
-                    "user_id",
-                    user.id
-                )
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Mitarbeiterdaten konnten nicht geladen werden:",
-                error
-            );
-
-        } else {
-
-            aktuellerMitarbeiter =
-                data || null;
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Laden der Mitarbeiterdaten:",
-            error
-        );
+    if (employeeName) {
+        employeeName.textContent =
+            employee.name || "-";
     }
 
-
-    // --------------------------------------------------------
-    // MITARBEITERANZEIGE
-    // --------------------------------------------------------
-
-    if (aktuellerMitarbeiter) {
-
-        aktualisiereMitarbeiterAnzeige(
-            aktuellerMitarbeiter
-        );
-
-    } else {
-
-        setText(
-            "statusText",
-            "Mitarbeiterdaten nicht vollständig hinterlegt"
-        );
-
-
-        setText(
-            "arbeitszeitAnzeige",
-            "0 Std. 0 Min."
-        );
-
-
-        aktualisiereVerfuegbarkeitsAnzeige();
+    if (employeeRole) {
+        employeeRole.textContent =
+            employee.role || "-";
     }
 
-
-    // --------------------------------------------------------
-    // WEITERE BEREICHE
-    // --------------------------------------------------------
-
-    await Promise.allSettled([
-        ladeEigeneAuftraege(user),
-        ladeOffeneVerstaerkung(),
-        ladeBenachrichtigungen()
-    ]);
-}
-
-
-// ============================================================
-// MITARBEITERSTATUS
-// ============================================================
-
-function aktualisiereMitarbeiterAnzeige(
-    mitarbeiter
-) {
-
-    if (!mitarbeiter) {
-        return;
+    if (employeeRank) {
+        employeeRank.textContent =
+            employee.rang || "-";
     }
 
-
-    const aktiv =
-        mitarbeiter.is_active === true;
-
-
-    const statusPunkt =
-        element("statusPunkt");
-
-
-    const statusText =
-        element("statusText");
-
-
-    if (statusPunkt) {
-
-        statusPunkt.style.display =
-            "inline-block";
-
-
-        statusPunkt.textContent =
-            "●";
-
-
-        statusPunkt.title =
-            aktiv
-                ? "Aktiv"
-                : "Inaktiv";
-    }
-
-
-    if (statusText) {
-
-        statusText.textContent =
-            aktiv
-                ? "Aktiv"
-                : "Inaktiv";
-    }
-
-
-    const statusButton =
-        element("statusButton");
-
-
-    if (statusButton) {
-
-        statusButton.textContent =
-            aktiv
-                ? "Auf Inaktiv setzen"
-                : "Auf Aktiv setzen";
-
-
-        statusButton.disabled =
-            !aktuellerUser ||
-            !aktuellerMitarbeiter;
-    }
-
-
-    const arbeitszeit =
-        Number(
-            mitarbeiter.total_work_minutes || 0
-        );
-
-
-    setText(
-        "arbeitszeitAnzeige",
-        formatiereArbeitszeit(
-            arbeitszeit
-        )
-    );
-
-
-    aktualisiereVerfuegbarkeitsAnzeige();
-}
-
-
-// ============================================================
-// STATUS ÄNDERN
-// ============================================================
-
-async function aendereMitarbeiterStatus() {
-
-    if (
-        !aktuellerUser ||
-        !mitarbeiterSupabase
-    ) {
-        return;
-    }
-
-
-    if (!aktuellerMitarbeiter) {
-
-        zeigeFehler(
-            "Für dein Konto wurden noch keine Mitarbeiterdaten hinterlegt."
-        );
-
-        return;
-    }
-
-
-    const button =
-        element("statusButton");
-
-
-    const neuerStatus =
-        aktuellerMitarbeiter.is_active !== true;
-
-
-    if (button) {
-        button.disabled = true;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .update({
-                    is_active: neuerStatus,
-                    updated_at: new Date().toISOString()
-                })
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                )
-                .select("*")
-                .maybeSingle();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (data) {
-
-            aktuellerMitarbeiter =
-                data;
-
-
-            aktualisiereMitarbeiterAnzeige(
-                data
-            );
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Ändern des Mitarbeiterstatus:",
-            error
-        );
-
-
-        zeigeFehler(
-            "Der Mitarbeiterstatus konnte nicht geändert werden."
-        );
-
-
-    } finally {
-
-        if (button) {
-            button.disabled = false;
-        }
-    }
-}
-
-
-// ============================================================
-// ARBEITSZEIT
-// ============================================================
-
-function formatiereArbeitszeit(
-    minuten
-) {
-
-    const gesamtMinuten =
-        Math.max(
-            0,
-            Number(minuten) || 0
-        );
-
-
-    const stunden =
-        Math.floor(
-            gesamtMinuten / 60
-        );
-
-
-    const restMinuten =
-        gesamtMinuten % 60;
-
-
-    return `${stunden} Std. ${restMinuten} Min.`;
-        }
-
-// ============================================================
-// STEMPELUHR
-// ============================================================
-
-async function einstempeln() {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter ||
-        !mitarbeiterSupabase
-    ) {
-        zeigeFehler(
-            "Mitarbeiterdaten konnten nicht geladen werden."
-        );
-        return;
-    }
-
-
-    if (aktuellerMitarbeiter.clock_in) {
-
-        zeigeFehler(
-            "Du bist bereits eingestempelt."
-        );
-
-        return;
-    }
-
-
-    const jetzt =
-        new Date().toISOString();
-
-
-    try {
-
-        const { error } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .update({
-                    clock_in: jetzt
-                })
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                );
-
-
-        if (error) {
-
-    console.error(
-        "SUPABASE EINSTEMPELN FEHLER:",
-        error
-    );
-
-    zeigeFehler(
-        "Einstempeln fehlgeschlagen: " +
-        (error.message || "Unbekannter Fehler")
-    );
-
-    return;
-}
-
-
-        aktuellerMitarbeiter.clock_in =
-            jetzt;
-
-
-        versteckeFehler();
-
-
-        aktualisiereStempeluhrAnzeige();
-
-
-    } catch (error) {
-
-        console.error(
-            "Einstempeln Fehler:",
-            error
-        );
-
-
-        zeigeFehler(
-            "Einstempeln fehlgeschlagen."
-        );
-    }
-            }
-
-
-// ============================================================
-// AUSSTEMPELN
-// ============================================================
-
-async function ausstempeln() {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter ||
-        !mitarbeiterSupabase
-    ) {
-
-        zeigeFehler(
-            "Mitarbeiterdaten konnten nicht geladen werden."
-        );
-
-        return;
-    }
-
-
-    if (!aktuellerMitarbeiter.clock_in) {
-
-        zeigeFehler(
-            "Du bist aktuell nicht eingestempelt."
-        );
-
-        return;
-    }
-
-
-    const start =
-        new Date(
-            aktuellerMitarbeiter.clock_in
-        );
-
-
-    const ende =
-        new Date();
-
-
-    const minuten =
-        Math.max(
-            1,
-            Math.floor(
-                (ende - start) / 60000
-            )
-        );
-
-
-    const bisher =
-        Number(
-            aktuellerMitarbeiter.total_work_minutes || 0
-        );
-
-
-    const gesamt =
-        bisher + minuten;
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .update({
-                    clock_in: null,
-                    total_work_minutes:
-                        gesamt,
-                    updated_at:
-                        new Date().toISOString()
-                })
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                )
-                .select("*")
-                .maybeSingle();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (!data) {
-
-            throw new Error(
-                "Mitarbeiterdatensatz wurde nicht aktualisiert."
-            );
-        }
-
-
-        aktuellerMitarbeiter =
-            data;
-
-
-        versteckeFehler();
-
-        aktualisiereStempeluhrAnzeige();
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Ausstempeln:",
-            error
-        );
-
-
-        zeigeFehler(
-            "Ausstempeln fehlgeschlagen."
-        );
-    }
-}
-
-
-// ============================================================
-// STEMPELUHR-ANZEIGE
-// ============================================================
-
-function aktualisiereStempeluhrAnzeige() {
-
-    const anzeige =
-        element("arbeitszeitAnzeige");
-
-
-    const einButton =
-        element("einstempelnButton");
-
-
-    const ausButton =
-        element("ausstempelnButton");
-
-
-    if (!aktuellerMitarbeiter) {
-        return;
-    }
-
-
-    if (anzeige) {
-
-        anzeige.textContent =
-            formatiereArbeitszeit(
-                aktuellerMitarbeiter
-                    .total_work_minutes
-            );
-    }
-
-
-    const eingestempelt =
-        Boolean(
-            aktuellerMitarbeiter.clock_in
-        );
-
-
-    if (einButton) {
-
-        einButton.disabled =
-            eingestempelt;
-    }
-
-
-    if (ausButton) {
-
-        ausButton.disabled =
-            !eingestempelt;
-    }
-}
-
-
-// ============================================================
-// TEIL 3
-// VERFÜGBARKEIT
-// ============================================================
-
-function aktualisiereVerfuegbarkeitsAnzeige() {
-
-    const verfuegbar =
-        aktuellerMitarbeiter?.is_available === true;
-
-
-    const text =
-        element("verfuegbarkeitText");
-
-
-    const button =
-        element("verfuegbarkeitButton");
-
-
-    if (text) {
-
-        text.textContent =
-            verfuegbar
+    if (employeeStatus) {
+        employeeStatus.textContent =
+            employee.is_active
                 ? "Verfügbar"
                 : "Nicht verfügbar";
     }
 
 
-    if (button) {
+    // =====================================================
+    // HILFSFUNKTIONEN
+    // =====================================================
 
-        button.textContent =
-            verfuegbar
-                ? "Nicht verfügbar"
-                : "Verfügbar";
+    function escapeHtml(value) {
 
+        if (value === null || value === undefined) {
+            return "";
+        }
 
-        button.disabled =
-            !aktuellerUser ||
-            !aktuellerMitarbeiter;
-    }
-}
-
-
-// ============================================================
-// VERFÜGBARKEIT ÄNDERN
-// ============================================================
-
-async function setzeVerfuegbarkeit(
-    wert
-) {
-
-    if (
-        !aktuellerUser ||
-        !aktuellerMitarbeiter ||
-        !mitarbeiterSupabase
-    ) {
-        return;
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
 
-    const button =
-        element("verfuegbarkeitButton");
-
-
-    if (button) {
-        button.disabled = true;
+    function zeigeFehler(text) {
+        console.error(text);
+        alert(text);
     }
 
 
-    try {
+    function zeigeErfolg(text) {
+        alert(text);
+    }
+
+
+    function getElement(id) {
+        return document.getElementById(id);
+    }
+
+
+    // =====================================================
+    // ARBEITSZEIT – STATUS PRÜFEN
+    // =====================================================
+
+    const {
+        data: activeAttendance,
+        error: attendanceError
+    } = await supabase
+        .from("employee_attendance")
+        .select("*")
+        .eq("employee_id", user.id)
+        .is("clock_out", null)
+        .order("created_at", {
+            ascending: false
+        })
+        .limit(1)
+        .maybeSingle();
+
+
+    if (attendanceError) {
+        console.error(
+            "Fehler beim Laden der Arbeitszeit:",
+            attendanceError
+        );
+    }
+
+
+    const workStatus =
+        getElement("workStatus");
+
+    const clockInButton =
+        getElement("clockIn");
+
+    const clockOutButton =
+        getElement("clockOut");
+
+
+    if (activeAttendance) {
+
+        if (workStatus) {
+            workStatus.textContent =
+                "🟢 Eingestempelt";
+        }
+
+        if (clockInButton) {
+            clockInButton.disabled = true;
+        }
+
+        if (clockOutButton) {
+            clockOutButton.disabled = false;
+        }
+
+    } else {
+
+        if (workStatus) {
+            workStatus.textContent =
+                "🔴 Ausgestempelt";
+        }
+
+        if (clockInButton) {
+            clockInButton.disabled = false;
+        }
+
+        if (clockOutButton) {
+            clockOutButton.disabled = true;
+        }
+    }
+
+
+    // =====================================================
+    // OFFENE AUFTRÄGE
+    // =====================================================
+
+    async function ladeOffeneAuftraege() {
+
+        const availableOrders =
+            getElement("availableOrders");
+
+        if (!availableOrders) {
+            return;
+        }
+
+        availableOrders.innerHTML = `
+            <p>
+                Offene Aufträge werden geladen...
+            </p>
+        `;
+
+
+        // -------------------------------------------------
+        // MATERIALBESTELLUNGEN
+        // -------------------------------------------------
+
+        const {
+            data: materialOrders,
+            error: materialError
+        } = await supabase
+            .from("orders")
+            .select("*")
+            .eq("status", "Offen")
+            .is("employee_id", null);
+
+
+        if (materialError) {
+
+            console.error(
+                "Materialbestellungen:",
+                materialError
+            );
+        }
+
+
+        // -------------------------------------------------
+        // BAUAUFTRÄGE
+        // -------------------------------------------------
+
+        const {
+            data: buildOrders,
+            error: buildError
+        } = await supabase
+            .from("build_orders")
+            .select("*")
+            .eq("status", "Offen")
+            .is("assigned_employee_id", null);
+
+
+        if (buildError) {
+
+            console.error(
+                "Bauaufträge:",
+                buildError
+            );
+        }
+
+
+        // -------------------------------------------------
+        // REDSTONE-AUFTRÄGE
+        // -------------------------------------------------
+
+        const {
+            data: redstoneOrders,
+            error: redstoneError
+        } = await supabase
+            .from("redstone_orders")
+            .select("*")
+            .eq("status", "Offen")
+            .is("assigned_employee_id", null);
+
+
+        if (redstoneError) {
+
+            console.error(
+                "Redstone-Aufträge:",
+                redstoneError
+            );
+        }
+
+
+        // -------------------------------------------------
+        // LOGISTIKAUFTRÄGE
+        // -------------------------------------------------
+
+        const {
+            data: logisticsOrders,
+            error: logisticsError
+        } = await supabase
+            .from("logistics_orders")
+            .select("*")
+            .eq("status", "Offen");
+
+
+        if (logisticsError) {
+
+            console.error(
+                "Logistikaufträge:",
+                logisticsError
+            );
+        }
+
+
+        // -------------------------------------------------
+        // ALTE ANZEIGE LEEREN
+        // -------------------------------------------------
+
+        availableOrders.innerHTML = "";
+
+
+        let openCount = 0;
+
+
+        // -------------------------------------------------
+        // MATERIAL
+        // -------------------------------------------------
+
+        if (
+            materialOrders &&
+            materialOrders.length > 0
+        ) {
+
+            materialOrders.forEach(order => {
+
+                openCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        📦 Materialbestellung #${escapeHtml(order.id)}
+                    </h3>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(order.status || "Offen")}
+                    </p>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(order.customer_name)}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openMaterialOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="acceptMaterialOrder('${escapeHtml(order.id)}', this)"
+                        >
+                            ✅ Auftrag annehmen
+                        </button>
+
+                    </div>
+
+                `;
+
+                availableOrders.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // BAUAUFTRÄGE
+        // -------------------------------------------------
+
+        if (
+            buildOrders &&
+            buildOrders.length > 0
+        ) {
+
+            buildOrders.forEach(order => {
+
+                openCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🏗️ ${
+                            escapeHtml(
+                                order.building_type ||
+                                order.title ||
+                                "Bauauftrag"
+                            )
+                        }
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(order.status || "Offen")}
+                    </p>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(order.customer_name)}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openBuildOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="acceptBuildOrder('${escapeHtml(order.id)}', this)"
+                        >
+                            ✅ Auftrag annehmen
+                        </button>
+
+                    </div>
+
+                `;
+
+                availableOrders.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // REDSTONE
+        // -------------------------------------------------
+
+        if (
+            redstoneOrders &&
+            redstoneOrders.length > 0
+        ) {
+
+            redstoneOrders.forEach(order => {
+
+                openCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🔴 ${
+                            escapeHtml(
+                                order.title ||
+                                "Redstone-Auftrag"
+                            )
+                        }
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(order.customer_name)}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    ${
+                        order.redstone_build_type
+                            ? `
+                                <p>
+                                    <strong>Redstone-Bau:</strong>
+                                    ${escapeHtml(
+                                        order.redstone_build_type
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(order.status || "Offen")}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openRedstoneOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="acceptRedstoneOrder('${escapeHtml(order.id)}', this)"
+                        >
+                            ✅ Auftrag annehmen
+                        </button>
+
+                    </div>
+
+                `;
+
+                availableOrders.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // LOGISTIK
+        // -------------------------------------------------
+
+        if (
+            logisticsOrders &&
+            logisticsOrders.length > 0
+        ) {
+
+            logisticsOrders.forEach(order => {
+
+                openCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🚚 Logistikauftrag #${escapeHtml(order.id)}
+                    </h3>
+
+                    <p>
+                        <strong>Auftraggeber:</strong>
+                        ${escapeHtml(
+                            order.customer_name || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Strecke:</strong>
+                        ${escapeHtml(
+                            order.start_point || "-"
+                        )}
+                        →
+                        ${escapeHtml(
+                            order.destination || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Kisten:</strong>
+                        ${escapeHtml(
+                            order.crate_count || 0
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Preis:</strong>
+                        ${escapeHtml(
+                            order.total_price || 0
+                        )} $
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(
+                            order.status || "Offen"
+                        )}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openLogisticsOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="acceptLogisticsOrder('${escapeHtml(order.id)}', this)"
+                        >
+                            🚚 Auftrag annehmen
+                        </button>
+
+                    </div>
+
+                `;
+
+                availableOrders.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // KEINE AUFTRÄGE
+        // -------------------------------------------------
+
+        if (openCount === 0) {
+
+            availableOrders.innerHTML = `
+                <div class="card">
+
+                    <h3>
+                        Keine offenen Aufträge
+                    </h3>
+
+                    <p>
+                        Aktuell stehen keine neuen
+                        Aufträge zur Verfügung.
+                    </p>
+
+                </div>
+            `;
+        }
+
+
+        // -------------------------------------------------
+        // ANZAHL OFFENE AUFTRÄGE
+        // -------------------------------------------------
+
+        const openOrdersElement =
+            getElement("openOrders");
+
+        if (openOrdersElement) {
+            openOrdersElement.textContent =
+                openCount;
+        }
+    }
+
+
+    // =====================================================
+    // AUFTRÄGE LADEN
+    // =====================================================
+
+    await ladeOffeneAuftraege();
+
+
+    // =====================================================
+    // AUFTRAG ÖFFNEN – BAU
+    // =====================================================
+
+    window.openBuildOrder = function(id) {
+
+        window.location.href =
+            `bauauftrag_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // AUFTRAG ÖFFNEN – MATERIAL
+    // =====================================================
+
+    window.openMaterialOrder = function(id) {
+
+        window.location.href =
+            `material_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // AUFTRAG ÖFFNEN – LOGISTIK
+    // =====================================================
+
+    window.openLogisticsOrder = function(id) {
+
+        window.location.href =
+            `logistik_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // AUFTRAG ÖFFNEN – REDSTONE
+    // =====================================================
+
+    window.openRedstoneOrder = function(id) {
+
+        window.location.href =
+            `redstone_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+        // =====================================================
+    // MATERIALBESTELLUNG ANNEHMEN
+    // =====================================================
+
+    window.acceptMaterialOrder = async function(id, button) {
+
+        if (button) {
+            button.disabled = true;
+            button.textContent = "⏳ Wird angenommen...";
+        }
 
         const {
             data,
             error
-        } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .update({
-                    is_available: wert,
-                    updated_at:
-                        new Date().toISOString()
-                })
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                )
-                .select("*")
-                .maybeSingle();
+        } = await supabase
+            .from("orders")
+            .update({
+                employee_id: user.id,
+                employee_name: employee.name,
+                status: "In Bearbeitung",
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", id)
+            .eq("status", "Offen")
+            .is("employee_id", null)
+            .select("*")
+            .maybeSingle();
 
 
         if (error) {
-            throw error;
+
+            console.error(
+                "Fehler beim Annehmen der Materialbestellung:",
+                error
+            );
+
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Die Materialbestellung konnte nicht angenommen werden.\n\n" +
+                error.message
+            );
+
+            return;
         }
 
 
-        if (data) {
+        if (!data) {
 
-            aktuellerMitarbeiter =
-                data;
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Dieser Auftrag wurde bereits von einem anderen Mitarbeiter angenommen."
+            );
+
+            await ladeOffeneAuftraege();
+
+            return;
         }
 
 
-        aktualisiereVerfuegbarkeitsAnzeige();
+        zeigeErfolg(
+            "Materialbestellung erfolgreich übernommen."
+        );
 
-    } catch (error) {
 
-        console.error(
-            "Fehler bei der Verfügbarkeit:",
+        window.location.href =
+            `material_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // BAUAUFTRAG ANNEHMEN
+    // =====================================================
+
+    window.acceptBuildOrder = async function(id, button) {
+
+        if (button) {
+            button.disabled = true;
+            button.textContent =
+                "⏳ Wird angenommen...";
+        }
+
+
+        const {
+            data,
             error
+        } = await supabase
+            .from("build_orders")
+            .update({
+                assigned_employee_id: user.id,
+                status: "In Bearbeitung"
+            })
+            .eq("id", id)
+            .eq("status", "Offen")
+            .is("assigned_employee_id", null)
+            .select("*")
+            .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Annehmen des Bauauftrags:",
+                error
+            );
+
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Der Bauauftrag konnte nicht angenommen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        if (!data) {
+
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Dieser Bauauftrag wurde bereits von einem anderen Mitarbeiter angenommen."
+            );
+
+            await ladeOffeneAuftraege();
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Bauauftrag erfolgreich übernommen."
         );
 
 
-        zeigeFehler(
-            "Die Verfügbarkeit konnte nicht geändert werden."
+        window.location.href =
+            `bauauftrag_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // REDSTONE-AUFTRAG ANNEHMEN
+    // =====================================================
+
+    window.acceptRedstoneOrder = async function(id, button) {
+
+        if (button) {
+            button.disabled = true;
+            button.textContent =
+                "⏳ Wird angenommen...";
+        }
+
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from("redstone_orders")
+            .update({
+                assigned_employee_id: user.id,
+                status: "In Bearbeitung"
+            })
+            .eq("id", id)
+            .eq("status", "Offen")
+            .is("assigned_employee_id", null)
+            .select("*")
+            .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Annehmen des Redstone-Auftrags:",
+                error
+            );
+
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Der Redstone-Auftrag konnte nicht angenommen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        if (!data) {
+
+            if (button) {
+                button.disabled = false;
+                button.textContent =
+                    "✅ Auftrag annehmen";
+            }
+
+            zeigeFehler(
+                "Dieser Redstone-Auftrag wurde bereits von einem anderen Mitarbeiter angenommen."
+            );
+
+            await ladeOffeneAuftraege();
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Redstone-Auftrag erfolgreich übernommen."
         );
 
-    } finally {
+
+        window.location.href =
+            `redstone_details.html?id=${encodeURIComponent(id)}`;
+    };
+
+
+    // =====================================================
+    // LOGISTIKAUFTRAG ANNEHMEN
+    // =====================================================
+
+    window.acceptLogisticsOrder = async function(id, button) {
+
+        if (button) {
+            button.disabled = true;
+            button.textContent =
+                "⏳ Wird angenommen...";
+        }
+
+
+        /*
+         * WICHTIG:
+         * Der aktuelle logistics_orders-Datensatz besitzt
+         * nach dem bisher geprüften Datenbankschema keine
+         * Mitarbeiter-Zuweisungsspalte.
+         *
+         * Deshalb wird hier NICHT einfach eine nicht
+         * vorhandene Spalte geschrieben.
+         *
+         * Sobald die Datenbank eine Assignment-Spalte
+         * für Logistikaufträge besitzt, kann diese Funktion
+         * entsprechend aktiviert werden.
+         */
 
         if (button) {
             button.disabled = false;
-        }
-    }
-}
-
-
-// ============================================================
-// BUTTONS
-// ============================================================
-
-function verbindeMitarbeiterButtons() {
-
-    const statusButton =
-        element("statusButton");
-
-
-    if (statusButton) {
-
-        statusButton.onclick =
-            aendereMitarbeiterStatus;
-    }
-
-
-    const verfuegbarkeitButton =
-        element("verfuegbarkeitButton");
-
-
-    if (verfuegbarkeitButton) {
-
-        verfuegbarkeitButton.onclick =
-            async () => {
-
-                if (
-                    aktuellerMitarbeiter
-                        ?.is_available === true
-                ) {
-
-                    await setzeVerfuegbarkeit(
-                        false
-                    );
-
-                } else {
-
-                    await setzeVerfuegbarkeit(
-                        true
-                    );
-                }
-            };
-    }
-
-
-    const einstempelnButton =
-        element("einstempelnButton");
-
-
-    const ausstempelnButton =
-        element("ausstempelnButton");
-
-
-    if (einstempelnButton) {
-
-        einstempelnButton.onclick =
-            einstempeln;
-    }
-
-
-    if (ausstempelnButton) {
-
-        ausstempelnButton.onclick =
-            ausstempeln;
-    }
+            button.textContent =
+                "🚚 Auftrag annehmen";
         }
 
-// ============================================================
-// EIGENE AUFTRÄGE
-// ============================================================
 
-async function ladeEigeneAuftraege(user) {
-
-    const container =
-        element("eigeneAuftraege");
+        zeigeFehler(
+            "Der Logistikauftrag kann momentan noch nicht direkt angenommen werden, " +
+            "weil in der Datenbank noch keine Mitarbeiter-Zuweisung für Logistikaufträge vorhanden ist."
+        );
+    };
 
 
-    if (!container) {
-        return;
-    }
+    // =====================================================
+    // EIGENE AUFTRÄGE LADEN
+    // =====================================================
+
+    async function ladeEigeneAuftraege() {
+
+        const myOrdersContainer =
+            getElement("myOrders");
+
+        if (!myOrdersContainer) {
+            return;
+        }
 
 
-    if (!user) {
-
-        container.innerHTML =
-            "<p>Keine Anmeldung vorhanden.</p>";
-
-        return;
-    }
+        myOrdersContainer.innerHTML = `
+            <p>
+                Eigene Aufträge werden geladen...
+            </p>
+        `;
 
 
-    try {
-
-        const [
-            bauResult,
-            materialResult,
-            redstoneResult,
-            logistikResult
-        ] =
-            await Promise.all([
-
-                mitarbeiterSupabase
-                    .from("build_order_workers")
-                    .select("*")
-                    .eq(
-                        "employee_id",
-                        user.id
-                    ),
-
-                mitarbeiterSupabase
-                    .from("material_order_workers")
-                    .select("*")
-                    .eq(
-                        "employee_id",
-                        user.id
-                    ),
-
-                mitarbeiterSupabase
-                    .from("redstone_order_workers")
-                    .select("*")
-                    .eq(
-                        "employee_id",
-                        user.id
-                    ),
-
-                mitarbeiterSupabase
-                    .from("logistics_order_workers")
-                    .select("*")
-                    .eq(
-                        "employee_id",
-                        user.id
-                    )
-            ]);
+        let myOrderCount = 0;
 
 
-        const auftraege = [];
+        // -------------------------------------------------
+        // EIGENE MATERIALBESTELLUNGEN
+        // -------------------------------------------------
+
+        const {
+            data: myMaterialOrders,
+            error: myMaterialError
+        } = await supabase
+            .from("orders")
+            .select("*")
+            .eq("employee_id", user.id);
 
 
-        if (
-            !bauResult.error &&
-            Array.isArray(bauResult.data)
-        ) {
+        if (myMaterialError) {
 
-            bauResult.data.forEach(
-                auftrag => {
-
-                    auftraege.push({
-                        typ: "Bau",
-                        daten: auftrag
-                    });
-                }
+            console.error(
+                "Eigene Materialbestellungen:",
+                myMaterialError
             );
         }
 
 
-        if (
-            !materialResult.error &&
-            Array.isArray(materialResult.data)
-        ) {
+        // -------------------------------------------------
+        // EIGENE BAUAUFTRÄGE
+        // -------------------------------------------------
 
-            materialResult.data.forEach(
-                auftrag => {
+        const {
+            data: myBuildOrders,
+            error: myBuildError
+        } = await supabase
+            .from("build_orders")
+            .select("*")
+            .eq("assigned_employee_id", user.id);
 
-                    auftraege.push({
-                        typ: "Material",
-                        daten: auftrag
-                    });
-                }
+
+        if (myBuildError) {
+
+            console.error(
+                "Eigene Bauaufträge:",
+                myBuildError
             );
         }
 
 
-        if (
-            !redstoneResult.error &&
-            Array.isArray(redstoneResult.data)
-        ) {
+        // -------------------------------------------------
+        // EIGENE REDSTONE-AUFTRÄGE
+        // -------------------------------------------------
 
-            redstoneResult.data.forEach(
-                auftrag => {
+        const {
+            data: myRedstoneOrders,
+            error: myRedstoneError
+        } = await supabase
+            .from("redstone_orders")
+            .select("*")
+            .eq("assigned_employee_id", user.id);
 
-                    auftraege.push({
-                        typ: "Redstone",
-                        daten: auftrag
-                    });
-                }
+
+        if (myRedstoneError) {
+
+            console.error(
+                "Eigene Redstone-Aufträge:",
+                myRedstoneError
             );
         }
 
 
+        // -------------------------------------------------
+        // EIGENE LOGISTIKAUFTRÄGE
+        // -------------------------------------------------
+
+        /*
+         * Wird erst verwendet, wenn die
+         * Mitarbeiter-Zuweisung in logistics_orders
+         * vorhanden ist.
+         */
+
+        const myLogisticsOrders = [];
+
+
+        // -------------------------------------------------
+        // CONTAINER LEEREN
+        // -------------------------------------------------
+
+        myOrdersContainer.innerHTML = "";
+
+
+        // -------------------------------------------------
+        // MATERIAL ANZEIGEN
+        // -------------------------------------------------
+
         if (
-            !logistikResult.error &&
-            Array.isArray(logistikResult.data)
+            myMaterialOrders &&
+            myMaterialOrders.length > 0
         ) {
 
-            logistikResult.data.forEach(
-                auftrag => {
+            myMaterialOrders.forEach(order => {
 
-                    auftraege.push({
-                        typ: "Logistik",
-                        daten: auftrag
-                    });
-                }
-            );
+                myOrderCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        📦 Materialbestellung
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(
+                                        order.customer_name
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(
+                            order.status || "-"
+                        )}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openMaterialOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        ${
+                            order.status !== "Abgeschlossen"
+                                ? `
+                                    <button
+                                        type="button"
+                                        onclick="finishMaterialOrder('${escapeHtml(order.id)}')"
+                                    >
+                                        ✅ Auftrag abschließen
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="requestMaterialHelp('${escapeHtml(order.id)}')"
+                                    >
+                                        👥 Verstärkung anfordern
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+                myOrdersContainer.appendChild(card);
+            });
         }
 
 
-        if (auftraege.length === 0) {
+        // -------------------------------------------------
+        // BAU ANZEIGEN
+        // -------------------------------------------------
 
-            container.innerHTML = `
-                <div
-                    style="
-                        text-align:center;
-                        color:#888;
-                        padding:20px;
-                    "
-                >
-                    Dir sind aktuell keine Aufträge zugewiesen.
+        if (
+            myBuildOrders &&
+            myBuildOrders.length > 0
+        ) {
+
+            myBuildOrders.forEach(order => {
+
+                myOrderCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🏗️ ${
+                            escapeHtml(
+                                order.building_type ||
+                                order.title ||
+                                "Bauauftrag"
+                            )
+                        }
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(
+                                        order.customer_name
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(
+                            order.status || "-"
+                        )}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openBuildOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        ${
+                            order.status !== "Abgeschlossen"
+                                ? `
+                                    <button
+                                        type="button"
+                                        onclick="finishBuildOrder('${escapeHtml(order.id)}')"
+                                    >
+                                        ✅ Auftrag abschließen
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="requestBuildHelp('${escapeHtml(order.id)}')"
+                                    >
+                                        👥 Verstärkung anfordern
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+                myOrdersContainer.appendChild(card);
+            });
+    }
+
+            // -------------------------------------------------
+        // LOGISTIK ANZEIGEN
+        // -------------------------------------------------
+
+        if (
+            myLogisticsOrders &&
+            myLogisticsOrders.length > 0
+        ) {
+
+            myLogisticsOrders.forEach(order => {
+
+                myOrderCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🚚 Logistikauftrag
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    <p>
+                        <strong>Auftraggeber:</strong>
+                        ${escapeHtml(
+                            order.customer_name || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Strecke:</strong>
+                        ${escapeHtml(
+                            order.start_point || "-"
+                        )}
+                        →
+                        ${escapeHtml(
+                            order.destination || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Kisten:</strong>
+                        ${escapeHtml(
+                            order.crate_count || 0
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Preis:</strong>
+                        ${escapeHtml(
+                            order.total_price || 0
+                        )} $
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(
+                            order.status || "-"
+                        )}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openLogisticsOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        ${
+                            order.status !== "Abgeschlossen"
+                                ? `
+                                    <button
+                                        type="button"
+                                        onclick="finishLogisticsOrder('${escapeHtml(order.id)}')"
+                                    >
+                                        ✅ Auftrag abschließen
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="requestLogisticsHelp('${escapeHtml(order.id)}')"
+                                    >
+                                        👥 Verstärkung anfordern
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+                myOrdersContainer.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // REDSTONE ANZEIGEN
+        // -------------------------------------------------
+
+        if (
+            myRedstoneOrders &&
+            myRedstoneOrders.length > 0
+        ) {
+
+            myRedstoneOrders.forEach(order => {
+
+                myOrderCount++;
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "card";
+
+                card.innerHTML = `
+
+                    <h3>
+                        🔴 ${
+                            escapeHtml(
+                                order.title ||
+                                "Redstone-Auftrag"
+                            )
+                        }
+                        #${escapeHtml(order.id)}
+                    </h3>
+
+                    ${
+                        order.customer_name
+                            ? `
+                                <p>
+                                    <strong>Auftraggeber:</strong>
+                                    ${escapeHtml(
+                                        order.customer_name
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    ${
+                        order.redstone_build_type
+                            ? `
+                                <p>
+                                    <strong>Redstone-Bau:</strong>
+                                    ${escapeHtml(
+                                        order.redstone_build_type
+                                    )}
+                                </p>
+                              `
+                            : ""
+                    }
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHtml(
+                            order.status || "-"
+                        )}
+                    </p>
+
+                    <div class="auftrag-buttons">
+
+                        <button
+                            type="button"
+                            onclick="openRedstoneOrder('${escapeHtml(order.id)}')"
+                        >
+                            🔎 Ansehen
+                        </button>
+
+                        ${
+                            order.status !== "Abgeschlossen"
+                                ? `
+                                    <button
+                                        type="button"
+                                        onclick="finishRedstoneOrder('${escapeHtml(order.id)}')"
+                                    >
+                                        ✅ Auftrag abschließen
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onclick="requestRedstoneHelp('${escapeHtml(order.id)}')"
+                                    >
+                                        👥 Verstärkung anfordern
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+                myOrdersContainer.appendChild(card);
+            });
+        }
+
+
+        // -------------------------------------------------
+        // KEINE EIGENEN AUFTRÄGE
+        // -------------------------------------------------
+
+        if (myOrderCount === 0) {
+
+            myOrdersContainer.innerHTML = `
+
+                <div class="card">
+
+                    <h3>
+                        Keine eigenen Aufträge
+                    </h3>
+
+                    <p>
+                        Du hast aktuell keine
+                        übernommenen Aufträge.
+                    </p>
+
+                </div>
+
+            `;
+        }
+
+
+        // -------------------------------------------------
+        // MEINE AUFTRÄGE – ANZAHL
+        // -------------------------------------------------
+
+        const myOrderCountElement =
+            getElement("myOrderCount");
+
+        if (myOrderCountElement) {
+
+            myOrderCountElement.textContent =
+                myOrderCount;
+        }
+    }
+
+
+    // =====================================================
+    // EIGENE AUFTRÄGE STARTEN
+    // =====================================================
+
+    await ladeEigeneAuftraege();
+
+
+    // =====================================================
+    // MATERIALBESTELLUNG ABSCHLIESSEN
+    // =====================================================
+
+    window.finishMaterialOrder = async function(id) {
+
+        if (!confirm(
+            "Materialbestellung wirklich abschließen?"
+        )) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("orders")
+            .update({
+                status: "Abgeschlossen",
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", id)
+            .eq("employee_id", user.id);
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Abschließen:",
+                error
+            );
+
+            zeigeFehler(
+                "Die Materialbestellung konnte nicht abgeschlossen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Materialbestellung erfolgreich abgeschlossen."
+        );
+
+        await ladeEigeneAuftraege();
+    };
+
+
+    // =====================================================
+    // BAUAUFTRAG ABSCHLIESSEN
+    // =====================================================
+
+    window.finishBuildOrder = async function(id) {
+
+        if (!confirm(
+            "Bauauftrag wirklich abschließen?"
+        )) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("build_orders")
+            .update({
+                status: "Abgeschlossen"
+            })
+            .eq("id", id)
+            .eq("assigned_employee_id", user.id);
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Abschließen:",
+                error
+            );
+
+            zeigeFehler(
+                "Der Bauauftrag konnte nicht abgeschlossen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Bauauftrag erfolgreich abgeschlossen."
+        );
+
+        await ladeEigeneAuftraege();
+    };
+
+
+    // =====================================================
+    // LOGISTIKAUFTRAG ABSCHLIESSEN
+    // =====================================================
+
+    window.finishLogisticsOrder = async function(id) {
+
+        if (!confirm(
+            "Logistikauftrag wirklich abschließen?"
+        )) {
+            return;
+        }
+
+
+        /*
+         * Der Abschluss wird hier bewusst nur über die
+         * Auftrags-ID durchgeführt.
+         *
+         * Eine Mitarbeiter-Zuweisungsspalte für
+         * logistics_orders ist aktuell noch nicht vorhanden.
+         */
+
+        const {
+            error
+        } = await supabase
+            .from("logistics_orders")
+            .update({
+                status: "Abgeschlossen"
+            })
+            .eq("id", id);
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Abschließen:",
+                error
+            );
+
+            zeigeFehler(
+                "Der Logistikauftrag konnte nicht abgeschlossen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Logistikauftrag erfolgreich abgeschlossen."
+        );
+
+        await ladeEigeneAuftraege();
+    };
+
+
+    // =====================================================
+    // REDSTONE-AUFTRAG ABSCHLIESSEN
+    // =====================================================
+
+    window.finishRedstoneOrder = async function(id) {
+
+        if (!confirm(
+            "Redstone-Auftrag wirklich abschließen?"
+        )) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("redstone_orders")
+            .update({
+                status: "Abgeschlossen"
+            })
+            .eq("id", id)
+            .eq("assigned_employee_id", user.id);
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Abschließen:",
+                error
+            );
+
+            zeigeFehler(
+                "Der Redstone-Auftrag konnte nicht abgeschlossen werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Redstone-Auftrag erfolgreich abgeschlossen."
+        );
+
+        await ladeEigeneAuftraege();
+    };
+
+
+    // =====================================================
+    // VERSTÄRKUNG – MATERIAL
+    // =====================================================
+
+    window.requestMaterialHelp = async function(orderId) {
+
+        const comment =
+            prompt(
+                "Warum benötigst du Verstärkung?"
+            );
+
+
+        if (comment === null) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .insert({
+                employee_id: user.id,
+                order_type: "Material",
+                order_id: orderId,
+                status: "Offen",
+                comment: comment,
+                reward_share: 0
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Fehler bei Verstärkungsanfrage:",
+                error
+            );
+
+            zeigeFehler(
+                "Die Verstärkungsanfrage konnte nicht erstellt werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Verstärkung erfolgreich angefordert."
+        );
+    };
+
+
+    // =====================================================
+    // VERSTÄRKUNG – BAUAUFTRAG
+    // =====================================================
+
+    window.requestBuildHelp = async function(orderId) {
+
+        const comment =
+            prompt(
+                "Warum benötigst du Verstärkung?"
+            );
+
+
+        if (comment === null) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .insert({
+                employee_id: user.id,
+                order_type: "Bauauftrag",
+                order_id: orderId,
+                status: "Offen",
+                comment: comment,
+                reward_share: 0
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Fehler bei Verstärkungsanfrage:",
+                error
+            );
+
+            zeigeFehler(
+                "Die Verstärkungsanfrage konnte nicht erstellt werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Verstärkung erfolgreich angefordert."
+        );
+    };
+
+                              // =====================================================
+    // VERSTÄRKUNG – LOGISTIK
+    // =====================================================
+
+    window.requestLogisticsHelp = async function(orderId) {
+
+        const comment =
+            prompt(
+                "Warum benötigst du Verstärkung?"
+            );
+
+
+        if (comment === null) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .insert({
+                employee_id: user.id,
+                order_type: "Logistik",
+                order_id: orderId,
+                status: "Offen",
+                comment: comment,
+                reward_share: 0
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Fehler bei Verstärkungsanfrage:",
+                error
+            );
+
+            zeigeFehler(
+                "Die Verstärkungsanfrage konnte nicht erstellt werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Verstärkung erfolgreich angefordert."
+        );
+    };
+
+
+    // =====================================================
+    // VERSTÄRKUNG – REDSTONE
+    // =====================================================
+
+    window.requestRedstoneHelp = async function(orderId) {
+
+        const comment =
+            prompt(
+                "Warum benötigst du Verstärkung?"
+            );
+
+
+        if (comment === null) {
+            return;
+        }
+
+
+        const {
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .insert({
+                employee_id: user.id,
+                order_type: "Redstone",
+                order_id: orderId,
+                status: "Offen",
+                comment: comment,
+                reward_share: 0
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Fehler bei Verstärkungsanfrage:",
+                error
+            );
+
+            zeigeFehler(
+                "Die Verstärkungsanfrage konnte nicht erstellt werden.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Verstärkung erfolgreich angefordert."
+        );
+    };
+
+
+    // =====================================================
+    // OFFENE VERSTÄRKUNGSANFRAGEN LADEN
+    // =====================================================
+
+    async function ladeOffeneVerstaerkung() {
+
+        const helpContainer =
+            getElement("helpRequests");
+
+
+        if (!helpContainer) {
+            return;
+        }
+
+
+        helpContainer.innerHTML = `
+            <p>
+                Verstärkungsanfragen werden geladen...
+            </p>
+        `;
+
+
+        const {
+            data: helpRequests,
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .select("*")
+            .eq("status", "Offen")
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Verstärkungsanfragen:",
+                error
+            );
+
+            helpContainer.innerHTML = `
+                <div class="card">
+                    <p>
+                        Verstärkungsanfragen konnten
+                        nicht geladen werden.
+                    </p>
                 </div>
             `;
 
@@ -1601,628 +1976,1767 @@ async function ladeEigeneAuftraege(user) {
         }
 
 
-        container.innerHTML = "";
+        helpContainer.innerHTML = "";
 
 
-        auftraege.forEach(
-            auftrag => {
+        if (
+            !helpRequests ||
+            helpRequests.length === 0
+        ) {
 
-                const daten =
-                    auftrag.daten || {};
+            helpContainer.innerHTML = `
+                <div class="card">
 
+                    <h3>
+                        Keine offenen Anfragen
+                    </h3>
 
-                const titel =
-                    daten.title ||
-                    daten.order_title ||
-                    daten.name ||
-                    `${auftrag.typ}-Auftrag`;
+                    <p>
+                        Aktuell benötigt kein Mitarbeiter
+                        Verstärkung.
+                    </p>
 
-
-                const status =
-                    daten.status ||
-                    "Offen";
-
-
-                const karte =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                karte.className =
-                    "auftrag";
-
-
-                karte.innerHTML = `
-                    <div
-                        style="
-                            font-weight:bold;
-                            color:#d7ad52;
-                            margin-bottom:6px;
-                        "
-                    >
-                        ${escapeHtml(auftrag.typ)}
-                    </div>
-
-                    <div>
-                        ${escapeHtml(titel)}
-                    </div>
-
-                    <div
-                        style="
-                            color:#aaa;
-                            margin-top:5px;
-                        "
-                    >
-                        Status:
-                        ${escapeHtml(status)}
-                    </div>
-                `;
-
-
-                container.appendChild(
-                    karte
-                );
-            }
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Eigene Aufträge konnten nicht geladen werden:",
-            error
-        );
-
-
-        container.innerHTML = `
-            <div
-                style="
-                    text-align:center;
-                    color:#888;
-                    padding:20px;
-                "
-            >
-                Aufträge konnten momentan nicht geladen werden.
-            </div>
-        `;
-    }
-}
-
-
-// ============================================================
-// OFFENE VERSTÄRKUNG
-// ============================================================
-
-async function ladeOffeneVerstaerkung() {
-
-    const container =
-        element("offeneVerstaerkung");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    if (!aktuellerUser) {
-
-        container.innerHTML =
-            "<p>Keine Anmeldung vorhanden.</p>";
-
-        return;
-    }
-
-
-    container.innerHTML =
-        "<p>Verstärkungsanfragen werden geladen...</p>";
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employee_help_requests")
-                .select("*")
-                .eq(
-                    "status",
-                    "Offen"
-                )
-                .is(
-                    "helper_id",
-                    null
-                )
-                .neq(
-                    "employee_id",
-                    aktuellerUser.id
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        const anfragen =
-            Array.isArray(data)
-                ? data
-                : [];
-
-
-        if (anfragen.length === 0) {
-
-            container.innerHTML = `
-                <p>
-                    Aktuell wird keine Verstärkung gesucht.
-                </p>
+                </div>
             `;
 
             return;
         }
 
 
-        container.innerHTML = "";
+        helpRequests.forEach(request => {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "card";
 
 
-        anfragen
-            .slice(0, 10)
-            .forEach(
-                anfrage => {
+            card.innerHTML = `
 
-                    const karte =
-                        erstelleVerstaerkungsElement(
-                            anfrage
-                        );
+                <h3>
+                    🤝 ${
+                        escapeHtml(
+                            request.order_type ||
+                            "Auftrag"
+                        )
+                    }
+                    #${escapeHtml(
+                        request.order_id
+                    )}
+                </h3>
+
+                <p>
+                    <strong>Nachricht:</strong>
+                    ${escapeHtml(
+                        request.comment ||
+                        "Keine Beschreibung."
+                    )}
+                </p>
+
+                <button
+                    type="button"
+                    onclick="acceptHelpRequest('${escapeHtml(request.id)}')"
+                >
+                    🤝 Ich helfe
+                </button>
+
+            `;
 
 
-                    container.insertAdjacentHTML(
-                        "beforeend",
-                        karte
-                    );
-                }
+            helpContainer.appendChild(card);
+        });
+    }
+
+
+    // =====================================================
+    // VERSTÄRKUNGSANFRAGE ANNEHMEN
+    // =====================================================
+
+    window.acceptHelpRequest = async function(id) {
+
+        const {
+            error
+        } = await supabase
+            .from("employee_help_requests")
+            .update({
+                helper_id: user.id,
+                status: "Angenommen"
+            })
+            .eq("id", id)
+            .eq("status", "Offen");
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Annehmen der Verstärkung:",
+                error
             );
 
-
-        container
-            .querySelectorAll(
-                "[data-verstaerkung-id]"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            void uebernehmeVerstaerkung(
-                                button.dataset.verstaerkungId,
-                                button
-                            );
-                        }
-                    );
-                }
+            zeigeFehler(
+                "Die Verstärkungsanfrage konnte nicht angenommen werden.\n\n" +
+                error.message
             );
 
+            return;
+        }
+
+
+        zeigeErfolg(
+            "Du unterstützt jetzt diesen Auftrag."
+        );
+
+
+        await ladeOffeneVerstaerkung();
+    };
+
+
+    // =====================================================
+    // EINSTEMPELN
+    // =====================================================
+
+    if (clockInButton) {
+
+        clockInButton.addEventListener(
+            "click",
+            async () => {
+
+                clockInButton.disabled = true;
+
+
+                const {
+                    error
+                } = await supabase
+                    .from("employee_attendance")
+                    .insert({
+                        employee_id: user.id,
+                        clock_in:
+                            new Date().toISOString()
+                    });
+
+
+                if (error) {
+
+                    console.error(
+                        "Fehler beim Einstempeln:",
+                        error
+                    );
+
+                    clockInButton.disabled = false;
+
+                    zeigeFehler(
+                        "Einstempeln nicht möglich.\n\n" +
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                if (workStatus) {
+                    workStatus.textContent =
+                        "🟢 Eingestempelt";
+                }
+
+
+                if (clockOutButton) {
+                    clockOutButton.disabled =
+                        false;
+                }
+
+
+                zeigeErfolg(
+                    "Du wurdest erfolgreich eingestempelt."
+                );
+            }
+        );
+    }
+
+
+    // =====================================================
+    // AUSSTEMPELN
+    // =====================================================
+
+    if (clockOutButton) {
+
+        clockOutButton.addEventListener(
+            "click",
+            async () => {
+
+                clockOutButton.disabled = true;
+
+
+                const {
+                    data: attendance,
+                    error: attendanceLoadError
+                } = await supabase
+                    .from("employee_attendance")
+                    .select("*")
+                    .eq("employee_id", user.id)
+                    .is("clock_out", null)
+                    .order("created_at", {
+                        ascending: false
+                    })
+                    .limit(1)
+                    .maybeSingle();
+
+
+                if (attendanceLoadError) {
+
+                    console.error(
+                        "Fehler beim Laden der Arbeitszeit:",
+                        attendanceLoadError
+                    );
+
+                    clockOutButton.disabled = false;
+
+                    zeigeFehler(
+                        "Die aktuelle Arbeitszeit konnte nicht geladen werden.\n\n" +
+                        attendanceLoadError.message
+                    );
+
+                    return;
+                }
+
+
+                if (!attendance) {
+
+                    clockOutButton.disabled = true;
+
+                    if (clockInButton) {
+                        clockInButton.disabled = false;
+                    }
+
+                    if (workStatus) {
+                        workStatus.textContent =
+                            "🔴 Ausgestempelt";
+                    }
+
+                    zeigeFehler(
+                        "Du bist aktuell nicht eingestempelt."
+                    );
+
+                    return;
+                }
+
+
+                const clockOut =
+                    new Date();
+
+
+                const workedMinutes =
+                    Math.max(
+                        0,
+                        Math.floor(
+                            (
+                                clockOut -
+                                new Date(
+                                    attendance.clock_in
+                                )
+                            ) / 60000
+                        )
+                    );
+
+
+                const {
+                    error: clockOutError
+                } = await supabase
+                    .from("employee_attendance")
+                    .update({
+                        clock_out:
+                            clockOut.toISOString(),
+                        worked_minutes:
+                            workedMinutes
+                    })
+                    .eq("id", attendance.id);
+
+
+                if (clockOutError) {
+
+                    console.error(
+                        "Fehler beim Ausstempeln:",
+                        clockOutError
+                    );
+
+                    clockOutButton.disabled =
+                        false;
+
+                    zeigeFehler(
+                        "Ausstempeln nicht möglich.\n\n" +
+                        clockOutError.message
+                    );
+
+                    return;
+                }
+
+
+                if (workStatus) {
+                    workStatus.textContent =
+                        "🔴 Ausgestempelt";
+                }
+
+
+                if (clockInButton) {
+                    clockInButton.disabled =
+                        false;
+                }
+
+
+                clockOutButton.disabled =
+                    true;
+
+
+                zeigeErfolg(
+                    `Arbeitszeit beendet. Gearbeitet: ${workedMinutes} Minuten.`
+                );
+            }
+        );
+    }
+
+
+    // =====================================================
+    // ABWESENHEIT SPEICHERN
+    // =====================================================
+
+    const saveAbsenceButton =
+        getElement("saveAbsence");
+
+
+    if (saveAbsenceButton) {
+
+        saveAbsenceButton.addEventListener(
+            "click",
+            async () => {
+
+                const reasonElement =
+                    getElement("absenceReason");
+
+                const dateFromElement =
+                    getElement("absenceFrom");
+
+                const dateToElement =
+                    getElement("absenceTo");
+
+                const commentElement =
+                    getElement("absenceComment");
+
+
+                const reason =
+                    reasonElement
+                        ? reasonElement.value
+                        : "";
+
+                const dateFrom =
+                    dateFromElement
+                        ? dateFromElement.value
+                        : "";
+
+                const dateTo =
+                    dateToElement
+                        ? dateToElement.value
+                        : "";
+
+                const comment =
+                    commentElement
+                        ? commentElement.value
+                        : "";
+
+
+                if (!dateFrom || !dateTo) {
+
+                    zeigeFehler(
+                        "Bitte Von- und Bis-Datum auswählen."
+                    );
+
+                    return;
+                }
+
+
+                if (dateFrom > dateTo) {
+
+                    zeigeFehler(
+                        "Das Bis-Datum darf nicht vor dem Von-Datum liegen."
+                    );
+
+                    return;
+                }
+
+
+                saveAbsenceButton.disabled =
+                    true;
+
+
+                const {
+                    error
+                } = await supabase
+                    .from("employee_absences")
+                    .insert({
+                        employee_id: user.id,
+                        reason: reason,
+                        date_from: dateFrom,
+                        date_to: dateTo,
+                        comment: comment,
+                        status: "Offen"
+                    });
+
+
+                if (error) {
+
+                    console.error(
+                        "Fehler beim Speichern der Abwesenheit:",
+                        error
+                    );
+
+                    saveAbsenceButton.disabled =
+                        false;
+
+                    zeigeFehler(
+                        "Die Abwesenheit konnte nicht gespeichert werden.\n\n" +
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                if (commentElement) {
+                    commentElement.value = "";
+                }
+
+
+                saveAbsenceButton.disabled =
+                    false;
+
+
+                zeigeErfolg(
+                    "Abwesenheit erfolgreich gespeichert."
+                );
+            }
+        );
+                }
+
+                              // =====================================================
+    // MITARBEITER-VERFÜGBARKEIT AKTUALISIEREN
+    // =====================================================
+
+    async function aktualisiereMitarbeiterStatus() {
+
+        const statusElement =
+            getElement("employeeStatus");
+
+        const {
+            data: currentEmployee,
+            error
+        } = await supabase
+            .from("employees")
+            .select("is_active, is_available")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden des Mitarbeiterstatus:",
+                error
+            );
+
+            return;
+        }
+
+
+        if (!currentEmployee) {
+            return;
+        }
+
+
+        if (statusElement) {
+
+            if (!currentEmployee.is_active) {
+
+                statusElement.textContent =
+                    "Nicht verfügbar";
+
+            } else if (currentEmployee.is_available) {
+
+                statusElement.textContent =
+                    "Verfügbar";
+
+            } else {
+
+                statusElement.textContent =
+                    "Nicht verfügbar";
+            }
+        }
+    }
+
+
+    // =====================================================
+    // VERFÜGBARKEIT EIN/AUS
+    // =====================================================
+
+    const availabilityButton =
+        getElement("availabilityButton");
+
+
+    if (availabilityButton) {
+
+        availabilityButton.addEventListener(
+            "click",
+            async () => {
+
+                const {
+                    data: currentEmployee,
+                    error: loadError
+                } = await supabase
+                    .from("employees")
+                    .select("is_available, is_active")
+                    .eq("user_id", user.id)
+                    .maybeSingle();
+
+
+                if (loadError || !currentEmployee) {
+
+                    zeigeFehler(
+                        "Der Mitarbeiterstatus konnte nicht geladen werden."
+                    );
+
+                    return;
+                }
+
+
+                if (!currentEmployee.is_active) {
+
+                    zeigeFehler(
+                        "Dein Mitarbeiterkonto ist momentan deaktiviert."
+                    );
+
+                    return;
+                }
+
+
+                availabilityButton.disabled =
+                    true;
+
+
+                const newAvailability =
+                    !currentEmployee.is_available;
+
+
+                const {
+                    error
+                } = await supabase
+                    .from("employees")
+                    .update({
+                        is_available:
+                            newAvailability
+                    })
+                    .eq("user_id", user.id);
+
+
+                if (error) {
+
+                    console.error(
+                        "Fehler beim Ändern der Verfügbarkeit:",
+                        error
+                    );
+
+                    availabilityButton.disabled =
+                        false;
+
+                    zeigeFehler(
+                        "Die Verfügbarkeit konnte nicht geändert werden.\n\n" +
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                availabilityButton.disabled =
+                    false;
+
+
+                await aktualisiereMitarbeiterStatus();
+
+
+                if (newAvailability) {
+
+                    zeigeErfolg(
+                        "Du bist jetzt als verfügbar eingetragen."
+                    );
+
+                } else {
+
+                    zeigeErfolg(
+                        "Du bist jetzt als nicht verfügbar eingetragen."
+                    );
+                }
+            }
+        );
+    }
+
+
+    // =====================================================
+    // MITARBEITERSTATUS AKTUALISIEREN
+    // =====================================================
+
+    await aktualisiereMitarbeiterStatus();
+
+
+    // =====================================================
+    // OFFENE AUFTRÄGE MANUELL AKTUALISIEREN
+    // =====================================================
+
+    const refreshOrdersButton =
+        getElement("refreshOrders");
+
+
+    if (refreshOrdersButton) {
+
+        refreshOrdersButton.addEventListener(
+            "click",
+            async () => {
+
+                refreshOrdersButton.disabled =
+                    true;
+
+                refreshOrdersButton.textContent =
+                    "⏳ Laden...";
+
+
+                try {
+
+                    await ladeOffeneAuftraege();
+
+                } catch (error) {
+
+                    console.error(
+                        "Fehler beim Aktualisieren der Aufträge:",
+                        error
+                    );
+
+                    zeigeFehler(
+                        "Die offenen Aufträge konnten nicht aktualisiert werden."
+                    );
+
+                }
+
+
+                refreshOrdersButton.disabled =
+                    false;
+
+                refreshOrdersButton.textContent =
+                    "🔄 Aufträge aktualisieren";
+            }
+        );
+    }
+
+
+    // =====================================================
+    // VERSTÄRKUNGSANFRAGEN MANUELL AKTUALISIEREN
+    // =====================================================
+
+    const refreshHelpButton =
+        getElement("refreshHelp");
+
+
+    if (refreshHelpButton) {
+
+        refreshHelpButton.addEventListener(
+            "click",
+            async () => {
+
+                refreshHelpButton.disabled =
+                    true;
+
+                refreshHelpButton.textContent =
+                    "⏳ Laden...";
+
+
+                try {
+
+                    await ladeOffeneVerstaerkung();
+
+                } catch (error) {
+
+                    console.error(
+                        "Fehler beim Aktualisieren der Verstärkung:",
+                        error
+                    );
+
+                    zeigeFehler(
+                        "Die Verstärkungsanfragen konnten nicht aktualisiert werden."
+                    );
+                }
+
+
+                refreshHelpButton.disabled =
+                    false;
+
+                refreshHelpButton.textContent =
+                    "🔄 Anfragen aktualisieren";
+            }
+        );
+    }
+
+
+    // =====================================================
+    // AUTOMATISCHE AKTUALISIERUNG
+    // =====================================================
+
+    let aktualisierungsTimer = null;
+
+
+    async function aktualisiereMitarbeiterbereich() {
+
+        try {
+
+            await Promise.allSettled([
+                ladeOffeneAuftraege(),
+                ladeEigeneAuftraege(),
+                ladeOffeneVerstaerkung(),
+                aktualisiereMitarbeiterStatus()
+            ]);
+
+        } catch (error) {
+
+            console.error(
+                "Fehler bei der automatischen Aktualisierung:",
+                error
+            );
+        }
+    }
+
+
+    aktualisierungsTimer =
+        setInterval(
+            aktualisiereMitarbeiterbereich,
+            60000
+        );
+
+
+    // =====================================================
+    // GLOBALER ZUGRIFF AUF AUFTRAGS-AKTUALISIERUNG
+    // =====================================================
+
+    window.ehrenmarktOffeneAuftraegeAktualisieren =
+        ladeOffeneAuftraege;
+
+
+    window.ehrenmarktEigeneAuftraegeAktualisieren =
+        ladeEigeneAuftraege;
+
+
+    window.ehrenmarktVerstaerkungAktualisieren =
+        ladeOffeneVerstaerkung;
+
+
+    // =====================================================
+    // SEITEN-VERLASSEN
+    // =====================================================
+
+    window.addEventListener(
+        "beforeunload",
+        () => {
+
+            if (aktualisierungsTimer) {
+
+                clearInterval(
+                    aktualisierungsTimer
+                );
+
+                aktualisierungsTimer =
+                    null;
+            }
+        }
+    );
+
+
+    // =====================================================
+    // ABSCHLIESSENDE INITIALISIERUNG
+    // =====================================================
+
+    await Promise.allSettled([
+
+        ladeOffeneAuftraege(),
+
+        ladeEigeneAuftraege(),
+
+        ladeOffeneVerstaerkung(),
+
+        aktualisiereMitarbeiterStatus()
+
+    ]);
+
+
+    console.log(
+        "EHRENMARKT Mitarbeiterbereich erfolgreich gestartet."
+    );
+
+});
+
+// =====================================================
+// ENDE MITARBEITERBEREICH – TEIL 6
+// =====================================================
+//
+// Dieser Bereich ist absichtlich als eigener Block
+// vorbereitet, damit die folgenden Funktionen aus
+// Teil 7 und Teil 8 sauber darunter ergänzt werden.
+// =====================================================
+
+
+// =====================================================
+// SICHERHEIT: AKTUELLEN MITARBEITER PRÜFEN
+// =====================================================
+
+async function pruefeAktuellenMitarbeiter() {
+
+    const {
+        data: currentUser,
+        error: userError
+    } = await supabase.auth.getUser();
+
+
+    if (userError || !currentUser) {
+
+        console.error(
+            "Benutzer konnte nicht geprüft werden:",
+            userError
+        );
+
+        return false;
+    }
+
+
+    if (currentUser.user.id !== user.id) {
+
+        console.error(
+            "Benutzer-ID stimmt nicht überein."
+        );
+
+        return false;
+    }
+
+
+    const {
+        data: currentEmployee,
+        error: employeeError
+    } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if (employeeError || !currentEmployee) {
+
+        console.error(
+            "Mitarbeiter konnte nicht gefunden werden:",
+            employeeError
+        );
+
+        return false;
+    }
+
+
+    if (!currentEmployee.is_active) {
+
+        zeigeFehler(
+            "Dein Mitarbeiterkonto ist momentan deaktiviert."
+        );
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+// =====================================================
+// AUFTRAG ANSEHEN – ALLGEMEINE FUNKTION
+// =====================================================
+
+window.ehrenmarktAuftragAnsehen = function(
+    typ,
+    id
+) {
+
+    if (!typ || !id) {
+        return;
+    }
+
+
+    switch (typ) {
+
+        case "Material":
+
+            window.openMaterialOrder(id);
+
+            break;
+
+
+        case "Bauauftrag":
+
+            window.openBuildOrder(id);
+
+            break;
+
+
+        case "Logistik":
+
+            window.openLogisticsOrder(id);
+
+            break;
+
+
+        case "Redstone":
+
+            window.openRedstoneOrder(id);
+
+            break;
+
+
+        default:
+
+            console.error(
+                "Unbekannter Auftragstyp:",
+                typ
+            );
+
+            break;
+    }
+};
+
+
+// =====================================================
+// AUFTRAGSTYP LESBAR MACHEN
+// =====================================================
+
+function auftragTypName(typ) {
+
+    switch (typ) {
+
+        case "Material":
+            return "Materialbestellung";
+
+        case "Bauauftrag":
+            return "Bauauftrag";
+
+        case "Logistik":
+            return "Logistikauftrag";
+
+        case "Redstone":
+            return "Redstone-Auftrag";
+
+        default:
+            return "Auftrag";
+    }
+}
+
+
+// =====================================================
+// STATUS LESBAR MACHEN
+// =====================================================
+
+function statusName(status) {
+
+    if (!status) {
+        return "Unbekannt";
+    }
+
+
+    switch (status) {
+
+        case "Offen":
+        case "offen":
+            return "Offen";
+
+        case "In Bearbeitung":
+            return "In Bearbeitung";
+
+        case "Abgeschlossen":
+            return "Abgeschlossen";
+
+        case "Storniert":
+            return "Storniert";
+
+        default:
+            return status;
+    }
+}
+
+
+// =====================================================
+// STATUS-KLASSE
+// =====================================================
+
+function statusKlasse(status) {
+
+    switch (status) {
+
+        case "Offen":
+        case "offen":
+            return "offen";
+
+        case "In Bearbeitung":
+            return "bearbeitung";
+
+        case "Abgeschlossen":
+            return "abgeschlossen";
+
+        case "Storniert":
+            return "storniert";
+
+        default:
+            return "unbekannt";
+    }
+}
+
+
+// =====================================================
+// AUFTRAGSDATEN FORMATIEREN
+// =====================================================
+
+function formatiereAuftragsdatum(datum) {
+
+    if (!datum) {
+        return "-";
+    }
+
+
+    try {
+
+        return new Date(datum)
+            .toLocaleString(
+                "de-DE",
+                {
+                    dateStyle: "short",
+                    timeStyle: "short"
+                }
+            );
 
     } catch (error) {
 
-        console.error(
-            "Fehler bei den Verstärkungsanfragen:",
-            error
-        );
-
-
-        container.innerHTML = `
-            <p>
-                Aktuell konnten keine Verstärkungsanfragen geladen werden.
-            </p>
-        `;
+        return "-";
     }
 }
 
 
-// ============================================================
-// VERSTÄRKUNGS-ELEMENT
-// ============================================================
+// =====================================================
+// GELDBETRAG FORMATIEREN
+// =====================================================
 
-function erstelleVerstaerkungsElement(
-    anfrage
-) {
-
-    const id =
-        anfrage.id;
-
-
-    const auftragstyp =
-        anfrage.order_type ||
-        "Auftrag";
-
-
-    const auftragsId =
-        anfrage.order_id ||
-        "Nicht angegeben";
-
-
-    const kommentar =
-        anfrage.comment ||
-        "Keine zusätzlichen Informationen.";
-
-
-    const belohnung =
-        Number(
-            anfrage.reward_share || 0
-        );
-
-
-    let belohnungsText =
-        "Keine Vergütung angegeben.";
-
+function formatierePreis(preis) {
 
     if (
-        Number.isFinite(belohnung) &&
-        belohnung > 0
+        preis === null ||
+        preis === undefined ||
+        preis === ""
     ) {
-
-        belohnungsText =
-            `Vergütungsanteil: ${belohnung}%`;
+        return "0 $";
     }
 
 
-    return `
-        <div
-            class="karte"
-            style="
-                margin-bottom:10px;
-                padding:14px;
-            "
-        >
+    const zahl =
+        Number(preis);
 
-            <h3 style="margin-top:0;">
-                Verstärkung gesucht
+
+    if (Number.isNaN(zahl)) {
+        return `${escapeHtml(preis)} $`;
+    }
+
+
+    return `${zahl.toLocaleString("de-DE")} $`;
+}
+
+
+// =====================================================
+// AUFTRAGSKARTE – SICHERE BASIS
+// =====================================================
+
+function erstelleAuftragsCard(
+    typ,
+    order,
+    optionen = {}
+) {
+
+    const card =
+        document.createElement("div");
+
+    card.className = "card";
+
+
+    const titel =
+        optionen.titel ||
+        `${auftragTypName(typ)} #${order.id}`;
+
+
+    const status =
+        statusName(order.status);
+
+
+    const statusClass =
+        statusKlasse(order.status);
+
+
+    card.innerHTML = `
+
+        <div class="auftrag-card-header">
+
+            <h3>
+                ${escapeHtml(titel)}
             </h3>
 
-            <p>
-                <strong>Auftrag:</strong>
-                ${escapeHtml(auftragstyp)}
-            </p>
+            <span
+                class="auftrag-status ${escapeHtml(statusClass)}"
+            >
+                ${escapeHtml(status)}
+            </span>
 
-            <p>
-                <strong>Auftrags-ID:</strong>
-                ${escapeHtml(auftragsId)}
-            </p>
+        </div>
 
-            <p>
-                <strong>Information:</strong>
-                ${escapeHtml(kommentar)}
-            </p>
+        ${
+            optionen.beschreibung
+                ? `
+                    <p>
+                        ${escapeHtml(
+                            optionen.beschreibung
+                        )}
+                    </p>
+                  `
+                : ""
+        }
 
-            <p>
-                <strong>
-                    ${escapeHtml(belohnungsText)}
-                </strong>
-            </p>
+        ${
+            optionen.auftraggeber
+                ? `
+                    <p>
+                        <strong>Auftraggeber:</strong>
+                        ${escapeHtml(
+                            optionen.auftraggeber
+                        )}
+                    </p>
+                  `
+                : ""
+        }
+
+        ${
+            optionen.preis !== undefined
+                ? `
+                    <p>
+                        <strong>Preis:</strong>
+                        ${formatierePreis(
+                            optionen.preis
+                        )}
+                    </p>
+                  `
+                : ""
+        }
+
+        <div class="auftrag-buttons">
 
             <button
                 type="button"
-                class="button"
-                data-verstaerkung-id="${escapeHtml(id)}"
+                onclick="ehrenmarktAuftragAnsehen(
+                    '${escapeHtml(typ)}',
+                    '${escapeHtml(order.id)}'
+                )"
             >
-                Ich helfe
+                🔎 Ansehen
             </button>
+
+            ${
+                optionen.annahme === true
+                    ? `
+                        <button
+                            type="button"
+                            onclick="${escapeHtml(
+                                optionen.annahmeFunktion || ""
+                            )}(
+                                '${escapeHtml(order.id)}',
+                                this
+                            )"
+                        >
+                            ✅ Auftrag annehmen
+                        </button>
+                      `
+                    : ""
+            }
 
         </div>
     `;
+
+
+    return card;
 }
 
 
-// ============================================================
-// VERSTÄRKUNG ÜBERNEHMEN
-// ============================================================
+// =====================================================
+// AUFTRAGSDATEN PRÜFEN
+// =====================================================
 
-async function uebernehmeVerstaerkung(
-    anfrageId,
-    button
+function istGueltigeAuftragsId(id) {
+
+    return (
+        id !== null &&
+        id !== undefined &&
+        String(id).trim() !== ""
+    );
+}
+
+
+// =====================================================
+// DOPPELTE KLICKS VERHINDERN
+// =====================================================
+
+const laufendeAuftraege =
+    new Set();
+
+
+function auftragIstInBearbeitung(id) {
+
+    return laufendeAuftraege.has(
+        String(id)
+    );
+}
+
+
+function setzeAuftragInBearbeitung(id) {
+
+    laufendeAuftraege.add(
+        String(id)
+    );
+}
+
+
+function entferneAuftragAusBearbeitung(id) {
+
+    laufendeAuftraege.delete(
+        String(id)
+    );
+}
+
+
+// =====================================================
+// AUFTRAG-AKTION SICHER STARTEN
+// =====================================================
+
+async function starteAuftragsAktion(
+    id,
+    button,
+    funktion
 ) {
 
-    if (
-        !aktuellerUser ||
-        !mitarbeiterSupabase
-    ) {
+    if (!istGueltigeAuftragsId(id)) {
+
+        zeigeFehler(
+            "Ungültige Auftrags-ID."
+        );
+
         return;
     }
+
+
+    if (auftragIstInBearbeitung(id)) {
+        return;
+    }
+
+
+    setzeAuftragInBearbeitung(id);
 
 
     if (button) {
 
         button.disabled = true;
 
+        button.dataset.originalText =
+            button.textContent;
+
         button.textContent =
-            "Wird übernommen...";
+            "⏳ Wird bearbeitet...";
     }
 
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employee_help_requests")
-                .update({
-                    helper_id:
-                        aktuellerUser.id,
-
-                    status:
-                        "Angenommen",
-
-                    updated_at:
-                        new Date().toISOString()
-                })
-                .eq(
-                    "id",
-                    anfrageId
-                )
-                .eq(
-                    "status",
-                    "Offen"
-                )
-                .is(
-                    "helper_id",
-                    null
-                )
-                .select("*")
-                .maybeSingle();
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (!data) {
-
-            throw new Error(
-                "Die Verstärkungsanfrage wurde bereits übernommen."
-            );
-        }
-
-
-        await ladeOffeneVerstaerkung();
-
-
-        await ladeEigeneAuftraege(
-            aktuellerUser
-        );
-
+        await funktion();
 
     } catch (error) {
 
         console.error(
-            "Fehler beim Übernehmen der Verstärkung:",
+            "Fehler bei der Auftragsaktion:",
             error
         );
 
-
         zeigeFehler(
-            "Die Verstärkungsanfrage konnte nicht übernommen werden."
+            "Die Aktion konnte nicht ausgeführt werden.\n\n" +
+            (error.message || error)
         );
 
+    } finally {
+
+        entferneAuftragAusBearbeitung(id);
 
         if (button) {
 
             button.disabled = false;
 
             button.textContent =
-                "Ich helfe";
+                button.dataset.originalText ||
+                "✅ Auftrag annehmen";
         }
     }
-}
-
-
-// ============================================================
-// BENACHRICHTIGUNGEN
-// ============================================================
-
-async function ladeBenachrichtigungen() {
-
-    const container =
-        element("benachrichtigungen");
-
-
-    if (!container) {
-        return;
     }
 
-
-    container.innerHTML = `
-        <p>
-            Aktuell liegen keine neuen
-            Benachrichtigungen vor.
-        </p>
-    `;
-}
-
-
 // ============================================================
-// KOMPLETTE AKTUALISIERUNG
+// TEIL 7/8 – WEITERE HILFSFUNKTIONEN
 // ============================================================
 
-async function aktualisiereMitarbeiterbereich() {
+// ------------------------------------------------------------
+// Mitarbeiterdaten erneut laden
+// ------------------------------------------------------------
 
-    if (
-        !aktuellerUser ||
-        !mitarbeiterSupabase
-    ) {
-        return;
+async function ladeAktuellenMitarbeiter() {
+    if (!supabase || !user) {
+        return null;
     }
-
 
     try {
+        const { data, error } = await supabase
+            .from("employees")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("is_active", true)
+            .maybeSingle();
 
-        const {
-            data,
-            error
-        } =
-            await mitarbeiterSupabase
-                .from("employees")
-                .select("*")
-                .eq(
-                    "user_id",
-                    aktuellerUser.id
-                )
-                .maybeSingle();
-
-
-        if (!error && data) {
-
-            aktuellerMitarbeiter =
-                data;
-
-
-            aktualisiereMitarbeiterAnzeige(
-                data
-            );
-
-
-            aktualisiereStempeluhrAnzeige();
+        if (error) {
+            console.error("Fehler beim Laden des Mitarbeiters:", error);
+            return null;
         }
 
-
-        await Promise.allSettled([
-            ladeEigeneAuftraege(
-                aktuellerUser
-            ),
-
-            ladeOffeneVerstaerkung(),
-
-            ladeBenachrichtigungen()
-        ]);
-
-
+        return data;
     } catch (error) {
-
-        console.error(
-            "Fehler beim Aktualisieren:",
-            error
-        );
+        console.error("Fehler bei ladeAktuellenMitarbeiter:", error);
+        return null;
     }
 }
 
 
-// ============================================================
-// AUTOMATISCHE AKTUALISIERUNG
-// ============================================================
+// ------------------------------------------------------------
+// Prüfen, ob der aktuelle Benutzer Mitarbeiter ist
+// ------------------------------------------------------------
 
-function starteAutomatischeAktualisierung() {
+async function pruefeAktuellenMitarbeiter() {
+    const mitarbeiter = await ladeAktuellenMitarbeiter();
 
-    if (aktualisierungsTimer) {
-
-        clearInterval(
-            aktualisierungsTimer
-        );
-    }
-
-
-    aktualisierungsTimer =
-        setInterval(
-            () => {
-
-                if (aktuellerUser) {
-
-                    void aktualisiereMitarbeiterbereich();
-                }
-
-            },
-            60000
-        );
-}
-
-
-// ============================================================
-// START
-// ============================================================
-
-async function starteMitarbeiterbereich() {
-
-    console.log(
-        "Ehrenmarkt Mitarbeiterbereich startet..."
-    );
-
-
-    versteckeFehler();
-
-
-    mitarbeiterSupabase =
-        window.supabaseClient;
-
-
-    if (!mitarbeiterSupabase) {
-
-        console.error(
-            "window.supabaseClient fehlt."
-        );
-
-
+    if (!mitarbeiter) {
         zeigeFehler(
-            "Die Verbindung zu Ehrenmarkt konnte nicht hergestellt werden."
+            "Für dein Konto wurde kein aktiver Mitarbeiter-Eintrag gefunden."
         );
+        return false;
+    }
+
+    return true;
+}
 
 
+// ------------------------------------------------------------
+// Auftrag ansehen
+// ------------------------------------------------------------
+
+function ehrenmarktAuftragAnsehen(typ, id) {
+    if (!id) {
+        zeigeFehler("Die Auftrags-ID fehlt.");
         return;
     }
 
+    let ziel = null;
 
-    verbindeAbmeldenButton();
+    switch (typ) {
+        case "bau":
+            ziel = `../HTML/bauauftrag_details.html?id=${encodeURIComponent(id)}`;
+            break;
 
-    verbindeMitarbeiterButtons();
+        case "material":
+            ziel = `../HTML/material_details.html?id=${encodeURIComponent(id)}`;
+            break;
 
-    registriereAuthListener();
+        case "redstone":
+            ziel = `../HTML/redstone_details.html?id=${encodeURIComponent(id)}`;
+            break;
 
-    await pruefeAnmeldung();
+        case "logistik":
+            ziel = `../HTML/logistik_details.html?id=${encodeURIComponent(id)}`;
+            break;
 
-    starteAutomatischeAktualisierung();
+        default:
+            zeigeFehler("Unbekannter Auftragstyp.");
+            return;
+    }
+
+    window.location.href = ziel;
+}
 
 
-    console.log(
-        "Ehrenmarkt Mitarbeiterbereich fertig."
+// ------------------------------------------------------------
+// Auftragstyp lesbar machen
+// ------------------------------------------------------------
+
+function auftragTypName(typ) {
+    switch (typ) {
+        case "bau":
+            return "Bauauftrag";
+
+        case "material":
+            return "Materialauftrag";
+
+        case "redstone":
+            return "Redstone-Auftrag";
+
+        case "logistik":
+            return "Logistikauftrag";
+
+        default:
+            return "Auftrag";
+    }
+}
+
+
+// ------------------------------------------------------------
+// Status lesbar machen
+// ------------------------------------------------------------
+
+function statusName(status) {
+    if (!status) {
+        return "Unbekannt";
+    }
+
+    switch (String(status).toLowerCase()) {
+        case "offen":
+            return "Offen";
+
+        case "in bearbeitung":
+            return "In Bearbeitung";
+
+        case "angenommen":
+            return "Angenommen";
+
+        case "abgeschlossen":
+            return "Abgeschlossen";
+
+        case "storniert":
+            return "Storniert";
+
+        case "abgelehnt":
+            return "Abgelehnt";
+
+        default:
+            return status;
+    }
+}
+
+
+// ------------------------------------------------------------
+// Status-Klasse für Anzeige
+// ------------------------------------------------------------
+
+function statusKlasse(status) {
+    if (!status) {
+        return "status-unbekannt";
+    }
+
+    switch (String(status).toLowerCase()) {
+        case "offen":
+            return "status-offen";
+
+        case "in bearbeitung":
+            return "status-bearbeitung";
+
+        case "angenommen":
+            return "status-angenommen";
+
+        case "abgeschlossen":
+            return "status-abgeschlossen";
+
+        case "storniert":
+            return "status-storniert";
+
+        case "abgelehnt":
+            return "status-abgelehnt";
+
+        default:
+            return "status-unbekannt";
+    }
+}
+
+
+// ------------------------------------------------------------
+// Datum formatieren
+// ------------------------------------------------------------
+
+function formatiereDatum(datum) {
+    if (!datum) {
+        return "Kein Datum";
+    }
+
+    const wert = new Date(datum);
+
+    if (Number.isNaN(wert.getTime())) {
+        return "Kein gültiges Datum";
+    }
+
+    return wert.toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+
+// ------------------------------------------------------------
+// Geldbetrag formatieren
+// ------------------------------------------------------------
+
+function formatierePreis(preis) {
+    if (
+        preis === null ||
+        preis === undefined ||
+        preis === ""
+    ) {
+        return "0 $";
+    }
+
+    const zahl = Number(preis);
+
+    if (Number.isNaN(zahl)) {
+        return "0 $";
+    }
+
+    return zahl.toLocaleString("de-DE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) + " $";
+}
+
+
+// ------------------------------------------------------------
+// Sichere ID-Prüfung
+// ------------------------------------------------------------
+
+function istGueltigeAuftragsId(id) {
+    if (
+        id === null ||
+        id === undefined ||
+        id === ""
+    ) {
+        return false;
+    }
+
+    return String(id).trim().length > 0;
+}
+
+
+// ------------------------------------------------------------
+// Doppelklick auf Annahme verhindern
+// ------------------------------------------------------------
+
+function sperreAuftragsButton(button) {
+    if (!button) {
+        return;
+    }
+
+    button.disabled = true;
+    button.dataset.originalText = button.textContent;
+    button.textContent = "Wird angenommen...";
+}
+
+
+// ------------------------------------------------------------
+// Button wieder freigeben
+// ------------------------------------------------------------
+
+function entsperreAuftragsButton(button) {
+    if (!button) {
+        return;
+    }
+
+    button.disabled = false;
+
+    if (button.dataset.originalText) {
+        button.textContent = button.dataset.originalText;
+    }
+}
+
+
+// ------------------------------------------------------------
+// Auftrag erfolgreich angenommen
+// ------------------------------------------------------------
+
+function zeigeAuftragAngenommen(typ) {
+    const name = auftragTypName(typ);
+
+    zeigeErfolg(
+        `${name} wurde erfolgreich angenommen.`
     );
 }
 
 
-// ============================================================
-// START BEIM LADEN DER SEITE
-// ============================================================
+// ------------------------------------------------------------
+// Offene Aufträge nach Annahme neu laden
+// ------------------------------------------------------------
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        void starteMitarbeiterbereich();
-
-    },
-    {
-        once: true
+async function aktualisiereOffeneAuftraegeNachAnnahme() {
+    try {
+        await ladeOffeneAuftraege();
+    } catch (error) {
+        console.error(
+            "Fehler beim Aktualisieren der offenen Aufträge:",
+            error
+        );
     }
+}
+
+
+// ------------------------------------------------------------
+// Globale Funktion für manuelle Aktualisierung
+// ------------------------------------------------------------
+
+window.ehrenmarktAuftraegeAktualisieren = async function () {
+    await ladeOffeneAuftraege();
+};
+
+
+// ------------------------------------------------------------
+// Globale Funktion zum Anzeigen eines Auftrags
+// ------------------------------------------------------------
+
+window.ehrenmarktAuftragAnsehen = function (typ, id) {
+    ehrenmarktAuftragAnsehen(typ, id);
+};
+
+
+// ------------------------------------------------------------
+// Globale Funktion zum Annehmen eines Auftrags
+// ------------------------------------------------------------
+
+window.ehrenmarktAuftragAnnehmen = async function (
+    typ,
+    id,
+    button
+) {
+    await uebernehmeOffenenAuftrag(
+        typ,
+        id,
+        button
+    );
+};
+
+
+// ============================================================
+// ENDE TEIL 7/8
+// ============================================================
+
+// ============================================================
+// TEIL 8/8 – ABSCHLUSS UND START
+// ============================================================
+
+// ------------------------------------------------------------
+// Letzte Aktualisierung beim Öffnen des Mitarbeiterbereichs
+// ------------------------------------------------------------
+
+try {
+    await Promise.allSettled([
+        ladeOffeneAuftraege(),
+        ladeOffeneVerstaerkung(),
+        ladeBenachrichtigungen()
+    ]);
+} catch (error) {
+    console.error(
+        "Fehler beim initialen Laden des Mitarbeiterbereichs:",
+        error
+    );
+}
+
+
+// ------------------------------------------------------------
+// Automatische Aktualisierung
+// ------------------------------------------------------------
+
+const ehrenmarktAutoRefresh = setInterval(async () => {
+    try {
+        await Promise.allSettled([
+            ladeOffeneAuftraege(),
+            ladeOffeneVerstaerkung(),
+            ladeBenachrichtigungen()
+        ]);
+    } catch (error) {
+        console.error(
+            "Fehler bei der automatischen Aktualisierung:",
+            error
+        );
+    }
+}, 60000);
+
+
+// ------------------------------------------------------------
+// Aufräumen beim Verlassen der Seite
+// ------------------------------------------------------------
+
+window.addEventListener("beforeunload", () => {
+    if (ehrenmarktAutoRefresh) {
+        clearInterval(ehrenmarktAutoRefresh);
+    }
+});
+
+
+// ------------------------------------------------------------
+// Globale Aktualisierungsfunktion
+// ------------------------------------------------------------
+
+window.ehrenmarktMitarbeiterbereichAktualisieren =
+    async function () {
+
+        try {
+            await Promise.allSettled([
+                ladeOffeneAuftraege(),
+                ladeEigeneAuftraege(user),
+                ladeOffeneVerstaerkung(),
+                ladeBenachrichtigungen()
+            ]);
+
+            zeigeErfolg(
+                "Mitarbeiterbereich wurde aktualisiert."
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Fehler beim Aktualisieren:",
+                error
+            );
+
+            zeigeFehler(
+                "Der Mitarbeiterbereich konnte nicht vollständig aktualisiert werden."
+            );
+        }
+    };
+
+
+// ------------------------------------------------------------
+// Seite vollständig initialisiert
+// ------------------------------------------------------------
+
+console.log(
+    "Ehrenmarkt Mitarbeiterbereich erfolgreich gestartet."
 );
 
 
 // ============================================================
-// ÖFFENTLICHE FUNKTIONEN
+// DOMContentLoaded ENDE
 // ============================================================
 
-window.ehrenmarktMitarbeiterAktualisieren =
-    aktualisiereMitarbeiterbereich;
-
-
-window.ehrenmarktMitarbeiterAbmelden =
-    abmelden;
+});
