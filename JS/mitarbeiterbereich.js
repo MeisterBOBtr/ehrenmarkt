@@ -1092,6 +1092,7 @@ function aktualisiereStempeluhrAnzeige() {
     }
 }
 
+    
 // ============================================================
 // TEIL 3
 // VERFÜGBARKEIT
@@ -1248,6 +1249,22 @@ function verbindeMitarbeiterButtons() {
                     );
                 }
             };
+
+            const einstempelnButton =
+        element("einstempelnButton");
+
+    const ausstempelnButton =
+        element("ausstempelnButton");
+
+    if (einstempelnButton) {
+        einstempelnButton.onclick =
+            einstempeln;
+    }
+
+    if (ausstempelnButton) {
+        ausstempelnButton.onclick =
+            ausstempeln;
+    
     }
 }
 
