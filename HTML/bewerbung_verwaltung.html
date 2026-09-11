@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Bewerbungsverwaltung</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #eeeeee;
+
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.78),
+                    rgba(0, 0, 0, 0.91)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewerbung.png")
+                center center / cover fixed no-repeat;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            width: 100%;
+            background: rgba(8, 7, 6, 0.96);
+
+            border-bottom:
+                1px solid rgba(215, 173, 82, 0.45);
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.65);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: auto;
+
+            padding: 18px 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .brand {
+            min-width: 0;
+        }
+
+        .logo {
+            color: #d7ad52;
+
+            font-size: 24px;
+            font-weight: bold;
+
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            margin-top: 4px;
+
+            color: #999999;
+
+            font-size: 13px;
+        }
+
+        .back-button {
+            padding: 10px 15px;
+
+            color: #eeeeee;
+
+            background:
+                rgba(80, 15, 15, 0.65);
+
+            border:
+                1px solid #7f2222;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background:
+                rgba(120, 25, 25, 0.8);
+
+            border-color:
+                #d7ad52;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        main {
+            width: 100%;
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 30px 15px 50px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            color: #d7ad52;
+
+            font-size: 28px;
+
+            margin-bottom: 7px;
+        }
+
+        .page-heading p {
+            color: #aaaaaa;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           STATISTIK
+        ========================= */
+
+        .statistics {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            padding: 18px;
+
+            background:
+                rgba(15, 12, 10, 0.88);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.35);
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .stat-label {
+            color: #999999;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: #d7ad52;
+
+            font-size: 26px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           HAUPTLAYOUT
+        ========================= */
+
+        .management-layout {
+            display: grid;
+
+            grid-template-columns:
+                350px 1fr;
+
+            gap: 20px;
+        }
+
+        .panel {
+            background:
+                rgba(15, 12, 10, 0.91);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.38);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-header {
+            padding: 17px 18px;
+
+            background:
+                rgba(0, 0, 0, 0.30);
+
+            border-bottom:
+                1px solid rgba(215, 173, 82, 0.20);
+        }
+
+        .panel-header h2 {
+            color: #d7ad52;
+
+            font-size: 17px;
+        }
+
+        .panel-header p {
+            margin-top: 4px;
+
+            color: #777777;
+
+            font-size: 11px;
+        }
+
+    </style>
+
+          <style>
+
+        /* =========================
+           BEWERBUNGSLISTE
+        ========================= */
+
+        .application-list {
+            padding: 10px;
+        }
+
+        .application-list-empty {
+            padding: 35px 20px;
+
+            text-align: center;
+
+            color: #777777;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+        .application-list-empty strong {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #d7ad52;
+
+            font-size: 15px;
+        }
+
+
+        .application-item {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 9px;
+
+            background:
+                rgba(25, 20, 17, 0.82);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 10px;
+
+            text-align: left;
+
+            color: #eeeeee;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .application-item:hover {
+            background:
+                rgba(35, 28, 23, 0.95);
+
+            border-color:
+                rgba(215, 173, 82, 0.55);
+        }
+
+        .application-item.active {
+            background:
+                rgba(60, 42, 20, 0.50);
+
+            border-color:
+                #d7ad52;
+        }
+
+        .application-name {
+            color: #eeeeee;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+        .application-minecraft {
+            color: #999999;
+
+            font-size: 12px;
+
+            margin-bottom: 10px;
+        }
+
+        .application-meta {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            letter-spacing: 0.4px;
+        }
+
+        .status-offen {
+            color: #e8c76b;
+
+            background:
+                rgba(180, 130, 20, 0.18);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.35);
+        }
+
+        .status-angenommen {
+            color: #79c77b;
+
+            background:
+                rgba(50, 130, 50, 0.16);
+
+            border:
+                1px solid rgba(100, 190, 100, 0.30);
+        }
+
+        .status-abgelehnt {
+            color: #d87878;
+
+            background:
+                rgba(130, 30, 30, 0.16);
+
+            border:
+                1px solid rgba(180, 50, 50, 0.30);
+        }
+
+        .application-date {
+            color: #666666;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================
+           DETAILBEREICH
+        ========================= */
+
+        .details-content {
+            padding: 20px;
+        }
+
+        .details-empty {
+            min-height: 400px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            color: #777777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        .details-empty-inner {
+            max-width: 350px;
+        }
+
+        .details-empty-title {
+            color: #d7ad52;
+
+            font-size: 20px;
+
+            margin-bottom: 8px;
+        }
+
+
+        /* =========================
+           BEWERBERKOPF
+        ========================= */
+
+        .candidate-header {
+            display: flex;
+
+            align-items: flex-start;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding-bottom: 18px;
+
+            margin-bottom: 22px;
+
+            border-bottom:
+                1px solid rgba(215, 173, 82, 0.20);
+        }
+
+        .candidate-name {
+            color: #d7ad52;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            margin-bottom: 5px;
+        }
+
+        .candidate-minecraft {
+            color: #999999;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           DETAIL-SEKTIONEN
+        ========================= */
+
+        .detail-section {
+            margin-bottom: 23px;
+        }
+
+        .detail-section-title {
+            color: #d7ad52;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 11px;
+        }
+
+        .info-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+        }
+
+        .info-box {
+            padding: 12px;
+
+            background:
+                rgba(0, 0, 0, 0.28);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.07);
+
+            border-radius: 8px;
+        }
+
+        .info-label {
+            color: #777777;
+
+            font-size: 10px;
+
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #eeeeee;
+
+            font-size: 13px;
+
+            word-break: break-word;
+
+            line-height: 1.4;
+        }
+
+        .text-box {
+            padding: 14px;
+
+            background:
+                rgba(0, 0, 0, 0.28);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.07);
+
+            border-radius: 8px;
+
+            color: #cccccc;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            white-space: pre-line;
+
+            word-break: break-word;
+        }
+
+          </style>
+
+          <style>
+
+        /* =========================
+           FÄHIGKEITEN
+        ========================= */
+
+        .skills-container {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+        .skill-tag {
+            padding: 7px 10px;
+
+            color: #dddddd;
+
+            background:
+                rgba(80, 20, 20, 0.55);
+
+            border:
+                1px solid rgba(160, 50, 50, 0.40);
+
+            border-radius: 7px;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           ENTSCHEIDUNG
+        ========================= */
+
+        .decision-panel {
+            margin-top: 25px;
+
+            padding: 18px;
+
+            background:
+                rgba(0, 0, 0, 0.30);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.30);
+
+            border-radius: 10px;
+        }
+
+        .decision-title {
+            color: #d7ad52;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+
+            color: #aaaaaa;
+
+            font-size: 11px;
+
+            margin-bottom: 6px;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+
+            padding: 11px;
+
+            color: #eeeeee;
+
+            background:
+                #17120f;
+
+            border:
+                1px solid rgba(215, 173, 82, 0.30);
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            font-size: 13px;
+        }
+
+        select:focus,
+        textarea:focus {
+            border-color:
+                #d7ad52;
+        }
+
+        textarea {
+            min-height: 90px;
+
+            resize: vertical;
+        }
+
+
+        /* =========================
+           ENTSCHEIDUNGSBUTTONS
+        ========================= */
+
+        .decision-buttons {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+        .decision-button {
+            padding: 13px 10px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .accept-button {
+            color: #dcefdc;
+
+            background:
+                rgba(45, 110, 45, 0.45);
+
+            border:
+                1px solid rgba(100, 190, 100, 0.45);
+        }
+
+        .accept-button:hover {
+            background:
+                rgba(55, 140, 55, 0.65);
+        }
+
+        .reject-button {
+            color: #f0dada;
+
+            background:
+                rgba(110, 25, 25, 0.50);
+
+            border:
+                1px solid rgba(190, 65, 65, 0.45);
+        }
+
+        .reject-button:hover {
+            background:
+                rgba(140, 30, 30, 0.70);
+        }
+
+
+        /* =========================
+           HINWEIS
+        ========================= */
+
+        .preview-note {
+            margin-top: 20px;
+
+            padding: 12px 14px;
+
+            background:
+                rgba(80, 60, 20, 0.18);
+
+            border:
+                1px solid rgba(215, 173, 82, 0.20);
+
+            border-radius: 8px;
+
+            color: #888888;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .preview-note strong {
+            color: #d7ad52;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding:
+                0 15px 30px;
+
+            text-align: center;
+
+            color: #555555;
+
+            font-size: 11px;
+        }
+
+          </style>
+
+  </head>
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header>
+
+        <div class="header-inner">
+
+            <div class="brand">
+
+                <div class="logo">
+                    EHRENMARKT
+                </div>
+
+                <div class="subtitle">
+                    Bewerbungsverwaltung · Stadtleitung
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="back-button"
+                onclick="history.back()"
+            >
+                ← Zurück
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main>
+
+
+        <div class="page-heading">
+
+            <h1>
+                Bewerbungsverwaltung
+            </h1>
+
+            <p>
+                Bewerbungen prüfen und über die Aufnahme neuer Mitarbeiter entscheiden.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             STATISTIK
+        ========================= -->
+
+        <div class="statistics">
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Offene Bewerbungen
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statOffen"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Angenommen
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statAngenommen"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Abgelehnt
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="statAbgelehnt"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             VERWALTUNG
+        ========================= -->
+
+        <div class="management-layout">
+
+
+            <!-- =========================
+                 BEWERBUNGSLISTE
+            ========================= -->
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Bewerbungen
+                    </h2>
+
+                    <p>
+                        Bewerbungen aus dem Ehrenmarkt-System
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="application-list"
+                    id="applicationList"
+                >
+
+                    <div class="application-list-empty">
+
+                        <strong>
+                            Keine Bewerbung ausgewählt
+                        </strong>
+
+                        Die Bewerbungen werden später automatisch aus
+                        der Tabelle <b>applications</b> geladen.
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =========================
+                 DETAILS
+            ========================= -->
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <h2>
+                        Bewerbungsdetails
+                    </h2>
+
+                    <p>
+                        Vollständige Informationen zum Bewerber
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="details-content"
+                    id="detailsContent"
+                >
+
+                    <div class="details-empty">
+
+                        <div class="details-empty-inner">
+
+                            <div class="details-empty-title">
+                                Keine Bewerbung ausgewählt
+                            </div>
+
+                            <p>
+                                Wähle links eine Bewerbung aus,
+                                um die Bewerbungsdetails anzuzeigen.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <footer>
+        EHRENMARKT · Bewerbungsverwaltung
+    </footer>
+
+      <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script src="../supabase.js"></script>
+
+    <script src="../JS/bewerbung_verwaltung.js"></script>
+
+
+</body>
+</html>
