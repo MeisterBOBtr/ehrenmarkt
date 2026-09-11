@@ -943,42 +943,115 @@ document.addEventListener("DOMContentLoaded", async () => {
     // LOGISTIKAUFTRAG ANNEHMEN
     // =====================================================
 
-    window.acceptLogisticsOrder = async function(id, button) {
+    // ============================================================
+// LOGISTIKAUFTRAG ANNEHMEN
+// ============================================================
 
-        if (button) {
-            button.disabled = true;
-            button.textContent =
-                "⏳ Wird angenommen...";
+window.acceptLogisticsOrder = async function(id, button) {
+
+    if (!id) {
+        zeigeFehler("Die Auftrags-ID fehlt.");
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "⏳ Wird angenommen...";
+    }
+
+    try {
+
+        // Aktuellen Mitarbeiter laden
+        const { data: employee, error: employeeError } =
+            await supabase
+                .from("employees")
+                .select("id, user_id, name")
+                .eq("user_id", user.id)
+                .eq("is_active", true)
+                .maybeSingle();
+
+        if (employeeError) {
+            throw employeeError;
+        }
+
+        if (!employee) {
+            throw new Error(
+                "Für deinen Account wurde kein aktiver Mitarbeiter gefunden."
+            );
         }
 
 
-        /*
-         * WICHTIG:
-         * Der aktuelle logistics_orders-Datensatz besitzt
-         * nach dem bisher geprüften Datenbankschema keine
-         * Mitarbeiter-Zuweisungsspalte.
-         *
-         * Deshalb wird hier NICHT einfach eine nicht
-         * vorhandene Spalte geschrieben.
-         *
-         * Sobald die Datenbank eine Assignment-Spalte
-         * für Logistikaufträge besitzt, kann diese Funktion
-         * entsprechend aktiviert werden.
-         */
+        // Logistikauftrag übernehmen
+        const { data: auftrag, error: updateError } =
+            await supabase
+                .from("logistics_orders")
+                .update({
+                    employee_id: employee.id,
+                    employee_name: employee.name,
+                    status: "In Bearbeitung"
+                })
+                .eq("id", id)
+                .eq("status", "Offen")
+                .is("employee_id", null)
+                .select("*")
+                .maybeSingle();
+
+
+        if (updateError) {
+            throw updateError;
+        }
+
+
+        // Auftrag wurde bereits von jemand anderem übernommen
+        if (!auftrag) {
+
+            throw new Error(
+                "Dieser Logistikauftrag wurde bereits von einem anderen Mitarbeiter übernommen."
+            );
+        }
+
+
+        // Erfolgsmeldung
+        zeigeErfolg(
+            "Logistikauftrag erfolgreich übernommen."
+        );
+
+
+        // Offene Aufträge neu laden
+        await ladeOffeneAuftraege();
+
+
+        // Eigene Aufträge neu laden
+        await ladeEigeneAuftraege();
+
+
+        // Kurz warten, damit die Erfolgsmeldung sichtbar bleibt
+        setTimeout(() => {
+
+            window.location.href =
+                `../HTML/logistik_details.html?id=${encodeURIComponent(id)}`;
+
+        }, 500);
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Übernehmen des Logistikauftrags:",
+            error
+        );
 
         if (button) {
             button.disabled = false;
-            button.textContent =
-                "🚚 Auftrag annehmen";
+            button.textContent = "📦 Auftrag annehmen";
         }
 
-
         zeigeFehler(
-            "Der Logistikauftrag kann momentan noch nicht direkt angenommen werden, " +
-            "weil in der Datenbank noch keine Mitarbeiter-Zuweisung für Logistikaufträge vorhanden ist."
+            error.message ||
+            "Der Logistikauftrag konnte nicht übernommen werden."
         );
-    };
-
+    }
+};
 
     // =====================================================
     // EIGENE AUFTRÄGE LADEN
@@ -1074,13 +1147,49 @@ document.addEventListener("DOMContentLoaded", async () => {
         // EIGENE LOGISTIKAUFTRÄGE
         // -------------------------------------------------
 
-        /*
-         * Wird erst verwendet, wenn die
-         * Mitarbeiter-Zuweisung in logistics_orders
-         * vorhanden ist.
-         */
+        // ================================================
+// EIGENE LOGISTIKAUFTRÄGE
+// ================================================
 
-        const myLogisticsOrders = [];
+const { data: eigenerMitarbeiter, error: eigenerMitarbeiterError } =
+    await supabase
+        .from("employees")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+if (eigenerMitarbeiterError) {
+    console.error(
+        "Fehler beim Laden des eigenen Mitarbeiters:",
+        eigenerMitarbeiterError
+    );
+}
+
+let myLogisticsOrders = [];
+
+if (eigenerMitarbeiter) {
+
+    const {
+        data: logisticsOrders,
+        error: myLogisticsError
+    } = await supabase
+        .from("logistics_orders")
+        .select("*")
+        .eq("employee_id", eigenerMitarbeiter.id);
+
+    if (myLogisticsError) {
+
+        console.error(
+            "Eigene Logistikaufträge konnten nicht geladen werden:",
+            myLogisticsError
+        );
+
+    } else {
+
+        myLogisticsOrders = logisticsOrders || [];
+    }
+}
 
 
         // -------------------------------------------------
@@ -1612,37 +1721,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     // LOGISTIKAUFTRAG ABSCHLIESSEN
     // =====================================================
 
-    window.finishLogisticsOrder = async function(id) {
+    // ============================================================
+// LOGISTIKAUFTRAG ABSCHLIESSEN
+// ============================================================
 
-        if (!confirm(
-            "Logistikauftrag wirklich abschließen?"
-        )) {
-            return;
-        }
+window.finishLogisticsOrder = async function(id) {
 
+    if (!confirm(
+        "Logistikauftrag wirklich abschließen?"
+    )) {
+        return;
+    }
 
-        /*
-         * Der Abschluss wird hier bewusst nur über die
-         * Auftrags-ID durchgeführt.
-         *
-         * Eine Mitarbeiter-Zuweisungsspalte für
-         * logistics_orders ist aktuell noch nicht vorhanden.
-         */
+    if (!id) {
+        zeigeFehler(
+            "Die Auftrags-ID fehlt."
+        );
+        return;
+    }
 
-        const {
-            error
-        } = await supabase
-            .from("logistics_orders")
-            .update({
-                status: "Abgeschlossen"
-            })
-            .eq("id", id);
+    try {
+
+        const { data: auftrag, error } =
+            await supabase
+                .from("logistics_orders")
+                .update({
+                    status: "Abgeschlossen"
+                })
+                .eq("id", id)
+                .select("*")
+                .maybeSingle();
 
 
         if (error) {
 
             console.error(
-                "Fehler beim Abschließen:",
+                "Fehler beim Abschließen des Logistikauftrags:",
                 error
             );
 
@@ -1655,12 +1769,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
+        if (!auftrag) {
+
+            zeigeFehler(
+                "Der Logistikauftrag wurde nicht gefunden."
+            );
+
+            return;
+        }
+
+
         zeigeErfolg(
             "Logistikauftrag erfolgreich abgeschlossen."
         );
 
+
+        // Eigene Aufträge neu laden
         await ladeEigeneAuftraege();
-    };
+
+
+        // Offene Aufträge aktualisieren
+        await ladeOffeneAuftraege();
+
+    } catch (error) {
+
+        console.error(
+            "Unerwarteter Fehler beim Abschließen:",
+            error
+        );
+
+        zeigeFehler(
+            "Der Logistikauftrag konnte nicht abgeschlossen werden.\n\n" +
+            (error.message || "Unbekannter Fehler")
+        );
+    }
+};
 
 
     // =====================================================
