@@ -1940,7 +1940,7 @@ async function bewerbungAbsenden() {
 
 
     // Erfolgreich
-    zeigeBewerbungErfolg();
+    window.location.href = "bewerbung_erfolgreich.html";
 
 }
 
