@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Bündnis erfolgreich</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #f1e5c8;
+
+            background-image:
+                linear-gradient(
+                    rgba(8, 7, 6, 0.78),
+                    rgba(8, 7, 6, 0.88)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bundnis.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================================
+           HAUPTBEREICH
+           ======================================== */
+
+        main {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .karte {
+            width: 100%;
+            background: rgba(15, 12, 10, 0.92);
+            border: 1px solid #d7ad52;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow:
+                0 0 25px rgba(0, 0, 0, 0.65),
+                inset 0 0 20px rgba(215, 173, 82, 0.05);
+        }
+
+        .kopf {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .kopf h1 {
+            margin: 0;
+            color: #d7ad52;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        .kopf p {
+            margin: 10px 0 0;
+            color: #c8bda5;
+            font-size: 16px;
+        }
+
+        /* ========================================
+           ERFOLG
+           ======================================== */
+
+        .erfolg {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .erfolg-symbol {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .erfolg h2 {
+            margin: 0 0 15px;
+            color: #d7ad52;
+            font-size: 28px;
+        }
+
+        .erfolg p {
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+            color: #e4dac4;
+            font-size: 16px;
+        }
+
+              /* ========================================
+           INFOBOX
+           ======================================== */
+
+        .infobox {
+            margin: 30px auto;
+            max-width: 700px;
+            padding: 20px;
+            background: rgba(30, 24, 18, 0.85);
+            border: 1px solid rgba(215, 173, 82, 0.45);
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .infobox h3 {
+            margin: 0 0 12px;
+            color: #d7ad52;
+            font-size: 20px;
+        }
+
+        .infobox p {
+            margin: 0;
+            line-height: 1.6;
+            color: #d8ccb3;
+        }
+
+        /* ========================================
+           STATUS
+           ======================================== */
+
+        .status {
+            max-width: 700px;
+            margin: 25px auto;
+            padding: 16px 20px;
+
+            background: rgba(20, 16, 12, 0.9);
+            border: 1px solid #8f7134;
+            border-radius: 10px;
+
+            color: #d7ad52;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ========================================
+           BUTTON-BEREICH
+           ======================================== */
+
+        .aktionen {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 220px;
+            padding: 14px 22px;
+
+            border: 1px solid #d7ad52;
+            border-radius: 10px;
+
+            background: #211a13;
+            color: #d7ad52;
+
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .button:hover {
+            background: #d7ad52;
+            color: #15110d;
+            transform: translateY(-2px);
+        }
+
+        .button.haupt {
+            background: #8f2525;
+            border-color: #b83a3a;
+            color: #f4e8ce;
+        }
+
+        .button.haupt:hover {
+            background: #b83a3a;
+            color: #ffffff;
+              }
+
+              /* ========================================
+           FOOTER
+           ======================================== */
+
+        footer {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+
+            background: rgba(8, 7, 6, 0.92);
+            border-top: 1px solid rgba(215, 173, 82, 0.35);
+
+            color: #8f8573;
+            font-size: 13px;
+        }
+
+        footer strong {
+            color: #d7ad52;
+        }
+
+        /* ========================================
+           MOBILE
+           ======================================== */
+
+        @media (max-width: 700px) {
+
+            main {
+                padding: 20px 12px;
+            }
+
+            .karte {
+                padding: 25px 18px;
+                border-radius: 12px;
+            }
+
+            .kopf h1 {
+                font-size: 26px;
+            }
+
+            .erfolg {
+                padding: 20px 5px;
+            }
+
+            .erfolg-symbol {
+                font-size: 52px;
+            }
+
+            .erfolg h2 {
+                font-size: 23px;
+            }
+
+            .erfolg p {
+                font-size: 15px;
+            }
+
+            .infobox {
+                padding: 16px;
+            }
+
+            .aktionen {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <div class="karte">
+
+            <div class="kopf">
+                <h1>EHRENMARKT</h1>
+                <p>Bündnis</p>
+            </div>
+
+            <section class="erfolg">
+
+                <div class="erfolg-symbol">🤝</div>
+
+                <h2>Bündnisantrag erfolgreich eingereicht</h2>
+
+                <p>
+                    Dein Bündnisantrag wurde erfolgreich an Ehrenmarkt
+                    übermittelt.
+                </p>
+
+            </section>
+
+                      <div class="infobox">
+
+                <h3>Wie geht es weiter?</h3>
+
+                <p>
+                    Das Team von Ehrenmarkt wird deinen Antrag prüfen.
+                    Sobald eine Entscheidung getroffen wurde, wird der
+                    Status deines Bündnisses entsprechend aktualisiert.
+                </p>
+
+            </div>
+
+            <div class="status">
+                Status: Antrag eingereicht – Prüfung durch Ehrenmarkt
+            </div>
+
+            <div class="aktionen">
+
+                <a
+                    class="button haupt"
+                    href="../HTML/kundenbereich.html"
+                >
+                    Zum Kundenbereich
+                </a>
+
+                <a
+                    class="button"
+                    href="../HTML/startseite.html"
+                >
+                    Zur Startseite
+                </a>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <strong>EHRENMARKT</strong>
+        – Mittelalterliche Stadt &amp; Gemeinschaft
+    </footer>
+
+</body>
+</html>
