@@ -757,8 +757,6 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        supabaseClient = window.supabaseClient;
-
         if (!supabaseClient) {
             zeigeFehler(
                 "Supabase wurde nicht geladen."
