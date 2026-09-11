@@ -106,16 +106,16 @@ if (ladebereich) {
     // =====================================================
 
     const employeeName =
-        document.getElementById("employeeName");
+    document.getElementById("mitarbeiterUsername");
 
-    const employeeRole =
-        document.getElementById("employeeRole");
+const employeeRole =
+    document.getElementById("mitarbeiterRolle");
 
-    const employeeRank =
-        document.getElementById("employeeRank");
+const employeeRank =
+    document.getElementById("mitarbeiterRang");
 
-    const employeeStatus =
-        document.getElementById("employeeStatus");
+const employeeStatus =
+    document.getElementById("statusText");
 
     if (employeeName) {
         employeeName.textContent =
