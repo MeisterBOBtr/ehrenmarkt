@@ -1375,8 +1375,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 verwaltungZeigeFehler(
                     "Die Bewerbung konnte nicht angenommen werden.\n\n" +
-                    verwaltungZeigeFehler(
-                    "Die Bewerbung konnte nicht angenommen werden.\n\n" +
                     verwaltungFehlerText(error),
                     element(
                         "bewerbungenMessage"
