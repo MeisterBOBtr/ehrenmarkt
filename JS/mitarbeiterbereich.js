@@ -1075,7 +1075,7 @@ function aktualisiereStempeluhrAnzeige() {
 
     if (anzeige) {
         anzeige.textContent =
-            formatierenArbeitszeit(
+            formatiereArbeitszeit(
                 aktuellerMitarbeiter.total_work_minutes
             );
     }
