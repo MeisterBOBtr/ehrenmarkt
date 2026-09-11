@@ -149,6 +149,106 @@
             font-size: 16px;
         }
 
+        /* =====================================================
+   EHRENMARKT UMSATZ
+   ===================================================== */
+
+.umsatz-gesamt {
+    text-align: center;
+
+    padding: 25px 15px;
+
+    margin-bottom: 20px;
+
+    background:
+        rgba(10, 8, 7, 0.92);
+
+    border:
+        1px solid rgba(215, 173, 82, 0.55);
+
+    border-radius: 12px;
+}
+
+
+.umsatz-label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #cfc3a8;
+
+    font-size: 17px;
+}
+
+
+.umsatz-gesamt strong {
+    display: block;
+
+    color: #d7ad52;
+
+    font-size: clamp(30px, 7vw, 46px);
+
+    text-shadow:
+        2px 2px 5px #000;
+}
+
+
+.umsatz-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+.umsatz-card {
+    padding: 22px;
+
+    text-align: center;
+
+    background:
+        rgba(10, 8, 7, 0.92);
+
+    border:
+        1px solid rgba(215, 173, 82, 0.45);
+
+    border-radius: 12px;
+}
+
+
+.umsatz-card span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #cfc3a8;
+
+    font-size: 16px;
+}
+
+
+.umsatz-card strong {
+    display: block;
+
+    color: #d7ad52;
+
+    font-size: 26px;
+
+    text-shadow:
+        1px 1px 3px #000;
+}
+
+
+@media (max-width: 600px) {
+
+    .umsatz-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
 
         /* =====================================================
            WICHTIGE LINKS
@@ -709,6 +809,58 @@
             </p>
 
         </section>
+
+        <!-- =================================================
+     EHRENMARKT UMSATZ
+     ================================================= -->
+
+<section class="section">
+
+    <h2>Ehrenmarkt Umsatz</h2>
+
+    <div class="umsatz-gesamt">
+
+        <span class="umsatz-label">
+            Gesamtumsatz
+        </span>
+
+        <strong id="gesamtUmsatz">
+            0 $
+        </strong>
+
+    </div>
+
+
+    <div class="umsatz-grid">
+
+        <div class="umsatz-card">
+
+            <span>
+                Clan-Umsatz
+            </span>
+
+            <strong id="clanUmsatz">
+                0 $
+            </strong>
+
+        </div>
+
+
+        <div class="umsatz-card">
+
+            <span>
+                Arbeiter-Umsatz
+            </span>
+
+            <strong id="arbeiterUmsatz">
+                0 $
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
 
 
         <!-- =================================================
