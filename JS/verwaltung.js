@@ -4103,168 +4103,202 @@ document.addEventListener("DOMContentLoaded", async () => {
     await ladeBuendnisse();
 
         // =========================================================
-    // TEIL 7/7 – NAVIGATION & ABSCHLUSS
-    // =========================================================
+// TEIL 7/7 – NAVIGATION & ABSCHLUSS
+// =========================================================
 
-    // ---------------------------------------------------------
-    // Navigation zwischen den Verwaltungsbereichen
-    // ---------------------------------------------------------
+// ---------------------------------------------------------
+// Verwaltungsbereiche
+// ---------------------------------------------------------
 
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(button => {
+const verwaltungsBereiche = [
+    "section-bewerbungen",
+    "section-auftraege",
+    "section-mitarbeiter",
+    "section-preise",
+    "section-buendnisse"
+];
 
-            button.addEventListener(
-                "click",
-                async () => {
+// ---------------------------------------------------------
+// Alle Verwaltungsbereiche ausblenden
+// ---------------------------------------------------------
 
-                    const bereich =
-                        button.dataset.section;
+function versteckeAlleVerwaltungsbereiche() {
 
-                    if (!bereich) {
-                        return;
-                    }
+    verwaltungsBereiche.forEach(id => {
 
-                    // Alle Bereiche ausblenden
-                    document
-                        .querySelectorAll(
-                            ".verwaltung-section"
-                        )
-                        .forEach(section => {
-                            section.style.display =
-                                "none";
-                        });
+        const bereich =
+            document.getElementById(id);
 
-                    // Gewählten Bereich anzeigen
-                    const ziel =
-                        element(
-                            "section-" + bereich
+        if (bereich) {
+            bereich.style.display = "none";
+        }
+
+    });
+}
+
+// ---------------------------------------------------------
+// Einen Verwaltungsbereich anzeigen
+// ---------------------------------------------------------
+
+function zeigeVerwaltungsbereich(name) {
+
+    versteckeAlleVerwaltungsbereiche();
+
+    const bereich =
+        document.getElementById(
+            "section-" + name
+        );
+
+    if (bereich) {
+        bereich.style.display = "block";
+    }
+}
+
+// ---------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------
+
+document
+    .querySelectorAll(".nav-button")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            async () => {
+
+                const bereich =
+                    button.dataset.section;
+
+                if (!bereich) {
+                    return;
+                }
+
+                // Nur den ausgewählten Bereich anzeigen
+                zeigeVerwaltungsbereich(
+                    bereich
+                );
+
+                // Aktiven Button markieren
+                document
+                    .querySelectorAll(".nav-button")
+                    .forEach(btn => {
+
+                        btn.classList.remove(
+                            "active"
                         );
 
-                    if (ziel) {
-                        ziel.style.display =
-                            "block";
+                    });
+
+                button.classList.add(
+                    "active"
+                );
+
+                // -------------------------------------------------
+                // Daten des ausgewählten Bereichs neu laden
+                // -------------------------------------------------
+
+                try {
+
+                    if (
+                        bereich ===
+                        "bewerbungen"
+                    ) {
+
+                        await ladeBewerbungen();
+
+                    } else if (
+                        bereich ===
+                        "auftraege"
+                    ) {
+
+                        await ladeAuftraege(
+                            aktuelleAuftragsart
+                        );
+
+                    } else if (
+                        bereich ===
+                        "mitarbeiter"
+                    ) {
+
+                        await ladeMitarbeiter();
+
+                    } else if (
+                        bereich ===
+                        "preise"
+                    ) {
+
+                        await ladeItems();
+
+                    } else if (
+                        bereich ===
+                        "buendnisse"
+                    ) {
+
+                        await ladeBuendnisse();
+
                     }
 
-                    // Aktiven Button markieren
-                    document
-                        .querySelectorAll(
-                            ".nav-button"
-                        )
-                        .forEach(btn => {
-                            btn.classList.remove(
-                                "active"
-                            );
-                        });
+                } catch (error) {
 
-                    button.classList.add(
-                        "active"
+                    console.error(
+                        "Fehler beim Laden des Verwaltungsbereichs:",
+                        error
                     );
 
-                    // -------------------------------------------------
-                    // Bereich bei Bedarf neu laden
-                    // -------------------------------------------------
-
-                    try {
-
-                        if (
-                            bereich ===
-                            "bewerbungen"
-                        ) {
-                            await ladeBewerbungen();
-                        }
-
-                        if (
-                            bereich ===
-                            "auftraege"
-                        ) {
-                            await ladeAuftraege(
-                                aktuelleAuftragsart
-                            );
-                        }
-
-                        if (
-                            bereich ===
-                            "mitarbeiter"
-                        ) {
-                            await ladeMitarbeiter();
-                        }
-
-                        if (
-                            bereich ===
-                            "preise"
-                        ) {
-                            await ladeItems();
-                        }
-
-                        if (
-                            bereich ===
-                            "buendnisse"
-                        ) {
-                            await ladeBuendnisse();
-                        }
-
-                    } catch (error) {
-
-                        console.error(
-                            "Fehler beim Laden des Verwaltungsbereichs:",
-                            error
-                        );
-
-                    }
-
                 }
-            );
 
-        });
-
-    // ---------------------------------------------------------
-    // Standardbereich
-    // ---------------------------------------------------------
-
-    document
-        .querySelectorAll(
-            ".verwaltung-section"
-        )
-        .forEach(section => {
-
-            if (
-                section.id !==
-                "section-bewerbungen"
-            ) {
-                section.style.display =
-                    "none";
             }
-
-        });
-
-    const ersterButton =
-        document.querySelector(
-            '.nav-button[data-section="bewerbungen"]'
         );
 
-    if (ersterButton) {
-        ersterButton.classList.add(
-            "active"
-        );
-    }
+    });
 
-    // ---------------------------------------------------------
-    // Letzte Sicherheitsprüfung
-    // ---------------------------------------------------------
+// ---------------------------------------------------------
+// Startbereich: Bewerbungen
+// ---------------------------------------------------------
 
-    console.log(
-        "EHRENMARKT Verwaltung vollständig geladen."
+versteckeAlleVerwaltungsbereiche();
+
+zeigeVerwaltungsbereich(
+    "bewerbungen"
+);
+
+// ---------------------------------------------------------
+// Ersten Button aktiv markieren
+// ---------------------------------------------------------
+
+const ersterButton =
+    document.querySelector(
+        '.nav-button[data-section="bewerbungen"]'
     );
 
-    console.log(
-        "Angemeldeter Benutzer:",
-        user.id
+if (ersterButton) {
+
+    ersterButton.classList.add(
+        "active"
     );
 
-    console.log(
-        "Verwaltungsmitarbeiter:",
-        aktuellerMitarbeiter
-    );
+}
+
+// ---------------------------------------------------------
+// Sicherheitsprüfung
+// ---------------------------------------------------------
+
+console.log(
+    "EHRENMARKT Verwaltung vollständig geladen."
+);
+
+console.log(
+    "Angemeldeter Benutzer:",
+    user.id
+);
+
+console.log(
+    "Verwaltungsmitarbeiter:",
+    aktuellerMitarbeiter
+);
+
+// =========================================================
+// ENDE VERWALTUNG.JS
+// =========================================================
 
 });
