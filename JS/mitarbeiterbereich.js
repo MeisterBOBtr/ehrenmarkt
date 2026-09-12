@@ -821,28 +821,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!id) return;
 
     window.location.href =
-        `/HTML/bauauftrag_details.html?id=${encodeURIComponent(id)}`;
+    `./bauauftrag_details.html?id=${encodeURIComponent(id)}`;
 };
 
     window.openMaterialOrder = function(id) {
         if (!id) return;
 
         window.location.href =
-            `/HTML/material_details.html?id=${encodeURIComponent(id)}`;
+            `./material_details.html?id=${encodeURIComponent(id)}`;
     };
 
     window.openLogisticsOrder = function(id) {
         if (!id) return;
 
         window.location.href =
-            `/HTML/logistik_details.html?id=${encodeURIComponent(id)}`;
+            `./logistik_details.html?id=${encodeURIComponent(id)}`;
     };
 
     window.openRedstoneOrder = function(id) {
         if (!id) return;
 
         window.location.href =
-            `/HTML/redstone_details.html?id=${encodeURIComponent(id)}`;
+            `./redstone_details.html?id=${encodeURIComponent(id)}`;
     };
 
     window.ehrenmarktAuftragAnsehen = function(type, id) {
