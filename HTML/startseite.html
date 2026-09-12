@@ -70,9 +70,9 @@
         }
 
         /* =========================
-           HERO-BEREICH
-           Das Hintergrundbild ist
-           ausschließlich hier.
+           HERO
+           Startseite.png wird nur
+           in diesem Bereich verwendet
         ========================= */
 
         .hero {
@@ -80,9 +80,8 @@
             min-height: 255px;
 
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
 
             padding: 42px 20px;
             margin-bottom: 18px;
@@ -95,33 +94,21 @@
             background:
                 linear-gradient(
                     rgba(20, 12, 7, 0.30),
-                    rgba(20, 12, 7, 0.74)
+                    rgba(20, 12, 7, 0.76)
                 ),
                 url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
                 center / cover no-repeat;
 
             box-shadow:
-                inset 0 0 45px rgba(0, 0, 0, 0.38),
-                0 0 0 1px rgba(200, 164, 93, 0.05);
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-
-            background: linear-gradient(
-                90deg,
-                rgba(0, 0, 0, 0.22),
-                transparent,
-                rgba(0, 0, 0, 0.22)
-            );
+                inset 0 0 45px rgba(0, 0, 0, 0.40),
+                0 8px 25px rgba(0, 0, 0, 0.20);
         }
 
         .hero-content {
             position: relative;
             z-index: 1;
+
+            width: 100%;
             text-align: center;
         }
 
@@ -133,8 +120,8 @@
             letter-spacing: 5px;
 
             text-shadow:
-                0 3px 8px rgba(0, 0, 0, 0.90),
-                0 0 18px rgba(0, 0, 0, 0.55);
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 0 18px rgba(0, 0, 0, 0.65);
         }
 
         .hero-subtitle {
@@ -150,6 +137,8 @@
         .hero-rating {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
 
             margin-top: 24px;
@@ -158,7 +147,7 @@
             border: 1px solid rgba(200, 164, 93, 0.65);
             border-radius: 9px;
 
-            background: rgba(16, 9, 5, 0.76);
+            background: rgba(16, 9, 5, 0.80);
         }
 
         .hero-stars {
@@ -204,6 +193,7 @@
 
         .section-title::after {
             content: "";
+
             position: absolute;
             left: 0;
             bottom: 0;
@@ -223,7 +213,7 @@
         }
 
         /* =========================
-           LEITUNG
+           STADTLEITUNG
         ========================= */
 
         .leadership-grid {
@@ -268,6 +258,7 @@
 
             display: block;
             object-fit: contain;
+
             margin-bottom: 5px;
         }
 
@@ -454,8 +445,8 @@
 
         .footer-links {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             flex-wrap: wrap;
             gap: 7px;
         }
@@ -581,7 +572,7 @@
         <main class="container">
 
             <!-- =========================
-                 HERO-INHALT
+                 HERO
             ========================= -->
 
             <section class="hero">
@@ -848,9 +839,11 @@
 
                 <div class="portal-grid">
 
+                    <!-- Bauaufträge -->
+
                     <a
                         class="portal-card"
-                        href="bauauftraege.html"
+                        href="bauauftrag.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/BAU.png"
@@ -858,6 +851,7 @@
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Bauaufträge
                             </div>
@@ -865,6 +859,7 @@
                             <p class="portal-card-text">
                                 Gebäude, Bauprojekte und individuelle Bauwünsche.
                             </p>
+
                         </div>
 
                         <span class="portal-arrow">
@@ -873,9 +868,11 @@
                     </a>
 
 
+                    <!-- Redstone -->
+
                     <a
                         class="portal-card"
-                        href="redstone.html"
+                        href="redstoneauftrag.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/RED.png"
@@ -883,6 +880,7 @@
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Redstone
                             </div>
@@ -890,6 +888,7 @@
                             <p class="portal-card-text">
                                 Redstone-Aufträge, technische Anlagen und Schaltungen.
                             </p>
+
                         </div>
 
                         <span class="portal-arrow">
@@ -898,9 +897,11 @@
                     </a>
 
 
+                    <!-- Logistik -->
+
                     <a
                         class="portal-card"
-                        href="logistik.html"
+                        href="logistikauftrag.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/LED.png"
@@ -908,6 +909,7 @@
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Logistik
                             </div>
@@ -915,6 +917,7 @@
                             <p class="portal-card-text">
                                 Transporte, Lagerung und weitere Logistikaufträge.
                             </p>
+
                         </div>
 
                         <span class="portal-arrow">
@@ -923,9 +926,11 @@
                     </a>
 
 
+                    <!-- Materialien -->
+
                     <a
                         class="portal-card"
-                        href="materialien.html"
+                        href="materialauftrag.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/MAD.png"
@@ -933,6 +938,7 @@
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Materialien
                             </div>
@@ -940,6 +946,7 @@
                             <p class="portal-card-text">
                                 Materialien suchen, verwalten und bestellen.
                             </p>
+
                         </div>
 
                         <span class="portal-arrow">
@@ -967,6 +974,8 @@
 
                 <div class="portal-grid">
 
+                    <!-- Bewerbung -->
+
                     <a
                         class="portal-card"
                         href="bewerbung.html"
@@ -986,15 +995,15 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
 
+                    <!-- Bündnisse -->
+
                     <a
                         class="portal-card"
-                        href="bundnis.html"
+                        href="buendnis.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bundnis.png"
@@ -1011,36 +1020,36 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
 
+                    <!-- Karte -->
+
                     <a
                         class="portal-card"
-                        href="stadt.html"
+                        href="karte.html"
                     >
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Stadt.png"
-                            alt="Falkenstein"
+                            alt="Karte von Falkenstein"
                         >
 
                         <div class="portal-card-content">
                             <div class="portal-card-title">
-                                Falkenstein
+                                Karte von Falkenstein
                             </div>
 
                             <p class="portal-card-text">
-                                Wissenswertes über unsere Stadt und ihre Entwicklung.
+                                Entdecke die Stadt und ihre wichtigsten Bereiche.
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Verleih -->
 
                     <a
                         class="portal-card"
@@ -1062,11 +1071,11 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Regelwerk -->
 
                     <a
                         class="portal-card"
@@ -1087,11 +1096,11 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Bewertungen -->
 
                     <a
                         class="portal-card"
@@ -1112,9 +1121,7 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
                 </div>
@@ -1123,7 +1130,7 @@
 
 
             <!-- =========================
-                 KONTO-BEREICHE
+                 KONTO UND VERWALTUNG
             ========================= -->
 
             <section class="section">
@@ -1138,13 +1145,15 @@
 
                 <div class="portal-grid">
 
+                    <!-- Registrierung -->
+
                     <a
                         class="portal-card"
                         id="linkRegistrieren"
                         href="registrieren.html"
                     >
                         <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Registrieren.png"
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regrestrieren.png"
                             alt="Registrieren"
                         >
 
@@ -1158,11 +1167,11 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Kundenbereich -->
 
                     <a
                         class="portal-card"
@@ -1184,11 +1193,11 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Mitarbeiterbereich -->
 
                     <a
                         class="portal-card"
@@ -1210,11 +1219,11 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
+
+                    <!-- Verwaltung -->
 
                     <a
                         class="portal-card"
@@ -1236,9 +1245,7 @@
                             </p>
                         </div>
 
-                        <span class="portal-arrow">
-                            ›
-                        </span>
+                        <span class="portal-arrow">›</span>
                     </a>
 
                 </div>
@@ -1279,13 +1286,13 @@
                 <div class="footer-line"></div>
 
                 <div class="footer-links">
-                    <a href="impressum.html">Impressum</a>
-                    <span>·</span>
-                    <a href="datenschutz.html">Datenschutz</a>
-                    <span>·</span>
                     <a href="regelwerk.html">Regelwerk</a>
                     <span>·</span>
-                    <a href="kontakt.html">Kontakt</a>
+                    <a href="bewertung.html">Bewertungen</a>
+                    <span>·</span>
+                    <a href="faq.html">FAQ</a>
+                    <span>·</span>
+                    <a href="karte.html">Karte</a>
                 </div>
 
                 <p class="footer-copy">
@@ -1297,3 +1304,16 @@
         </main>
 
     </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+    <script src="../JS/startseite.js"></script>
+
+</body>
+
+</html>
