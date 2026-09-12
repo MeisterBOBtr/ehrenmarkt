@@ -756,30 +756,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await ladeBewertungen();
 
-
-    /* =====================================================
-       SUPABASE AUTH-ÄNDERUNGEN
-       ===================================================== */
-
-    supabase.auth.onAuthStateChange(
-        async () => {
-
-            /*
-             * Wenn sich der Benutzer an- oder abmeldet,
-             * wird die Startseite neu geladen.
-             */
-
-            setTimeout(
-                () => {
-                    window.location.reload();
-                },
-                100
-            );
-
-        }
-    );
-
-
     /* =====================================================
        ABSCHLUSS
        ===================================================== */
