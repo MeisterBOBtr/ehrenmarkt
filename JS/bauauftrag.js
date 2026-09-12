@@ -1422,6 +1422,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     auftrag
                 );
 
+                // Discord-Benachrichtigung senden
+try {
+    if (
+        window.EhrenmarktDiscord &&
+        typeof window.EhrenmarktDiscord.sendeBenachrichtigung === "function"
+    ) {
+        await window.EhrenmarktDiscord.sendeBenachrichtigung({
+            aktion: "neuer_auftrag",
+            daten: {
+                auftragstyp: "Bauauftrag",
+                kunde: auftrag.minecraft_name || "Unbekannt",
+                auftragsnummer: auftrag.order_number || "Keine Nummer",
+                betrag: auftrag.provisional_price || 0,
+                status: auftrag.status || "offen",
+                titel: auftrag.building_type || "Bauauftrag",
+                beschreibung: auftrag.description || ""
+            },
+            erstellt_am: new Date().toISOString(),
+            quelle: "bauauftrag.js",
+            benutzer_id: auftrag.user_id || null
+        });
+    }
+} catch (discordError) {
+    console.error(
+        "Discord-Benachrichtigung konnte nicht gesendet werden:",
+        discordError
+    );
+}
+
 
             } catch (error) {
 
