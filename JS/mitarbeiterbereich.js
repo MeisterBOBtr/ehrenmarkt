@@ -1533,9 +1533,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             const id =
                                 button.dataset.orderId;
 
-                            window.ehrenmarktAuftragAnsehen(
-                                typ,
-                                id
+                            onclick="alert('Button funktioniert')"
                             );
                         }
                     );
