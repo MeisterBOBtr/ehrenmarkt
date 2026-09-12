@@ -1533,7 +1533,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             const id =
                                 button.dataset.orderId;
 
-                            onclick="alert('Button funktioniert')"
+                            alert("Button funktioniert");
                             );
                         }
                     );
