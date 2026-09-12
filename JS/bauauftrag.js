@@ -1356,8 +1356,7 @@ document.addEventListener("DOMContentLoaded", () => {
          */
 
 
-        window.location.href =
-            "bauauftrag_erfolg.html";
+        window.location.href = "HTML/bauauftrag_erfolg.html";
     }
 
 
