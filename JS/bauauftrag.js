@@ -1448,14 +1448,14 @@ try {
     }`,
 
     kunde:
-        auftrag.customer_name ||
-        "Unbekannt",
+    auftrag.minecraft_name ||
+    "Unbekannt",
 
     bearbeiter: "Noch nicht zugewiesen",
 
     preis: `${Number(
-        auftrag.total_price || 0
-    ).toLocaleString("de-DE")} $`,
+    auftrag.provisional_price ?? auftrag.final_price ?? 0
+).toLocaleString("de-DE")} $`,
 
     status: "Offen",
 
