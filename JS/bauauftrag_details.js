@@ -10,19 +10,17 @@
    1. GRUNDLEGENDE KONFIGURATION
    ========================================================= */
 
-const EHRENMARKT_CONFIG = {
-    // Falls deine Supabase-Tabelle anders heißt, nur diesen Wert ändern.
-    orderTable: "bauauftraege",
+const SUPABASE_TABLE_ORDERS =
+    "build_orders";
 
-    // Beschaffungszuschlag bei Materialbereitstellung durch Falkenstein.
-    materialSurchargePercent: 15,
+const SUPABASE_TABLE_ORDER_ITEMS =
+    "build_order_materials";
 
-    // Standardwährung im Portal.
-    currency: "$",
+const SUPABASE_TABLE_ORDER_WORKERS =
+    "build_order_workers";
 
-    // URL-Parameter des Auftrags.
-    orderIdParameter: "id"
-};
+const SUPABASE_TABLE_EMPLOYEES =
+    "employees";
 
 
 /* =========================================================
