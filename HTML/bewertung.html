@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bewertungen – Ehrenmarkt</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Georgia, "Times New Roman", serif;
+            color: #eee6d5;
+            background: #0b0908;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    rgba(5, 4, 3, 0.72),
+                    rgba(5, 4, 3, 0.88)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewertung.png")
+                center center / cover fixed no-repeat;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            padding: 25px 15px 50px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #d7ad52;
+            font-size: clamp(34px, 7vw, 58px);
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 6px #000;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #cfc3a8;
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           HAUPTKARTE
+           ===================================================== */
+
+        .card {
+            background: rgba(12, 10, 8, 0.94);
+            border: 1px solid rgba(215, 173, 82, 0.55);
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 22px;
+
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.45),
+                inset 0 0 25px rgba(215, 173, 82, 0.03);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            color: #d7ad52;
+            font-size: 27px;
+        }
+
+        .card-description {
+            color: #cfc3a8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+
+        /* =====================================================
+           BEWERTUNGSÜBERSICHT
+           ===================================================== */
+
+        .rating-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-box {
+            background: rgba(5, 4, 3, 0.72);
+            border: 1px solid rgba(215, 173, 82, 0.4);
+            border-radius: 12px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .summary-label {
+            display: block;
+            color: #cfc3a8;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            display: block;
+            color: #d7ad52;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        .stars {
+            color: #d7ad52;
+            font-size: 26px;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           REGELN
+           ===================================================== */
+
+        .rules {
+            margin-top: 10px;
+        }
+
+        .rules h3 {
+            margin: 0 0 12px;
+            color: #d7ad52;
+            font-size: 21px;
+        }
+
+        .rules-list {
+            margin: 0;
+            padding-left: 22px;
+            color: #d7d0c3;
+            line-height: 1.7;
+        }
+
+        .rules-list li {
+            margin-bottom: 5px;
+        }
+
+
+        /* =====================================================
+           BEWERTUNG ABGEBEN
+           ===================================================== */
+
+        .review-form {
+            margin-top: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d7ad52;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px 14px;
+
+            border-radius: 9px;
+            border: 1px solid rgba(215, 173, 82, 0.4);
+
+            background: rgba(5, 4, 3, 0.85);
+            color: #eee6d5;
+
+            font-family: inherit;
+            font-size: 16px;
+
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #d7ad52;
+
+            box-shadow:
+                0 0 0 2px rgba(215, 173, 82, 0.12);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .char-counter {
+            text-align: right;
+            margin-top: 5px;
+            color: #8f887b;
+            font-size: 13px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="container">
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <header class="header">
+
+            <h1>Bewertungen</h1>
+
+            <p>
+                Deine Meinung über den Ehrenmarkt
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             ÜBERSICHT
+             ================================================= -->
+
+        <section class="card">
+
+            <h2>
+                Unsere Bewertungen
+            </h2>
+
+            <p class="card-description">
+
+                Deine Meinung hilft uns dabei,
+                den Ehrenmarkt weiterzuentwickeln
+                und unseren Service zu verbessern.
+
+            </p>
+
+
+            <div class="rating-summary">
+
+                <div class="summary-box">
+
+                    <span class="summary-label">
+                        Durchschnittliche Bewertung
+                    </span>
+
+                    <span
+                        id="durchschnittBewertung"
+                        class="summary-value"
+                    >
+                        0,0
+                    </span>
+
+                    <div
+                        id="durchschnittSterne"
+                        class="stars"
+                    >
+                        ★★★★★
+                    </div>
+
+                </div>
+
+
+                <div class="summary-box">
+
+                    <span class="summary-label">
+                        Abgegebene Bewertungen
+                    </span>
+
+                    <span
+                        id="anzahlBewertungen"
+                        class="summary-value"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 REGELN
+                 ================================================= -->
+
+            <div class="rules">
+
+                <h3>
+                    Wichtige Hinweise
+                </h3>
+
+                <ol class="rules-list">
+
+                    <li>
+                        Eine Bewertung kann nur alle 30 Tage
+                        abgegeben werden.
+                    </li>
+
+                    <li>
+                        Eine abgeschickte Bewertung kann nicht
+                        geändert oder gelöscht werden.
+                    </li>
+
+                    <li>
+                        Bitte bleibe sachlich, fair und respektvoll.
+                    </li>
+
+                    <li>
+                        Rechtswidrige, beleidigende oder
+                        diskriminierende Inhalte sind nicht erlaubt.
+                    </li>
+
+                    <li>
+                        Für die eigenen Inhalte ist der Verfasser
+                        verantwortlich.
+                    </li>
+
+                </ol>
+
+            </div>
+
+              </section>
+
+      
+        <!-- =================================================
+             BEWERTUNG ABGEBEN
+             ================================================= -->
+
+        <section class="card">
+
+            <h2>
+                Bewertung abgeben
+            </h2>
+
+            <p class="card-description">
+                Teile uns mit, wie zufrieden du mit dem Ehrenmarkt bist.
+            </p>
+
+
+            <!-- 30-TAGE-HINWEIS -->
+
+            <div
+                id="bewertung30TageHinweis"
+                class="notice"
+                style="display: none;"
+            >
+                Du hast bereits innerhalb der letzten 30 Tage
+                eine Bewertung abgegeben.
+                Eine neue Bewertung ist erst nach Ablauf dieser
+                Frist möglich.
+            </div>
+
+
+            <form
+                id="bewertungForm"
+                class="review-form"
+            >
+
+
+                <!-- =========================================
+                     NAME
+                     ========================================= -->
+
+                <div class="form-group">
+
+                    <label for="bewertungName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bewertungName"
+                        name="name"
+                        placeholder="Dein Name"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- =========================================
+                     STERNE
+                     ========================================= -->
+
+                <div class="form-group">
+
+                    <label>
+                        Deine Bewertung
+                    </label>
+
+                    <div
+                        id="starRating"
+                        class="star-rating"
+                    >
+
+                        <button
+                            type="button"
+                            class="star-button"
+                            data-rating="1"
+                            aria-label="1 Stern"
+                        >
+                            ★
+                        </button>
+
+                        <button
+                            type="button"
+                            class="star-button"
+                            data-rating="2"
+                            aria-label="2 Sterne"
+                        >
+                            ★
+                        </button>
+
+                        <button
+                            type="button"
+                            class="star-button"
+                            data-rating="3"
+                            aria-label="3 Sterne"
+                        >
+                            ★
+                        </button>
+
+                        <button
+                            type="button"
+                            class="star-button"
+                            data-rating="4"
+                            aria-label="4 Sterne"
+                        >
+                            ★
+                        </button>
+
+                        <button
+                            type="button"
+                            class="star-button"
+                            data-rating="5"
+                            aria-label="5 Sterne"
+                        >
+                            ★
+                        </button>
+
+                    </div>
+
+
+                    <input
+                        type="hidden"
+                        id="bewertungSterne"
+                        name="sterne"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <!-- =========================================
+                     KOMMENTAR
+                     ========================================= -->
+
+                <div class="form-group">
+
+                    <label for="bewertungKommentar">
+                        Deine Meinung
+                    </label>
+
+                    <textarea
+                        id="bewertungKommentar"
+                        name="kommentar"
+                        maxlength="1000"
+                        placeholder="Schreibe deine ehrliche Meinung ..."
+                        required
+                    ></textarea>
+
+                    <div
+                        id="zeichenZaehler"
+                        class="char-counter"
+                    >
+                        0 / 1000
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     DAUERHAFTE SPEICHERUNG
+                     ========================================= -->
+
+                <div class="notice">
+
+                    Deine Bewertung wird dauerhaft gespeichert.
+                    Nach dem Absenden kann sie nicht mehr geändert
+                    oder gelöscht werden.
+
+                </div>
+
+
+                <!-- =========================================
+                     BESTÄTIGUNG 1
+                     ========================================= -->
+
+                <div class="checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="bestaetigungDauerhaft"
+                        name="bestaetigung_dauerhaft"
+                        required
+                    >
+
+                    <label for="bestaetigungDauerhaft">
+
+                        Ich habe verstanden, dass meine Bewertung
+                        dauerhaft gespeichert und nicht geändert
+                        oder gelöscht werden kann.
+
+                    </label>
+
+                </div>
+
+
+                <!-- =========================================
+                     BESTÄTIGUNG 2
+                     ========================================= -->
+
+                <div class="checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="bestaetigungVerantwortung"
+                        name="bestaetigung_verantwortung"
+                        required
+                    >
+
+                    <label for="bestaetigungVerantwortung">
+
+                        Ich bestätige, dass ich für meine Inhalte
+                        verantwortlich bin und dass bei rechtswidrigen
+                        oder strafbaren Inhalten eine Weitergabe im
+                        Rahmen der gesetzlichen Bestimmungen erfolgen kann.
+
+                    </label>
+
+                </div>
+
+
+                <!-- =========================================
+                     ABSENDEN
+                     ========================================= -->
+
+                <button
+                    type="submit"
+                    id="bewertungAbsenden"
+                    class="button"
+                >
+                    Bewertung endgültig absenden
+                </button>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================================
+             BEWERTUNGEN DER COMMUNITY
+             ================================================= -->
+
+        <section class="card">
+
+            <h2 class="reviews-title">
+                Bewertungen der Community
+            </h2>
+
+            <div
+                id="bewertungenListe"
+                class="review-list"
+            >
+
+                <div class="empty-message">
+                    Bewertungen werden geladen ...
+                </div>
+
+            </div>
+
+        </section>
+
+              <!-- =================================================
+             ZURÜCK ZUR STARTSEITE
+             ================================================= -->
+
+        <a
+            href="startseite.html"
+            class="back-button"
+        >
+            ← Zurück zur Startseite
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ZUSÄTZLICHES CSS
+     ========================================================= -->
+
+<style>
+
+    /* =====================================================
+       STERNE
+       ===================================================== */
+
+    .star-rating {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .star-button {
+        border: 0;
+        background: transparent;
+
+        color: #625b4d;
+
+        font-size: 38px;
+
+        cursor: pointer;
+
+        padding: 0;
+
+        transition: 0.15s ease;
+    }
+
+    .star-button:hover,
+    .star-button.active {
+        color: #d7ad52;
+
+        transform: scale(1.08);
+
+        text-shadow:
+            0 0 8px rgba(215, 173, 82, 0.45);
+    }
+
+
+    /* =====================================================
+       HINWEISE
+       ===================================================== */
+
+    .notice {
+        padding: 15px;
+
+        margin-bottom: 18px;
+
+        border-radius: 10px;
+
+        background: rgba(80, 18, 18, 0.42);
+
+        border: 1px solid rgba(180, 65, 65, 0.5);
+
+        color: #e6caca;
+
+        line-height: 1.5;
+    }
+
+
+    /* =====================================================
+       CHECKBOXEN
+       ===================================================== */
+
+    .checkbox-group {
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 10px;
+
+        margin-bottom: 14px;
+
+        padding: 14px;
+
+        background: rgba(5, 4, 3, 0.65);
+
+        border: 1px solid rgba(215, 173, 82, 0.25);
+
+        border-radius: 9px;
+    }
+
+    .checkbox-group input {
+        width: 18px;
+        height: 18px;
+
+        margin-top: 3px;
+
+        flex-shrink: 0;
+
+        accent-color: #d7ad52;
+    }
+
+    .checkbox-group label {
+        margin: 0;
+
+        color: #d7d0c3;
+
+        font-weight: normal;
+
+        line-height: 1.5;
+
+        cursor: pointer;
+    }
+
+
+    /* =====================================================
+       BUTTON
+       ===================================================== */
+
+    .button {
+        display: inline-block;
+
+        width: 100%;
+
+        padding: 15px 20px;
+
+        border: 1px solid #d7ad52;
+
+        border-radius: 10px;
+
+        background:
+            linear-gradient(
+                180deg,
+                #8f2929,
+                #641919
+            );
+
+        color: #fff3d6;
+
+        font-family: inherit;
+
+        font-size: 17px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+        text-align: center;
+
+        transition: 0.2s ease;
+    }
+
+    .button:hover {
+        filter: brightness(1.15);
+
+        transform: translateY(-1px);
+    }
+
+    .button:disabled {
+        opacity: 0.45;
+
+        cursor: not-allowed;
+
+        transform: none;
+    }
+
+
+    /* =====================================================
+       BEWERTUNGEN
+       ===================================================== */
+
+    .reviews-title {
+        margin-bottom: 18px;
+    }
+
+    .review-list {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .review-item {
+        background: rgba(5, 4, 3, 0.72);
+
+        border: 1px solid rgba(215, 173, 82, 0.28);
+
+        border-radius: 11px;
+
+        padding: 18px;
+    }
+
+    .review-top {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-bottom: 8px;
+    }
+
+    .review-name {
+        color: #d7ad52;
+
+        font-weight: bold;
+    }
+
+    .review-stars {
+        color: #d7ad52;
+
+        letter-spacing: 2px;
+    }
+
+    .review-text {
+        color: #d7d0c3;
+
+        line-height: 1.6;
+
+        white-space: pre-wrap;
+    }
+
+    .review-date {
+        margin-top: 10px;
+
+        color: #827b70;
+
+        font-size: 13px;
+    }
+
+    .empty-message {
+        text-align: center;
+
+        color: #9e9688;
+
+        padding: 25px 10px;
+    }
+
+
+    /* =====================================================
+       ZURÜCK
+       ===================================================== */
+
+    .back-button {
+        display: block;
+
+        width: 100%;
+
+        text-align: center;
+
+        padding: 13px;
+
+        margin-top: 18px;
+
+        border: 1px solid rgba(215, 173, 82, 0.35);
+
+        border-radius: 9px;
+
+        background: rgba(5, 4, 3, 0.75);
+
+        color: #cfc3a8;
+
+        transition: 0.2s ease;
+    }
+
+    .back-button:hover {
+        color: #d7ad52;
+
+        border-color: #d7ad52;
+    }
+
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
+    @media (max-width: 650px) {
+
+        .page {
+            padding: 18px 10px 35px;
+        }
+
+        .card {
+            padding: 18px;
+        }
+
+        .rating-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .header h1 {
+            font-size: 35px;
+        }
+
+        .review-top {
+            flex-direction: column;
+
+            align-items: flex-start;
+        }
+
+        .star-button {
+            font-size: 34px;
+        }
+
+    }
+
+</style>
+
+
+<!-- =========================================================
+     SUPABASE
+     ========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../supabase.js"></script>
+
+<script src="../JS/bewertungen.js"></script>
+
+
+</body>
+</html>
