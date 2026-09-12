@@ -800,14 +800,32 @@
             }
 
             await app.loadCurrentUser();
-            await app.loadOrder();
-            await app.loadItems();
-            await app.loadMaterials();
 
-            app.renderOrder();
-            app.renderMaterials();
-            app.calculatePrices();
-            app.setupEventListeners();
+// Auftrag zuerst laden und sofort anzeigen
+await app.loadOrder();
+app.renderOrder();
+
+// Materialien separat laden
+try {
+    await app.loadMaterials();
+} catch (error) {
+    console.error("Materialien konnten nicht geladen werden:", error);
+    app.materials = [];
+}
+
+// Items separat laden
+try {
+    await app.loadItems();
+} catch (error) {
+    console.error("Items konnten nicht geladen werden:", error);
+    app.items = [];
+}
+
+// Restliche Anzeige
+app.renderMaterials();
+app.calculatePrices();
+app.setupEventListeners();
+            
         } catch (error) {
             app.showError(
                 "Der Bauauftrag konnte nicht geladen werden."
