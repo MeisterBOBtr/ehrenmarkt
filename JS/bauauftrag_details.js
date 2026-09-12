@@ -251,14 +251,30 @@ app.setText("contactType", order.contact_type);
 app.setText("contactValue", order.contact_value);
 app.setText("buildingType", order.building_type);
 
-app.setText("mergeWidth", order.merge_width);
-app.setText("mergeHeight", order.merge_height);
+app.setText(
+    "plotSize",
+    order.merge_width != null && order.merge_height != null
+        ? `${order.merge_width} × ${order.merge_height}`
+        : "—"
+);
+
 app.setText("plotCount", order.plot_count);
 
-app.setText("buildingLength", order.building_length);
-app.setText("buildingWidth", order.building_width);
-app.setText("buildingHeight", order.building_height);
-app.setText("buildingFloors", order.building_floors);
+app.setText(
+    "buildingDimensions",
+    order.building_length != null &&
+    order.building_width != null &&
+    order.building_height != null
+        ? `${order.building_length} × ${order.building_width} × ${order.building_height}`
+        : "—"
+);
+
+app.setText(
+    "buildingFloors",
+    order.building_floors != null
+        ? order.building_floors
+        : "—"
+);
 
 app.setText("buildingStyle", order.building_style);
 app.setText("blockPalette", order.block_palette);
