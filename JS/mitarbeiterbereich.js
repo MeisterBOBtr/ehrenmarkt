@@ -1516,50 +1516,67 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
 
             // ----------------------------------------------------
-            // ÖFFNEN-BUTTONS
-            // ----------------------------------------------------
+// ÖFFNEN-BUTTONS
+// ----------------------------------------------------
 
-            container
-                .querySelectorAll(".auftrag-button")
-                .forEach(button => {
+container
+    .querySelectorAll(".auftrag-button")
+    .forEach(button => {
 
-                    button.addEventListener(
-                        "click",
-                        () => {
+        button.addEventListener("click", () => {
 
-                            const typ =
-                                button.dataset.orderType;
+            const typ =
+                button.dataset.orderType;
 
-                            const id =
-                                button.dataset.orderId;
+            const id =
+                button.dataset.orderId;
 
-                            alert("Button funktioniert");
-                            );
-                        }
-                    );
+            alert("Button funktioniert");
 
-                });
+            if (!id) {
+                alert("Die Auftrags-ID fehlt.");
+                return;
+            }
 
-        } catch (error) {
+            if (
+                typeof window.ehrenmarktAuftragAnsehen ===
+                "function"
+            ) {
+                window.ehrenmarktAuftragAnsehen(typ, id);
+            } else {
+                console.error(
+                    "Die Funktion ehrenmarktAuftragAnsehen wurde nicht gefunden."
+                );
 
-            console.error(
-                "Fehler beim Laden der eigenen Aufträge:",
-                error
-            );
+                alert(
+                    "Die Funktion zum Öffnen des Auftrags wurde nicht gefunden."
+                );
+            }
+        });
 
-            container.innerHTML = `
-                <div class="error-state">
-                    <h3>Fehler beim Laden</h3>
-                    <p>
-                        Deine Aufträge konnten nicht geladen werden.
-                    </p>
-                </div>
-            `;
-        }
-    }
+    });
 
-    // Eigene Aufträge direkt laden
-    await ladeEigeneAuftraege();
+} catch (error) {
+
+    console.error(
+        "Fehler beim Laden der eigenen Aufträge:",
+        error
+    );
+
+    container.innerHTML = `
+        <div class="error-state">
+            <h3>Fehler beim Laden</h3>
+            <p>
+                Deine Aufträge konnten nicht geladen werden.
+            </p>
+        </div>
+    `;
+}
+}
+
+// Eigene Aufträge direkt laden
+await ladeEigeneAuftraege();
+    
 
         // ============================================================
     // TEIL 9/12 – AUFTRÄGE ABSCHLIESSEN
