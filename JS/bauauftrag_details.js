@@ -1,4 +1,4 @@
-alert("bauauftrag_details.js wurde geladen");
+
 // ======================================================
 // EHRENMARKT – BAUAUFTRAG DETAILS
 // Teil 1 von 4
