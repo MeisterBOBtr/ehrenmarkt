@@ -1,14 +1,7 @@
 (function () {
-    const datei = window.location.pathname
-        .split("/")
-        .pop()
-        .toLowerCase();
+    "use strict";
 
-    if (!datei.endsWith(".html")) {
-        return;
-    }
-
-    const namen = {
+    const seiten = {
         "index.html": "startseite",
         "startseite.html": "startseite",
         "bauauftrag.html": "bauauftrag",
@@ -26,21 +19,76 @@
         "faq.html": "faq"
     };
 
-    const bereich = namen[datei];
+    const aktuellerDateiname = window.location.pathname
+        .split("/")
+        .pop()
+        .toLowerCase();
 
-    if (!bereich) {
-        return;
+    const schönerName = seiten[aktuellerDateiname];
+
+    /*
+     * Sichtbare URL ändern:
+     * /HTML/startseite.html
+     * wird zu
+     * /startseite
+     */
+    if (schönerName) {
+        const neueAdresse =
+            "/" +
+            schönerName +
+            window.location.search +
+            window.location.hash;
+
+        if (window.location.pathname !== neueAdresse) {
+            window.history.replaceState(
+                {},
+                document.title,
+                neueAdresse
+            );
+        }
     }
 
-    const neueAdresse =
-        "/" +
-        bereich +
-        window.location.search +
-        window.location.hash;
+    /*
+     * Alle internen HTML-Links weiterhin korrekt
+     * auf den Ordner /HTML verweisen lassen.
+     */
+    document.querySelectorAll("a[href]").forEach(function (link) {
+        const href = link.getAttribute("href");
 
-    window.history.replaceState(
-        {},
-        document.title,
-        neueAdresse
-    );
+        if (!href) {
+            return;
+        }
+
+        if (
+            href.startsWith("http://") ||
+            href.startsWith("https://") ||
+            href.startsWith("#") ||
+            href.startsWith("mailto:") ||
+            href.startsWith("tel:") ||
+            href.startsWith("/")
+        ) {
+            return;
+        }
+
+        const teile = href.split("#");
+        const ohneHash = teile[0];
+        const hash = teile[1] ? "#" + teile[1] : "";
+
+        const queryTeile = ohneHash.split("?");
+        const dateiname = queryTeile[0]
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+        const query = queryTeile[1]
+            ? "?" + queryTeile[1]
+            : "";
+
+        if (dateiname.endsWith(".html")) {
+            link.setAttribute(
+                "href",
+                "/HTML/" + dateiname + query + hash
+            );
+        }
+    });
 })();
