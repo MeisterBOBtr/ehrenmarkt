@@ -285,21 +285,29 @@
             line-height: 1.6;
         }
 
-                /* =========================
+
+        /* =========================
            BUTTON-BEREICH
            ========================= */
 
         .buttons {
             display: flex;
+
             justify-content: center;
+
             gap: 14px;
+
             flex-wrap: wrap;
+
             margin-top: 28px;
         }
 
+
         .button {
             display: inline-block;
+
             min-width: 180px;
+
             padding: 14px 20px;
 
             border-radius: 9px;
@@ -310,9 +318,11 @@
                 serif;
 
             font-size: 16px;
+
             font-weight: bold;
 
             text-align: center;
+
             text-decoration: none;
 
             cursor: pointer;
@@ -322,9 +332,13 @@
                 filter 0.2s;
         }
 
+
         .button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.12);
+            transform:
+                translateY(-2px);
+
+            filter:
+                brightness(1.12);
         }
 
 
@@ -550,6 +564,7 @@
         }
 
     </style>
+
 </head>
 
 
@@ -727,7 +742,7 @@
 
             <a
                 class="button login-button"
-                href="HTML/login.html"
+                href="HTML/registrieren.html"
             >
                 ⚜ Anmelden
             </a>
@@ -754,6 +769,56 @@
 
 
     </main>
+
+
+    <!-- =========================================================
+         SUPABASE / AUTH
+         ========================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase.js"></script>
+
+    <script src="auth.js"></script>
+
+
+    <!-- =========================================================
+         AUTOMATISCHE SESSION-PRÜFUNG
+         ========================================================= -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+
+                try {
+
+                    const user =
+                        await aktuellerBenutzer();
+
+
+                    if (user) {
+
+                        window.location.replace(
+                            "HTML/startseite.html"
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Session-Prüfung fehlgeschlagen:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
 
 
 </body>
