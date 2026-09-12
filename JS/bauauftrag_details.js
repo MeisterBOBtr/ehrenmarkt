@@ -241,6 +241,7 @@ async function loadEmployee() {
 // ======================================================
 
 async function loadOrder() {
+    alert("loadOrder wurde gestartet");
 
     const params =
         getOrderParameters();
