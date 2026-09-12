@@ -224,12 +224,12 @@
 
         app.setText("orderNumber", order.order_number);
         app.setText("minecraftName", order.minecraft_name);
-        app.setText("contactType", order.contact_type);
-        app.setText("contactValue", order.contact_value);
-        app.setText("buildingType", order.building_type);
+app.setText("contactType", order.contact_type);
+app.setText("contactValue", order.contact_value);
+app.setText("buildingType", order.building_type);
 
-        app.setText("mergeWidth", order.building_length);
-app.setText("mergeHeight", order.building_width);
+app.setText("mergeWidth", order.merge_width);
+app.setText("mergeHeight", order.merge_height);
 app.setText("plotCount", order.plot_count);
 
 app.setText("buildingLength", order.building_length);
@@ -237,36 +237,36 @@ app.setText("buildingWidth", order.building_width);
 app.setText("buildingHeight", order.building_height);
 app.setText("buildingFloors", order.building_floors);
 
-        app.setText("buildingStyle", order.building_style);
-        app.setText("blockPalette", order.block_palette);
-        app.setText("specialBlocks", order.special_blocks);
+app.setText("buildingStyle", order.building_style);
+app.setText("blockPalette", order.block_palette);
+app.setText("specialBlocks", order.special_blocks);
 
-        app.setText("interiorLevel", order.interior_level);
-        app.setText("interiorPercent", order.interior_percent + " %");
+app.setText("interiorLevel", order.interior_level);
+app.setText("interiorPercent", `${order.interior_percent ?? 0} %`);
 
-        app.setText("exteriorLevel", order.exterior_level);
-        app.setText("exteriorPercent", order.exterior_percent + " %");
+app.setText("exteriorLevel", order.exterior_level);
+app.setText("exteriorPercent", `${order.exterior_percent ?? 0} %`);
 
-        app.setText("lightingLevel", order.lighting_level);
-        app.setText("lightingPercent", order.lighting_percent + " %");
+app.setText("lightingLevel", order.lighting_level);
+app.setText("lightingPercent", `${order.lighting_percent ?? 0} %`);
 
-        app.setText("terraformingLevel", order.terraforming_level);
-        app.setText(
-            "terraformingPercent",
-            order.terraforming_percent + " %"
-        );
+app.setText("terraformingLevel", order.terraforming_level);
+app.setText(
+    "terraformingPercent",
+    `${order.terraforming_percent ?? 0} %`
+);
 
-        app.setText(
-            "planningDescription",
-            order.planning_description
-        );
+app.setText(
+    "planningDescription",
+    order.planning_description
+);
 
-        app.setText("description", order.description);
-        app.setText("specialRequests", order.special_requests);
-        app.setText("location", order.location);
-        app.setText("priority", order.priority);
-        app.setText("status", order.status);
-        app.setText("progress", order.progress + " %");
+app.setText("description", order.description);
+app.setText("specialRequests", order.special_requests);
+app.setText("location", order.location);
+app.setText("priority", order.priority);
+app.setText("status", order.status);
+app.setText("progress", `${order.progress ?? 0} %`);
 
         app.setText(
             "basePrice",
