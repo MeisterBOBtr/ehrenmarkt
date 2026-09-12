@@ -755,29 +755,46 @@ document.addEventListener("DOMContentLoaded", async () => {
                 container.appendChild(card);
             });
 
-            // Buttons nach dem Einfügen verbinden
-            container
-                .querySelectorAll(".auftrag-button")
-                .forEach(button => {
+            // ----------------------------------------------------
+// BUTTONS NACH DEM EINFÜGEN VERBINDEN
+// ----------------------------------------------------
 
-                    button.addEventListener(
-                        "click",
-                        () => {
+container
+    .querySelectorAll(".auftrag-button")
+    .forEach(button => {
 
-                            const typ =
-                                button.dataset.orderType;
+        button.addEventListener("click", () => {
 
-                            const id =
-                                button.dataset.orderId;
+            const typ =
+                button.dataset.orderType;
 
-                            oeffneAuftrag(
-                                typ,
-                                id
-                            );
-                        }
-                    );
+            const id =
+                button.dataset.orderId;
 
-                });
+            alert("Button funktioniert");
+
+            if (!id) {
+                alert("Die Auftrags-ID fehlt.");
+                return;
+            }
+
+            if (
+                typeof window.ehrenmarktAuftragAnsehen ===
+                "function"
+            ) {
+                window.ehrenmarktAuftragAnsehen(typ, id);
+            } else {
+                console.error(
+                    "ehrenmarktAuftragAnsehen wurde nicht gefunden."
+                );
+
+                alert(
+                    "Die Funktion zum Öffnen des Auftrags wurde nicht gefunden."
+                );
+            }
+        });
+
+    });
 
         } catch (error) {
 
