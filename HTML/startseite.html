@@ -2,6 +2,7 @@
 <html lang="de">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,675 +12,1063 @@
 
     <title>Ehrenmarkt – Startseite</title>
 
+
     <style>
+
+        /* =====================================================
+           EHRENMARKT – GRUNDLAYOUT
+           ===================================================== */
+
+        :root {
+
+            --ehrenmarkt-primary: #4f8cff;
+            --ehrenmarkt-primary-dark: #2456a6;
+            --ehrenmarkt-primary-light: #79aaff;
+
+            --background: #080b12;
+            --background-secondary: #0e131d;
+
+            --card: rgba(18, 24, 36, 0.96);
+            --card-hover: rgba(24, 32, 48, 0.98);
+
+            --border: rgba(121, 170, 255, 0.22);
+            --border-hover: rgba(121, 170, 255, 0.65);
+
+            --text: #f2f5fa;
+            --text-secondary: #aeb9ca;
+            --text-muted: #788598;
+
+            --shadow: rgba(0, 0, 0, 0.45);
+        }
+
+
         * {
             box-sizing: border-box;
-        }
-
-        html,
-        body {
             margin: 0;
             padding: 0;
-            min-height: 100%;
         }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
 
         body {
-            font-family:
-                Georgia,
-                "Times New Roman",
-                serif;
 
-            color: #eee6d5;
+            min-height: 100vh;
 
             background:
-                linear-gradient(
-                    rgba(4, 3, 2, 0.60),
-                    rgba(4, 3, 2, 0.90)
-                ),
-                url(
-                    "https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png"
-                )
-                center center / cover fixed no-repeat;
+                radial-gradient(
+                    circle at top,
+                    #18243a 0%,
+                    var(--background) 45%,
+                    #05070b 100%
+                );
+
+            color: var(--text);
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            line-height: 1.5;
         }
+
 
         a {
             color: inherit;
             text-decoration: none;
         }
 
-        button {
-            font-family: inherit;
+
+        img {
+            display: block;
+            max-width: 100%;
         }
+
+
+        /* =====================================================
+           SEITEN-CONTAINER
+           ===================================================== */
 
         .page {
+
             width: 100%;
+
             min-height: 100vh;
-            padding: 16px 10px 40px;
+
+            padding:
+                20px
+                12px
+                45px;
         }
 
+
         .container {
+
             width: 100%;
-            max-width: 1180px;
+
+            max-width: 1150px;
+
             margin: 0 auto;
         }
 
+
         /* =====================================================
-           HEADER
-        ===================================================== */
+           HERO
+           
+           WICHTIG:
+           Startseite.png wird NUR hier verwendet.
+           NICHT als Body-Hintergrund.
+           ===================================================== */
 
-        .header {
-            padding: 18px 10px 20px;
+        .hero {
+
+            position: relative;
+
+            min-height: 350px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            margin-bottom: 24px;
+
+            padding:
+                45px
+                20px;
+
             text-align: center;
+
+            border:
+                1px solid
+                var(--border-hover);
+
+            border-radius: 20px;
+
+            background-image:
+                linear-gradient(
+                    rgba(5, 9, 16, 0.38),
+                    rgba(5, 9, 16, 0.82)
+                ),
+                url(
+                    "https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png"
+                );
+
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            box-shadow:
+                0 12px 35px
+                var(--shadow);
         }
 
-        .header h1 {
-            margin: 0;
-            color: #d7ad52;
-            font-size: clamp(38px, 8vw, 68px);
-            letter-spacing: 4px;
+
+        .hero::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    transparent 45%,
+                    rgba(5, 8, 14, 0.45)
+                );
+
+            pointer-events: none;
+        }
+
+
+        .hero-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 800px;
+        }
+
+
+        .hero-title {
+
+            color: #ffffff;
+
+            font-size:
+                clamp(
+                    38px,
+                    8vw,
+                    72px
+                );
+
+            font-weight: 800;
+
+            letter-spacing:
+                clamp(
+                    2px,
+                    1vw,
+                    8px
+                );
+
             text-shadow:
-                0 3px 8px #000,
-                0 0 20px rgba(215, 173, 82, 0.16);
+                0 4px 18px
+                rgba(0, 0, 0, 0.8);
+
+            margin-bottom: 10px;
         }
 
-        .header p {
-            margin: 8px 0 0;
-            color: #d0c3ac;
-            font-size: clamp(14px, 2.5vw, 18px);
+
+        .hero-subtitle {
+
+            color: #dce7fa;
+
+            font-size:
+                clamp(
+                    15px,
+                    2.5vw,
+                    20px
+                );
+
+            font-weight: 500;
+
+            margin-bottom: 22px;
         }
 
-        .header-line {
-            width: 130px;
-            height: 2px;
-            margin: 15px auto 0;
+
+        /* =====================================================
+           BEWERTUNG IM HERO
+           ===================================================== */
+
+        .hero-rating {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            padding:
+                9px
+                16px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.2);
+
+            border-radius: 12px;
+
+            background:
+                rgba(5, 9, 16, 0.68);
+
+            backdrop-filter: blur(5px);
+        }
+
+
+        .hero-stars {
+
+            color:
+                var(--ehrenmarkt-primary-light);
+
+            font-size: 21px;
+
+            letter-spacing: 2px;
+
+            white-space: nowrap;
+        }
+
+
+        .hero-rating-text {
+
+            color: #d7e1ef;
+
+            font-size: 14px;
+
+            white-space: nowrap;
+        }
+
+
+        /*
+         * Diese beiden Elemente bleiben vorhanden,
+         * damit startseite.js sie weiterhin verwenden kann.
+         */
+
+        #startDurchschnitt,
+        #startBewertungAnzahl {
+
+            display: inline;
+        }
+
+
+        /* =====================================================
+           BEREICHE
+           ===================================================== */
+
+        .section {
+
+            margin-bottom: 24px;
+
+            padding: 20px;
+
+            background:
+                rgba(11, 16, 25, 0.88);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.22);
+        }
+
+
+        .section-title {
+
+            color: #ffffff;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+
+        .section-title::after {
+
+            content: "";
+
+            display: block;
+
+            width: 55px;
+
+            height: 3px;
+
+            margin-top: 8px;
+
+            border-radius: 5px;
+
+            background:
+                var(--ehrenmarkt-primary);
+        }
+
+
+        .section-description {
+
+            color:
+                var(--text-secondary);
+
+            font-size: 14px;
+
+            margin-bottom: 17px;
+        }
+
+
+        /* =====================================================
+           LEITUNG
+           ===================================================== */
+
+        .leitung-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(0, 1fr)
+                );
+
+            gap: 12px;
+        }
+
+
+        .leitung-card {
+
+            min-width: 0;
+
+            padding: 13px 8px;
+
+            text-align: center;
+
+            background:
+                var(--card);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 13px;
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.18s ease,
+                background 0.18s ease;
+        }
+
+
+        .leitung-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                var(--border-hover);
+
+            background:
+                var(--card-hover);
+        }
+
+
+        .leitung-icon {
+
+            width: 95px;
+
+            height: 95px;
+
+            margin:
+                0 auto 7px;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(
+                    0 5px 8px
+                    rgba(0, 0, 0, 0.55)
+                );
+        }
+
+
+        .leitung-bereich {
+
+            color:
+                var(--ehrenmarkt-primary-light);
+
+            font-size: 16px;
+
+            font-weight: 700;
+        }
+
+
+        .leitung-rang {
+
+            margin-top: 2px;
+
+            color:
+                var(--text-muted);
+
+            font-size: 12px;
+        }
+
+
+        .leitung-name {
+
+            min-height: 18px;
+
+            margin-top: 4px;
+
+            color:
+                var(--text);
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           PORTAL-KARTEN
+           
+           Bild LINKS
+           Titel + Beschreibung RECHTS
+           ===================================================== */
+
+        .portal-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 12px;
+        }
+
+
+        .portal-card {
+
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 13px;
+
+            background:
+                var(--card);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 14px;
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.18s ease,
+                background 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+
+        .portal-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                var(--border-hover);
+
+            background:
+                var(--card-hover);
+
+            box-shadow:
+                0 7px 20px
+                rgba(0, 0, 0, 0.3);
+        }
+
+
+        .portal-card img {
+
+            flex:
+                0 0 100px;
+
+            width: 100px;
+
+            height: 100px;
+
+            object-fit: contain;
+
+            border-radius: 11px;
+
+            background:
+                rgba(0, 0, 0, 0.18);
+        }
+
+
+        .portal-card-content {
+
+            min-width: 0;
+
+            flex: 1;
+        }
+
+
+        .portal-card-title {
+
+            color:
+                #ffffff;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+
+        .portal-card-text {
+
+            color:
+                var(--text-secondary);
+
+            font-size: 13px;
+
+            line-height: 1.45;
+        }
+
+
+        .portal-arrow {
+
+            flex:
+                0 0 auto;
+
+            color:
+                var(--ehrenmarkt-primary-light);
+
+            font-size: 21px;
+
+            padding-left: 3px;
+        }
+
+
+        /* =====================================================
+           ACCOUNT-KARTEN
+           ===================================================== */
+
+        .account-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 12px;
+        }
+
+
+        .account-card {
+
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 13px;
+
+            background:
+                var(--card);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 14px;
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.18s ease,
+                background 0.18s ease;
+        }
+
+
+        .account-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                var(--border-hover);
+
+            background:
+                var(--card-hover);
+        }
+
+
+        .account-card img {
+
+            flex:
+                0 0 85px;
+
+            width: 85px;
+
+            height: 85px;
+
+            object-fit: contain;
+
+            border-radius: 10px;
+        }
+
+
+        .account-card-content {
+
+            min-width: 0;
+        }
+
+
+        .account-card-title {
+
+            color:
+                #ffffff;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            margin-bottom: 4px;
+        }
+
+
+        .account-card-text {
+
+            color:
+                var(--text-secondary);
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           BEWERTUNGEN GANZ UNTEN
+           ===================================================== */
+
+        .bewertung-box {
+
+            padding: 16px;
+
+            text-align: center;
+
+            background:
+                rgba(18, 25, 38, 0.8);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 13px;
+        }
+
+
+        .bewertung-button {
+
+            display: inline-block;
+
+            margin-top: 12px;
+
+            padding:
+                10px
+                18px;
+
+            color: #ffffff;
+
+            background:
+                var(--ehrenmarkt-primary-dark);
+
+            border:
+                1px solid
+                var(--ehrenmarkt-primary);
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            transition:
+                0.18s ease;
+        }
+
+
+        .bewertung-button:hover {
+
+            background:
+                var(--ehrenmarkt-primary);
+
+            border-color:
+                var(--ehrenmarkt-primary-light);
+        }
+
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+
+            padding:
+                20px
+                10px;
+
+            text-align: center;
+
+            color:
+                var(--text-muted);
+
+            font-size: 12px;
+        }
+
+
+        .footer-line {
+
+            width: 90px;
+
+            height: 1px;
+
+            margin:
+                0 auto 12px;
 
             background:
                 linear-gradient(
                     90deg,
                     transparent,
-                    #d7ad52,
+                    var(--ehrenmarkt-primary),
                     transparent
                 );
         }
 
-        /* =====================================================
-           ALLGEMEINE BEREICHE
-        ===================================================== */
-
-        .section {
-            margin-bottom: 18px;
-            padding: 18px;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(13, 10, 8, 0.95),
-                    rgba(7, 6, 5, 0.94)
-                );
-
-            border: 1px solid rgba(215, 173, 82, 0.45);
-            border-radius: 14px;
-
-            box-shadow:
-                0 10px 30px rgba(0, 0, 0, 0.48),
-                inset 0 0 30px rgba(215, 173, 82, 0.025);
-        }
-
-        .section-title {
-            margin: 0 0 5px;
-            text-align: center;
-            color: #d7ad52;
-            font-size: clamp(22px, 4vw, 28px);
-            text-shadow: 2px 2px 5px #000;
-        }
-
-        .section-description {
-            margin: 0 0 15px;
-            text-align: center;
-            color: #cfc3a8;
-            font-size: 14px;
-            line-height: 1.5;
-        }
 
         /* =====================================================
-           KLEINE LEITUNG
-        ===================================================== */
+           MOBILE
+           ===================================================== */
 
-        .leitung-section {
-            padding: 12px;
-            margin-bottom: 18px;
+        @media (max-width: 750px) {
+
+            .page {
+
+                padding:
+                    10px
+                    7px
+                    30px;
+            }
+
+
+            .hero {
+
+                min-height: 300px;
+
+                padding:
+                    35px
+                    12px;
+            }
+
+
+            .section {
+
+                padding: 14px;
+
+                margin-bottom: 14px;
+            }
+
+
+            .section-title {
+
+                font-size: 22px;
+            }
+
+
+            .section-description {
+
+                font-size: 13px;
+            }
+
+
+            .leitung-grid {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                gap: 9px;
+            }
+
+
+            .leitung-icon {
+
+                width: 82px;
+
+                height: 82px;
+            }
+
+
+            .portal-grid,
+            .account-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 9px;
+            }
+
+
+            .portal-card {
+
+                gap: 12px;
+
+                padding: 10px;
+            }
+
+
+            .portal-card img {
+
+                flex-basis: 82px;
+
+                width: 82px;
+
+                height: 82px;
+            }
+
+
+            .portal-card-title {
+
+                font-size: 16px;
+            }
+
+
+            .portal-card-text {
+
+                font-size: 12px;
+            }
+
+
+            .account-card img {
+
+                flex-basis: 75px;
+
+                width: 75px;
+
+                height: 75px;
+            }
         }
 
-        .leitung-section .section-title {
-            font-size: 21px;
-            margin-bottom: 3px;
+
+        @media (max-width: 400px) {
+
+            .hero {
+
+                min-height: 270px;
+            }
+
+
+            .hero-title {
+
+                font-size: 35px;
+            }
+
+
+            .hero-subtitle {
+
+                font-size: 13px;
+            }
+
+
+            .hero-rating {
+
+                gap: 7px;
+
+                padding:
+                    8px
+                    10px;
+            }
+
+
+            .hero-stars {
+
+                font-size: 17px;
+            }
+
+
+            .hero-rating-text {
+
+                font-size: 11px;
+            }
+
+
+            .portal-card img {
+
+                flex-basis: 72px;
+
+                width: 72px;
+
+                height: 72px;
+            }
         }
 
-        .leitung-section .section-description {
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
+    </style>
 
-        .leitung-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 9px;
-        }
-
-        .leitung-card {
-            position: relative;
-            width: 100%;
-            min-height: 135px;
-            padding: 7px 5px;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-
-            text-align: center;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(7, 6, 5, 0.96),
-                    rgba(14, 10, 7, 0.88)
-                );
-
-            border: 1px solid rgba(215, 173, 82, 0.32);
-            border-radius: 9px;
-
-            transition:
-                transform 0.18s ease,
-                border-color 0.18s ease;
-        }
-
-        .leitung-card:hover {
-            transform: translateY(-2px);
-            border-color: #d7ad52;
-        }
-
-        .leitung-card.gruender {
-            grid-column: 2;
-        }
-
-        .leitung-icon {
-            width: 57px;
-            height: 57px;
-            object-fit: contain;
-            margin-bottom: 2px;
-
-            filter:
-                drop-shadow(
-                    0 3px 6px rgba(0, 0, 0, 0.85)
-                );
-        }
-
-        .leitung-bereich {
-            color: #d7ad52;
-            font-size: 14px;
-            font-weight: bold;
-            line-height: 1.15;
-            text-shadow: 1px 1px 3px #000;
-        }
-
-        .leitung-rang {
-            margin-top: 2px;
-            color: #cfc3a8;
-            font-size: 11px;
-        }
-
-        .leitung-name {
-            min-height: 15px;
-            margin-top: 3px;
-            color: #eee6d5;
-            font-size: 12px;
-            font-weight: bold;
-            overflow-wrap: anywhere;
-        }
-
-        /* =====================================================
-           PORTAL-KARTEN
-        ===================================================== */
-
-        .portal-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .portal-card {
-            position: relative;
-            min-height: 135px;
-            overflow: hidden;
-
-            display: flex;
-            align-items: flex-end;
-
-            background: #080706;
-
-            border: 1px solid rgba(215, 173, 82, 0.40);
-            border-radius: 11px;
-
-            box-shadow:
-                0 7px 20px rgba(0, 0, 0, 0.40);
-
-            transition:
-                transform 0.18s ease,
-                border-color 0.18s ease;
-        }
-
-        .portal-card:hover {
-            transform: translateY(-2px);
-            border-color: #d7ad52;
-        }
-
-        .portal-card img {
-            position: absolute;
-            inset: 0;
-
-            width: 100%;
-            height: 100%;
-
-            object-fit: cover;
-            opacity: 0.46;
-
-            transition:
-                transform 0.25s ease,
-                opacity 0.25s ease;
-        }
-
-        .portal-card:hover img {
-            transform: scale(1.03);
-            opacity: 0.58;
-        }
-
-        .portal-card::after {
-            content: "";
-
-            position: absolute;
-            inset: 0;
-
-            background:
-                linear-gradient(
-                    to top,
-                    rgba(3, 2, 1, 0.98) 0%,
-                    rgba(3, 2, 1, 0.78) 52%,
-                    rgba(3, 2, 1, 0.18) 100%
-                );
-        }
-
-        .portal-card-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            padding: 14px;
-            padding-right: 48px;
-        }
-
-        .portal-card-title {
-            color: #f0d078;
-            font-size: 18px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px #000;
-        }
-
-        .portal-card-text {
-            margin-top: 4px;
-            color: #eee6d5;
-            font-size: 12px;
-            line-height: 1.4;
-            text-shadow: 1px 1px 3px #000;
-        }
-
-        .portal-arrow {
-            position: absolute;
-            right: 13px;
-            bottom: 13px;
-            z-index: 3;
-
-            width: 29px;
-            height: 29px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid rgba(215, 173, 82, 0.65);
-            border-radius: 50%;
-
-            color: #d7ad52;
-            background: rgba(5, 4, 3, 0.78);
-            font-size: 18px;
-        }
-
-            /* =====================================================
-       WEITERE PORTALBEREICHE
-    ===================================================== */
-
-    .portal-section-title {
-        margin: 22px 0 12px;
-
-        color: #d7ad52;
-        font-size: 21px;
-        text-align: center;
-        text-shadow: 2px 2px 4px #000;
-    }
-
-    .portal-card-wide {
-        grid-column: 1 / -1;
-    }
-
-    /* =====================================================
-       BEWERTUNGSBEREICH
-    ===================================================== */
-
-    .bewertung-box {
-        text-align: center;
-        padding: 18px 10px;
-    }
-
-    .bewertung-sterne {
-        color: #f0d078;
-        font-size: 28px;
-        letter-spacing: 3px;
-    }
-
-    .bewertung-wert {
-        margin-top: 5px;
-        color: #eee6d5;
-        font-size: 15px;
-    }
-
-    .bewertung-anzahl {
-        margin-top: 3px;
-        color: #bcae95;
-        font-size: 12px;
-    }
-
-    /* =====================================================
-       BENUTZERBEREICH
-    ===================================================== */
-
-    .account-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-    }
-
-    .account-card {
-        min-height: 105px;
-        padding: 14px;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        text-align: center;
-
-        background:
-            linear-gradient(
-                180deg,
-                rgba(18, 13, 8, 0.96),
-                rgba(8, 6, 4, 0.96)
-            );
-
-        border: 1px solid rgba(215, 173, 82, 0.38);
-        border-radius: 10px;
-
-        transition:
-            transform 0.18s ease,
-            border-color 0.18s ease;
-    }
-
-    .account-card:hover {
-        transform: translateY(-2px);
-        border-color: #d7ad52;
-    }
-
-    .account-card strong {
-        color: #f0d078;
-        font-size: 16px;
-        text-shadow: 1px 1px 3px #000;
-    }
-
-    .account-card span {
-        margin-top: 5px;
-        color: #cfc3a8;
-        font-size: 12px;
-    }
-
-    /* =====================================================
-       LINKS UND BUTTONS
-    ===================================================== */
-
-    .link-grid {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .portal-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        min-height: 38px;
-        padding: 9px 15px;
-
-        color: #f0d078;
-        background:
-            linear-gradient(
-                180deg,
-                rgba(48, 33, 14, 0.95),
-                rgba(22, 14, 7, 0.98)
-            );
-
-        border: 1px solid rgba(215, 173, 82, 0.55);
-        border-radius: 7px;
-
-        font-size: 13px;
-        font-weight: bold;
-
-        cursor: pointer;
-
-        transition:
-            background 0.18s ease,
-            border-color 0.18s ease,
-            transform 0.18s ease;
-    }
-
-    .portal-link:hover {
-        transform: translateY(-1px);
-        border-color: #f0d078;
-        background:
-            linear-gradient(
-                180deg,
-                rgba(75, 49, 17, 0.98),
-                rgba(32, 20, 8, 0.98)
-            );
-    }
-
-    /* =====================================================
-       FUSSZEILE
-    ===================================================== */
-
-    .footer {
-        margin-top: 24px;
-        padding: 18px 10px;
-
-        text-align: center;
-
-        color: #aa9b80;
-        font-size: 12px;
-
-        border-top: 1px solid rgba(215, 173, 82, 0.25);
-    }
-
-    .footer strong {
-        color: #d7ad52;
-    }
-
-    /* =====================================================
-       LEITUNGSNAMEN-BUTTON
-    ===================================================== */
-
-    .leitung-name-bearbeiten {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        width: 20px;
-        height: 20px;
-        margin-top: 4px;
-
-        color: #f0d078;
-        background: rgba(35, 23, 8, 0.95);
-
-        border: 1px solid rgba(215, 173, 82, 0.55);
-        border-radius: 50%;
-
-        font-size: 14px;
-        line-height: 1;
-
-        cursor: pointer;
-    }
-
-    .leitung-name-bearbeiten:hover {
-        background: rgba(85, 55, 16, 0.98);
-        border-color: #f0d078;
-    }
-
-    /* =====================================================
-       VERSTECKTE BEREICHE
-    ===================================================== */
-
-    .hidden {
-        display: none !important;
-    }
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media (max-width: 700px) {
-        .page {
-            padding: 10px 7px 30px;
-        }
-
-        .section {
-            padding: 12px;
-            border-radius: 11px;
-        }
-
-        .leitung-section {
-            padding: 9px;
-        }
-
-        .leitung-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 7px;
-        }
-
-        .leitung-card {
-            min-height: 128px;
-            padding: 6px 4px;
-        }
-
-        .leitung-card.gruender {
-            grid-column: 1 / -1;
-            width: 50%;
-            min-width: 0;
-            justify-self: center;
-        }
-
-        .leitung-icon {
-            width: 53px;
-            height: 53px;
-        }
-
-        .leitung-bereich {
-            font-size: 13px;
-        }
-
-        .leitung-rang {
-            font-size: 10px;
-        }
-
-        .leitung-name {
-            font-size: 11px;
-        }
-
-        .portal-grid {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-
-        .portal-card {
-            min-height: 125px;
-        }
-
-        .account-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .header h1 {
-            letter-spacing: 2px;
-        }
-    }
-
-    @media (max-width: 390px) {
-        .leitung-card.gruender {
-            width: 62%;
-        }
-
-        .leitung-icon {
-            width: 48px;
-            height: 48px;
-        }
-
-        .leitung-bereich {
-            font-size: 12px;
-        }
-
-        .portal-card-content {
-            padding: 11px;
-        }
-
-        .portal-card-title {
-            font-size: 16px;
-        }
-    }
-</style>
 </head>
 
 <body>
-    <div class="page">
-        <main class="container">
 
-            <header class="header">
-                <h1>EHRENMARKT</h1>
-                <p>Das offizielle Portal von Falkenstein</p>
-                <div class="header-line"></div>
+    <div class="page">
+
+        <div class="container">
+
+
+            <!-- =====================================================
+                 HERO-BEREICH
+                 ===================================================== -->
+
+            <header class="hero">
+
+                <div class="hero-content">
+
+                    <h1 class="hero-title">
+                        EHRENMARKT
+                    </h1>
+
+                    <p class="hero-subtitle">
+                        Bauen · Handeln · Gemeinsam mehr erreichen
+                    </p>
+
+                    <div class="hero-rating">
+
+                        <div
+                            id="startSterne"
+                            class="hero-stars"
+                        >
+                            ★★★★★
+                        </div>
+
+                        <div class="hero-rating-text">
+
+                            <span id="startDurchschnitt">
+                                0,0 / 5
+                            </span>
+
+                            ·
+
+                            <span id="startBewertungAnzahl">
+                                0 Bewertungen
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </header>
 
-            <!-- =================================================
-                 LEITUNG
-            ================================================== -->
 
-            <section class="section leitung-section">
-                <h2 class="section-title">Die Leitung</h2>
+            <!-- =====================================================
+                 LEITUNG
+                 ===================================================== -->
+
+            <section class="section">
+
+                <h2 class="section-title">
+                    Die Leitung
+                </h2>
 
                 <p class="section-description">
-                    Die Verantwortlichen und Ansprechpartner des Ehrenmarkts
+                    Die Menschen hinter dem Ehrenmarkt.
                 </p>
+
 
                 <div class="leitung-grid">
 
+
+                    <!-- GRÜNDER -->
+
                     <div class="leitung-card gruender">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Grunder.png"
@@ -698,9 +1087,14 @@
                             class="leitung-name"
                             id="leitung-gruender"
                         ></div>
+
                     </div>
 
+
+                    <!-- BUCHHALTUNG -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Buchhalter.png"
@@ -719,9 +1113,14 @@
                             class="leitung-name"
                             id="leitung-buchhaltung"
                         ></div>
+
                     </div>
 
+
+                    <!-- BAUMEISTER -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Baumeister.png"
@@ -740,9 +1139,14 @@
                             class="leitung-name"
                             id="leitung-baumeister"
                         ></div>
+
                     </div>
 
+
+                    <!-- HÄNDLER -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Handler.png"
@@ -761,9 +1165,14 @@
                             class="leitung-name"
                             id="leitung-handler"
                         ></div>
+
                     </div>
 
+
+                    <!-- REDSTONE -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Redstone.png"
@@ -782,9 +1191,14 @@
                             class="leitung-name"
                             id="leitung-redstone"
                         ></div>
+
                     </div>
 
+
+                    <!-- FARMER -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Farmer.png"
@@ -803,9 +1217,14 @@
                             class="leitung-name"
                             id="leitung-farmer"
                         ></div>
+
                     </div>
 
+
+                    <!-- LOGISTIK -->
+
                     <div class="leitung-card">
+
                         <img
                             class="leitung-icon"
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Logistik.png"
@@ -824,402 +1243,634 @@
                             class="leitung-name"
                             id="leitung-logistik"
                         ></div>
+
                     </div>
 
+
                 </div>
+
             </section>
 
-            <!-- =================================================
-                 PORTAL
-            ================================================== -->
+
+            <!-- =====================================================
+                 AUFTRÄGE
+                 ===================================================== -->
 
             <section class="section">
-                <h2 class="section-title">Ehrenmarkt-Portal</h2>
+
+                <h2 class="section-title">
+                    Aufträge
+                </h2>
 
                 <p class="section-description">
-                    Alle wichtigen Bereiche und Dienstleistungen auf einen Blick
+                    Erstelle Aufträge für Bauarbeiten, Logistik,
+                    Redstone-Systeme und benötigte Materialien.
                 </p>
+
 
                 <div class="portal-grid">
 
+
+                    <!-- BAUAUFTRÄGE -->
+
                     <a
-                        class="portal-card"
                         href="bauauftrag.html"
+                        class="portal-card"
                     >
+
                         <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bauauftrag.png"
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/BAU.png"
                             alt="Bauaufträge"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Bauaufträge
                             </div>
 
                             <div class="portal-card-text">
-                                Gebäude, Projekte und Bauleistungen beim Ehrenmarkt beauftragen.
+                                Plane dein Bauprojekt und beauftrage
+                                das Ehrenmarkt-Bauteam.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
-                    </a>
-
-                    <a
-                        class="portal-card"
-                        href="redstoneauftrag.html"
-                    >
-                        <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Redstoneauftrag.png"
-                            alt="Redstone-Aufträge"
-                        >
-
-                        <div class="portal-card-content">
-                            <div class="portal-card-title">
-                                Redstone
-                            </div>
-
-                            <div class="portal-card-text">
-                                Redstone-Anlagen, technische Systeme und Automatisierungen.
-                            </div>
+                        <div class="portal-arrow">
+                            →
                         </div>
 
-                        <div class="portal-arrow">›</div>
                     </a>
 
+
+                    <!-- LOGISTIK -->
+
                     <a
-                        class="portal-card"
                         href="logistikauftrag.html"
+                        class="portal-card"
                     >
+
                         <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Logistikauftrag.png"
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/LED.png"
                             alt="Logistik"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Logistik
                             </div>
 
                             <div class="portal-card-text">
-                                Transporte, Lagerung und weitere Logistikleistungen.
+                                Organisiere Transporte, Lagerarbeiten
+                                und weitere logistische Aufgaben.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
                     </a>
 
+
+                    <!-- REDSTONE -->
+
                     <a
+                        href="redstoneauftrag.html"
                         class="portal-card"
+                    >
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/RED.png"
+                            alt="Redstone-Aufträge"
+                        >
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Redstone
+                            </div>
+
+                            <div class="portal-card-text">
+                                Plane und beauftrage automatische
+                                Anlagen und technische Systeme.
+                            </div>
+
+                        </div>
+
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
+                    </a>
+
+
+                    <!-- MATERIALIEN -->
+
+                    <a
                         href="materialauftrag.html"
+                        class="portal-card"
                     >
+
                         <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Materialauftrag.png"
-                            alt="Materialbestellungen"
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/MAD.png"
+                            alt="Materialaufträge"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
-                                Materialbestellungen
+                                Materialien
                             </div>
 
                             <div class="portal-card-text">
-                                Benötigte Materialien einfach und übersichtlich bestellen.
+                                Bestelle Baustoffe und weitere
+                                Materialien für dein Projekt.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
                     </a>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 EHRENMARKT
+                 ===================================================== -->
+
+            <section class="section">
+
+                <h2 class="section-title">
+                    Ehrenmarkt
+                </h2>
+
+                <p class="section-description">
+                    Entdecke unsere Gemeinschaft, Angebote und
+                    Möglichkeiten innerhalb des Ehrenmarkt-Portals.
+                </p>
+
+
+                <div class="portal-grid">
+
+
+                    <!-- BEWERBUNG -->
 
                     <a
-                        class="portal-card"
-                        href="verleih.html"
-                    >
-                        <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Verkeih.png"
-                            alt="Verleih"
-                        >
-
-                        <div class="portal-card-content">
-                            <div class="portal-card-title">
-                                Verleih
-                            </div>
-
-                            <div class="portal-card-text">
-                                Gegenstände und Ausrüstung des Ehrenmarkts ausleihen.
-                            </div>
-                        </div>
-
-                        <div class="portal-arrow">›</div>
-                    </a>
-
-                    <a
-                        class="portal-card"
-                        href="karte.html"
-                    >
-                        <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Stadt.png"
-                            alt="Karte und Ingame"
-                        >
-
-                        <div class="portal-card-content">
-                            <div class="portal-card-title">
-                                Karte &amp; Ingame
-                            </div>
-
-                            <div class="portal-card-text">
-                                Standorte, Koordinaten, CityBuild-Informationen und wichtige Links.
-                            </div>
-                        </div>
-
-                        <div class="portal-arrow">›</div>
-                    </a>
-
-                                        <a
-                        class="portal-card"
-                        href="buendnis.html"
-                    >
-                        <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bundnis.png"
-                            alt="Bündnisse"
-                        >
-
-                        <div class="portal-card-content">
-                            <div class="portal-card-title">
-                                Bündnisse
-                            </div>
-
-                            <div class="portal-card-text">
-                                Kooperationen und Partnerschaften mit dem Ehrenmarkt beantragen.
-                            </div>
-                        </div>
-
-                        <div class="portal-arrow">›</div>
-                    </a>
-
-                    <a
-                        class="portal-card"
                         href="bewerbung.html"
+                        class="portal-card"
                     >
+
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewerbung.png"
                             alt="Bewerbung"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Bewerbung
                             </div>
 
                             <div class="portal-card-text">
-                                Werde Teil des Ehrenmarkts und bewirb dich bei unserem Team.
+                                Bewirb dich und werde Teil
+                                des Ehrenmarkt-Teams.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
                     </a>
 
+
+                    <!-- BÜNDNIS -->
+
                     <a
+                        href="buendnis.html"
                         class="portal-card"
-                        href="bewertung.html"
                     >
+
                         <img
-                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewertung.png"
-                            alt="Bewertungen"
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bundnis.png"
+                            alt="Bündnis"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
-                                Bewertungen
+                                Bündnis
                             </div>
 
                             <div class="portal-card-text">
-                                Teile deine Erfahrungen mit dem Ehrenmarkt.
+                                Informiere dich über Partnerschaften
+                                und mögliche Bündnisse.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
                     </a>
 
+
+                    <!-- KARTE & INGAME -->
+
                     <a
+                        href="karte.html"
                         class="portal-card"
-                        href="regelwerk.html"
                     >
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Stadt.png"
+                            alt="Karte und Ingame"
+                        >
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Karte &amp; Ingame
+                            </div>
+
+                            <div class="portal-card-text">
+                                Finde Ehrenmarkt im Spiel und erhalte
+                                wichtige Ingame-Informationen.
+                            </div>
+
+                        </div>
+
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
+                    </a>
+
+
+                    <!-- VERLEIH
+                         startseite.js kann diese Karte
+                         für Mitarbeiter sichtbar machen. -->
+
+                    <a
+                        id="linkVerleih"
+                        href="verleih.html"
+                        class="portal-card"
+                    >
+
+                        <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Verkeih.png"
+                            alt="Verleih"
+                        >
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Verleih
+                            </div>
+
+                            <div class="portal-card-text">
+                                Nutze verfügbare Gegenstände und
+                                Ausrüstung aus dem Ehrenmarkt-Verleih.
+                            </div>
+
+                        </div>
+
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
+                    </a>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 ALLGEMEIN
+                 ===================================================== -->
+
+            <section class="section">
+
+                <h2 class="section-title">
+                    Allgemein
+                </h2>
+
+                <p class="section-description">
+                    Allgemeine Informationen und wichtige Zugänge
+                    zum Ehrenmarkt-Portal.
+                </p>
+
+
+                <div class="portal-grid">
+
+
+                    <!-- REGELWERK -->
+
+                    <a
+                        href="regelwerk.html"
+                        class="portal-card"
+                    >
+
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regel.png"
                             alt="Regelwerk"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 Regelwerk
                             </div>
 
                             <div class="portal-card-text">
-                                Alle wichtigen Regeln und Informationen zum Ehrenmarkt.
+                                Lies die Regeln und wichtigen Richtlinien
+                                von Ehrenmarkt.
                             </div>
+
                         </div>
 
-                        <div class="portal-arrow">›</div>
+                        <div class="portal-arrow">
+                            →
+                        </div>
+
                     </a>
 
+
+                    <!-- FAQ -->
+
                     <a
-                        class="portal-card"
                         href="faq.html"
+                        class="portal-card"
                     >
+
                         <img
                             src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regel.png"
                             alt="FAQ"
                         >
 
                         <div class="portal-card-content">
+
                             <div class="portal-card-title">
                                 FAQ
                             </div>
 
                             <div class="portal-card-text">
-                                Häufig gestellte Fragen und hilfreiche Antworten.
+                                Finde Antworten auf häufig gestellte
+                                Fragen rund um Ehrenmarkt.
                             </div>
-                        </div>
 
-                        <div class="portal-arrow">›</div>
-                    </a>
+                    <!-- REGISTRIEREN / ANMELDEN -->
 
-                </div>
-            </section>
+<a
+    href="registrieren.html"
+    class="portal-card"
+    id="linkRegistrieren"
+>
+    <img
+        src="https://wytt...supabase.co/storage/v1/object/public/Bilder%20bereich/Registrieren.png"
+        alt="Registrieren und Anmelden"
+    >
 
-            <!-- =================================================
-                 BEWERTUNGEN
-            ================================================== -->
+    <div class="portal-card-content">
+        <div class="portal-card-title">
+            Registrieren / Anmelden
+        </div>
 
-            <section class="section">
-                <h2 class="section-title">Bewertungen des Ehrenmarkts</h2>
-
-                <div class="bewertung-box">
-                    <div
-                        class="bewertung-sterne"
-                        id="startSterne"
-                    >
-                        ★★★★★
-                    </div>
-
-                    <div class="bewertung-wert">
-                        Durchschnitt:
-                        <strong id="startDurchschnitt">0,0</strong>
-                        / 5
-                    </div>
-
-                    <div class="bewertung-anzahl">
-                        <span id="startBewertungAnzahl">0</span>
-                        Bewertungen
-                    </div>
-
-                    <div class="link-grid">
-                        <a
-                            class="portal-link"
-                            href="bewertung.html"
-                        >
-                            Bewertungen ansehen
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- =================================================
-                 BENUTZERBEREICHE
-            ================================================== -->
-
-            <section class="section">
-                <h2 class="section-title">Dein Bereich</h2>
-
-                <p class="section-description">
-                    Melde dich an, um deine Aufträge und deinen persönlichen Bereich zu verwalten.
-                </p>
-
-                <div class="account-grid">
-
-                    <a
-                        class="account-card"
-                        id="linkRegistrieren"
-                        href="registrieren.html"
-                    >
-                        <strong>Anmelden / Registrieren</strong>
-                        <span>Zum persönlichen Zugang</span>
-                    </a>
-
-                    <a
-                        class="account-card hidden"
-                        id="linkKundenbereich"
-                        href="kundenbereich.html"
-                    >
-                        <strong>Kundenbereich</strong>
-                        <span>Eigene Aufträge und Anfragen</span>
-                    </a>
-
-                    <a
-                        class="account-card hidden"
-                        id="linkMitarbeiterbereich"
-                        href="mitarbeiterbereich.html"
-                    >
-                        <strong>Mitarbeiterbereich</strong>
-                        <span>Aufträge und Arbeitsbereich</span>
-                    </a>
-
-                    <a
-                        class="account-card hidden"
-                        id="linkVerwaltung"
-                        href="verwaltung.html"
-                    >
-                        <strong>Verwaltung</strong>
-                        <span>Verwaltung des Ehrenmarkts</span>
-                    </a>
-
-                </div>
-            </section>
-
-            <!-- =================================================
-                 EXTERNE LINKS
-            ================================================== -->
-
-            <section class="section">
-                <h2 class="section-title">Wichtige Links</h2>
-
-                <div class="link-grid">
-                    <a
-                        class="portal-link"
-                        href="https://discord.gg/UTBkKqCvgH"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Falkenstein Discord
-                    </a>
-
-                    <a
-                        class="portal-link"
-                        href="https://discord.gg/opsucht"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        OPSUCHT.NET Discord
-                    </a>
-                </div>
-            </section>
-
-            <footer class="footer">
-                <strong>EHRENMARKT</strong>
-                <br>
-                Ein Projekt von Falkenstein
-            </footer>
-
-        </main>
+        <div class="portal-card-text">
+            Erstelle dein Konto oder melde dich
+            im Ehrenmarkt-Portal an.
+        </div>
     </div>
 
-    <!-- =====================================================
-         SCRIPTS
-    ===================================================== -->
+    <div class="portal-arrow">
+        →
+    </div>
+</a>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../supabase.js"></script>
-    <script src="../JS/startseite.js"></script>
+
+<!-- BEWERTUNG -->
+
+<a
+    href="bewertung.html"
+    class="portal-card"
+>
+    <img
+        src="https://wytt...supabase.co/storage/v1/object/public/Bilder%20bereich/Bewertung.png"
+        alt="Bewertung"
+    >
+
+    <div class="portal-card-content">
+        <div class="portal-card-title">
+            Bewertung
+        </div>
+
+        <div class="portal-card-text">
+            Bewerte unsere Arbeit und teile
+            deine Erfahrungen mit Ehrenmarkt.
+        </div>
+    </div>
+
+    <div class="portal-arrow">
+        →
+    </div>
+</a>
+
+</div>
+</section>
+
+
+<!-- MEIN BEREICH -->
+
+<section class="section">
+
+    <h2 class="section-title">
+        Mein Bereich
+    </h2>
+
+    <p class="section-description">
+        Verwalte deine Aufträge, dein Konto
+        und deine persönlichen Bereiche.
+    </p>
+
+    <div class="portal-grid">
+
+        <!-- KUNDENBEREICH -->
+
+        <a
+            href="kundenbereich.html"
+            class="portal-card"
+            id="linkKundenbereich"
+        >
+            <img
+                src="https://wytt...supabase.co/storage/v1/object/public/Bilder%20bereich/Kunde.png"
+                alt="Kundenbereich"
+            >
+
+            <div class="portal-card-content">
+                <div class="portal-card-title">
+                    Kundenbereich
+                </div>
+
+                <div class="portal-card-text">
+                    Verwalte deine Aufträge,
+                    Bestellungen und Rechnungen.
+                </div>
+            </div>
+
+            <div class="portal-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- MITARBEITERBEREICH -->
+
+        <a
+            href="mitarbeiterbereich.html"
+            class="portal-card"
+            id="linkMitarbeiterbereich"
+        >
+            <img
+                src="https://wytt...supabase.co/storage/v1/object/public/Bilder%20bereich/Mitarbeiter.png"
+                alt="Mitarbeiterbereich"
+            >
+
+            <div class="portal-card-content">
+                <div class="portal-card-title">
+                    Mitarbeiterbereich
+                </div>
+
+                <div class="portal-card-text">
+                    Bearbeite Bauaufträge und verwalte
+                    deine zugewiesenen Aufgaben.
+                </div>
+            </div>
+
+            <div class="portal-arrow">
+                →
+            </div>
+        </a>
+
+
+        <!-- VERWALTUNG -->
+
+        <a
+            href="verwaltung.html"
+            class="portal-card"
+            id="linkVerwaltung"
+        >
+            <img
+                src="https://wytt...supabase.co/storage/v1/object/public/Bilder%20bereich/Verwaltung.png"
+                alt="Verwaltung"
+            >
+
+            <div class="portal-card-content">
+                <div class="portal-card-title">
+                    Verwaltung
+                </div>
+
+                <div class="portal-card-text">
+                    Verwalte das Ehrenmarkt-Portal
+                    und die internen Bereiche.
+                </div>
+            </div>
+
+            <div class="portal-arrow">
+                →
+            </div>
+        </a>
+
+    </div>
+</section>
+
+
+<!-- ABSCHLUSS -->
+
+<section class="closing-section">
+
+    <h2>
+        Willkommen bei Ehrenmarkt
+    </h2>
+
+    <p>
+        Dein Ansprechpartner für Bauaufträge,
+        Materialien, Redstone, Logistik und mehr
+        im Namen von Falkenstein.
+    </p>
+
+    <a
+        href="registrieren.html"
+        class="primary-button"
+        id="linkStartRegistrieren"
+    >
+        Jetzt registrieren
+    </a>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+    <div class="footer-line"></div>
+
+    <div class="footer-links">
+
+        <a href="regelwerk.html">
+            Regelwerk
+        </a>
+
+        <span>·</span>
+
+        <a href="faq.html">
+            FAQ
+        </a>
+
+        <span>·</span>
+
+        <a href="bewertung.html">
+            Bewertung
+        </a>
+
+    </div>
+
+    <div class="footer-copy">
+        Ehrenmarkt · Falkenstein
+    </div>
+
+</footer>
+
+
+</div>
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- SUPABASE-KONFIGURATION -->
+
+<script src="../supabase.js"></script>
+
+<!-- STARTSEITE-JAVASCRIPT -->
+
+<script src="../JS/startseite.js"></script>
 
 </body>
-</html>
+            </html>
