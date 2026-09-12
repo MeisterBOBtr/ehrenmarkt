@@ -351,6 +351,97 @@ document.addEventListener("DOMContentLoaded", async () => {
         aktualisiereBearbeitungsAuswahl();
     }
 
+    // =========================================================
+// UMSATZ LADEN
+// =========================================================
+
+async function ladeUmsatz() {
+
+    const gesamtUmsatz =
+        document.getElementById("gesamtUmsatz");
+
+    const clanUmsatz =
+        document.getElementById("clanUmsatz");
+
+    const arbeiterUmsatz =
+        document.getElementById("arbeiterUmsatz");
+
+
+    if (
+        !gesamtUmsatz ||
+        !clanUmsatz ||
+        !arbeiterUmsatz
+    ) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabase
+        .from("order_finances")
+        .select(
+            "total_price, clan_profit, worker_total"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden des Umsatzes:",
+            error
+        );
+
+        gesamtUmsatz.textContent = "Nicht verfügbar";
+        clanUmsatz.textContent = "Nicht verfügbar";
+        arbeiterUmsatz.textContent = "Nicht verfügbar";
+
+        return;
+    }
+
+
+    let gesamt = 0;
+    let clan = 0;
+    let arbeiter = 0;
+
+
+    (data || []).forEach(finanz => {
+
+        gesamt +=
+            Number(finanz.total_price) || 0;
+
+        clan +=
+            Number(finanz.clan_profit) || 0;
+
+        arbeiter +=
+            Number(finanz.worker_total) || 0;
+
+    });
+
+
+    function formatEuroWert(wert) {
+
+        return wert.toLocaleString(
+            "de-DE",
+            {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        ) + " $";
+    }
+
+
+    gesamtUmsatz.textContent =
+        formatEuroWert(gesamt);
+
+    clanUmsatz.textContent =
+        formatEuroWert(clan);
+
+    arbeiterUmsatz.textContent =
+        formatEuroWert(arbeiter);
+}
+
 
     // =========================================================
     // STANDORTE ANZEIGEN
@@ -1155,7 +1246,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             await ladeBenutzer();
 
-            await ladeStandorte();
+await ladeUmsatz();
+
+await ladeStandorte();
 
         }
     );
