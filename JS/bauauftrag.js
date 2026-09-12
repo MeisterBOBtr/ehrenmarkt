@@ -1433,7 +1433,7 @@ try {
     }
 
     const response = await fetch(
-        "https://pdbvqsuyjbljvubwiph.supabase.co/functions/v1/discord-benachrichtigungen",
+        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
         {
             method: "POST",
             headers: {
@@ -1441,24 +1441,36 @@ try {
                 "Authorization": `Bearer ${session.access_token}`
             },
             body: JSON.stringify({
-                type: "auftrag",
-                title: "Neuer Bauauftrag",
-                message:
-                    `Ein neuer Bauauftrag wurde erstellt: ${
-                        auftrag.order_number || "Keine Nummer"
-                    }`,
-                customerName:
-                    auftrag.customer_name || "Unbekannt",
-                status: auftrag.status || "Offen",
-                orderNumber:
-                    auftrag.order_number || "Keine Nummer",
-                details: {
-                    Gebäudetyp: auftrag.building_type || "Nicht angegeben",
-                    Baustil: auftrag.building_style || "Nicht angegeben",
-                    Beschreibung: auftrag.description || ""
-                },
-                portalUrl: "https://ehrenmarkt.de/"
-            })
+    typ: "Bauauftrag",
+
+    titel: `Neuer Bauauftrag ${
+        auftrag.order_number || "Keine Nummer"
+    }`,
+
+    kunde:
+        auftrag.customer_name ||
+        "Unbekannt",
+
+    bearbeiter: "Noch nicht zugewiesen",
+
+    preis: `${Number(
+        auftrag.total_price || 0
+    ).toLocaleString("de-DE")} $`,
+
+    status: "Offen",
+
+    auftrag:
+        auftrag.order_number ||
+        "Keine Nummer",
+
+    nachricht:
+        auftrag.description ||
+        "Neuer Bauauftrag wurde erstellt.",
+
+    portal_url: "https://ehrenmarkt.de/",
+
+    bild_url: ""
+})
         }
     );
 
