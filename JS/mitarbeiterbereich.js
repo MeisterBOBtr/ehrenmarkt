@@ -845,29 +845,52 @@ document.addEventListener("DOMContentLoaded", async () => {
             `redstone_details.html?id=${encodeURIComponent(id)}`;
     };
 
-    window.ehrenmarktAuftragAnsehen =
-        function(typ, id) {
+    window.ehrenmarktAuftragAnsehen = function(type, id) {
+    if (!id) {
+        alert("Die Auftrags-ID fehlt.");
+        return;
+    }
 
-            switch (typ) {
+    const auftragstyp = String(type || "")
+        .trim()
+        .toLowerCase();
 
-                case "Material":
-                    window.openMaterialOrder(id);
-                    break;
+    console.log("Auftrag wird geöffnet:", {
+        typ: auftragstyp,
+        id: id
+    });
 
-                case "Bauauftrag":
-                    window.openBuildOrder(id);
-                    break;
+    switch (auftragstyp) {
+        case "bauauftrag":
+        case "bau":
+        case "bauauftrag erstellen":
+            window.openBuildOrder(id);
+            break;
 
-                case "Logistik":
-                    window.openLogisticsOrder(id);
-                    break;
+        case "material":
+        case "materialauftrag":
+        case "materialbestellung":
+            window.openMaterialOrder(id);
+            break;
 
-                case "Redstone":
-                    window.openRedstoneOrder(id);
-                    break;
-            }
-        };
+        case "logistik":
+        case "logistikauftrag":
+            window.openLogisticsOrder(id);
+            break;
 
+        case "redstone":
+        case "redstoneauftrag":
+            window.openRedstoneOrder(id);
+            break;
+
+        default:
+            console.error("Unbekannter Auftragstyp:", type);
+            alert(
+                "Dieser Auftragstyp konnte nicht geöffnet werden: " +
+                (type || "unbekannt")
+            );
+    }
+};
             // ============================================================
     // TEIL 6/12 – AUFTRÄGE ANNEHMEN
     // ============================================================
