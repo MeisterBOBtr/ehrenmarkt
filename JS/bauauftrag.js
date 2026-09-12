@@ -1433,7 +1433,7 @@ try {
     }
 
     const response = await fetch(
-        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
+        "https://pdbvqsuyjbljvubwiph.supabase.co/functions/v1/discord-benachrichtigungen",
         {
             method: "POST",
             headers: {
