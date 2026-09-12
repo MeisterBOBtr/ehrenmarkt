@@ -228,14 +228,14 @@
         app.setText("contactValue", order.contact_value);
         app.setText("buildingType", order.building_type);
 
-        app.setText("mergeWidth", order.merge_width);
-        app.setText("mergeHeight", order.merge_height);
-        app.setText("plotCount", order.plot_count);
+        app.setText("mergeWidth", order.building_length);
+app.setText("mergeHeight", order.building_width);
+app.setText("plotCount", order.plot_count);
 
-        app.setText("buildingLength", order.building_length);
-        app.setText("buildingWidth", order.building_width);
-        app.setText("buildingHeight", order.building_height);
-        app.setText("buildingFloors", order.building_floors);
+app.setText("buildingLength", order.building_length);
+app.setText("buildingWidth", order.building_width);
+app.setText("buildingHeight", order.building_height);
+app.setText("buildingFloors", order.building_floors);
 
         app.setText("buildingStyle", order.building_style);
         app.setText("blockPalette", order.block_palette);
