@@ -820,9 +820,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.openBuildOrder = function(id) {
         if (!id) return;
 
-        window.openBauauftrag = function(id) {
-    if (!id) return;
-
     window.location.href =
         `/HTML/bauauftrag_details.html?id=${encodeURIComponent(id)}`;
 };
