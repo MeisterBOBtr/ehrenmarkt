@@ -1423,26 +1423,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Discord-Benachrichtigung senden
 try {
-    if (
-        window.EhrenmarktDiscord &&
-        typeof window.EhrenmarktDiscord.sendeBenachrichtigung === "function"
-    ) {
-        await window.EhrenmarktDiscord.sendeBenachrichtigung({
-            aktion: "neuer_auftrag",
-            daten: {
-                auftragstyp: "Bauauftrag",
-                kunde: auftrag.minecraft_name || "Unbekannt",
-                auftragsnummer: auftrag.order_number || "Keine Nummer",
-                betrag: auftrag.provisional_price || 0,
-                status: auftrag.status || "offen",
-                titel: auftrag.building_type || "Bauauftrag",
-                beschreibung: auftrag.description || ""
-            },
-            erstellt_am: new Date().toISOString(),
-            quelle: "bauauftrag.js",
-            benutzer_id: auftrag.user_id || null
-        });
+    const { data: sessionData } =
+        await supabaseClient.auth.getSession();
+
+    const session = sessionData?.session;
+
+    if (!session?.access_token) {
+        throw new Error("Keine gültige Sitzung vorhanden.");
     }
+
+    const response = await fetch(
+        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+                type: "auftrag",
+                title: "Neuer Bauauftrag",
+                message:
+                    `Ein neuer Bauauftrag wurde erstellt: ${
+                        auftrag.order_number || "Keine Nummer"
+                    }`,
+                customerName:
+                    auftrag.customer_name || "Unbekannt",
+                status: auftrag.status || "Offen",
+                orderNumber:
+                    auftrag.order_number || "Keine Nummer",
+                details: {
+                    Gebäudetyp: auftrag.building_type || "Nicht angegeben",
+                    Baustil: auftrag.building_style || "Nicht angegeben",
+                    Beschreibung: auftrag.description || ""
+                },
+                portalUrl: "https://ehrenmarkt.de/"
+            })
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`HTTP-Fehler ${response.status}`);
+    }
+
+    console.log("Discord-Benachrichtigung erfolgreich gesendet.");
 } catch (discordError) {
     console.error(
         "Discord-Benachrichtigung konnte nicht gesendet werden:",
