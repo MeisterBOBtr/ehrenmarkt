@@ -1,7 +1,6 @@
-
 // ======================================================
 // EHRENMARKT – BAUAUFTRAG DETAILS
-// Teil 1 von 4
+// Teil 1 von 5
 // ======================================================
 
 let currentUser = null;
@@ -25,15 +24,12 @@ const supabaseClient =
 // ======================================================
 
 function getElement(id) {
-
     return document.getElementById(id);
 }
 
 
 function setText(id, value) {
-
-    const element =
-        getElement(id);
+    const element = getElement(id);
 
     if (!element) {
         return;
@@ -49,9 +45,7 @@ function setText(id, value) {
 
 
 function number(value) {
-
-    const result =
-        Number(value);
+    const result = Number(value);
 
     return Number.isFinite(result)
         ? result
@@ -60,74 +54,52 @@ function number(value) {
 
 
 function formatMoney(value) {
-
-    return number(value).toLocaleString(
-        "de-DE"
-    ) + " $";
+    return number(value).toLocaleString("de-DE") + " $";
 }
 
 
 function formatDate(value) {
-
     if (!value) {
         return "—";
     }
 
-    const date =
-        new Date(value);
+    const date = new Date(value);
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
+    if (Number.isNaN(date.getTime())) {
         return value;
     }
 
-    return date.toLocaleString(
-        "de-DE",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
+    return date.toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 }
 
 
 function showError(message) {
-
-    const element =
-        getElement("errorMessage");
+    const element = getElement("errorMessage");
 
     if (!element) {
         return;
     }
 
-    element.textContent =
-        message;
-
-    element.style.display =
-        "block";
+    element.textContent = message;
+    element.style.display = "block";
 }
 
 
 function hideError() {
-
-    const element =
-        getElement("errorMessage");
+    const element = getElement("errorMessage");
 
     if (!element) {
         return;
     }
 
-    element.textContent =
-        "";
-
-    element.style.display =
-        "none";
+    element.textContent = "";
+    element.style.display = "none";
 }
 
 
@@ -136,16 +108,12 @@ function hideError() {
 // ======================================================
 
 function getOrderParameters() {
-
     const params =
-        new URLSearchParams(
-            window.location.search
-        );
+        new URLSearchParams(window.location.search);
 
     return {
         id: params.get("id"),
-        orderNumber:
-            params.get("order")
+        orderNumber: params.get("order")
     };
 }
 
@@ -155,31 +123,21 @@ function getOrderParameters() {
 // ======================================================
 
 async function loadUser() {
-
     const {
         data,
         error
-    } =
-        await supabaseClient
-            .auth
-            .getUser();
-
+    } = await supabaseClient.auth.getUser();
 
     if (
         error ||
         !data ||
         !data.user
     ) {
-
-        window.location.href =
-            "login.html";
-
+        window.location.href = "login.html";
         return false;
     }
 
-
-    currentUser =
-        data.user;
+    currentUser = data.user;
 
     return true;
 }
@@ -190,23 +148,16 @@ async function loadUser() {
 // ======================================================
 
 async function loadEmployee() {
-
     const {
         data,
         error
-    } =
-        await supabaseClient
-            .from("employees")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .maybeSingle();
-
+    } = await supabaseClient
+        .from("employees")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
 
     if (error) {
-
         console.error(
             "Mitarbeiter konnte nicht geladen werden:",
             error
@@ -219,9 +170,7 @@ async function loadEmployee() {
         return false;
     }
 
-
     if (!data) {
-
         showError(
             "Du bist nicht als Mitarbeiter hinterlegt."
         );
@@ -229,9 +178,7 @@ async function loadEmployee() {
         return false;
     }
 
-
-    currentEmployee =
-        data;
+    currentEmployee = data;
 
     return true;
 }
@@ -242,17 +189,12 @@ async function loadEmployee() {
 // ======================================================
 
 async function loadOrder() {
-
-
-    const params =
-        getOrderParameters();
-
+    const params = getOrderParameters();
 
     if (
         !params.id &&
         !params.orderNumber
     ) {
-
         showError(
             "Kein Bauauftrag ausgewählt. " +
             "Bitte öffne zuerst einen Auftrag aus dem Mitarbeiterbereich."
@@ -261,40 +203,25 @@ async function loadOrder() {
         return false;
     }
 
-
-    let query =
-        supabaseClient
-            .from("build_orders")
-            .select("*");
-
+    let query = supabaseClient
+        .from("build_orders")
+        .select("*");
 
     if (params.id) {
-
-        query =
-            query.eq(
-                "id",
-                params.id
-            );
-
+        query = query.eq("id", params.id);
     } else {
-
-        query =
-            query.eq(
-                "order_number",
-                params.orderNumber
-            );
+        query = query.eq(
+            "order_number",
+            params.orderNumber
+        );
     }
-
 
     const {
         data,
         error
-    } =
-        await query.maybeSingle();
-
+    } = await query.maybeSingle();
 
     if (error) {
-
         console.error(
             "Bauauftrag konnte nicht geladen werden:",
             error
@@ -307,9 +234,7 @@ async function loadOrder() {
         return false;
     }
 
-
     if (!data) {
-
         showError(
             "Der Bauauftrag wurde nicht gefunden."
         );
@@ -317,17 +242,9 @@ async function loadOrder() {
         return false;
     }
 
+    currentOrder = data;
 
-    currentOrder =
-        data;
-
-
-
-
-    renderOrder(
-        currentOrder
-    );
-
+    renderOrder(currentOrder);
 
     return true;
 }
@@ -335,6 +252,142 @@ async function loadOrder() {
 
 // ======================================================
 // BAUAUFTRAG ANZEIGEN
+// ======================================================
+
+function renderOrder(order) {
+    setText(
+        "orderNumber",
+        order.order_number
+    );
+
+    const status = getElement("orderStatus");
+
+    if (status) {
+        status.textContent =
+            order.status || "Offen";
+    }
+
+    setText(
+        "orderDate",
+        formatDate(order.created_at)
+    );
+
+    setText(
+        "minecraftName",
+        order.minecraft_name
+    );
+
+    setText(
+        "customerName",
+        order.minecraft_name
+    );
+
+    setText(
+        "contact",
+        order.contact_value ||
+        order.contact ||
+        "—"
+    );
+
+    setText(
+        "location",
+        order.location
+    );
+
+    setText(
+        "priority",
+        getPriorityName(order.priority)
+    );
+
+    setText(
+        "plotSize",
+        getPlotSize(order)
+    );
+
+    const plotCount =
+        number(order.plot_count);
+
+    setText(
+        "plotCount",
+        plotCount > 0
+            ? plotCount
+            : "—"
+    );
+
+    setText(
+        "pricePlotCount",
+        plotCount > 0
+            ? plotCount
+            : "0"
+    );
+
+    setText(
+        "buildingType",
+        order.building_type
+    );
+
+    setText(
+        "buildingDimensions",
+        getBuildingDimensions(order)
+    );
+
+    setText(
+        "buildingFloors",
+        order.building_floors
+    );
+
+    setText(
+        "buildingStyle",
+        order.building_style
+    );
+
+    setText(
+        "blockPalette",
+        order.block_palette
+    );
+
+    setText(
+        "specialBlocks",
+        order.special_blocks
+    );
+
+    setText(
+        "interiorLevel",
+        order.interior_level
+    );
+
+    setText(
+        "exteriorLevel",
+        order.exterior_level
+    );
+
+    setText(
+        "lightingLevel",
+        order.lighting_level
+    );
+
+    setText(
+        "terraformingLevel",
+        order.terraforming_level
+    );
+
+    setText(
+        "description",
+        order.description
+    );
+
+    setText(
+        "specialRequests",
+        order.special_requests
+    );
+
+    setText(
+        "materialProvider",
+        getMaterialProviderName(
+            order.material_provider
+        )
+    );
+
 // ======================================================
 
 function renderOrder(order) {
@@ -691,6 +744,302 @@ function getBuildingDimensions(order) {
 
 function getPriorityName(priority) {
 
+    const priorities = {
+
+        niedrig: "Niedrig",
+
+        normal: "Normal",
+
+        hoch: "Hoch",
+
+        dringend: "Dringend"
+    };
+
+
+    return (
+        priorities[priority] ||
+        priority ||
+        "Normal"
+    );
+}
+
+
+// ======================================================
+// MATERIALBEREITSTELLUNG
+// ======================================================
+
+function getMaterialProviderName(provider) {
+
+    if (
+        provider === "customer" ||
+        provider === "kunde" ||
+        provider === "client"
+    ) {
+
+        return "Kunde stellt Materialien bereit";
+    }
+
+
+    if (
+        provider === "falkenstein" ||
+        provider === "company" ||
+        provider === "server"
+    ) {
+
+        return "Falkenstein stellt Materialien bereit";
+    }
+
+
+    return provider || "Nicht angegeben";
+}
+
+
+// ======================================================
+// STATUSFORTSCHRITT
+// ======================================================
+
+function updateStatusProgress(status) {
+
+    const normalizedStatus =
+        String(
+            status || ""
+        ).toLowerCase();
+
+
+    const steps = [
+
+        {
+            id: "statusOpen",
+            values: [
+                "offen",
+                "open",
+                "neu"
+            ]
+        },
+
+        {
+            id: "statusAccepted",
+            values: [
+                "angenommen",
+                "accepted",
+                "in_bearbeitung",
+                "in bearbeitung"
+            ]
+        },
+
+        {
+            id: "statusProgress",
+            values: [
+                "in arbeit",
+                "in_progress",
+                "fortschritt",
+                "bearbeitung"
+            ]
+        },
+
+        {
+            id: "statusCompleted",
+            values: [
+                "abgeschlossen",
+                "completed",
+                "fertig",
+                "erledigt"
+            ]
+        }
+    ];
+
+
+    let activeIndex = 0;
+
+
+    steps.forEach(
+        (step, index) => {
+
+            if (
+                step.values.includes(
+                    normalizedStatus
+                )
+            ) {
+
+                activeIndex = index;
+            }
+        }
+    );
+
+
+    steps.forEach(
+        (step, index) => {
+
+            const element =
+                getElement(
+                    step.id
+                );
+
+            if (!element) {
+                return;
+            }
+
+
+            element.classList.toggle(
+                "active",
+                index <= activeIndex
+            );
+
+            element.classList.toggle(
+                "completed",
+                index < activeIndex
+            );
+        }
+    );
+}
+
+
+// ======================================================
+// REFERENZBILD
+// ======================================================
+
+function renderReferenceImage(url) {
+
+    const image =
+        getElement(
+            "referenceImage"
+        );
+
+    if (!image) {
+        return;
+    }
+
+
+    if (!url) {
+
+        image.style.display =
+            "none";
+
+        return;
+    }
+
+
+    image.src = url;
+
+    image.style.display =
+        "block";
+}
+
+
+// ======================================================
+// HILFSFUNKTIONEN
+// ======================================================
+
+function getElement(id) {
+
+    return document.getElementById(id);
+}
+
+
+function setText(id, value) {
+
+    const element =
+        getElement(id);
+
+    if (!element) {
+        return;
+    }
+
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        element.textContent =
+            "—";
+
+        return;
+    }
+
+
+    element.textContent =
+        value;
+}
+
+
+function number(value) {
+
+    const parsed =
+        Number(value);
+
+    if (
+        Number.isNaN(parsed)
+    ) {
+
+        return 0;
+    }
+
+
+    return parsed;
+}
+
+
+function formatMoney(value) {
+
+    const amount =
+        number(value);
+
+
+    return (
+        amount.toLocaleString(
+            "de-DE"
+        ) +
+        " $"
+    );
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+    }
+
+
+    return date.toLocaleDateString(
+        "de-DE"
+    );
+}
+
+length +
+            " × " +
+            width +
+            " × " +
+            height
+        );
+    }
+
+
+    return "—";
+}
+
+
+// ======================================================
+// PRIORITÄT
+// ======================================================
+
+function getPriorityName(priority) {
+
     const names = {
 
         normal:
@@ -803,7 +1152,8 @@ function renderReferenceImage(url) {
     container.appendChild(
         image
     );
-      }
+}
+
 
 // ==========================================
 // TEIL 2 VON 4
@@ -811,18 +1161,43 @@ function renderReferenceImage(url) {
 // ==========================================
 
 async function loadAvailableMaterials() {
-    try {
-        const { data, error } = await supabase
-            .from("items")
-            .select("id, name, price, active")
-            .eq("active", true)
-            .order("name", { ascending: true });
 
-        if (error) throw error;
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("items")
+            .select(
+                "id, name, price, active"
+            )
+            .eq(
+                "active",
+                true
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
 
         return data || [];
+
     } catch (error) {
-        console.error("Fehler beim Laden der Materialien:", error);
+
+        console.error(
+            "Fehler beim Laden der Materialien:",
+            error
+        );
+
         return [];
     }
 }
@@ -834,79 +1209,154 @@ async function loadAvailableMaterials() {
 
 async function openMaterialEditor() {
 
-    if (!currentOrder) return;
+    if (!currentOrder) {
+        return;
+    }
+
 
     // Nur der Bearbeiter darf Materialien eintragen
     if (
         currentOrder.employee_id &&
         currentOrder.employee_id !== currentUser.id
     ) {
-        showError("Nur der zugewiesene Bearbeiter darf Materialien eintragen.");
+
+        showError(
+            "Nur der zugewiesene Bearbeiter darf Materialien eintragen."
+        );
+
         return;
     }
+
 
     if (!currentOrder.employee_id) {
-        showError("Bitte übernimm den Auftrag zuerst.");
+
+        showError(
+            "Bitte übernimm den Auftrag zuerst."
+        );
+
         return;
     }
 
-    const availableMaterials = await loadAvailableMaterials();
+
+    const availableMaterials =
+        await loadAvailableMaterials();
+
 
     if (!availableMaterials.length) {
-        showError("Es wurden keine aktiven Materialien gefunden.");
+
+        showError(
+            "Es wurden keine aktiven Materialien gefunden."
+        );
+
         return;
     }
 
-    const materialNames = availableMaterials
-        .map(material => material.name)
-        .join("\n");
 
-    const materialName = prompt(
-        "Welches Material wurde verbraucht?\n\n" +
-        materialNames
-    );
+    const materialNames =
+        availableMaterials
+            .map(
+                material => material.name
+            )
+            .join("\n");
 
-    if (!materialName) return;
 
-    const selectedMaterial = availableMaterials.find(
-        material =>
-            material.name.toLowerCase() === materialName.toLowerCase()
-    );
+    const materialName =
+        prompt(
+            "Welches Material wurde verbraucht?\n\n" +
+            materialNames
+        );
+
+
+    if (!materialName) {
+        return;
+    }
+
+
+    const selectedMaterial =
+        availableMaterials.find(
+            material =>
+                material.name.toLowerCase() ===
+                materialName.toLowerCase()
+        );
+
 
     if (!selectedMaterial) {
-        showError("Material wurde nicht gefunden.");
+
+        showError(
+            "Material wurde nicht gefunden."
+        );
+
         return;
     }
 
-    const quantityInput = prompt(
-        `Wie viele ${selectedMaterial.name} wurden verbraucht?`
-    );
 
-    if (!quantityInput) return;
+    const quantityInput =
+        prompt(
+            `Wie viele ${selectedMaterial.name} wurden verbraucht?`
+        );
 
-    const quantity = parseInt(quantityInput, 10);
 
-    if (!Number.isInteger(quantity) || quantity <= 0) {
-        showError("Bitte eine gültige Menge eingeben.");
+    if (!quantityInput) {
         return;
     }
 
-    const existingMaterial = materials.find(
-        material => Number(material.material_id) === Number(selectedMaterial.id)
-    );
+
+    const quantity =
+        parseInt(
+            quantityInput,
+            10
+        );
+
+
+    if (
+        !Number.isInteger(quantity) ||
+        quantity <= 0
+    ) {
+
+        showError(
+            "Bitte eine gültige Menge eingeben."
+        );
+
+        return;
+    }
+
+
+    const existingMaterial =
+        materials.find(
+            material =>
+                Number(material.material_id) ===
+                Number(selectedMaterial.id)
+        );
+
 
     if (existingMaterial) {
-        existingMaterial.quantity += quantity;
+
+        existingMaterial.quantity +=
+            quantity;
+
     } else {
+
         materials.push({
-            material_id: selectedMaterial.id,
-            name: selectedMaterial.name,
-            price: number(selectedMaterial.price),
-            quantity: quantity
+
+            material_id:
+                selectedMaterial.id,
+
+            name:
+                selectedMaterial.name,
+
+            price:
+                number(
+                    selectedMaterial.price
+                ),
+
+            quantity:
+                quantity
         });
     }
 
+
     renderConsumedMaterials();
+
     calculateFinalPrice();
 }
 
@@ -917,11 +1367,19 @@ async function openMaterialEditor() {
 
 function renderConsumedMaterials() {
 
-    const container = getElement("materialsList");
+    const container =
+        getElement(
+            "materialsList"
+        );
 
-    if (!container) return;
+
+    if (!container) {
+        return;
+    }
+
 
     if (!materials.length) {
+
         container.innerHTML = `
             <tr>
                 <td colspan="4">
@@ -931,46 +1389,65 @@ function renderConsumedMaterials() {
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    container.innerHTML = materials.map((material, index) => {
 
-        const quantity = number(material.quantity);
-        const price = number(material.price);
-        const total = quantity * price;
+    container.innerHTML =
+        materials
+            .map(
+                (
+                    material,
+                    index
+                ) => {
 
-        return `
-            <tr>
-                <td>
-                    ${escapeHtml(material.name)}
-                </td>
+                    const quantity =
+                        number(
+                            material.quantity
+                        );
 
-                <td>
-                    ${quantity}
-                </td>
+                    const price =
+                        number(
+                            material.price
+                        );
 
-                <td>
-                    ${formatMoney(price)} $
-                </td>
+                    const total =
+                        quantity * price;
 
-                <td>
-                    <strong>
-                        ${formatMoney(total)} $
-                    </strong>
 
-                    <button
-                        type="button"
-                        class="material-remove"
-                        onclick="removeConsumedMaterial(${index})"
-                    >
-                        ✕
-                    </button>
-                </td>
-            </tr>
-        `;
+                    return `
+                        <tr>
+                            <td>
+                                ${escapeHtml(material.name)}
+                            </td>
 
-    }).join("");
+                            <td>
+                                ${quantity}
+                            </td>
+
+                            <td>
+                                ${formatMoney(price)} $
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${formatMoney(total)} $
+                                </strong>
+
+                                <button
+                                    type="button"
+                                    class="material-remove"
+                                    onclick="removeConsumedMaterial(${index})"
+                                >
+                                    ✕
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            )
+            .join("");
 }
 
 
@@ -980,11 +1457,23 @@ function renderConsumedMaterials() {
 
 function removeConsumedMaterial(index) {
 
-    if (index < 0 || index >= materials.length) return;
+    if (
+        index < 0 ||
+        index >= materials.length
+    ) {
 
-    materials.splice(index, 1);
+        return;
+    }
+
+
+    materials.splice(
+        index,
+        1
+    );
+
 
     renderConsumedMaterials();
+
     calculateFinalPrice();
 }
 
@@ -995,12 +1484,29 @@ function removeConsumedMaterial(index) {
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -1010,201 +1516,63 @@ function escapeHtml(value) {
 
 function calculateMaterialCost() {
 
-    return materials.reduce((sum, material) => {
+function calculateMaterialCost() {
 
-        const quantity = number(material.quantity);
-        const price = number(material.price);
-
-        return sum + (quantity * price);
-
-    }, 0);
-}
-
-
-// ==========================================
-// BESCHAFFUNGSZUSCHLAG
-// ==========================================
-
-function calculateMaterialSurcharge(materialCost) {
-
-    if (!currentOrder) return 0;
-
-    const provider = String(
-        currentOrder.material_provider ??
-        currentOrder.materialProvider ??
-        ""
-    ).toLowerCase();
-
-    // Nur wenn Falkenstein die Materialien beschafft
-    const isFalkenstein =
-        provider.includes("falkenstein") ||
-        provider.includes("stadt");
-
-    if (!isFalkenstein) {
+    if (!materials.length) {
         return 0;
     }
 
-    return materialCost * 0.15;
+
+    return materials.reduce(
+        (sum, material) => {
+
+            const quantity =
+                number(
+                    material.quantity
+                );
+
+            const price =
+                number(
+                    material.price
+                );
+
+            return sum +
+                quantity * price;
+        },
+        0
+    );
 }
 
 
 // ==========================================
-// GESAMTPREIS NEU BERECHNEN
+// ENDPREIS BERECHNEN
 // ==========================================
 
 function calculateFinalPrice() {
 
-    if (!currentOrder) return;
-
-    const basePrice = number(
-        currentOrder.base_price ??
-        currentOrder.price ??
-        0
-    );
-
-    const addonPrice = number(
-        currentOrder.addon_price ??
-        currentOrder.addons_price ??
-        0
-    );
-
-    const materialCost = calculateMaterialCost();
-
-    const materialSurcharge =
-        calculateMaterialSurcharge(materialCost);
-
-    const finalPrice =
-        basePrice +
-        addonPrice +
-        materialCost +
-        materialSurcharge;
-
-    const deposit = finalPrice * 0.25;
-
-    const remaining = finalPrice - deposit;
-
-    setText(
-        "materialCost",
-        `${formatMoney(materialCost)} $`
-    );
-
-    setText(
-        "materialSurcharge",
-        `${formatMoney(materialSurcharge)} $`
-    );
-
-    setText(
-        "finalPrice",
-        `${formatMoney(finalPrice)} $`
-    );
-
-    setText(
-        "deposit",
-        `${formatMoney(deposit)} $`
-    );
-
-    setText(
-        "remainingPayment",
-        `${formatMoney(remaining)} $`
-    );
-                              }
-
-// ==========================================
-// TEIL 3 VON 4
-// Materialien speichern & Auftrag aktualisieren
-// ==========================================
-
-
-// ==========================================
-// MATERIALIEN IN SUPABASE SPEICHERN
-// ==========================================
-
-async function saveConsumedMaterials() {
-
     if (!currentOrder) {
-        throw new Error("Kein Bauauftrag geladen.");
-    }
-
-    if (!currentUser) {
-        throw new Error("Nicht angemeldet.");
-    }
-
-    // Nur der Bearbeiter darf Materialien speichern
-    if (currentOrder.employee_id !== currentUser.id) {
-        throw new Error(
-            "Nur der zugewiesene Bearbeiter darf Materialien eintragen."
-        );
-    }
-
-    // Alte Materialeinträge für diesen Auftrag löschen
-    const { error: deleteError } = await supabase
-        .from("build_order_materials")
-        .delete()
-        .eq("order_id", currentOrder.id);
-
-    if (deleteError) {
-        throw deleteError;
-    }
-
-    // Wenn keine Materialien vorhanden sind,
-    // bleibt die Tabelle für diesen Auftrag leer.
-    if (!materials.length) {
         return;
     }
 
-    const rows = materials.map(material => ({
-        order_id: currentOrder.id,
-        material_id: material.material_id,
-        quantity: material.quantity,
-        unit_price: material.price
-    }));
 
-    const { error: insertError } = await supabase
-        .from("build_order_materials")
-        .insert(rows);
-
-    if (insertError) {
-        throw insertError;
-    }
-}
-
-
-// ==========================================
-// AUFTRAGSPREIS IN SUPABASE AKTUALISIEREN
-// ==========================================
-
-async function updateBuildOrderPrice() {
-
-    if (!currentOrder) {
-        throw new Error("Kein Bauauftrag geladen.");
-    }
-
-    if (!currentUser) {
-        throw new Error("Nicht angemeldet.");
-    }
-
-    if (currentOrder.employee_id !== currentUser.id) {
-        throw new Error(
-            "Nur der zugewiesene Bearbeiter darf den Preis aktualisieren."
+    const basePrice =
+        number(
+            currentOrder.base_price
         );
-    }
 
-    const basePrice = number(
-        currentOrder.base_price ??
-        currentOrder.price ??
-        0
-    );
+    const addonPrice =
+        number(
+            currentOrder.addon_price
+        );
 
-    const addonPrice = number(
-        currentOrder.addon_price ??
-        currentOrder.addons_price ??
-        0
-    );
+    const materialCost =
+        calculateMaterialCost();
 
-    const materialCost = calculateMaterialCost();
 
     const materialSurcharge =
-        calculateMaterialSurcharge(materialCost);
+        materialCost *
+        0.30;
+
 
     const finalPrice =
         basePrice +
@@ -1212,118 +1580,40 @@ async function updateBuildOrderPrice() {
         materialCost +
         materialSurcharge;
 
-    const deposit = finalPrice * 0.25;
 
-    const remaining = finalPrice - deposit;
-
-    const { data, error } = await supabase
-        .from("build_orders")
-        .update({
-            material_cost: materialCost,
-            material_procurement: materialCost,
-            material_surcharge_percent:
-                materialSurcharge > 0 ? 15 : 0,
-            material_surcharge: materialSurcharge,
-            final_price: finalPrice,
-            deposit: deposit,
-            remaining_payment: remaining,
-            updated_at: new Date().toISOString()
-        })
-        .eq("id", currentOrder.id)
-        .select()
-        .single();
-
-    if (error) {
-        throw error;
-    }
-
-    currentOrder = {
-        ...currentOrder,
-        ...data
-    };
-
-    return data;
-}
+    setText(
+        "materialCost",
+        formatMoney(
+            materialCost
+        )
+    );
 
 
-// ==========================================
-// KOMPLETT SPEICHERN
-// ==========================================
-
-async function saveMaterialsAndPrice() {
-
-    hideError();
-
-    try {
-
-        if (!currentOrder) {
-            throw new Error("Kein Bauauftrag geladen.");
-        }
-
-        if (!currentUser) {
-            throw new Error("Nicht angemeldet.");
-        }
-
-        if (currentOrder.employee_id !== currentUser.id) {
-            throw new Error(
-                "Nur der Bearbeiter darf den Materialverbrauch ändern."
-            );
-        }
-
-        await saveConsumedMaterials();
-
-        await updateBuildOrderPrice();
-
-        renderConsumedMaterials();
-
-        calculateFinalPrice();
-
-        alert("Materialverbrauch und Auftragspreis wurden gespeichert.");
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Speichern:",
-            error
-        );
-
-        showError(
-            error.message ||
-            "Die Änderungen konnten nicht gespeichert werden."
-        );
-    }
-}
+    setText(
+        "materialSurcharge",
+        formatMoney(
+            materialSurcharge
+        )
+    );
 
 
-// ==========================================
-// MATERIAL-BUTTON EINRICHTEN
-// ==========================================
-
-function setupMaterialButtons() {
-
-    const addButton =
-        getElement("addMaterialButton");
-
-    const saveButton =
-        getElement("saveMaterialsButton");
+    setText(
+        "finalPrice",
+        formatMoney(
+            finalPrice
+        )
+    );
 
 
-    if (addButton) {
-
-        addButton.addEventListener(
-            "click",
-            openMaterialEditor
-        );
-    }
-
-
-    if (saveButton) {
-
-        saveButton.addEventListener(
-            "click",
-            saveMaterialsAndPrice
-        );
-    }
+    setText(
+        "remainingPayment",
+        formatMoney(
+            finalPrice -
+            number(
+                currentOrder.deposit
+            )
+        )
+    );
 }
 
 
@@ -1331,91 +1621,91 @@ function setupMaterialButtons() {
 // AUFTRAG ÜBERNEHMEN
 // ==========================================
 
-async function acceptBuildOrder() {
-
-    hideError();
+async function acceptOrder() {
 
     if (!currentOrder) {
-        showError("Kein Bauauftrag geladen.");
         return;
     }
+
 
     if (!currentUser) {
-        showError("Nicht angemeldet.");
-        return;
-    }
 
-    if (!currentEmployee) {
-        showError("Kein Mitarbeiterprofil gefunden.");
-        return;
-    }
-
-    if (!currentEmployee.is_available) {
         showError(
-            "Du bist aktuell nicht verfügbar und kannst keinen Auftrag übernehmen."
+            "Du musst angemeldet sein."
         );
+
         return;
     }
+
 
     if (
-        currentOrder.status &&
-        currentOrder.status !== "Offen"
+        currentOrder.employee_id &&
+        currentOrder.employee_id !== currentUser.id
     ) {
+
         showError(
-            "Dieser Auftrag wurde bereits übernommen."
+            "Dieser Auftrag wurde bereits von einem anderen Mitarbeiter übernommen."
         );
+
         return;
     }
+
 
     try {
 
-        const { data, error } = await supabase
-            .from("build_orders")
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("bauauftraege")
             .update({
-                employee_id: currentUser.id,
-                status: "In Bearbeitung",
-                updated_at: new Date().toISOString()
+
+                employee_id:
+                    currentUser.id,
+
+                status:
+                    "angenommen",
+
+                accepted_at:
+                    new Date().toISOString()
             })
-            .eq("id", currentOrder.id)
-            .eq("status", "Offen")
+            .eq(
+                "id",
+                currentOrder.id
+            )
             .select()
             .single();
+
 
         if (error) {
             throw error;
         }
 
-        currentOrder = {
-            ...currentOrder,
-            ...data
-        };
 
-        setText(
-            "orderStatus",
-            "In Bearbeitung"
+        currentOrder =
+            data;
+
+
+        showSuccess(
+            "Der Auftrag wurde erfolgreich übernommen."
         );
 
-        const button =
-            getElement("acceptOrderButton");
 
-        if (button) {
-            button.disabled = true;
-            button.textContent = "✓ Auftrag übernommen";
-        }
+        renderOrder(
+            currentOrder
+        );
 
-        enableMaterialEditing();
 
-        alert("Bauauftrag wurde übernommen.");
+        updateButtons();
 
     } catch (error) {
 
         console.error(
-            "Fehler beim Übernehmen:",
+            "Fehler beim Übernehmen des Auftrags:",
             error
         );
 
         showError(
-            error.message ||
             "Der Auftrag konnte nicht übernommen werden."
         );
     }
@@ -1423,190 +1713,439 @@ async function acceptBuildOrder() {
 
 
 // ==========================================
-// MATERIAL-BEARBEITUNG AKTIVIEREN
+// AUFTRAG ABSCHLIESSEN
 // ==========================================
 
-function enableMaterialEditing() {
+async function completeOrder() {
 
-    const addButton =
-        getElement("addMaterialButton");
-
-    const saveButton =
-        getElement("saveMaterialsButton");
-
-    if (addButton) {
-        addButton.disabled = false;
-        addButton.style.display = "block";
+    if (!currentOrder) {
+        return;
     }
 
-    if (saveButton) {
-        saveButton.disabled = false;
-        saveButton.style.display = "block";
-    }
-}
 
+    if (
+        !currentUser ||
+        currentOrder.employee_id !== currentUser.id
+    ) {
 
-// ==========================================
-// MATERIAL-BEARBEITUNG DEAKTIVIEREN
-// ==========================================
+        showError(
+            "Nur der zugewiesene Mitarbeiter darf den Auftrag abschließen."
+        );
 
-function disableMaterialEditing() {
-
-    const addButton =
-        getElement("addMaterialButton");
-
-    const saveButton =
-        getElement("saveMaterialsButton");
-
-    if (addButton) {
-        addButton.disabled = true;
+        return;
     }
 
-    if (saveButton) {
-        saveButton.disabled = true;
+
+    const confirmed =
+        confirm(
+            "Möchtest du diesen Auftrag wirklich abschließen?"
+        );
+
+
+    if (!confirmed) {
+        return;
     }
-}
 
-// ==========================================
-// TEIL 4 VON 4
-// Gespeicherte Materialien laden & Start
-// ==========================================
-
-
-// ==========================================
-// GESPEICHERTE MATERIALIEN LADEN
-// ==========================================
-
-async function loadConsumedMaterials() {
-
-    if (!currentOrder) return;
 
     try {
 
-        const { data, error } = await supabase
-            .from("build_order_materials")
-            .select(`
-                material_id,
-                quantity,
-                unit_price,
-                items (
-                    id,
-                    name,
-                    price
-                )
-            `)
-            .eq("order_id", currentOrder.id);
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("bauauftraege")
+            .update({
+
+                status:
+                    "abgeschlossen",
+
+                completed_at:
+                    new Date().toISOString(),
+
+                material_usage:
+                    materials
+            })
+            .eq(
+                "id",
+                currentOrder.id
+            )
+            .select()
+            .single();
+
 
         if (error) {
-            console.error(
-                "Fehler beim Laden der Materialien:",
-                error
-            );
-            return;
+            throw error;
         }
 
-        materials = (data || []).map(row => {
 
-            const item = row.items || {};
+        currentOrder =
+            data;
 
-            return {
-                material_id: row.material_id,
-                name: item.name || "Unbekanntes Material",
-                price: number(
-                    row.unit_price ??
-                    item.price ??
-                    0
-                ),
-                quantity: number(row.quantity)
-            };
-        });
 
-        renderConsumedMaterials();
-        calculateFinalPrice();
+        showSuccess(
+            "Der Auftrag wurde abgeschlossen."
+        );
+
+
+        renderOrder(
+            currentOrder
+        );
+
+
+        updateButtons();
 
     } catch (error) {
 
         console.error(
-            "Fehler beim Laden des Materialverbrauchs:",
+            "Fehler beim Abschließen des Auftrags:",
             error
+        );
+
+        showError(
+            "Der Auftrag konnte nicht abgeschlossen werden."
         );
     }
 }
 
 
 // ==========================================
-// BUTTON-STATUS PRÜFEN
+// BUTTONS AKTUALISIEREN
 // ==========================================
 
-function updateEditingState() {
+function updateButtons() {
 
-    if (!currentOrder || !currentUser) {
-        disableMaterialEditing();
+    const acceptButton =
+        getElement(
+            "acceptOrderButton"
+        );
+
+    const completeButton =
+        getElement(
+            "completeOrderButton"
+        );
+
+    const materialButton =
+        getElement(
+            "addMaterialButton"
+        );
+
+
+    if (!currentOrder) {
         return;
     }
 
-    const isAssignedEmployee =
-        currentOrder.employee_id === currentUser.id;
 
-    const isOpen =
-        !currentOrder.status ||
-        currentOrder.status === "Offen";
+    const isAssignedToMe =
+        currentUser &&
+        currentOrder.employee_id ===
+            currentUser.id;
 
-    if (isAssignedEmployee) {
-        enableMaterialEditing();
-        return;
+
+    const isAssigned =
+        Boolean(
+            currentOrder.employee_id
+        );
+
+
+    const isCompleted =
+        currentOrder.status ===
+        "abgeschlossen";
+
+
+    if (acceptButton) {
+
+        acceptButton.style.display =
+            !isAssigned &&
+            !isCompleted
+                ? "inline-flex"
+                : "none";
     }
 
-    disableMaterialEditing();
 
-    // Auftrag ist noch offen:
-    // Materialien dürfen erst nach Übernahme
-    // eingetragen werden.
-    if (isOpen) {
+    if (completeButton) {
 
-        const addButton =
-            getElement("addMaterialButton");
+        completeButton.style.display =
+            isAssignedToMe &&
+            !isCompleted
+                ? "inline-flex"
+                : "none";
+    }
 
-        const saveButton =
-            getElement("saveMaterialsButton");
 
-        if (addButton) {
-            addButton.style.display = "none";
-        }
+    if (materialButton) {
 
-        if (saveButton) {
-            saveButton.style.display = "none";
-        }
+        materialButton.style.display =
+            isAssignedToMe &&
+            !isCompleted
+                ? "inline-flex"
+                : "none";
     }
 }
 
 
 // ==========================================
-// ÜBERNAHME-BUTTON EINRICHTEN
+// FEHLER- UND ERFOLGSMELDUNGEN
 // ==========================================
 
-function setupAcceptButton() {
+function showError(message) {
 
-    const button =
-        getElement("acceptOrderButton");
+    const element =
+        getElement(
+            "errorMessage"
+        );
 
-    if (!button) return;
 
-    button.addEventListener(
-        "click",
-        acceptBuildOrder
+    if (element) {
+
+        element.textContent =
+            message;
+
+        element.style.display =
+            "block";
+    }
+
+
+    console.error(
+        message
     );
 }
 
 
+function showSuccess(message) {
+
+    const element =
+        getElement(
+            "successMessage"
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            message;
+
+        element.style.display =
+            "block";
+    }
+
+
+    console.log(
+        message
+    );
+        }
+
 // ==========================================
-// BUTTONS FÜR MATERIALIEN EINRICHTEN
+// AUFTRAG LADEN
 // ==========================================
 
-function setupButtons() {
+async function loadOrder() {
 
-    setupAcceptButton();
-    setupMaterialButtons();
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const orderId =
+        params.get("id") ||
+        params.get("order_id");
+
+
+    if (!orderId) {
+
+        showError(
+            "Keine Auftrags-ID gefunden."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("bauauftraege")
+            .select("*")
+            .eq(
+                "id",
+                orderId
+            )
+            .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+
+            showError(
+                "Auftrag wurde nicht gefunden."
+            );
+
+            return;
+        }
+
+
+        currentOrder =
+            data;
+
+
+        if (
+            data.material_usage &&
+            Array.isArray(
+                data.material_usage
+            )
+        ) {
+
+            materials =
+                data.material_usage;
+        }
+
+
+        renderOrder(
+            currentOrder
+        );
+
+        renderConsumedMaterials();
+
+        calculateFinalPrice();
+
+        updateButtons();
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Laden des Auftrags:",
+            error
+        );
+
+        showError(
+            "Der Auftrag konnte nicht geladen werden."
+        );
+    }
+}
+
+
+// ==========================================
+// AKTUELLE BENUTZERDATEN LADEN
+// ==========================================
+
+async function loadCurrentUser() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth
+            .getUser();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        currentUser =
+            data?.user ||
+            null;
+
+
+    } catch (error) {
+
+        console.error(
+            "Fehler beim Laden des Benutzers:",
+            error
+        );
+
+        currentUser =
+            null;
+    }
+}
+
+
+// ==========================================
+// EVENTLISTENER
+// ==========================================
+
+function setupEventListeners() {
+
+    const acceptButton =
+        getElement(
+            "acceptOrderButton"
+        );
+
+
+    if (acceptButton) {
+
+        acceptButton.addEventListener(
+            "click",
+            acceptOrder
+        );
+    }
+
+
+    const completeButton =
+        getElement(
+            "completeOrderButton"
+        );
+
+
+    if (completeButton) {
+
+        completeButton.addEventListener(
+            "click",
+            completeOrder
+        );
+    }
+
+
+    const materialButton =
+        getElement(
+            "addMaterialButton"
+        );
+
+
+    if (materialButton) {
+
+        materialButton.addEventListener(
+            "click",
+            openMaterialEditor
+        );
+    }
+}
+
+
+// ==========================================
+// INITIALISIERUNG
+// ==========================================
+
+async function init() {
+
+    if (
+        typeof supabaseClient ===
+        "undefined" ||
+        !supabaseClient
+    ) {
+
+        showError(
+            "Supabase ist nicht verfügbar."
+        );
+
+        return;
+    }
+
+
+    await loadCurrentUser();
+
+    await loadOrder();
+
+    setupEventListeners();
 }
 
 
@@ -1614,72 +2153,17 @@ function setupButtons() {
 // START
 // ==========================================
 
-async function init() {
+if (
+    document.readyState ===
+    "loading"
+) {
 
-    hideError();
+    document.addEventListener(
+        "DOMContentLoaded",
+        init
+    );
 
-    try {
+} else {
 
-        // Benutzer prüfen
-        const authenticated =
-            await loadUser();
-
-        if (!authenticated) {
-            return;
+    init();
         }
-
-
-        // Mitarbeiter laden
-        await loadEmployee();
-
-
-        // Bauauftrag laden
-        await loadOrder();
-
-
-        if (!currentOrder) {
-            showError(
-                "Der Bauauftrag konnte nicht geladen werden."
-            );
-            return;
-        }
-
-
-        // Gespeicherte Materialien laden
-        await loadConsumedMaterials();
-
-
-        // Buttons einrichten
-        setupButtons();
-
-
-        // Bearbeitungsrechte prüfen
-        updateEditingState();
-
-
-        // Preis nochmals berechnen
-        calculateFinalPrice();
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Starten der Bauauftrag-Details:",
-            error
-        );
-
-        showError(
-            error.message ||
-            "Die Auftragsdetails konnten nicht geladen werden."
-        );
-    }
-}
-
-
-// ==========================================
-// SEITE STARTEN
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    init
-);
