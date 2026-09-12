@@ -1,6 +1,6 @@
 // Ehrenmarkt – Discord-Benachrichtigungen
-// Diese Datei übermittelt dynamische Auftragsdaten an Supabase.
-// Es werden keine festen Kundennamen, Beträge oder Status verwendet.
+// Übermittelt dynamische Daten aus jedem Auftrag an Supabase.
+// Keine festen Kundennamen, Beträge oder Statuswerte.
 
 (function () {
     "use strict";
@@ -25,28 +25,71 @@
     function timeoutPromise(ms) {
         return new Promise(function (_, reject) {
             setTimeout(function () {
-                reject(new Error("Zeitüberschreitung nach " + ms + " ms"));
+                reject(
+                    new Error(
+                        "Zeitüberschreitung nach " + ms + " Millisekunden."
+                    )
+                );
             }, ms);
         });
     }
 
+    async function getAktuellerBenutzerId(supabase) {
+        try {
+            if (
+                !supabase.auth ||
+                typeof supabase.auth.getUser !== "function"
+            ) {
+                return null;
+            }
+
+            const { data, error } = await supabase.auth.getUser();
+
+            if (error || !data || !data.user) {
+                return null;
+            }
+
+            return data.user.id || null;
+        } catch (fehler) {
+            console.warn(
+                "Ehrenmarkt: Benutzer-ID konnte nicht ermittelt werden.",
+                fehler
+            );
+
+            return null;
+        }
+    }
+
     /**
-     * Sendet eine dynamische Benachrichtigung an Discord.
+     * Sendet eine Discord-Benachrichtigung.
      *
      * Beispiel:
      *
-     * window.EhrenmarktDiscord.sendeBenachrichtigung(
+     * await window.EhrenmarktDiscord.sendeBenachrichtigung(
      *     "auftrag_erstellt",
      *     {
      *         auftragstyp: "Redstoneauftrag",
-     *         kunde: "Name aus dem Auftrag",
+     *         kunde: "Echter Kundenname",
      *         betrag: 150000,
      *         auftragsnummer: "EH-2026-001",
-     *         status: "Offen"
+     *         status: "Offen",
+     *         titel: "Redstone-Bauwerk",
+     *         beschreibung: "Beschreibung des Auftrags",
+     *         mitarbeiter: "Mitarbeitername",
+     *         kommentar: "Zusätzliche Informationen",
+     *         ablehnungsgrund: null,
+     *         details: {
+     *             weitere_information: "Wert"
+     *         }
      *     }
      * );
      */
-    async function sendeBenachrichtigung(aktion, daten, optionen) {
+
+    async function sendeBenachrichtigung(
+        aktion,
+        daten,
+        optionen
+    ) {
         const supabase = getSupabaseClient();
 
         if (!supabase) {
@@ -59,37 +102,37 @@
         daten = daten || {};
         optionen = optionen || {};
 
+        const benutzerId =
+            optionen.benutzer_id ||
+            await getAktuellerBenutzerId(supabase);
+
         const payload = {
             aktion: aktion || "unbekannte_aktion",
 
             daten: {
-                auftragstyp: daten.auftragstyp || null,
-                kunde: daten.kunde || null,
+                // Grunddaten des jeweiligen Auftrags
+                auftragstyp: daten.auftragstyp ?? null,
+                kunde: daten.kunde ?? null,
                 betrag: daten.betrag ?? null,
-                auftragsnummer: daten.auftragsnummer || null,
-                status: daten.status || null,
+                auftragsnummer: daten.auftragsnummer ?? null,
+                status: daten.status ?? null,
 
-                // Weitere optionale Informationen
-                titel: daten.titel || null,
-                beschreibung: daten.beschreibung || null,
-                mitarbeiter: daten.mitarbeiter || null,
-                ablehnungsgrund: daten.ablehnungsgrund || null,
-                kommentar: daten.kommentar || null,
-                details: daten.details || null
+                // Weitere dynamische Auftragsdaten
+                titel: daten.titel ?? null,
+                beschreibung: daten.beschreibung ?? null,
+                mitarbeiter: daten.mitarbeiter ?? null,
+                ablehnungsgrund: daten.ablehnungsgrund ?? null,
+                kommentar: daten.kommentar ?? null,
+                details: daten.details ?? null
             },
 
             erstellt_am: new Date().toISOString(),
 
-            quelle: optionen.quelle || "Ehrenmarkt-Portal",
+            quelle:
+                optionen.quelle ||
+                "Ehrenmarkt-Portal",
 
-            benutzer_id:
-                optionen.benutzer_id ||
-                (
-                    supabase.auth &&
-                    supabase.auth.getUser
-                        ? null
-                        : null
-                )
+            benutzer_id: benutzerId
         };
 
         let letzterFehler = null;
@@ -112,12 +155,10 @@
                     timeoutPromise(TIMEOUT)
                 ]);
 
-                const data = ergebnis.data;
-                const error = ergebnis.error;
-
-                if (error) {
+                if (ergebnis.error) {
                     throw new Error(
-                        error.message || "Unbekannter Supabase-Fehler"
+                        ergebnis.error.message ||
+                        "Unbekannter Supabase-Fehler."
                     );
                 }
 
@@ -128,7 +169,7 @@
 
                 return {
                     success: true,
-                    data: data
+                    data: ergebnis.data
                 };
             } catch (fehler) {
                 letzterFehler = fehler;
@@ -156,13 +197,15 @@
         return {
             success: false,
             error:
-                letzterFehler && letzterFehler.message
+                letzterFehler &&
+                letzterFehler.message
                     ? letzterFehler.message
                     : "Discord-Benachrichtigung konnte nicht gesendet werden."
         };
     }
 
     window.EhrenmarktDiscord = {
-        sendeBenachrichtigung: sendeBenachrichtigung
+        sendeBenachrichtigung:
+            sendeBenachrichtigung
     };
 })();
