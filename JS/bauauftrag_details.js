@@ -223,6 +223,29 @@
         }
 
         app.setText("orderNumber", order.order_number);
+
+        // Auftragsdatum
+app.setText(
+    "orderDate",
+    order.created_at
+        ? new Date(order.created_at).toLocaleDateString("de-DE")
+        : "—"
+);
+
+// Auftraggeber – aktuell wird der Minecraft-Name verwendet,
+// da build_orders keinen separaten Kundennamen enthält
+app.setText("customerName", order.minecraft_name);
+
+// Materialbereitstellung
+app.setText(
+    "materialProvider",
+    order.material_procurement === true
+        ? "Falkenstein"
+        : order.material_procurement === false
+            ? "Kunde"
+            : "—"
+);
+        
         app.setText("minecraftName", order.minecraft_name);
 app.setText("contactType", order.contact_type);
 app.setText("contactValue", order.contact_value);
