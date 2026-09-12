@@ -2,335 +2,1152 @@
 <html lang="de">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Ehrenmarkt - Startseite</title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Ehrenmarkt – Startseite
+    </title>
+
+
+    <style>
+
+        /* =====================================================
+           GRUNDLAGEN
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+
+            min-height: 100%;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            color: #eee6d5;
+
+            background: #0b0908;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+
+                linear-gradient(
+                    rgba(5, 4, 3, 0.68),
+                    rgba(5, 4, 3, 0.88)
+                ),
+
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
+                center center / cover fixed no-repeat;
+
+        }
+
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        .page {
+
+            width: 100%;
+            min-height: 100vh;
+
+            padding:
+                20px 12px 45px;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+            max-width: 1150px;
+
+            margin: 0 auto;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            color: #d7ad52;
+
+            font-size:
+                clamp(34px, 8vw, 62px);
+
+            letter-spacing: 3px;
+
+            text-shadow:
+                2px 2px 6px #000;
+
+        }
+
+
+        .header p {
+
+            margin:
+                7px 0 0;
+
+            color: #cfc3a8;
+
+            font-size: 16px;
+
+        }
+
+
+        /* =====================================================
+           SECTIONS
+           ===================================================== */
+
+        .section {
+
+            margin-bottom: 20px;
+
+            padding: 20px;
+
+            background:
+                rgba(12, 10, 8, 0.93);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.48);
+
+            border-radius: 13px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.40);
+
+        }
+
+
+        .section-title {
+
+            margin:
+                0 0 6px;
+
+            text-align: center;
+
+            color: #d7ad52;
+
+            font-size: 26px;
+
+            text-shadow:
+                2px 2px 4px #000;
+
+        }
+
+
+        .section-description {
+
+            margin:
+                0 0 18px;
+
+            text-align: center;
+
+            color: #cfc3a8;
+
+            line-height: 1.5;
+
+            font-size: 15px;
+
+        }
+
+
+        /* =====================================================
+           LEITUNG
+           ===================================================== */
+
+        .leitung-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 14px;
+
+        }
+
+
+        .leitung-card {
+
+            position: relative;
+
+            width: 100%;
+
+            min-height: 225px;
+
+            padding: 12px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+            text-align: center;
+
+            background:
+                rgba(5, 4, 3, 0.82);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.34);
+
+            border-radius: 11px;
+
+            transition:
+                transform 0.18s ease,
+                border-color 0.18s ease;
+
+        }
+
+
+        .leitung-card:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color:
+                #d7ad52;
+
+        }
+
+
+        /*
+         * Gründer bleibt exakt so groß wie
+         * die anderen Karten und wird nur
+         * in der Mitte platziert.
+         */
+
+        .leitung-card.gruender {
+
+            grid-column: 2;
+
+        }
+
+
+        .leitung-icon {
+
+            width: 115px;
+
+            height: 115px;
+
+            object-fit: contain;
+
+            margin-bottom: 5px;
+
+            filter:
+                drop-shadow(
+                    0 4px 6px
+                    rgba(0, 0, 0, 0.8)
+                );
+
+        }
+
+
+        .leitung-bereich {
+
+            color: #d7ad52;
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+            line-height: 1.2;
+
+            text-shadow:
+                1px 1px 3px #000;
+
+        }
+
+
+        .leitung-rang {
+
+            margin-top: 4px;
+
+            color: #cfc3a8;
+
+            font-size: 14px;
+
+        }
+
+
+        .leitung-name {
+
+            min-height: 18px;
+
+            margin-top: 5px;
+
+            color: #eee6d5;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =====================================================
+           PORTAL-LINKS
+           ===================================================== */
+
+        .portal-links {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+        }
+
+
+        .portal-link {
+
+            display: block;
+
+            padding: 13px 12px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(100, 25, 25, 0.84),
+                    rgba(65, 15, 15, 0.84)
+                );
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.34);
+
+            border-radius: 9px;
+
+            color: #eee6d5;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            transition:
+                0.18s ease;
+
+        }
+
+
+        .portal-link:hover {
+
+            color: #d7ad52;
+
+            border-color:
+                #d7ad52;
+
+        }
+
+
+        /* =====================================================
+           BEWERTUNGEN
+           ===================================================== */
+
+        .bewertung-box {
+
+            padding: 20px;
+
+            text-align: center;
+
+            background:
+                rgba(5, 4, 3, 0.75);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.32);
+
+            border-radius: 11px;
+
+        }
+
+
+        .bewertung-durchschnitt {
+
+            color: #d7ad52;
+
+            font-size: 38px;
+
+            font-weight: bold;
+
+            text-shadow:
+                2px 2px 5px #000;
+
+        }
+
+
+        .bewertung-anzahl {
+
+            margin-top: 4px;
+
+            color: #cfc3a8;
+
+            font-size: 15px;
+
+        }
+
+
+        .bewertung-button {
+
+            display: inline-block;
+
+            margin-top: 15px;
+
+            padding:
+                12px 22px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #8f2929,
+                    #641919
+                );
+
+            border:
+                1px solid #d7ad52;
+
+            border-radius: 9px;
+
+            color: #fff3d6;
+
+            font-weight: bold;
+
+        }
+
+                /* =====================================================
+           ACCOUNT-BEREICH
+           ===================================================== */
+
+        .account-links {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .account-button {
+
+            padding:
+                12px 20px;
+
+            background:
+                rgba(5, 4, 3, 0.80);
+
+            border:
+                1px solid
+                rgba(215, 173, 82, 0.40);
+
+            border-radius: 9px;
+
+            color: #eee6d5;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+        }
+
+
+        .account-button:hover {
+
+            color: #d7ad52;
+
+            border-color:
+                #d7ad52;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #81796d;
+
+            font-size: 13px;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .page {
+
+                padding:
+                    15px 8px 35px;
+
+            }
+
+
+            .section {
+
+                padding: 14px;
+
+            }
+
+
+            .leitung-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 10px;
+
+            }
+
+
+            .leitung-card {
+
+                min-height: 190px;
+
+                padding: 9px 5px;
+
+            }
+
+
+            .leitung-card.gruender {
+
+                grid-column: 1 / -1;
+
+                max-width: 190px;
+
+                margin: 0 auto;
+
+            }
+
+
+            .leitung-icon {
+
+                width: 95px;
+
+                height: 95px;
+
+                margin-bottom: 3px;
+
+            }
+
+
+            .leitung-bereich {
+
+                font-size: 16px;
+
+            }
+
+
+            .leitung-rang {
+
+                font-size: 13px;
+
+            }
+
+
+            .leitung-name {
+
+                font-size: 14px;
+
+            }
+
+
+            .portal-links {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .header {
+
+                margin-bottom: 17px;
+
+            }
+
+
+            .header h1 {
+
+                font-size: 36px;
+
+            }
+
+
+            .header p {
+
+                font-size: 14px;
+
+            }
+
+
+            .section-title {
+
+                font-size: 23px;
+
+            }
+
+
+            .bewertung-durchschnitt {
+
+                font-size: 34px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-    <h1>EHRENMARKT</h1>
 
-    <div id="status">
-        Anmeldung wird geprüft...
+<div class="page">
+
+    <div class="container">
+
+
+        <!-- =================================================
+             HEADER
+             ================================================= -->
+
+        <header class="header">
+
+            <h1>
+                EHRENMARKT
+            </h1>
+
+            <p>
+                Bauen · Handeln · Gemeinsam mehr erreichen
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             LEITUNG
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Die Leitung
+            </h2>
+
+            <p class="section-description">
+                Die Menschen hinter dem Ehrenmarkt.
+            </p>
+
+
+            <div class="leitung-grid">
+
+
+                <!-- =========================================
+                     GRÜNDER
+                     ========================================= -->
+
+                <div class="leitung-card gruender">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Grunder.png"
+                        alt="Gründer"
+                    >
+
+                    <div class="leitung-bereich">
+                        Gründer
+                    </div>
+
+                    <div class="leitung-rang">
+                        Stadtleitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-gruender"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     BUCHHALTUNG
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Buchhalter.png"
+                        alt="Buchhaltung"
+                    >
+
+                    <div class="leitung-bereich">
+                        Buchhaltung
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-buchhaltung"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     BAUMEISTER
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Baumeister.png"
+                        alt="Baumeister"
+                    >
+
+                    <div class="leitung-bereich">
+                        Baumeister
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-baumeister"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     HÄNDLER
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Handler.png"
+                        alt="Händler"
+                    >
+
+                    <div class="leitung-bereich">
+                        Händler
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-handler"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     REDSTONE
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Redstone.png"
+                        alt="Redstone"
+                    >
+
+                    <div class="leitung-bereich">
+                        Redstone
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-redstone"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     FARMER
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Farmer.png"
+                        alt="Farmer"
+                    >
+
+                    <div class="leitung-bereich">
+                        Farmer
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-farmer"
+                    ></div>
+
+                </div>
+
+
+                <!-- =========================================
+                     LOGISTIK
+                     ========================================= -->
+
+                <div class="leitung-card">
+
+                    <img
+                        class="leitung-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Logistik.png"
+                        alt="Logistik"
+                    >
+
+                    <div class="leitung-bereich">
+                        Logistik
+                    </div>
+
+                    <div class="leitung-rang">
+                        Leitung
+                    </div>
+
+                    <div
+                        class="leitung-name"
+                        id="leitung-logistik"
+                    ></div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             AUFTRÄGE
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Aufträge
+            </h2>
+
+            <p class="section-description">
+                Unsere verschiedenen Auftragsbereiche.
+            </p>
+
+            <div class="portal-links">
+
+                <a
+                    href="bauauftrag.html"
+                    class="portal-link"
+                >
+                    Bauauftrag
+                </a>
+
+                <a
+                    href="redstoneauftrag.html"
+                    class="portal-link"
+                >
+                    Redstone-Auftrag
+                </a>
+
+                <a
+                    href="logistikauftrag.html"
+                    class="portal-link"
+                >
+                    Logistikauftrag
+                </a>
+
+                <a
+                    href="materialauftrag.html"
+                    class="portal-link"
+                >
+                    Materialbestellung
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             HANDEL
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Handel
+            </h2>
+
+            <p class="section-description">
+                Handel und Verleih.
+            </p>
+
+            <div class="portal-links">
+
+                <a
+                    href="verleih.html"
+                    class="portal-link"
+                >
+                    Verleih
+                </a>
+
+                <a
+                    href="karte.html"
+                    class="portal-link"
+                >
+                    Ingame-Karte
+                </a>
+
+            </div>
+
+        </section>
+
+                <!-- =================================================
+             GEMEINSCHAFT
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Gemeinschaft
+            </h2>
+
+            <p class="section-description">
+                Zusammenarbeit, Informationen und Austausch.
+            </p>
+
+            <div class="portal-links">
+
+                <a
+                    href="buendnis.html"
+                    class="portal-link"
+                >
+                    Bündnis
+                </a>
+
+                <a
+                    href="bewerbung.html"
+                    class="portal-link"
+                >
+                    Bewerbung
+                </a>
+
+                <a
+                    href="bewertung.html"
+                    class="portal-link"
+                >
+                    Bewertungen
+                </a>
+
+                <a
+                    href="regelwerk.html"
+                    class="portal-link"
+                >
+                    Regelwerk
+                </a>
+
+                <a
+                    href="faq.html"
+                    class="portal-link"
+                >
+                    FAQ
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             BEWERTUNGEN
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Bewertungen
+            </h2>
+
+            <div class="bewertung-box">
+
+                <div
+                    id="startDurchschnitt"
+                    class="bewertung-durchschnitt"
+                >
+                    0,0 / 5
+                </div>
+
+                <div
+                    id="startBewertungAnzahl"
+                    class="bewertung-anzahl"
+                >
+                    0 Bewertungen
+                </div>
+
+                <a
+                    href="bewertung.html"
+                    class="bewertung-button"
+                >
+                    Bewertung abgeben
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MEIN BEREICH
+             ================================================= -->
+
+        <section class="section">
+
+            <h2 class="section-title">
+                Mein Bereich
+            </h2>
+
+            <div class="account-links">
+
+                <a
+                    href="registrieren.html"
+                    class="account-button"
+                >
+                    Registrieren
+                </a>
+
+                <a
+                    href="kundenbereich.html"
+                    class="account-button"
+                >
+                    Kundenbereich
+                </a>
+
+                <a
+                    href="mitarbeiterbereich.html"
+                    class="account-button"
+                >
+                    Mitarbeiterbereich
+                </a>
+
+                <a
+                    href="verwaltung.html"
+                    class="account-button"
+                >
+                    Verwaltung
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <footer class="footer">
+
+            Ehrenmarkt · Falkenstein
+
+        </footer>
+
+
     </div>
 
+</div>
 
-    <!-- =====================================================
-         KUNDENBEREICH
-         ===================================================== -->
 
-    <h2>Kundenbereich</h2>
+<!-- =========================================================
+     SUPABASE
+     ========================================================= -->
 
-    <p>
-        <a href="kundenbereich.html">
-            Kundenbereich
-        </a>
-    </p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <p>
-        <a href="bewerbung.html">
-            Bewerbung einreichen
-        </a>
-    </p>
+<script src="../supabase.js"></script>
 
+<script src="../JS/startseite.js"></script>
 
-    <!-- =====================================================
-         AUFTRÄGE
-         ===================================================== -->
-
-    <h2>Aufträge</h2>
-
-    <p>
-        <a href="bauauftrag.html">
-            Bauauftrag
-        </a>
-    </p>
-
-    <p>
-        <a href="materialauftrag.html">
-            Materialauftrag
-        </a>
-    </p>
-
-    <p>
-        <a href="redstoneauftrag.html">
-            Redstoneauftrag
-        </a>
-    </p>
-
-    <p>
-        <a href="logistikauftrag.html">
-            Logistikauftrag
-        </a>
-    </p>
-
-
-    <!-- =====================================================
-         MITARBEITERBEREICH
-         ===================================================== -->
-
-    <div id="mitarbeiterBereich" style="display:none;">
-
-        <h2>Mitarbeiterbereich</h2>
-
-        <p>
-            <a href="mitarbeiterbereich.html">
-                Mitarbeiterbereich
-            </a>
-        </p>
-
-    </div>
-
-
-    <!-- =====================================================
-         ANMELDUNG
-         ===================================================== -->
-
-    <div id="anmeldungBereich">
-
-        <p>
-            <a href="registrieren.html">
-                Anmelden / Registrieren
-            </a>
-        </p>
-
-    </div>
-
-
-    <!-- =====================================================
-         ABMELDEN
-         ===================================================== -->
-
-    <div id="abmeldenBereich" style="display:none;">
-
-        <button
-            type="button"
-            onclick="ehrenmarktAbmelden()">
-            Abmelden
-        </button>
-
-    </div>
-
-
-    <!-- =====================================================
-         SUPABASE
-         ===================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script src="../supabase.js"></script>
-
-    <script src="../auth.js"></script>
-
-
-    <script>
-
-        // ====================================================
-        // STARTSEITE INITIALISIEREN
-        // ====================================================
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            async function () {
-
-                await pruefeAnmeldung();
-
-            }
-        );
-
-
-        // ====================================================
-        // ANMELDUNG PRÜFEN
-        // ====================================================
-
-        async function pruefeAnmeldung() {
-
-            const status =
-                document.getElementById("status");
-
-            const mitarbeiterBereich =
-                document.getElementById(
-                    "mitarbeiterBereich"
-                );
-
-            const anmeldungBereich =
-                document.getElementById(
-                    "anmeldungBereich"
-                );
-
-            const abmeldenBereich =
-                document.getElementById(
-                    "abmeldenBereich"
-                );
-
-
-            // -----------------------------------------------
-            // Supabase prüfen
-            // -----------------------------------------------
-
-            if (!window.supabaseClient) {
-
-                status.textContent =
-                    "Supabase konnte nicht geladen werden.";
-
-                return;
-            }
-
-
-            try {
-
-                // -------------------------------------------
-                // Bestehende Session verwenden
-                // -------------------------------------------
-
-                const {
-                    data: {
-                        user
-                    },
-                    error
-                } =
-                    await window.supabaseClient.auth.getUser();
-
-
-                // -------------------------------------------
-                // NICHT ANGEMELDET
-                // -------------------------------------------
-
-                if (error || !user) {
-
-                    status.textContent =
-                        "Nicht angemeldet.";
-
-                    anmeldungBereich.style.display =
-                        "block";
-
-                    abmeldenBereich.style.display =
-                        "none";
-
-                    mitarbeiterBereich.style.display =
-                        "none";
-
-                    return;
-                }
-
-
-                // -------------------------------------------
-                // ANGEMELDET
-                // -------------------------------------------
-
-                status.textContent =
-                    "Angemeldet als: " +
-                    (user.email || "Benutzer");
-
-
-                anmeldungBereich.style.display =
-                    "none";
-
-                abmeldenBereich.style.display =
-                    "block";
-
-
-                // -------------------------------------------
-                // MITARBEITER PRÜFEN
-                // -------------------------------------------
-
-                const {
-                    data: employee,
-                    error: employeeError
-                } =
-                    await window.supabaseClient
-                        .from("employees")
-                        .select(
-                            "id, name, role, rang, is_active"
-                        )
-                        .eq(
-                            "user_id",
-                            user.id
-                        )
-                        .eq(
-                            "is_active",
-                            true
-                        )
-                        .maybeSingle();
-
-
-                // -------------------------------------------
-                // MITARBEITER
-                // -------------------------------------------
-
-                if (
-                    !employeeError &&
-                    employee
-                ) {
-
-                    mitarbeiterBereich.style.display =
-                        "block";
-
-
-                    status.textContent =
-                        "Angemeldet als: " +
-                        (employee.name ||
-                            user.email) +
-                        " | " +
-                        (employee.role || "Mitarbeiter") +
-                        " | Rang: " +
-                        (employee.rang || "-");
-
-                }
-
-
-                // -------------------------------------------
-                // NORMALER KUNDE
-                // -------------------------------------------
-
-                else {
-
-                    mitarbeiterBereich.style.display =
-                        "none";
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Fehler bei der Anmeldung:",
-                    error
-                );
-
-                status.textContent =
-                    "Fehler bei der Prüfung der Anmeldung.";
-
-            }
-        }
-
-
-        // ====================================================
-        // ABMELDEN
-        // ====================================================
-
-        async function ehrenmarktAbmelden() {
-
-            const erfolgreich =
-                await abmelden();
-
-
-            if (erfolgreich) {
-
-                window.location.href =
-                    "registrieren.html";
-
-            } else {
-
-                alert(
-                    "Die Abmeldung ist fehlgeschlagen."
-                );
-            }
-        }
-
-    </script>
 
 </body>
 
