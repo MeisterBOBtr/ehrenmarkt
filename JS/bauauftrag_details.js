@@ -319,6 +319,14 @@ async function loadOrder() {
     currentOrder =
         data;
 
+    alert(
+    "Geladene Daten:\n\n" +
+    "Minecraft-Name: " + (data.minecraft_name || "leer") + "\n" +
+    "Standort: " + (data.location || "leer") + "\n" +
+    "Plot-Anzahl: " + (data.plot_count ?? "leer") + "\n" +
+    "Gebäudetyp: " + (data.building_type || "leer")
+);
+
 
     renderOrder(
         currentOrder
