@@ -915,13 +915,6 @@ async function init() {
         showError(
             "Die Logistik-Detailseite konnte nicht geladen werden."
         );
-
-            } finally {
-        const loadingSection = document.getElementById("loadingSection");
-
-        if (loadingSection) {
-            loadingSection.style.display = "none";
-        }
     }
 }
 
