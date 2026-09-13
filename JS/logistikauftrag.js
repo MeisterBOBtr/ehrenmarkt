@@ -745,7 +745,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                         }
 
-                    ]);
+                    ])
+.select()
+.single();
 
 
             // ====================================================
