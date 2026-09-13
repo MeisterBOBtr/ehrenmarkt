@@ -768,35 +768,72 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
-            // ====================================================
-// PORTAL-BENACHRICHTIGUNG
-// ====================================================
+            // ============================================================
+// DISCORD-BENACHRICHTIGUNG SENDEN
+// ============================================================
 
 try {
-    await fetch(
-        "https://DEIN-PROJEKT.supabase.co/functions/v1/portal-benachrichtigung",
+    const { data: sessionData } =
+        await supabase.auth.getSession();
+
+    const session = sessionData?.session;
+
+    if (!session?.access_token) {
+        throw new Error("Keine gültige Sitzung vorhanden.");
+    }
+
+    const response = await fetch(
+        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
         {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
             },
             body: JSON.stringify({
                 typ: "Logistikauftrag",
-                titel: "Neuer Logistikauftrag",
+
+                titel: `Neuer Logistikauftrag ${orderNumber}`,
+
+                kunde:
+                    customerName.value.trim() ||
+                    "Unbekannt",
+
+                bearbeiter: "Noch nicht zugewiesen",
+
+                preis: `${Number(
+                    preise.gesamt
+                ).toLocaleString("de-DE")} $`,
+
+                status: "Offen",
+
+                auftrag: orderNumber,
+
                 nachricht:
-                    "Ein neuer Logistikauftrag wurde erstellt: " +
-                    orderNumber,
-                auftragsnummer: orderNumber
+                    description.value.trim() ||
+                    "Neuer Logistikauftrag wurde erstellt.",
+
+                portal_url: "https://ehrenmarkt.de/",
+
+                bild_url: ""
             })
         }
     );
-} catch (notificationError) {
+
+    if (!response.ok) {
+        throw new Error(`HTTP-Fehler ${response.status}`);
+    }
+
+    console.log(
+        "Discord-Benachrichtigung erfolgreich gesendet."
+    );
+
+} catch (discordError) {
     console.error(
-        "Fehler bei der Portal-Benachrichtigung:",
-        notificationError
+        "Discord-Benachrichtigung konnte nicht gesendet werden:",
+        discordError
     );
 }
-
 
             // ====================================================
             // ERFOLG
