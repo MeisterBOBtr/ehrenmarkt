@@ -1982,6 +1982,72 @@ const orderNumber =
             }
         }
 
+       // ============================================================
+// PORTAL-BENACHRICHTIGUNG – REDSTONE-AUFTRAG
+// ============================================================
+
+try {
+
+    await fetch(
+        "DIESELBE-SUPABASE-URL-WIE-BEI-MATERIALAUFTRAG",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                typ: "Redstone-Auftrag",
+
+                titel:
+                    `Neuer Redstone-Auftrag ${orderNumber}`,
+
+                kunde:
+                    auftrag.minecraft_name,
+
+                bearbeiter:
+                    "Noch nicht zugewiesen",
+
+                preis:
+                    formatMoney(
+                        preis.gesamtpreis
+                    ),
+
+                status:
+                    "Offen",
+
+                auftrag:
+                    orderNumber,
+
+                nachricht:
+                    `Neuer Redstone-Auftrag: ${auftrag.title}` +
+                    (
+                        auftrag.description
+                            ? `\n\nBeschreibung: ${auftrag.description}`
+                            : ""
+                    ),
+
+                portal_url:
+                    "https://ehrenmarkt.vercel.app",
+
+                bild_url:
+                    ""
+
+            })
+        }
+    );
+
+} catch (notificationError) {
+
+    console.error(
+        "Fehler bei der Portal-Benachrichtigung:",
+        notificationError
+    );
+
+}
+
 
         // Daten für Erfolgsseite speichern
 
