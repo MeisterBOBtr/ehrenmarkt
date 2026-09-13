@@ -2277,87 +2277,106 @@ const felder = Object.entries(
             }
         };
 
-    // ------------------------------------------------------------
-    // AUFTRAG LÖSCHEN
-    // ------------------------------------------------------------
+    // ============================================================
+// AUFTRAG LÖSCHEN
+// ============================================================
 
-    window.auftragLoeschen =
-        async function() {
+window.auftragLoeschen = async function () {
+    if (!aktuellerAuftragsDatensatz) {
+        return;
+    }
 
-            if (!aktuellerAuftragsDatensatz) {
-                return;
-            }
+    const auftrag = aktuellerAuftragsDatensatz;
 
-            const auftrag =
-                aktuellerAuftragsDatensatz;
+    const konfiguration =
+        auftragTabellen[aktuelleAuftragsart];
 
-            const konfiguration =
-                auftragTabellen[
-                    aktuelleAuftragsart
-                ];
+    if (!konfiguration) {
+        return;
+    }
 
-            if (!konfiguration) {
-                return;
-            }
+    const bestaetigt = confirm(
+        "Auftrag #" +
+        auftrag.id +
+        " wirklich endgültig löschen?"
+    );
 
-            const bestaetigt =
-                confirm(
-                    "Auftrag #" +
-                    auftrag.id +
-                    " wirklich endgültig löschen?"
-                );
+    if (!bestaetigt) {
+        return;
+    }
 
-            if (!bestaetigt) {
-                return;
-            }
+    try {
+        /*
+        ========================================================
+        WICHTIG:
 
-            try {
+        Vor dem Löschen werden zuerst:
+        1. Die Finanzdaten gespeichert
+        2. Bau- und Redstoneaufträge archiviert
 
-                const {
-                    error
-                } = await supabase
-                    .from(
-                        konfiguration.tabelle
-                    )
-                    .delete()
-                    .eq(
-                        "id",
-                        auftrag.id
-                    );
+        Wenn einer dieser Schritte fehlschlägt,
+        wird der Auftrag NICHT gelöscht.
+        ========================================================
+        */
 
-                if (error) {
-                    throw error;
-                }
+        if (
+            typeof window.archiviereAuftragVorLoeschung !==
+            "function"
+        ) {
+            throw new Error(
+                "archivierung.js wurde nicht geladen."
+            );
+        }
 
-                verwaltungZeigeErfolg(
-                    "Der Auftrag wurde gelöscht.",
-                    element(
-                        "auftraegeMessage"
-                    )
-                );
+        await window.archiviereAuftragVorLoeschung(
+            auftrag,
+            aktuelleAuftragsart
+        );
 
-                window.schliesseAuftragDetails();
 
-                await ladeAuftraege(
-                    aktuelleAuftragsart
-                );
+        /*
+        ========================================================
+        ERST JETZT wird der Auftrag aus der aktiven Tabelle
+        gelöscht.
+        ========================================================
+        */
 
-            } catch (error) {
+        const {
+            error
+        } = await supabase
+            .from(konfiguration.tabelle)
+            .delete()
+            .eq("id", auftrag.id);
 
-                console.error(
-                    "Fehler beim Löschen des Auftrags:",
-                    error
-                );
+        if (error) {
+            throw error;
+        }
 
-                verwaltungZeigeFehler(
-                    "Der Auftrag konnte nicht gelöscht werden.\n\n" +
-                    verwaltungFehlerText(error),
-                    element(
-                        "auftraegeMessage"
-                    )
-                );
-            }
-        };
+
+        verwaltungZeigeErfolg(
+            "Der Auftrag wurde archiviert und gelöscht.",
+            element("auftraegeMessage")
+        );
+
+        window.schliesseAuftragDetails();
+
+        await ladeAuftraege(
+            aktuelleAuftragsart
+        );
+
+    } catch (error) {
+        console.error(
+            "Fehler beim Archivieren oder Löschen des Auftrags:",
+            error
+        );
+
+        verwaltungZeigeFehler(
+            "Der Auftrag konnte nicht archiviert oder gelöscht werden.\n\n" +
+            verwaltungFehlerText(error),
+            element("auftraegeMessage")
+        );
+    }
+};
 
     // ------------------------------------------------------------
     // AUFTRAGSARTEN
