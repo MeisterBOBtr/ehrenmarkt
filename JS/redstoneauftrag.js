@@ -1989,7 +1989,7 @@ const orderNumber =
 try {
 
     await fetch(
-        "DIESELBE-SUPABASE-URL-WIE-BEI-MATERIALAUFTRAG",
+        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
         {
             method: "POST",
 
