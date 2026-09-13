@@ -99,6 +99,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ------------------------------------------------------------
+// HILFSFUNKTION: VERSTÄNDLICHE FELDBEZEICHNUNGEN
+// ------------------------------------------------------------
+
+function verwaltungFeldBezeichnung(schluessel) {
+
+    const bezeichnungen = {
+        merge_width: "Plot-Breite",
+        merge_height: "Plot-Höhe",
+        user_id: "Benutzer-ID",
+        created_at: "Erstellt am",
+        updated_at: "Zuletzt geändert",
+        order_id: "Auftrags-ID",
+        customer_name: "Kundenname",
+        minecraft_name: "Minecraft-Name",
+        discord_name: "Discord-Name",
+        status: "Status",
+        description: "Beschreibung",
+        details: "Details",
+        materials: "Materialien",
+        material_cost: "Materialkosten",
+        labor_cost: "Arbeitskosten",
+        total_cost: "Gesamtkosten"
+    };
+
+    if (bezeichnungen[schluessel]) {
+        return bezeichnungen[schluessel];
+    }
+
+    return String(schluessel)
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, buchstabe => buchstabe.toUpperCase());
+}
+
+    // ------------------------------------------------------------
     // HILFSFUNKTION: DATUM
     // ------------------------------------------------------------
 
@@ -1907,10 +1941,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            const felder =
-                Object.entries(
-                    auftrag
-                );
+            const technischeFelder = [
+    "id",
+    "user_id",
+    "created_at",
+    "updated_at",
+    "deleted_at",
+    "internal_id",
+    "customer_id",
+    "employee_id"
+];
+
+const felder = Object.entries(
+    auftrag
+).filter(
+    ([schluessel]) =>
+        !technischeFelder.includes(
+            schluessel
+        )
+);
 
             content.innerHTML = `
 
@@ -1928,8 +1977,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                                 <strong>
                                     ${verwaltungEscape(
-                                        schluessel
-                                    )}
+    verwaltungFeldBezeichnung(schluessel)
+)}
                                 </strong>
 
                                 <span style="white-space:pre-wrap;">
