@@ -166,7 +166,30 @@ function verwaltungFeldBezeichnung(schluessel) {
     materials: "Materialien",
     material_cost: "Materialkosten",
     labor_cost: "Arbeitskosten",
-    total_cost: "Gesamtkosten"
+    total_cost: "Gesamtkosten",
+
+        order_type: "Auftragsart",
+start_point: "Startpunkt",
+destination: "Ziel",
+start_citybuild: "Start-Citybuild",
+destination_citybuild: "Ziel-Citybuild",
+crate_count: "Kistenanzahl",
+sorting: "Sortierung",
+delivery_type: "Lieferart",
+express: "Express",
+extra_workers: "Zusätzliche Mitarbeiter",
+base_price: "Grundpreis",
+sorting_price: "Sortierungspreis",
+delivery_price: "Lieferpreis",
+express_price: "Expresspreis",
+workers_price: "Mitarbeiterkosten",
+total_price: "Gesamtpreis",
+deposit: "Anzahlung",
+remaining_payment: "Restzahlung",
+clan_share: "Clan-Anteil",
+worker_share: "Mitarbeiter-Anteil",
+created_by: "Erstellt von",
+employee_name: "Mitarbeitername"
 };
 
     if (bezeichnungen[schluessel]) {
@@ -2029,14 +2052,18 @@ const felder = Object.entries(
                                 </strong>
 
                                 <span style="white-space:pre-wrap;">
-                                    ${verwaltungEscape(
-                                        wert === null ||
-                                        wert === undefined ||
-                                        wert === ""
-                                            ? "—"
-                                            : wert
-                                    )}
-                                </span>
+    ${verwaltungEscape(
+        wert === null ||
+        wert === undefined ||
+        wert === ""
+            ? "—"
+            : wert === true
+                ? "Ja"
+                : wert === false
+                    ? "Nein"
+                    : wert
+    )}
+</span>
 
                             </div>
                         `
