@@ -105,23 +105,69 @@ document.addEventListener("DOMContentLoaded", async () => {
 function verwaltungFeldBezeichnung(schluessel) {
 
     const bezeichnungen = {
-        merge_width: "Plot-Breite",
-        merge_height: "Plot-Höhe",
-        user_id: "Benutzer-ID",
-        created_at: "Erstellt am",
-        updated_at: "Zuletzt geändert",
-        order_id: "Auftrags-ID",
-        customer_name: "Kundenname",
-        minecraft_name: "Minecraft-Name",
-        discord_name: "Discord-Name",
-        status: "Status",
-        description: "Beschreibung",
-        details: "Details",
-        materials: "Materialien",
-        material_cost: "Materialkosten",
-        labor_cost: "Arbeitskosten",
-        total_cost: "Gesamtkosten"
-    };
+    order_number: "Auftragsnummer",
+    minecraft_name: "Minecraft-Name",
+    contact_type: "Kontaktart",
+    contact_value: "Kontaktangabe",
+
+    building_type: "Gebäudetyp",
+    merge_width: "Plot-Breite",
+    merge_height: "Plot-Höhe",
+    plot_count: "Anzahl der Plots",
+    building_length: "Gebäudelänge",
+    building_width: "Gebäudebreite",
+    building_height: "Gebäudehöhe",
+    building_floors: "Anzahl der Etagen",
+
+    building_style: "Baustil",
+    block_palette: "Blockpalette",
+    special_blocks: "Sonderblöcke",
+
+    interior_level: "Innenausbau",
+    interior_percent: "Innenausbau-Prozent",
+    exterior_level: "Außenbereich",
+    exterior_percent: "Außenbereich-Prozent",
+    lighting_level: "Beleuchtung",
+    lighting_percent: "Beleuchtung-Prozent",
+    terraforming_level: "Terraforming",
+    terraforming_percent: "Terraforming-Prozent",
+
+    planning_description: "Planungsbeschreibung",
+    reference_image_url: "Referenzbild",
+    description: "Beschreibung",
+    special_requests: "Sonderwünsche",
+    location: "Standort",
+
+    priority: "Priorität",
+    priority_percent: "Prioritätszuschlag",
+
+    base_price: "Grundpreis",
+    addon_price: "Zusatzkosten",
+    provisional_price: "Vorläufiger Preis",
+    deposit_percent: "Anzahlung in Prozent",
+    deposit_amount: "Anzahlungsbetrag",
+    remaining_payment: "Restzahlung",
+
+    material_costs: "Materialkosten",
+    material_procurement: "Materialbeschaffung",
+    material_surcharge_percent: "Materialzuschlag in Prozent",
+    material_surcharge_amount: "Materialzuschlag",
+
+    final_price: "Endpreis",
+    status: "Status",
+    progress: "Fortschritt",
+
+    user_id: "Benutzer-ID",
+    created_at: "Erstellt am",
+    updated_at: "Zuletzt geändert",
+    customer_name: "Kundenname",
+    discord_name: "Discord-Name",
+    details: "Details",
+    materials: "Materialien",
+    material_cost: "Materialkosten",
+    labor_cost: "Arbeitskosten",
+    total_cost: "Gesamtkosten"
+};
 
     if (bezeichnungen[schluessel]) {
         return bezeichnungen[schluessel];
@@ -1949,6 +1995,7 @@ function verwaltungFeldBezeichnung(schluessel) {
     "deleted_at",
     "internal_id",
     "customer_id",
+    "assigned_employee_id",
     "employee_id"
 ];
 
