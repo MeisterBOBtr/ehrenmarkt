@@ -58,13 +58,17 @@ async function registrieren(email, passwort) {
         });
 
     if (error) {
-        console.error(
-            "Registrierung fehlgeschlagen:",
-            error.message
-        );
+  console.error("Registrierungsfehler:", error);
 
-        return false;
-    }
+  alert(
+    "Registrierungsfehler:\n\n" +
+    error.message +
+    "\n\nCode: " +
+    (error.code || "unbekannt")
+  );
+
+  return false;
+}
 
     console.log(
         "Registrierung erfolgreich:",
