@@ -1,411 +1,418 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+(function () {
+    "use strict";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Content-Type": "application/json",
-};
+    /*
+    ============================================================
+    EHRENMARKT – AUFTRAGSARCHIVIERUNG
+    ============================================================
 
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    Auftragstypen:
+    - bau
+    - material
+    - redstone
+    - logistik
 
-const supabase = createClient(
-  supabaseUrl,
-  serviceRoleKey
-);
+    Finanzaufteilung:
+    - Bauauftrag: 70 % Mitarbeiter / 30 % Clan
+    - Materialauftrag: 70 % Mitarbeiter / 30 % Clan
+    - Redstoneauftrag: 70 % Mitarbeiter / 30 % Clan
+    - Logistikauftrag: vorhandene worker_share / clan_share-Werte
 
-function euro(value: unknown): string {
-  const number = Number(value || 0);
+    Discord-Archiv:
+    - Bauauftrag
+    - Redstoneauftrag
 
-  return number.toLocaleString("de-DE", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
-}
+    Material- und Logistikaufträge werden nur in order_finances
+    gespeichert und anschließend aus der aktiven Tabelle gelöscht.
+    ============================================================
+    */
 
-function text(value: unknown): string {
-  if (value === null || value === undefined || value === "") {
-    return "Keine Angabe";
-  }
+    const supabase = window.supabaseClient;
 
-  if (typeof value === "object") {
-    return JSON.stringify(value, null, 2);
-  }
+    const AUFTRAGSTABELLEN = {
+        bau: "build_orders",
+        material: "orders",
+        redstone: "redstone_orders",
+        logistik: "logistics_orders"
+    };
 
-  return String(value);
-}
+    const DISCORD_ARCHIV_FUNCTIONS = {
+        bau: "archiviere-bauauftrag",
+        redstone: "redstone"
+    };
 
-function normalisiereAuftragsart(value: unknown): string {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replaceAll("ä", "ae")
-    .replaceAll("ö", "oe")
-    .replaceAll("ü", "ue")
-    .replaceAll("ß", "ss");
-}
 
-function istDiscordArchiv(value: unknown): boolean {
-  const art = normalisiereAuftragsart(value);
+    /*
+    ============================================================
+    HILFSFUNKTIONEN
+    ============================================================
+    */
 
-  return (
-    art === "bau" ||
-    art === "bauauftrag" ||
-    art === "redstone" ||
-    art === "redstoneauftrag"
-  );
-}
-
-function webhookFuerAuftrag(auftragsart: unknown): string | null {
-  const art = normalisiereAuftragsart(auftragsart);
-
-  if (art === "bau" || art === "bauauftrag") {
-    return Deno.env.get("BAUAUFTRAG_WEBHOOK_URL") || null;
-  }
-
-  if (art === "redstone" || art === "redstoneauftrag") {
-    return Deno.env.get("REDSTONE_WEBHOOK_URL") || null;
-  }
-
-  return null;
-}
-
-function erstelleDiscordEmbed(
-  auftragsart: string,
-  auftrag: Record<string, unknown>
-) {
-  const istRedstone =
-    normalisiereAuftragsart(auftragsart).includes("redstone");
-
-  const titel = istRedstone
-    ? "Archivierter Redstone-Auftrag"
-    : "Archivierter Bauauftrag";
-
-  const farbe = istRedstone ? 0xff0000 : 0x8b5a2b;
-
-  const felder = [
-    {
-      name: "Auftragsnummer",
-      value: text(
-        auftrag.order_number ||
-        auftrag.auftragnummer ||
-        auftrag.id
-      ),
-      inline: true,
-    },
-    {
-      name: "Kunde",
-      value: text(
-        auftrag.customer_name ||
-        auftrag.minecraft_name ||
-        auftrag.kunde
-      ),
-      inline: true,
-    },
-    {
-      name: "Titel",
-      value: text(
-        auftrag.title ||
-        auftrag.auftragstitel ||
-        auftrag.name
-      ),
-      inline: false,
-    },
-    {
-      name: "Status",
-      value: text(auftrag.status || "Abgeschlossen"),
-      inline: true,
-    },
-    {
-      name: "Gesamtpreis",
-      value: euro(
-        auftrag.total_price ||
-        auftrag.gesamtpreis ||
-        auftrag.gesamtsumme
-      ),
-      inline: true,
-    },
-    {
-      name: "Anzahlung",
-      value: euro(
-        auftrag.deposit_price ||
-        auftrag.anzahlung
-      ),
-      inline: true,
-    },
-    {
-      name: "Restbetrag",
-      value: euro(
-        auftrag.remaining_payment ||
-        auftrag.restbetrag
-      ),
-      inline: true,
-    },
-    {
-      name: "Mitarbeiter",
-      value: text(
-        auftrag.employee_name ||
-        auftrag.mitarbeiter ||
-        auftrag.assigned_employee
-      ),
-      inline: true,
-    },
-    {
-      name: "Arbeitszeit",
-      value: text(
-        auftrag.work_time ||
-        auftrag.arbeitszeit ||
-        auftrag.total_work_minutes
-      ),
-      inline: true,
-    },
-    {
-      name: "Beschreibung",
-      value: text(
-        auftrag.description ||
-        auftrag.beschreibung ||
-        auftrag.notes
-      ),
-      inline: false,
-    },
-    {
-      name: "Materialien",
-      value: text(
-        auftrag.materials ||
-        auftrag.materialien ||
-        auftrag.material_list
-      ),
-      inline: false,
-    },
-    {
-      name: "Zusätzliche Informationen",
-      value: text(
-        auftrag.additional_information ||
-        auftrag.zusatzinformationen ||
-        auftrag.details
-      ),
-      inline: false,
-    },
-  ];
-
-  return {
-    title: titel,
-    color: farbe,
-    fields: felder,
-    footer: {
-      text: "Ehrenmarkt – Auftragsarchiv",
-    },
-    timestamp: new Date().toISOString(),
-  };
-}
-
-Deno.serve(async (request) => {
-  if (request.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
-    });
-  }
-
-  if (request.method !== "POST") {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: "Nur POST-Anfragen sind erlaubt.",
-      }),
-      {
-        status: 405,
-        headers: corsHeaders,
-      }
-    );
-  }
-
-  try {
-    const body = await request.json();
-
-    const auftragsart =
-      body.order_type ||
-      body.auftragsart ||
-      body.type;
-
-    const auftrag =
-      body.order ||
-      body.auftrag ||
-      body.data ||
-      body;
-
-    const orderNumber =
-      auftrag.order_number ||
-      auftrag.auftragnummer ||
-      auftrag.orderNumber ||
-      String(auftrag.id || "");
-
-    const totalPrice = Number(
-      auftrag.total_price ||
-      auftrag.gesamtpreis ||
-      auftrag.gesamtsumme ||
-      0
-    );
-
-    const workerTotal = Number(
-      auftrag.worker_total ||
-      auftrag.mitarbeiterkosten ||
-      auftrag.worker_cost ||
-      0
-    );
-
-    const clanProfit = Number(
-      auftrag.clan_profit ||
-      auftrag.clangewinn ||
-      auftrag.clanProfit ||
-      0
-    );
-
-    if (!auftragsart) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Die Auftragsart fehlt.",
-        }),
-        {
-          status: 400,
-          headers: corsHeaders,
+    function pruefeSupabase() {
+        if (!supabase) {
+            throw new Error(
+                "Supabase wurde nicht gefunden. Prüfe, ob window.supabaseClient geladen ist."
+            );
         }
-      );
     }
 
-    if (!orderNumber) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Die Auftragsnummer fehlt.",
-        }),
-        {
-          status: 400,
-          headers: corsHeaders,
+
+    function zahl(wert) {
+        if (typeof wert === "number" && Number.isFinite(wert)) {
+            return wert;
         }
-      );
+
+        if (typeof wert !== "string") {
+            return 0;
+        }
+
+        let bereinigt = wert
+            .replace(/[^\d,.-]/g, "")
+            .trim();
+
+        if (!bereinigt) {
+            return 0;
+        }
+
+        /*
+        Deutsche Schreibweise unterstützen:
+        12.500,50 -> 12500.50
+        */
+        if (bereinigt.includes(",") && bereinigt.includes(".")) {
+            bereinigt = bereinigt
+                .replace(/\./g, "")
+                .replace(",", ".");
+        } else if (bereinigt.includes(",")) {
+            bereinigt = bereinigt.replace(",", ".");
+        }
+
+        const nummer = Number(bereinigt);
+
+        return Number.isFinite(nummer) ? nummer : 0;
     }
 
-    // ------------------------------------------------------------
-    // FINANZEN FÜR ALLE AUFTRAGSARTEN SPEICHERN
-    // Material, Redstone, Bauauftrag und Logistik
-    // ------------------------------------------------------------
 
-    const { error: financeError } = await supabase
-      .from("order_finances")
-      .insert({
-        order_number: String(orderNumber),
-        completed_at: new Date().toISOString(),
-        total_price: totalPrice,
-        clan_profit: clanProfit,
-        worker_total: workerTotal,
-        order_type: String(auftragsart),
-      });
-
-    if (financeError) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Finanzen konnten nicht gespeichert werden.",
-          details: financeError.message,
-        }),
-        {
-          status: 500,
-          headers: corsHeaders,
-        }
-      );
+    function rundeGeldbetrag(wert) {
+        return Math.round(zahl(wert) * 100) / 100;
     }
 
-    // ------------------------------------------------------------
-    // DISCORD-ARCHIV NUR FÜR BAUAUFTRAG UND REDSTONE
-    // ------------------------------------------------------------
 
-    let discordGesendet = false;
+    function ermittleAuftragsnummer(auftrag) {
+        if (!auftrag) {
+            return "";
+        }
 
-    if (istDiscordArchiv(auftragsart)) {
-      const webhookUrl = webhookFuerAuftrag(auftragsart);
-
-      if (!webhookUrl) {
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error:
-              "Für diese Auftragsart wurde noch kein Discord-Webhook hinterlegt.",
-          }),
-          {
-            status: 500,
-            headers: corsHeaders,
-          }
+        return String(
+            auftrag.order_number ??
+            auftrag.orderNumber ??
+            auftrag.nummer ??
+            auftrag.auftragsnummer ??
+            auftrag.id ??
+            ""
         );
-      }
-
-      const embed = erstelleDiscordEmbed(
-        String(auftragsart),
-        auftrag
-      );
-
-      const discordAntwort = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: "Ehrenmarkt Archiv",
-          embeds: [embed],
-        }),
-      });
-
-      if (!discordAntwort.ok) {
-        const discordFehler = await discordAntwort.text();
-
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "Discord-Benachrichtigung konnte nicht gesendet werden.",
-            details: discordFehler,
-          }),
-          {
-            status: 500,
-            headers: corsHeaders,
-          }
-        );
-      }
-
-      discordGesendet = true;
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Auftrag wurde archiviert.",
-        finanzenGespeichert: true,
-        discordGesendet: discordGesendet,
-        discordArchiv:
-          istDiscordArchiv(auftragsart),
-      }),
-      {
-        status: 200,
-        headers: corsHeaders,
-      }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: "Archivierung fehlgeschlagen.",
-        details: error instanceof Error
-          ? error.message
-          : String(error),
-      }),
-      {
-        status: 500,
-        headers: corsHeaders,
-      }
-    );
-  }
-});
 
-// ENDE
+    function ermittleGesamtpreis(auftrag, auftragsart) {
+        if (!auftrag) {
+            return 0;
+        }
+
+        let kandidaten = [];
+
+        if (auftragsart === "bau") {
+            kandidaten = [
+                auftrag.final_price,
+                auftrag.total_price,
+                auftrag.provisional_price,
+                auftrag.base_price,
+                auftrag.gesamtpreis
+            ];
+        } else {
+            kandidaten = [
+                auftrag.total_price,
+                auftrag.final_price,
+                auftrag.provisional_price,
+                auftrag.grand_total,
+                auftrag.gesamtpreis,
+                auftrag.gesamtbetrag
+            ];
+        }
+
+        for (const kandidat of kandidaten) {
+            const preis = rundeGeldbetrag(kandidat);
+
+            if (preis > 0) {
+                return preis;
+            }
+        }
+
+        return 0;
+    }
+
+
+    function ermittleFinanzanteile(auftrag, auftragsart, gesamtpreis) {
+        let mitarbeiterAnteil = 0;
+        let clanAnteil = 0;
+
+        /*
+        Logistik:
+        Die bereits gespeicherten Werte werden verwendet.
+        */
+        if (auftragsart === "logistik") {
+            mitarbeiterAnteil = rundeGeldbetrag(
+                auftrag.worker_share
+            );
+
+            clanAnteil = rundeGeldbetrag(
+                auftrag.clan_share
+            );
+        } else {
+            /*
+            Bau, Material und Redstone:
+            70 % Mitarbeiter
+            30 % Clan
+            */
+            mitarbeiterAnteil = rundeGeldbetrag(
+                gesamtpreis * 0.70
+            );
+
+            clanAnteil = rundeGeldbetrag(
+                gesamtpreis - mitarbeiterAnteil
+            );
+        }
+
+        return {
+            worker_total: mitarbeiterAnteil,
+            clan_profit: clanAnteil
+        };
+    }
+
+
+    /*
+    ============================================================
+    FINANZDATEN IN order_finances SPEICHERN
+    ============================================================
+    */
+
+    async function speichereFinanzdaten(auftrag, auftragsart) {
+        pruefeSupabase();
+
+        if (!auftrag) {
+            throw new Error(
+                "Es wurden keine Auftragsdaten zur Finanzspeicherung übergeben."
+            );
+        }
+
+        if (!AUFTRAGSTABELLEN[auftragsart]) {
+            throw new Error(
+                "Unbekannter Auftragstyp: " + auftragsart
+            );
+        }
+
+        const auftragsnummer = ermittleAuftragsnummer(auftrag);
+
+        if (!auftragsnummer) {
+            throw new Error(
+                "Der Auftrag besitzt keine gültige Auftragsnummer."
+            );
+        }
+
+        const gesamtpreis = ermittleGesamtpreis(
+            auftrag,
+            auftragsart
+        );
+
+        if (gesamtpreis <= 0) {
+            throw new Error(
+                "Für Auftrag #" +
+                auftragsnummer +
+                " wurde kein gültiger Gesamtpreis gefunden."
+            );
+        }
+
+        /*
+        Doppelte Finanzdatensätze verhindern.
+        */
+        const { data: bereitsVorhanden, error: suchfehler } =
+            await supabase
+                .from("order_finances")
+                .select("id")
+                .eq("order_number", auftragsnummer)
+                .eq("order_type", auftragsart)
+                .limit(1);
+
+        if (suchfehler) {
+            throw suchfehler;
+        }
+
+        if (
+            Array.isArray(bereitsVorhanden) &&
+            bereitsVorhanden.length > 0
+        ) {
+            return {
+                bereitsVorhanden: true,
+                gesamtpreis: gesamtpreis
+            };
+        }
+
+        const anteile = ermittleFinanzanteile(
+            auftrag,
+            auftragsart,
+            gesamtpreis
+        );
+
+        const finanzdatensatz = {
+            order_number: auftragsnummer,
+            completed_at: new Date().toISOString(),
+            total_price: gesamtpreis,
+            clan_profit: anteile.clan_profit,
+            worker_total: anteile.worker_total,
+            order_type: auftragsart
+        };
+
+        const { error: speicherfehler } = await supabase
+            .from("order_finances")
+            .insert([finanzdatensatz]);
+
+        if (speicherfehler) {
+            throw speicherfehler;
+        }
+
+        return {
+            bereitsVorhanden: false,
+            gesamtpreis: gesamtpreis,
+            finanzdatensatz: finanzdatensatz
+        };
+    }
+
+
+    /*
+    ============================================================
+    DISCORD-ARCHIVIERUNG
+    ============================================================
+    */
+
+    async function archiviereInDiscord(auftrag, auftragsart) {
+        pruefeSupabase();
+
+        /*
+        Material- und Logistikaufträge werden nicht an Discord
+        archiviert.
+        */
+        if (
+            auftragsart !== "bau" &&
+            auftragsart !== "redstone"
+        ) {
+            return {
+                archiviert: false,
+                uebersprungen: true
+            };
+        }
+
+        const functionName =
+            DISCORD_ARCHIV_FUNCTIONS[auftragsart];
+
+        if (!functionName) {
+            throw new Error(
+                "Keine Discord-Archivfunktion für Auftragstyp " +
+                auftragsart +
+                " eingerichtet."
+            );
+        }
+
+        const { data, error } =
+            await supabase.functions.invoke(
+                functionName,
+                {
+                    body: {
+                        order: auftrag
+                    }
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        return {
+            archiviert: true,
+            data: data
+        };
+    }
+
+
+    /*
+    ============================================================
+    HAUPTFUNKTION
+    ============================================================
+
+    Diese Funktion muss vor dem eigentlichen DELETE ausgeführt
+    werden.
+
+    Reihenfolge:
+
+    1. Finanzdaten speichern
+    2. Falls nötig Discord-Archiv erstellen
+    3. Erst danach darf der Auftrag gelöscht werden
+    ============================================================
+    */
+
+    window.archiviereAuftragVorLoeschung =
+        async function (auftrag, auftragsart) {
+            pruefeSupabase();
+
+            if (!auftrag) {
+                throw new Error(
+                    "Der Auftrag konnte nicht archiviert werden, da keine Daten vorhanden sind."
+                );
+            }
+
+            if (!auftragsart) {
+                throw new Error(
+                    "Der Auftragstyp wurde nicht übergeben."
+                );
+            }
+
+            /*
+            Zuerst Finanzdaten speichern.
+            Wenn das fehlschlägt, wird kein weiterer Schritt
+            ausgeführt und der Auftrag bleibt bestehen.
+            */
+            const finanzErgebnis =
+                await speichereFinanzdaten(
+                    auftrag,
+                    auftragsart
+                );
+
+            /*
+            Danach Discord-Archivierung durchführen.
+            Nur Bau und Redstone werden archiviert.
+            */
+            const discordErgebnis =
+                await archiviereInDiscord(
+                    auftrag,
+                    auftragsart
+                );
+
+            return {
+                erfolgreich: true,
+                finanzdaten: finanzErgebnis,
+                discord: discordErgebnis
+            };
+        };
+
+
+    /*
+    ============================================================
+    OPTIONAL: EINZELNE FUNKTIONEN GLOBAL VERFÜGBAR MACHEN
+    ============================================================
+    */
+
+    window.speichereAuftragsFinanzen =
+        speichereFinanzdaten;
+
+    window.archiviereAuftragInDiscord =
+        archiviereInDiscord;
+
+})();
