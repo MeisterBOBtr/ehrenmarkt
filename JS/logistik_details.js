@@ -3,7 +3,10 @@
 // Teil 1 von 2
 // ======================================================
 
-const supabaseClient = window.supabaseClient || window.supabase;
+const supabaseClient =
+    typeof window.supabaseClient === "function"
+        ? window.supabaseClient()
+        : window.supabaseClient;
 
 let currentUser = null;
 let currentEmployee = null;
