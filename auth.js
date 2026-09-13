@@ -42,42 +42,42 @@ async function anmelden(email, passwort) {
 // ------------------------------------------------------------
 
 async function registrieren(email, passwort) {
+async function registrieren(email, passwort, benutzername, minecraftName) {
+  if (!email || !passwort) {
+    console.error("E-Mail und Passwort werden benötigt.");
+    return false;
+  }
 
-    if (!email || !passwort) {
-        console.error(
-            "E-Mail und Passwort werden benötigt."
-        );
-
-        return false;
+  const { data, error } = await window.supabaseClient.auth.signUp({
+    email: email.trim(),
+    password: passwort,
+    options: {
+      data: {
+        username: benutzername.trim(),
+        minecraft_name: minecraftName.trim(),
+        rolle: "Kunde",
+        rang: "Kunde"
+      }
     }
+  });
 
-    const { data, error } =
-        await window.supabaseClient.auth.signUp({
-            email: email.trim(),
-            password: passwort
-        });
+  if (error) {
+    console.error("Registrierungsfehler:", error);
 
-    if (error) {
-  console.error("Registrierungsfehler:", error);
-
-  alert(
-    "Registrierungsfehler:\n\n" +
-    error.message +
-    "\n\nCode: " +
-    (error.code || "unbekannt")
-  );
-
-  return false;
-}
-
-    console.log(
-        "Registrierung erfolgreich:",
-        data.user
+    alert(
+      "Registrierungsfehler:\n\n" +
+      error.message +
+      "\n\nCode: " +
+      (error.code || "unbekannt")
     );
 
-    return true;
-}
+    return false;
+  }
 
+  console.log("Registrierung erfolgreich:", data.user);
+
+  return true;
+}
 
 // ------------------------------------------------------------
 // AKTUELL ANGEMELDETEN BENUTZER ABFRAGEN
