@@ -41,7 +41,6 @@ async function anmelden(email, passwort) {
 // REGISTRIEREN
 // ------------------------------------------------------------
 
-async function registrieren(email, passwort) {
 async function registrieren(email, passwort, benutzername, minecraftName) {
   if (!email || !passwort) {
     console.error("E-Mail und Passwort werden benötigt.");
