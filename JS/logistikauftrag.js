@@ -771,10 +771,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
-            // ============================================================
-// DISCORD-BENACHRICHTIGUNG SENDEN
-// ============================================================
-
+            // DISCORD-BENACHRICHTIGUNG SENDEN
 try {
     const { data: sessionData } =
         await supabase.auth.getSession();
@@ -782,62 +779,68 @@ try {
     const session = sessionData?.session;
 
     if (!session?.access_token) {
-        throw new Error("Keine gültige Sitzung vorhanden.");
+        console.warn("Keine Sitzung für Discord-Benachrichtigung vorhanden.");
+    } else {
+        fetch(
+            "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
+            {
+                method: "POST",
+                keepalive: true,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    typ: "Logistikauftrag",
+
+                    titel: `Neuer Logistikauftrag ${orderNumber}`,
+
+                    kunde:
+                        customerName.value.trim() ||
+                        "Unbekannt",
+
+                    bearbeiter: "Noch nicht zugewiesen",
+
+                    preis: `${Number(
+                        preise.gesamt
+                    ).toLocaleString("de-DE")} $`,
+
+                    status: "Offen",
+
+                    auftrag: orderNumber,
+
+                    nachricht:
+                        description.value.trim() ||
+                        "Neuer Logistikauftrag wurde erstellt.",
+
+                    portal_url: "https://ehrenmarkt.de/",
+
+                    bild_url: ""
+                })
+            }
+        )
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP-Fehler ${response.status}`);
+            }
+
+            console.log(
+                "Discord-Benachrichtigung erfolgreich gesendet."
+            );
+        })
+        .catch(error => {
+            console.error(
+                "Discord-Benachrichtigung fehlgeschlagen:",
+                error
+            );
+        });
     }
-
-    const response = await fetch(
-        "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({
-                typ: "Logistikauftrag",
-
-                titel: `Neuer Logistikauftrag ${orderNumber}`,
-
-                kunde:
-                    customerName.value.trim() ||
-                    "Unbekannt",
-
-                bearbeiter: "Noch nicht zugewiesen",
-
-                preis: `${Number(
-                    preise.gesamt
-                ).toLocaleString("de-DE")} $`,
-
-                status: "Offen",
-
-                auftrag: orderNumber,
-
-                nachricht:
-                    description.value.trim() ||
-                    "Neuer Logistikauftrag wurde erstellt.",
-
-                portal_url: "https://ehrenmarkt.de/",
-
-                bild_url: ""
-            })
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error(`HTTP-Fehler ${response.status}`);
-    }
-
-    console.log(
-        "Discord-Benachrichtigung erfolgreich gesendet."
-    );
-
-} catch (discordError) {
+} catch (error) {
     console.error(
-        "Discord-Benachrichtigung konnte nicht gesendet werden:",
-        discordError
+        "Fehler bei der Discord-Benachrichtigung:",
+        error
     );
 }
-
             // ====================================================
             // ERFOLG
             // ====================================================
