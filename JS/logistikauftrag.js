@@ -896,18 +896,7 @@ try {
     // BUTTON WÄHREND DER ERSTELLUNG SPERREN
     // ============================================================
 
-    createButton.addEventListener(
-        "click",
-        () => {
 
-            createButton.disabled = true;
-
-            createButton.textContent =
-                "Auftrag wird erstellt...";
-
-        },
-        { once: false }
-    );
 
 
     // ============================================================
