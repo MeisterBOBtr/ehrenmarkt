@@ -26,7 +26,7 @@
    GLOBALE VARIABLEN
    ============================================================ */
 
-let supabaseClient = null;
+//let supabaseClient = null;
 
 let currentUser = null;
 
@@ -1457,8 +1457,8 @@ async function initializePage() {
            SUPABASE
         ---------------------------------------------------- */
 
-        supabaseClient =
-            getSupabaseClient();
+        window.supabaseClient =
+    getSupabaseClient();
 
 
         if (!supabaseClient) {
