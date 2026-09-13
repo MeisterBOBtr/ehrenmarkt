@@ -834,15 +834,6 @@ async function init() {
         }
 
 
-        // Mitarbeiter prüfen
-        const employeeLoaded =
-            await loadEmployee();
-
-        if (!employeeLoaded) {
-            return;
-        }
-
-
         // Auftrag laden
         const orderLoaded =
             await loadOrder();
