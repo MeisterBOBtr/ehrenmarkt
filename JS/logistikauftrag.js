@@ -768,6 +768,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             }
 
+            // ====================================================
+// PORTAL-BENACHRICHTIGUNG
+// ====================================================
+
+try {
+    await fetch(
+        "https://DEIN-PROJEKT.supabase.co/functions/v1/portal-benachrichtigung",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                typ: "Logistikauftrag",
+                titel: "Neuer Logistikauftrag",
+                nachricht:
+                    "Ein neuer Logistikauftrag wurde erstellt: " +
+                    orderNumber,
+                auftragsnummer: orderNumber
+            })
+        }
+    );
+} catch (notificationError) {
+    console.error(
+        "Fehler bei der Portal-Benachrichtigung:",
+        notificationError
+    );
+}
+
 
             // ====================================================
             // ERFOLG
