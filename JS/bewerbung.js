@@ -872,6 +872,103 @@ async function bewerbungAbsenden() {
             "Ehrenmarkt Bewerbung erfolgreich gespeichert."
         );
 
+        // ============================================================
+// DISCORD-BENACHRICHTIGUNG – BEWERBUNG
+// ============================================================
+
+try {
+
+    const {
+        data: sessionData
+    } = await client.auth.getSession();
+
+    const session =
+        sessionData?.session;
+
+    if (session?.access_token) {
+
+        fetch(
+            "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
+            {
+                method: "POST",
+                keepalive: true,
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization":
+                        `Bearer ${session.access_token}`
+                },
+
+                body: JSON.stringify({
+
+                    typ:
+                        "Bewerbung",
+
+                    titel:
+                        `Neue Bewerbung von ${bewerbung.minecraft_name}`,
+
+                    kunde:
+                        bewerbung.minecraft_name ||
+                        "Unbekannt",
+
+                    bearbeiter:
+                        "Bewerbungsverwaltung",
+
+                    preis:
+                        "Keine Preisangabe",
+
+                    status:
+                        "Offen",
+
+                    auftrag:
+                        "Bewerbung",
+
+                    nachricht:
+                        "Neue Bewerbung eingegangen.\n\n" +
+                        "Name: " +
+                        (bewerbung.name || "—") +
+                        "\nMinecraft-Name: " +
+                        (bewerbung.minecraft_name || "—") +
+                        "\nAlter: " +
+                        (bewerbung.age || "—") +
+                        "\nGewünschte Rolle: " +
+                        (bewerbung.desired_role || "—") +
+                        "\nErfahrung: " +
+                        (bewerbung.experience || "—") +
+                        "\nVerfügbarkeit: " +
+                        (bewerbung.availability || "—") +
+                        "\nFachbereiche: " +
+                        (
+                            Array.isArray(
+                                bewerbung.additional_skills
+                            )
+                                ? bewerbung.additional_skills.join(", ")
+                                : "—"
+                        ) +
+                        "\n\nMotivation:\n" +
+                        (bewerbung.application_text || "—"),
+
+                    portal_url:
+                        "https://ehrenmarkt.de/",
+
+                    bild_url:
+                        ""
+
+                })
+            }
+        );
+
+    }
+
+} catch (error) {
+
+    console.error(
+        "Fehler bei der Bewerbungs-Benachrichtigung:",
+        error
+    );
+
+}
+
 
         // Erfolg anzeigen
 
