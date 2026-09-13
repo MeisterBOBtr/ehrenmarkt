@@ -1982,38 +1982,55 @@ const orderNumber =
             }
         }
 
-       // ============================================================
-// PORTAL-BENACHRICHTIGUNG – REDSTONE-AUFTRAG
+// ============================================================
+// DISCORD-BENACHRICHTIGUNG – REDSTONE-AUFTRAG
 // ============================================================
 
 try {
 
-    await fetch(
+    const {
+        data: sessionData
+    } = await supabaseClient.auth.getSession();
+
+    const session =
+        sessionData?.session;
+
+    if (!session?.access_token) {
+        throw new Error(
+            "Keine gültige Sitzung vorhanden."
+        );
+    }
+
+    const response = await fetch(
         "https://wvytteiqpwistcdcifcj.supabase.co/functions/v1/smooth-responder",
         {
             method: "POST",
 
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization":
+                    `Bearer ${session.access_token}`
             },
 
             body: JSON.stringify({
 
-                typ: "Redstone-Auftrag",
+                typ:
+                    "Redstoneauftrag",
 
                 titel:
                     `Neuer Redstone-Auftrag ${orderNumber}`,
 
                 kunde:
-                    auftrag.minecraft_name,
+                    auftrag.minecraft_name ||
+                    "Unbekannt",
 
                 bearbeiter:
                     "Noch nicht zugewiesen",
 
                 preis:
-                    formatMoney(
+                    `${Number(
                         preis.gesamtpreis
-                    ),
+                    ).toLocaleString("de-DE")} $`,
 
                 status:
                     "Offen",
@@ -2022,32 +2039,32 @@ try {
                     orderNumber,
 
                 nachricht:
-                    `Neuer Redstone-Auftrag: ${auftrag.title}` +
-                    (
-                        auftrag.description
-                            ? `\n\nBeschreibung: ${auftrag.description}`
-                            : ""
-                    ),
+                    auftrag.description ||
+                    "Neuer Redstone-Auftrag wurde erstellt.",
 
                 portal_url:
-                    "https://ehrenmarkt.vercel.app",
+                    "https://ehrenmarkt.de/",
 
                 bild_url:
                     ""
-
             })
         }
     );
 
-} catch (notificationError) {
+    if (!response.ok) {
+        throw new Error(
+            `HTTP-Fehler ${response.status}`
+        );
+    }
+
+} catch (discordError) {
 
     console.error(
-        "Fehler bei der Portal-Benachrichtigung:",
-        notificationError
+        "Discord-Benachrichtigung konnte nicht gesendet werden:",
+        discordError
     );
 
 }
-
 
         // Daten für Erfolgsseite speichern
 
