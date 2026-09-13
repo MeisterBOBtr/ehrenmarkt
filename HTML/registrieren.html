@@ -557,15 +557,20 @@ const email =
                 .value;
 
 
-        if (!email || !passwort || !passwort2) {
+        if (
+    !username ||
+    !minecraftName ||
+    !email ||
+    !passwort ||
+    !passwort2
+) {
+    zeigeMeldung(
+        "Bitte alle Felder ausfüllen.",
+        "fehler"
+    );
 
-            zeigeMeldung(
-                "Bitte alle Felder ausfüllen.",
-                "fehler"
-            );
-
-            return;
-        }
+    return;
+}
 
 
         if (passwort !== passwort2) {
