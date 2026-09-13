@@ -48,21 +48,19 @@ let currentMaterials = [];
  * Supabase-Client ermitteln
  */
 function getSupabaseClient() {
-
-    if (window.supabaseClient) {
+    if (
+        window.supabaseClient &&
+        typeof window.supabaseClient.from === "function"
+    ) {
         return window.supabaseClient;
     }
 
-    if (
-        window.supabase &&
-        typeof window.supabase.from === "function"
-    ) {
-        return window.supabase;
-    }
+    console.error(
+        "Supabase-Client wurde nicht gefunden."
+    );
 
     return null;
 }
-
 
 /**
  * Element sicher holen
