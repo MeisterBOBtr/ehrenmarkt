@@ -42,40 +42,45 @@ async function anmelden(email, passwort) {
 // ------------------------------------------------------------
 
 async function registrieren(email, passwort, benutzername, minecraftName) {
-  if (!email || !passwort) {
-    console.error("E-Mail und Passwort werden benötigt.");
-    return false;
-  }
+    if (!email || !passwort || !benutzername || !minecraftName) {
+        console.error(
+            "E-Mail, Passwort, Benutzername und Minecraft-Name werden benötigt."
+        );
 
-  const { data, error } = await window.supabaseClient.auth.signUp({
-    email: email.trim(),
-    password: passwort,
-    options: {
-      data: {
-        username: benutzername.trim(),
-        minecraft_name: minecraftName.trim(),
-        rolle: "Kunde",
-        rang: "Kunde"
-      }
+        return false;
     }
-  });
 
-  if (error) {
-    console.error("Registrierungsfehler:", error);
+    const { data, error } =
+        await window.supabaseClient.auth.signUp({
+            email: email.trim(),
+            password: passwort,
 
-    alert(
-      "Registrierungsfehler:\n\n" +
-      error.message +
-      "\n\nCode: " +
-      (error.code || "unbekannt")
-    );
+            options: {
+                data: {
+                    username: benutzername.trim(),
+                    minecraft_name: minecraftName.trim(),
+                    rolle: "Kunde",
+                    rang: "Kunde"
+                }
+            }
+        });
 
-    return false;
-  }
+    if (error) {
+        console.error("Registrierungsfehler:", error);
 
-  console.log("Registrierung erfolgreich:", data.user);
+        alert(
+            "Registrierungsfehler:\n\n" +
+            error.message +
+            "\n\nCode: " +
+            (error.code || "unbekannt")
+        );
 
-  return true;
+        return false;
+    }
+
+    console.log("Registrierung erfolgreich:", data.user);
+
+    return true;
 }
 
 // ------------------------------------------------------------
