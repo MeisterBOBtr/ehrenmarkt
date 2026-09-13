@@ -513,6 +513,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }
 
+                return true;
+    }
+
     // ============================================================
     // AUFTRAG ERSTELLEN
     // ============================================================
