@@ -3,7 +3,7 @@
 // Teil 1 von 2
 // ======================================================
 
-const supabaseClient = window.supabaseClient || window.supabase;
+const client = window.supabaseClient || window.supabase;
 let currentUser = null;
 let currentEmployee = null;
 let currentOrder = null;
@@ -40,7 +40,6 @@ function formatMoney(value) {
 
 
 function formatDate(value) {
-
     if (!value) {
         return "—";
     }
@@ -125,7 +124,7 @@ async function loadOrder() {
     }
 
 
-    let query = supabaseClient
+    let query = client
         .from("logistics_orders")
         .select("*");
 
@@ -202,14 +201,14 @@ function renderOrder(order) {
     // Minecraft-Name
     setText(
         "minecraftName",
-        order.minecraft_name
+        order.customer_name
     );
 
 
     // Auftraggeber
     setText(
         "customerName",
-        order.minecraft_name
+        order.customer_name
     );
 
 
@@ -255,7 +254,7 @@ function renderOrder(order) {
     setText(
         "transportType",
         getTransportTypeName(
-            order.transport_type
+            order.order_type
         )
     );
 
@@ -263,7 +262,7 @@ function renderOrder(order) {
     // Start
     setText(
         "startLocation",
-        order.start_location
+        order.start_point
     );
 
 
@@ -308,9 +307,9 @@ function renderOrder(order) {
     // Mitarbeiter
     setText(
         "workerBadge",
-        order.worker_count
+        (Number(order.extra_workers || 0) + 1)
             ? "Mitarbeiter: " +
-              order.worker_count
+              (Number(order.extra_workers || 0) + 1)
             : "Mitarbeiter: 1"
     );
 
@@ -322,7 +321,7 @@ function renderOrder(order) {
     if (notesElement) {
 
         notesElement.textContent =
-            order.notes ||
+            order.description ||
             "Keine Anmerkungen vorhanden.";
     }
 
@@ -331,7 +330,7 @@ function renderOrder(order) {
     setText(
         "cratePrice",
         formatMoney(
-            order.crate_price
+            order.base_price
         )
     );
 
@@ -339,7 +338,12 @@ function renderOrder(order) {
     setText(
         "extraPrice",
         formatMoney(
-            order.extra_price
+            (
+                Number(order.sorting_price || 0) +
+                Number(order.delivery_price || 0) +
+                Number(order.express_price || 0) +
+                Number(order.workers_price || 0)
+            )
         )
     );
 
@@ -363,7 +367,7 @@ function renderOrder(order) {
     setText(
         "remainingPrice",
         formatMoney(
-            order.remaining
+            order.remaining_payment
         )
     );
 }
@@ -431,7 +435,7 @@ async function loadUser() {
     const {
         data,
         error
-    } = await supabaseClient.auth.getUser();
+    } = await client.auth.getUser();
 
 
     if (error || !data.user) {
@@ -464,7 +468,7 @@ async function loadEmployee() {
     const {
         data,
         error
-    } = await supabaseClient
+    } = await client
         .from("employees")
         .select("*")
         .eq(
@@ -473,27 +477,7 @@ async function loadEmployee() {
         )
         .maybeSingle();
 
-
     if (error) {
-
-        console.error(
-            "Fehler beim Laden des Mitarbeiters:",
-            error
-        );
-
-        showError(
-            "Mitarbeiterdaten konnten nicht geladen werden."
-        );
-
-        return false;
-    }
-
-
-    if (!data) {
-
-        showError(
-            "Du bist nicht als Mitarbeiter hinterlegt."
-        );
 
         return false;
     }
@@ -503,310 +487,71 @@ async function loadEmployee() {
         data;
 
     return true;
-          }
-
-// ======================================================
-// EHRENMARKT – LOGISTIKAUFTRAG DETAILS
-// Teil 2 von 2
-// ======================================================
-
-
-// ======================================================
-// BEARBEITER ANZEIGEN
-// ======================================================
-
-async function loadEmployeeName() {
-
-    if (!currentOrder) {
-        return;
-    }
-
-    const employeeId =
-        currentOrder.employee_id ||
-        currentOrder.assigned_to ||
-        null;
-
-
-    if (!employeeId) {
-
-        setText(
-            "employeeName",
-            "Noch nicht übernommen"
-        );
-
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("employees")
-        .select("name")
-        .eq(
-            "user_id",
-            employeeId
-        )
-        .maybeSingle();
-
-
-    if (error) {
-
-        console.error(
-            "Fehler beim Laden des Bearbeiters:",
-            error
-        );
-
-        setText(
-            "employeeName",
-            "Bereits übernommen"
-        );
-
-        return;
-    }
-
-
-    setText(
-        "employeeName",
-        data?.name ||
-        "Bereits übernommen"
-    );
 }
 
 
 // ======================================================
-// AUFTRAG ÜBERNEHMEN
+// MITARBEITERNAME ANZEIGEN
 // ======================================================
 
-async function acceptOrder() {
+async function loadEmployeeName() {
 
-    hideError();
+    const employeeNameElement =
+        getElement("employeeName");
 
-
-    if (!currentUser) {
-
-        showError(
-            "Du bist nicht angemeldet."
-        );
-
+    if (!employeeNameElement) {
         return;
     }
 
 
     if (!currentEmployee) {
 
-        showError(
-            "Mitarbeiterdaten konnten nicht geladen werden."
-        );
+        employeeNameElement.textContent =
+            "Noch nicht zugewiesen";
 
         return;
     }
 
 
-    if (!currentOrder) {
-
-        showError(
-            "Kein Logistikauftrag geladen."
-        );
-
-        return;
-    }
-
-
-    // Mitarbeiter muss verfügbar sein
-    if (currentEmployee.is_available !== true) {
-
-        showError(
-            "Du bist momentan nicht verfügbar und kannst " +
-            "keine neuen Aufträge übernehmen."
-        );
-
-        return;
-    }
-
-
-    // Auftrag muss noch offen sein
-    if (currentOrder.status !== "Offen") {
-
-        showError(
-            "Dieser Auftrag wurde bereits übernommen " +
-            "oder ist nicht mehr verfügbar."
-        );
-
-        await loadOrder();
-        await loadEmployeeName();
-
-        return;
-    }
-
-
-    const button =
-        getElement("acceptOrderButton");
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Wird übernommen...";
-    }
-
-
-    try {
-
-        /*
-         * Der Auftrag wird nur übernommen,
-         * wenn er weiterhin "Offen" ist.
-         *
-         * Dadurch können nicht zwei Mitarbeiter
-         * gleichzeitig denselben Auftrag übernehmen.
-         */
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("logistics_orders")
-            .update({
-                employee_id: currentUser.id,
-                status: "In Bearbeitung"
-            })
-            .eq(
-                "id",
-                currentOrder.id
-            )
-            .eq(
-                "status",
-                "Offen"
-            )
-            .select()
-            .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Fehler beim Übernehmen:",
-                error
-            );
-
-            showError(
-                "Der Auftrag konnte nicht übernommen werden."
-            );
-
-            return;
-        }
-
-
-        if (!data) {
-
-            showError(
-                "Der Auftrag wurde bereits von einem " +
-                "anderen Mitarbeiter übernommen."
-            );
-
-            await loadOrder();
-            await loadEmployeeName();
-
-            return;
-        }
-
-
-        // Lokale Daten aktualisieren
-        currentOrder = data;
-
-
-        // Anzeige aktualisieren
-        renderOrder(
-            currentOrder
-        );
-
-        await loadEmployeeName();
-
-
-        // Button deaktivieren
-        if (button) {
-
-            button.disabled = true;
-
-            button.textContent =
-                "✓ Auftrag übernommen";
-        }
-
-
-        // Erfolgsmeldung
-        const errorElement =
-            getElement("errorMessage");
-
-        if (errorElement) {
-
-            errorElement.style.display =
-                "block";
-
-            errorElement.style.background =
-                "rgba(38, 78, 34, 0.65)";
-
-            errorElement.style.borderColor =
-                "#679b53";
-
-            errorElement.style.color =
-                "#d9f0c9";
-
-            errorElement.textContent =
-                "✓ Auftrag erfolgreich übernommen.";
-        }
-
-
-    } catch (err) {
-
-        console.error(
-            "Unerwarteter Fehler:",
-            err
-        );
-
-        showError(
-            "Beim Übernehmen des Auftrags ist ein Fehler aufgetreten."
-        );
-
-    } finally {
-
-        /*
-         * Nur wieder aktivieren, wenn der Auftrag
-         * nicht erfolgreich übernommen wurde.
-         */
-
-        if (
-            button &&
-            currentOrder?.status === "Offen"
-        ) {
-
-            button.disabled = false;
-
-            button.textContent =
-                "✓ Auftrag übernehmen";
-        }
-    }
+    employeeNameElement.textContent =
+        currentEmployee.minecraft_name ||
+        currentEmployee.display_name ||
+        currentEmployee.name ||
+        "Mitarbeiter";
 }
 
 
 // ======================================================
-// BUTTON VERKNÜPFEN
+// BUTTONS EINRICHTEN
 // ======================================================
 
 function setupButtons() {
 
-    const button =
+    const acceptButton =
         getElement("acceptOrderButton");
 
-
-    if (!button) {
+    if (!acceptButton) {
         return;
     }
 
 
-    button.addEventListener(
+    // Bereits angenommener Auftrag
+    if (
+        currentOrder &&
+        currentOrder.employee_id
+    ) {
+
+        acceptButton.disabled =
+            true;
+
+        acceptButton.textContent =
+            "Auftrag bereits angenommen";
+
+        return;
+    }
+
+
+    acceptButton.addEventListener(
         "click",
         acceptOrder
     );
@@ -814,105 +559,95 @@ function setupButtons() {
 
 
 // ======================================================
-// SEITE STARTEN
+// AUFTRAG ANNEHMEN
 // ======================================================
 
-async function init() {
+async function acceptOrder() {
 
-    try {
+    const acceptButton =
+        getElement("acceptOrderButton");
 
-        hideError();
-
-
-        // Benutzer prüfen
-        const userLoaded =
-            await loadUser();
-
-        if (!userLoaded) {
-            return;
-        }
-
-                // Mitarbeiter prüfen
-        const employeeLoaded =
-            await loadEmployee();
-
-        if (!employeeLoaded) {
-            return;
-        }
+    if (!currentOrder || !currentEmployee) {
+        return;
+    }
 
 
-        // Auftrag laden
-        const orderLoaded =
-            await loadOrder();
+    if (acceptButton) {
+
+        acceptButton.disabled =
+            true;
+
+        acceptButton.textContent =
+            "Wird angenommen...";
+    }
 
 
-        if (!orderLoaded) {
-            return;
-        }
+    const {
+        error
+    } = await client
+        .from("logistics_orders")
+        .update({
 
+            employee_id:
+                currentEmployee.id,
 
-        // Bearbeiter laden
-        await loadEmployeeName();
+            employee_name:
+                currentEmployee.minecraft_name ||
+                currentEmployee.display_name ||
+                currentEmployee.name ||
+                "Mitarbeiter",
 
-
-        // Button aktivieren
-        setupButtons();
-
-
-        // Inhalt anzeigen
-        const loadingSection =
-            getElement("loadingSection");
-
-        const orderContent =
-            getElement("orderContent");
-
-
-        if (loadingSection) {
-
-            loadingSection.style.display =
-                "none";
-        }
-
-
-        if (orderContent) {
-
-            orderContent.style.display =
-                "block";
-        }
-
-
-        /*
-         * Wenn der Auftrag bereits vergeben ist,
-         * kann er nicht erneut übernommen werden.
-         */
-
-        if (
-            currentOrder.status !== "Offen"
-        ) {
-
-            const button =
-                getElement("acceptOrderButton");
-
-            if (button) {
-
-                button.disabled = true;
-
-                button.textContent =
-                    "Auftrag bereits übernommen";
-            }
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Fehler beim Initialisieren:",
-            error
+            status:
+                "angenommen"
+        })
+        .eq(
+            "id",
+            currentOrder.id
         );
 
-        showError(
-            "Die Logistik-Detailseite konnte nicht geladen werden."
-        );
+
+    if (error) {
+
+        if (acceptButton) {
+
+            acceptButton.disabled =
+                false;
+
+            acceptButton.textContent =
+                "Auftrag annehmen";
+        }
+
+        return;
+    }
+
+
+    currentOrder.employee_id =
+        currentEmployee.id;
+
+    currentOrder.employee_name =
+        currentEmployee.minecraft_name ||
+        currentEmployee.display_name ||
+        currentEmployee.name ||
+        "Mitarbeiter";
+
+    currentOrder.status =
+        "angenommen";
+
+
+    renderOrder(
+        currentOrder
+    );
+
+    await loadEmployeeName();
+
+
+    if (acceptButton) {
+
+        acceptButton.disabled =
+            true;
+
+        acceptButton.textContent =
+            "Auftrag angenommen";
     }
 }
 
@@ -921,7 +656,61 @@ async function init() {
 // START
 // ======================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    init
-);
+async function init() {
+
+    const userLoaded =
+        await loadUser();
+
+    if (!userLoaded) {
+        return;
+    }
+
+
+    const employeeLoaded =
+        await loadEmployee();
+
+    if (!employeeLoaded) {
+        return;
+    }
+
+
+    const orderLoaded =
+        await loadOrder();
+
+    if (!orderLoaded) {
+        return;
+    }
+
+
+    await loadEmployeeName();
+
+    setupButtons();
+
+
+    const loadingSection =
+        getElement("loadingSection");
+
+    const orderContent =
+        getElement("orderContent");
+
+
+    if (loadingSection) {
+
+        loadingSection.style.display =
+            "none";
+    }
+
+
+    if (orderContent) {
+
+        orderContent.style.display =
+            "block";
+    }
+}
+
+
+// ======================================================
+// INIT AUSFÜHREN
+// ======================================================
+
+init();
