@@ -1207,7 +1207,7 @@ function getAktuellenPreis(item) {
                 await supabase
                     .from("profiles")
                     .select("minecraft_name")
-                    .eq("user_id", user.id)
+                    .eq("id", user.id)
                     .maybeSingle();
 
 
