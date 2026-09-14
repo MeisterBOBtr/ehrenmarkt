@@ -106,6 +106,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    // ============================================================
+// AKTUELLEN PREIS ERMITTELN
+// ============================================================
+
+function getAktuellenPreis(item) {
+    if (!item) {
+        return 0;
+    }
+
+    const normalpreis =
+        Number(item.price) || 0;
+
+    const angebotspreis =
+        Number(item.offer_price);
+
+    const angebotAktiv =
+        item.is_offer === true &&
+        Number.isFinite(angebotspreis) &&
+        item.offer_start_at &&
+        item.offer_end_at &&
+        new Date() >= new Date(item.offer_start_at) &&
+        new Date() < new Date(item.offer_end_at);
+
+    if (angebotAktiv) {
+        return angebotspreis;
+    }
+
+    return normalpreis;
+}
+
 
     // ============================================================
     // ITEMS AUS EHRENMARKT LADEN
@@ -466,7 +496,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Preis aus der items-Tabelle
         const piecePrice =
-            Number(item.price) || 0;
+    getAktuellenPreis(item);
 
 
         let quantity = amount;
@@ -840,7 +870,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // ----------------------------------------------------
 
             const price =
-                Number(item.price) || 0;
+    getAktuellenPreis(item);
 
 
             // ----------------------------------------------------
