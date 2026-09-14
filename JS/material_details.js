@@ -989,58 +989,86 @@ function updateSummary(
    ============================================================ */
 
 function renderPrice() {
-
     if (!currentOrder) {
         return;
     }
 
-
     const total =
-        Number(
-            currentOrder.total_price
-        ) || 0;
+        Number(currentOrder.total_price) || 0;
 
+    const notes =
+        currentOrder.notes || "";
 
-    /*
-       Die Materialbestellung speichert aktuell
-       den finalen Gesamtpreis direkt in orders.total_price.
+    function readPrice(label) {
+        const regex =
+            new RegExp(
+                label + "\\s*([^\\n]+)",
+                "i"
+            );
 
-       Es gibt bei dieser Bestellung keine separat
-       gespeicherten Felder für Zusatzkosten oder Rabatt.
-    */
+        const match =
+            notes.match(regex);
 
+        if (!match) {
+            return 0;
+        }
+
+        let value =
+            match[1]
+                .replace("$", "")
+                .trim();
+
+        if (value.includes(",")) {
+            value =
+                value
+                    .replace(/\./g, "")
+                    .replace(",", ".");
+        }
+
+        return (
+            Number(
+                value.replace(/[^0-9.-]/g, "")
+            ) || 0
+        );
+    }
+
+    const materialTotal =
+        readPrice("Materialsumme:");
+
+    const vat =
+        readPrice("Mehrwertsteuer 19 %:");
+
+    const delivery =
+        readPrice("Liefergebühr 15 %:");
+
+    const extraCosts =
+        vat + delivery;
 
     setText(
         "subtotal",
-        formatMoney(total)
+        formatMoney(materialTotal)
     );
-
 
     setText(
         "extraCosts",
-        formatMoney(0)
+        formatMoney(extraCosts)
     );
-
 
     setText(
         "discount",
         formatMoney(0)
     );
 
-
     setText(
         "totalPrice",
         formatMoney(total)
     );
 
-
     setText(
         "summaryTotal",
         formatMoney(total)
     );
-
 }
-
 
 /* ============================================================
    BUTTON DEAKTIVIEREN
