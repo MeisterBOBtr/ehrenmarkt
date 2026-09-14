@@ -1032,6 +1032,23 @@ function renderPrice() {
         );
     }
 
+    function readText(label) {
+        const regex =
+            new RegExp(
+                label + "\\s*([^\\n]+)",
+                "i"
+            );
+
+        const match =
+            notes.match(regex);
+
+        if (!match) {
+            return "—";
+        }
+
+        return match[1].trim();
+    }
+
     const materialTotal =
         readPrice("Materialsumme:");
 
@@ -1041,12 +1058,30 @@ function renderPrice() {
     const delivery =
         readPrice("Liefergebühr 15 %:");
 
+    const deliveryMethod =
+        readText("Lieferart:");
+
     const extraCosts =
         vat + delivery;
 
     setText(
         "subtotal",
         formatMoney(materialTotal)
+    );
+
+    setText(
+        "vatAmount",
+        formatMoney(vat)
+    );
+
+    setText(
+        "deliveryMethod",
+        deliveryMethod
+    );
+
+    setText(
+        "deliveryAmount",
+        formatMoney(delivery)
     );
 
     setText(
