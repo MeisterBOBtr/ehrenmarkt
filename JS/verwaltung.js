@@ -1879,11 +1879,9 @@ employee_name: "Mitarbeitername"
             "Unbekannt";
 
         const kunde =
-            auftrag.name ||
-            auftrag.customer_name ||
-            auftrag.username ||
-            auftrag.user_name ||
-            "Unbekannt";
+    auftrag.minecraft_name ||
+    auftrag.minecraftName ||
+    "Unbekannt";
 
         const erstellt =
             verwaltungDatum(
