@@ -926,7 +926,8 @@ async function sendeVerleihBenachrichtigung(aktion, itemName, preis = null) {
 
 await sendeVerleihBenachrichtigung(
     "ausgeliehen",
-    item.name
+    item.name,
+    gesamtpreis
 );
 
         // Panel schließen
