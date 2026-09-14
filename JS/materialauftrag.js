@@ -1519,7 +1519,7 @@ orderNotes +=
                                     ),
 
                                 portal_url:
-                                    "https://ehrenmarkt.vercel.app",
+                                    "https://ehrenmarkt.de/",
 
                                 bild_url:
                                     ""
