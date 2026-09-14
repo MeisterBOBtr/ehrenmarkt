@@ -1881,7 +1881,9 @@ employee_name: "Mitarbeitername"
         const kunde =
     auftrag.minecraft_name ||
     auftrag.minecraftName ||
-    "Unbekannt";
+    auftrag.minecraft_username ||
+    auftrag.minecraftUsername ||
+    "Nicht hinterlegt";
 
         const erstellt =
             verwaltungDatum(
@@ -2017,7 +2019,8 @@ employee_name: "Mitarbeitername"
     "internal_id",
     "customer_id",
     "assigned_employee_id",
-    "employee_id"
+    "employee_id",
+    "customer_name"
 ];
 
 const felder = Object.entries(
