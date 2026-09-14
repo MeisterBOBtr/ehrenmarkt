@@ -349,6 +349,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderStandorte();
 
         aktualisiereBearbeitungsAuswahl();
+
+        ladeUmsatz();
     }
 
     // =========================================================
