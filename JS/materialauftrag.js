@@ -56,6 +56,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const submitRemaining =
         document.getElementById("submitRemaining");
 
+    const deliveryMethod =
+    document.getElementById("deliveryMethod");
+
+const VAT_RATE = 0.19;
+const DELIVERY_RATE = 0.15;
+
 
     // ============================================================
     // VERZAUBERUNG
@@ -588,58 +594,63 @@ function getAktuellenPreis(item) {
 
     }
 
+    function calculateOrderTotals() {
+    const materialTotal = getCartTotal();
+
+    const vat = materialTotal * VAT_RATE;
+
+    const delivery =
+        deliveryMethod?.value === "delivery"
+            ? materialTotal * DELIVERY_RATE
+            : 0;
+
+    const grandTotal =
+        materialTotal + vat + delivery;
+
+    return {
+        materialTotal,
+        vat,
+        delivery,
+        grandTotal
+    };
+    }
+
 
     // ============================================================
     // ZAHLUNGEN AKTUALISIEREN
     // ============================================================
 
     function updatePaymentSummary() {
+    const {
+        grandTotal
+    } = calculateOrderTotals();
 
-        const grandTotal =
-            getCartTotal();
+    const deposit =
+        grandTotal * 0.25;
 
+    const remaining =
+        grandTotal * 0.75;
 
-        const deposit =
-            grandTotal * 0.25;
+    if (cartTotal) {
+        cartTotal.textContent =
+            formatMoney(grandTotal);
+    }
 
+    if (submitTotal) {
+        submitTotal.textContent =
+            formatMoney(grandTotal);
+    }
 
-        const remaining =
-            grandTotal * 0.75;
+    if (submitDeposit) {
+        submitDeposit.textContent =
+            formatMoney(deposit);
+    }
 
-
-        if (cartTotal) {
-
-            cartTotal.textContent =
-                formatMoney(grandTotal);
-
-        }
-
-
-        if (submitTotal) {
-
-            submitTotal.textContent =
-                formatMoney(grandTotal);
-
-        }
-
-
-        if (submitDeposit) {
-
-            submitDeposit.textContent =
-                formatMoney(deposit);
-
-        }
-
-
-        if (submitRemaining) {
-
-            submitRemaining.textContent =
-                formatMoney(remaining);
-
-        }
-
-              }
-
+    if (submitRemaining) {
+        submitRemaining.textContent =
+            formatMoney(remaining);
+    }
+}
             // ============================================================
     // WARENKORB ZEICHNEN
     // ============================================================
@@ -1128,6 +1139,13 @@ function getAktuellenPreis(item) {
 
     updatePaymentSummary();
 
+    if (deliveryMethod) {
+    deliveryMethod.addEventListener(
+        "change",
+        updatePaymentSummary
+    );
+    }
+
         // ============================================================
     // AUFTRAG ABSENDEN
     // ============================================================
@@ -1212,8 +1230,12 @@ function getAktuellenPreis(item) {
             // GESAMTSUMME
             // ----------------------------------------------------
 
-            const grandTotal =
-                getCartTotal();
+            const {
+    materialTotal,
+    vat,
+    delivery,
+    grandTotal
+} = calculateOrderTotals();
 
 
             if (grandTotal <= 0) {
@@ -1259,6 +1281,24 @@ function getAktuellenPreis(item) {
 
             let orderNotes =
                 noteInput?.value?.trim() || "";
+
+            const deliveryText =
+    deliveryMethod?.value === "delivery"
+        ? "Lieferung durch Falkenstein"
+        : "Selbstabholung";
+
+orderNotes +=
+    "\n\nPREISAUFTEILUNG\n" +
+    "Materialsumme: " +
+    formatMoney(materialTotal) +
+    "\nMehrwertsteuer 19 %: " +
+    formatMoney(vat) +
+    "\nLieferart: " +
+    deliveryText +
+    "\nLiefergebühr 15 %: " +
+    formatMoney(delivery) +
+    "\nGesamtpreis: " +
+    formatMoney(grandTotal);
 
 
             // ----------------------------------------------------
