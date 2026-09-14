@@ -1380,8 +1380,13 @@ await sendeVerleihBenachrichtigung(
 
 
             zeigeErfolg(
-                `${itemName} wurde erfolgreich zurückgegeben.`
-            );
+    `${itemName} wurde erfolgreich zurückgegeben.`
+);
+
+await sendeVerleihBenachrichtigung(
+    "zurückgegeben",
+    itemName
+);
 
 
             // Verfügbare Items und Ausleihen
@@ -1742,8 +1747,13 @@ await sendeVerleihBenachrichtigung(
 
 
             zeigeErfolg(
-                `${name} wurde erfolgreich zum Verleih hinzugefügt.`
-            );
+    `${name} wurde erfolgreich zum Verleih hinzugefügt.`
+);
+
+await sendeVerleihBenachrichtigung(
+    "neues Item hinzugefügt",
+    name
+);
 
 
             // Formular zurücksetzen
