@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // DISCORD-BENACHRICHTIGUNG FÜR DEN VERLEIH
 // =========================================================
 
-async function sendeVerleihBenachrichtigung(aktion, itemName) {
+async function sendeVerleihBenachrichtigung(aktion, itemName, preis = null) {
     try {
         const { error } = await supabase.functions.invoke(
             "verleih-benachrichtigung",
@@ -19,6 +19,7 @@ async function sendeVerleihBenachrichtigung(aktion, itemName) {
                 body: {
                     aktion: aktion,
                     item: itemName,
+                    preis: preis,
                     link: "https://ehrenmarkt.de/HTML/verleih.html"
                 }
             }
