@@ -771,8 +771,6 @@ container
             const id =
                 button.dataset.orderId;
 
-            alert("Button funktioniert");
-
             if (!id) {
                 alert("Die Auftrags-ID fehlt.");
                 return;
