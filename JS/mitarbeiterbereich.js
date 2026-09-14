@@ -1220,14 +1220,6 @@ container
             await ladeOffeneAuftraege();
             await ladeEigeneAuftraege();
 
-            // Nach kurzer Verzögerung zur Detailseite
-            setTimeout(() => {
-
-                window.location.href =
-                    `logistik_details.html?id=${encodeURIComponent(id)}`;
-
-            }, 500);
-
         } catch (error) {
 
             console.error(
