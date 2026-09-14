@@ -7,6 +7,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const supabase = window.supabaseClient;
 
+    // =========================================================
+// DISCORD-BENACHRICHTIGUNG FÜR DEN VERLEIH
+// =========================================================
+
+async function sendeVerleihBenachrichtigung(aktion, itemName) {
+    try {
+        const { error } = await supabase.functions.invoke(
+            "verleih-benachrichtigung",
+            {
+                body: {
+                    aktion: aktion,
+                    item: itemName,
+                    link: "https://ehrenmarkt.de/HTML/verleih.html"
+                }
+            }
+        );
+
+        if (error) {
+            console.error(
+                "Verleih-Benachrichtigung fehlgeschlagen:",
+                error
+            );
+        }
+    } catch (error) {
+        console.error(
+            "Fehler beim Senden der Verleih-Benachrichtigung:",
+            error
+        );
+    }
+}
+
     if (!supabase) {
         console.error("Supabase Client wurde nicht gefunden.");
         return;
@@ -889,9 +920,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         zeigeErfolg(
-            `${item.name} wurde erfolgreich ausgeliehen. Rückgabe bis ${formatDatum(rueckgabeBis)}.`
-        );
+    `${item.name} wurde erfolgreich ausgeliehen. Rückgabe bis ${formatDatum(rueckgabeBis)}. Bitte zahle den Leihpreis von ${gesamtpreis.toLocaleString("de-DE")} $ in die Clankasse ein.`
+);
 
+await sendeVerleihBenachrichtigung(
+    "ausgeliehen",
+    item.name
+);
 
         // Panel schließen
         schliesseLoanPanel(itemId);
