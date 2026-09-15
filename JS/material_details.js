@@ -1485,6 +1485,82 @@ async function acceptOrder() {
 
 }
 
+async function finishOrder() {
+    if (!currentOrder) {
+        alert("Kein Auftrag geladen.");
+        return;
+    }
+
+    if (!currentUser) {
+        alert("Du bist nicht angemeldet.");
+        return;
+    }
+
+    if (currentOrder.status !== "In Bearbeitung") {
+        alert("Dieser Auftrag ist noch nicht in Bearbeitung.");
+        return;
+    }
+
+    const button = getElement("finishOrderButton");
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = "⏳ Auftrag wird abgeschlossen...";
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("orders")
+        .update({
+            status: "Abgeschlossen"
+        })
+        .eq("id", currentOrder.id)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        console.error(
+            "Fehler beim Abschließen:",
+            error
+        );
+
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = "✓ Auftrag abschließen";
+        }
+
+        alert(
+            "Der Auftrag konnte nicht abgeschlossen werden.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+    if (!data) {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = "✓ Auftrag abschließen";
+        }
+
+        alert("Der Auftrag konnte nicht abgeschlossen werden.");
+        return;
+    }
+
+    currentOrder = data;
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = "Auftrag abgeschlossen";
+    }
+
+    updateAcceptButton();
+
+    alert("✓ Auftrag erfolgreich abgeschlossen!");
+}
+
 
 /* ============================================================
    BUTTON EVENT
