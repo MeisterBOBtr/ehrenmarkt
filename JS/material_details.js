@@ -1491,16 +1491,13 @@ async function acceptOrder() {
    ============================================================ */
 
 function setupEvents() {
+    const button = getElement(
+        "acceptOrderButton"
+    );
 
-    const button =
-        getElement(
-            "acceptOrderButton"
-        );
-
-    const finishButton =
-        getElement(
-            "finishOrderButton"
-        );
+    const finishButton = getElement(
+        "finishOrderButton"
+    );
 
     if (finishButton) {
         finishButton.addEventListener(
@@ -1517,9 +1514,7 @@ function setupEvents() {
         "click",
         acceptOrder
     );
-
 }
-
 
 /* ============================================================
    ENDE TEIL 3
