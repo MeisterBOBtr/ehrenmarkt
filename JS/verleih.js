@@ -166,6 +166,21 @@ async function sendeVerleihBenachrichtigung(aktion, itemName, preis = null) {
 
     }
 
+    function hatVerleihZugriff() {
+    if (
+        !currentEmployee ||
+        currentEmployee.is_active !== true
+    ) {
+        return false;
+    }
+
+    return [
+        "Mitarbeiter",
+        "Leitung",
+        "Stadtleitung"
+    ].includes(currentEmployee.rang);
+    }
+
 
     // =========================================================
     // START
