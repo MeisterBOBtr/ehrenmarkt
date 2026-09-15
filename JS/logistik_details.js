@@ -534,6 +534,12 @@ function setupButtons() {
         return;
     }
 
+        const finishButton = getElement("finishOrderButton");
+
+    if (finishButton) {
+        finishButton.addEventListener("click", finishOrder);
+    }
+
 
     // Bereits angenommener Auftrag
     if (
@@ -557,6 +563,57 @@ function setupButtons() {
     );
 }
 
+// ======================================================
+// AUFTRAG ABSCHLIESSEN
+// ======================================================
+
+async function finishOrder() {
+    if (!currentOrder || !currentEmployee) {
+        showError("Der Auftrag oder Mitarbeiter wurde nicht gefunden.");
+        return;
+    }
+
+    if (!confirm("Logistikauftrag wirklich abschließen?")) {
+        return;
+    }
+
+    const finishButton = getElement("finishOrderButton");
+
+    if (finishButton) {
+        finishButton.disabled = true;
+        finishButton.textContent = "Wird abgeschlossen...";
+    }
+
+    const { error } = await client
+        .from("logistics_orders")
+        .update({
+            status: "Abgeschlossen"
+        })
+        .eq("id", currentOrder.id)
+        .eq("employee_id", currentEmployee.id);
+
+    if (error) {
+        console.error("Fehler beim Abschließen:", error);
+        showError("Der Logistikauftrag konnte nicht abgeschlossen werden.");
+
+        if (finishButton) {
+            finishButton.disabled = false;
+            finishButton.textContent = "✓ Auftrag abschließen";
+        }
+
+        return;
+    }
+
+    currentOrder.status = "Abgeschlossen";
+    renderOrder(currentOrder);
+
+    if (finishButton) {
+        finishButton.disabled = true;
+        finishButton.textContent = "Auftrag abgeschlossen";
+    }
+
+    alert("Logistikauftrag erfolgreich abgeschlossen.");
+}
 
 // ======================================================
 // AUFTRAG ANNEHMEN
