@@ -596,8 +596,9 @@ function renderOrderInformation() {
        HINWEIS
     -------------------------------------------------------- */
 
-    const note =
-        order.notes;
+    const note = String(order.notes || "")
+    .replace(/PREISAUFTEILUNG[\s\S]*$/i, "")
+    .trim();
 
 
     const noteBox =
@@ -1000,9 +1001,14 @@ const remaining = total * 0.75;
    const clanAnteil = total * 0.30;
 const arbeiterAnteil = total * 0.70;
 
-    const notes =
-        currentOrder.notes || "";
+   const notes = String(currentOrder.notes || "");
 
+   setText("anzahlung", formatMoney(deposit));
+setText("restbetrag", formatMoney(remaining));
+setText("arbeiterAnteil", formatMoney(arbeiterAnteil));
+setText("clanAnteil", formatMoney(clanAnteil));
+
+   
     function readPrice(label) {
         const regex =
             new RegExp(
