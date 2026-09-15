@@ -1497,24 +1497,21 @@ function setupEvents() {
             "acceptOrderButton"
         );
 
-   const finishButton = getElement(
-    "finishOrderButton"
-);
+    const finishButton =
+        getElement(
+            "finishOrderButton"
+        );
 
-if (finishButton) {
-    finishButton.addEventListener(
-        "click",
-        finishOrder
-    );
-
-   )
-
-
+    if (finishButton) {
+        finishButton.addEventListener(
+            "click",
+            finishOrder
+        );
+    }
 
     if (!button) {
         return;
     }
-
 
     button.addEventListener(
         "click",
