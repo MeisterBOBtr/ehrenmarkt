@@ -1567,19 +1567,27 @@ async function finishOrder() {
    ============================================================ */
 
 function setupEvents() {
-    const button = getElement(
+    const acceptButton = getElement(
         "acceptOrderButton"
     );
 
-   
-    if (!button) {
-        return;
+    const finishButton = getElement(
+        "finishOrderButton"
+    );
+
+    if (acceptButton) {
+        acceptButton.addEventListener(
+            "click",
+            acceptOrder
+        );
     }
 
-    button.addEventListener(
-        "click",
-        acceptOrder
-    );
+    if (finishButton) {
+        finishButton.addEventListener(
+            "click",
+            finishOrder
+        );
+    }
 }
 
 /* ============================================================
