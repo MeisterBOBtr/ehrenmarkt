@@ -755,8 +755,21 @@ app.setText("progress", `${order.progress ?? 0} %`);
                         console.error(error);
                     }
                 }
+                
             );
         }
+
+        const finishOrderButton =
+    app.getElement("finishOrderButton");
+
+if (finishOrderButton) {
+    finishOrderButton.addEventListener("click", async () => {
+        if (confirm("Bauauftrag wirklich abschließen?")) {
+            await app.completeOrder();
+            alert("Bauauftrag erfolgreich abgeschlossen.");
+        }
+    });
+}
 
         const saveButton =
             app.getElement("saveMaterialsButton");
