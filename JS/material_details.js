@@ -1507,6 +1507,8 @@ if (finishButton) {
         finishOrder
     );
 
+   )
+
 
 
     if (!button) {
