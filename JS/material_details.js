@@ -995,6 +995,10 @@ function renderPrice() {
 
     const total =
         Number(currentOrder.total_price) || 0;
+   const deposit = total * 0.25;
+const remaining = total * 0.75;
+   const clanAnteil = total * 0.30;
+const arbeiterAnteil = total * 0.70;
 
     const notes =
         currentOrder.notes || "";
