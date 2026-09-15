@@ -2869,6 +2869,17 @@ function setupEvents() {
             acceptOrder
         );
     }
+
+   const finishButton = getElement(
+    "finishOrderButton"
+);
+
+if (finishButton) {
+    finishButton.addEventListener(
+        "click",
+        finishOrder
+    );
+}
 }
 
 
