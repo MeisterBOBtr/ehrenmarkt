@@ -2742,6 +2742,88 @@ function renderProgress() {
     }
 }
 
+async function finishOrder() {
+    hideError();
+    hideSuccess();
+
+    if (!currentOrder) {
+        showError("Kein Auftrag geladen.");
+        return;
+    }
+
+    if (
+        String(currentOrder.status || "").toLowerCase() !==
+        "in bearbeitung"
+    ) {
+        showError(
+            "Der Auftrag muss zuerst übernommen werden."
+        );
+        return;
+    }
+
+    const button = element("finishOrderButton");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent =
+            "Auftrag wird abgeschlossen...";
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from(SUPABASE_TABLE_ORDERS)
+        .update({
+            status: "Abgeschlossen"
+        })
+        .eq("id", currentOrder.id)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        console.error(
+            "Fehler beim Abschließen:",
+            error
+        );
+
+        showError(
+            "Der Auftrag konnte nicht abgeschlossen werden."
+        );
+
+        if (button) {
+            button.disabled = false;
+            button.textContent =
+                "✓ Auftrag abschließen";
+        }
+
+        return;
+    }
+
+    if (!data) {
+        showError(
+            "Der Auftrag wurde nicht aktualisiert."
+        );
+        return;
+    }
+
+    currentOrder = data;
+
+    renderOrder();
+    updateEmployeeControls();
+    renderProgress();
+
+    if (button) {
+        button.disabled = true;
+        button.textContent =
+            "✓ Auftrag abgeschlossen";
+    }
+
+    showSuccess(
+        "Der Redstone-Auftrag wurde erfolgreich abgeschlossen."
+    );
+}
+
 
 /* =========================================================
    EVENTS
@@ -2870,7 +2952,7 @@ function setupEvents() {
         );
     }
 
-   const finishButton = getElement(
+   const finishButton = element(
     "finishOrderButton"
 );
 
@@ -2879,6 +2961,7 @@ if (finishButton) {
         "click",
         finishOrder
     );
+
 }
 }
 
