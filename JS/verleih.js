@@ -1204,6 +1204,13 @@ await sendeVerleihBenachrichtigung(
                         </p>
 
                         <p>
+    👤 Ausgeliehen von:
+    <strong>
+        ${escapeHtml(ausleiherName)}
+    </strong>
+</p>
+
+                        <p>
                             Anzahl:
                             <strong>
                                 ${Number(ausleihe.anzahl)}
