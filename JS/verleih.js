@@ -1168,6 +1168,11 @@ await sendeVerleihBenachrichtigung(
                     item?.enchants ||
                     "Keine besonderen Verzauberungen";
 
+            const ausleiherName =
+    await holeAusleiherName(
+        ausleihe.user_id
+    );
+
 
                 const rueckgabe =
                     new Date(
