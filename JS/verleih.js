@@ -1114,9 +1114,9 @@ await sendeVerleihBenachrichtigung(
     }
 
     const { data, error } = await supabase
-        .from("employees")
-        .select("name, username")
-        .eq("user_id", userId)
+        .from("profiles")
+        .select("minecraft_name, username")
+        .eq("id", userId)
         .maybeSingle();
 
     if (error) {
@@ -1128,11 +1128,11 @@ await sendeVerleihBenachrichtigung(
     }
 
     return (
-        data?.name ||
+        data?.minecraft_name ||
         data?.username ||
         "Unbekannt"
     );
-    }
+}
     
 
     async function renderAusleihen() {
