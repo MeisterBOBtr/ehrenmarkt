@@ -1276,7 +1276,7 @@ await sendeVerleihBenachrichtigung(
                 );
 
             }
-        );
+        
 
 
         verbindeRueckgabeButtons();
