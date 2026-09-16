@@ -526,41 +526,34 @@ async function loadEmployeeName() {
 // ======================================================
 
 function setupButtons() {
-
     const acceptButton =
         getElement("acceptOrderButton");
 
-    if (!acceptButton) {
-        return;
-    }
-
-        const finishButton = getElement("finishOrderButton");
+    const finishButton =
+        getElement("finishOrderButton");
 
     if (finishButton) {
-        finishButton.addEventListener("click", finishOrder);
+        finishButton.addEventListener(
+            "click",
+            finishOrder
+        );
     }
 
-
-    // Bereits angenommener Auftrag
-    if (
-        currentOrder &&
-        currentOrder.employee_id
-    ) {
-
-        acceptButton.disabled =
-            true;
-
-        acceptButton.textContent =
-            "Auftrag bereits angenommen";
-
-        return;
+    if (acceptButton) {
+        if (
+            currentOrder &&
+            currentOrder.employee_id
+        ) {
+            acceptButton.disabled = true;
+            acceptButton.textContent =
+                "Auftrag bereits angenommen";
+        } else {
+            acceptButton.addEventListener(
+                "click",
+                acceptOrder
+            );
+        }
     }
-
-
-    acceptButton.addEventListener(
-        "click",
-        acceptOrder
-    );
 }
 
 // ======================================================
