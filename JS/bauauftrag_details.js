@@ -763,12 +763,46 @@ app.setText("progress", `${order.progress ?? 0} %`);
     app.getElement("finishOrderButton");
 
 if (finishOrderButton) {
-    finishOrderButton.addEventListener("click", async () => {
-        if (confirm("Bauauftrag wirklich abschließen?")) {
-            await app.completeOrder();
-            alert("Bauauftrag erfolgreich abgeschlossen.");
+    finishOrderButton.addEventListener(
+        "click",
+        async () => {
+            if (
+                !confirm(
+                    "Bauauftrag wirklich abschließen?"
+                )
+            ) {
+                return;
+            }
+
+            try {
+                finishOrderButton.disabled = true;
+                finishOrderButton.textContent =
+                    "⏳ Auftrag wird abgeschlossen...";
+
+                await app.completeOrder();
+
+                finishOrderButton.textContent =
+                    "✓ Auftrag abgeschlossen";
+
+                alert(
+                    "Bauauftrag erfolgreich abgeschlossen."
+                );
+            } catch (error) {
+                console.error(
+                    "Fehler beim Abschließen:",
+                    error
+                );
+
+                finishOrderButton.disabled = false;
+                finishOrderButton.textContent =
+                    "✓ Auftrag abschließen";
+
+                app.showError(
+                    "Auftrag konnte nicht abgeschlossen werden."
+                );
+            }
         }
-    });
+    );
 }
 
         const saveButton =
