@@ -1108,13 +1108,39 @@ await sendeVerleihBenachrichtigung(
     // AUSLEIHEN DARSTELLEN
     // =========================================================
 
-    function renderAusleihen() {
+    async function holeAusleiherName(userId) {
+    if (!userId) {
+        return "Unbekannt";
+    }
+
+    const { data, error } = await supabase
+        .from("employees")
+        .select("name, username")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if (error) {
+        console.error(
+            "Fehler beim Laden des Ausleihers:",
+            error
+        );
+        return "Unbekannt";
+    }
+
+    return (
+        data?.name ||
+        data?.username ||
+        "Unbekannt"
+    );
+    }
+    
+
+    async function renderAusleihen() {
 
         ausleihenContainer.innerHTML = "";
 
 
-        aktuelleAusleihen.forEach(
-            ausleihe => {
+        for (const ausleihe of aktuelleAusleihen) {
 
                 const card =
                     document.createElement(
