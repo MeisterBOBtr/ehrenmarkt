@@ -710,7 +710,7 @@ await ladeBuendnisRabatt();
     // ZAHLUNGEN AKTUALISIEREN
     // ============================================================
 
-    function updatePaymentSummary() {
+     function updatePaymentSummary() {
 
     const {
         normalMaterialTotal,
@@ -728,18 +728,8 @@ await ladeBuendnisRabatt();
         grandTotal * 0.75;
 
     if (cartTotal) {
-    cartTotal.textContent =
-        formatMoney(grandTotal);
-}
-            <div>Netto: ${formatMoney(materialTotal)}</div>
-            <div>MwSt. 19 %: ${formatMoney(vat)}</div>
-            ${
-                delivery > 0
-                    ? `<div>Lieferung: ${formatMoney(delivery)}</div>`
-                    : ""
-            }
-            <strong>Gesamt: ${formatMoney(grandTotal)}</strong>
-        `;
+        cartTotal.textContent =
+            formatMoney(grandTotal);
     }
 
     if (submitTotal) {
