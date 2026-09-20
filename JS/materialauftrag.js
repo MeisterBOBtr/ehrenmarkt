@@ -95,6 +95,9 @@ const DELIVERY_RATE = 0.15;
 
     let items = [];
 
+    let buendnisRabatt = 0;
+let buendnisId = null;
+
 
     // ============================================================
     // HILFSFUNKTION: GELD
@@ -174,6 +177,80 @@ function getAktuellenPreis(item) {
 
 
     items = data || [];
+
+    async function ladeBuendnisRabatt() {
+
+    buendnisRabatt = 0;
+    buendnisId = null;
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+        return;
+    }
+
+    const {
+        data: mitglied,
+        error: mitgliedError
+    } = await supabase
+        .from("buendnis_mitglieder")
+        .select("buendnis_id")
+        .eq("user_id", user.id)
+        .eq("active", true)
+        .maybeSingle();
+
+    if (mitgliedError) {
+        console.error(
+            "Fehler beim Laden der Bündnismitgliedschaft:",
+            mitgliedError
+        );
+        return;
+    }
+
+    if (!mitglied?.buendnis_id) {
+        return;
+    }
+
+    buendnisId = mitglied.buendnis_id;
+
+    const {
+        data: buendnis,
+        error: buendnisError
+    } = await supabase
+        .from("buendnisse")
+        .select("discount_percent")
+        .eq("buendnis_id", buendnisId)
+        .eq("status", "Angenommen")
+        .maybeSingle();
+
+    if (buendnisError) {
+        console.error(
+            "Fehler beim Laden des Bündnis-Rabatts:",
+            buendnisError
+        );
+        return;
+    }
+
+    buendnisRabatt = Math.min(
+        100,
+        Math.max(
+            0,
+            Number(buendnis?.discount_percent) || 0
+        )
+    );
+
+    console.log(
+        "Bündnis-Rabatt:",
+        buendnisRabatt + "%"
+    );
+}
+
+await ladeBuendnisRabatt();
 
 
     // ============================================================
@@ -595,9 +672,18 @@ function getAktuellenPreis(item) {
     }
 
     function calculateOrderTotals() {
-    const materialTotal = getCartTotal();
+    const normalMaterialTotal = getCartTotal();
 
-    const vat = materialTotal * VAT_RATE;
+    const discountAmount =
+        normalMaterialTotal *
+        (buendnisRabatt / 100);
+
+    const materialTotal =
+        normalMaterialTotal -
+        discountAmount;
+
+    const vat =
+        materialTotal * VAT_RATE;
 
     const delivery =
         deliveryMethod?.value === "delivery"
@@ -605,9 +691,13 @@ function getAktuellenPreis(item) {
             : 0;
 
     const grandTotal =
-        materialTotal + vat + delivery;
+        materialTotal +
+        vat +
+        delivery;
 
     return {
+        normalMaterialTotal,
+        discountAmount,
         materialTotal,
         vat,
         delivery,
@@ -621,7 +711,13 @@ function getAktuellenPreis(item) {
     // ============================================================
 
     function updatePaymentSummary() {
+
     const {
+        normalMaterialTotal,
+        discountAmount,
+        materialTotal,
+        vat,
+        delivery,
         grandTotal
     } = calculateOrderTotals();
 
@@ -632,8 +728,25 @@ function getAktuellenPreis(item) {
         grandTotal * 0.75;
 
     if (cartTotal) {
-        cartTotal.textContent =
-            formatMoney(grandTotal);
+        cartTotal.innerHTML = `
+            <div>Material: ${formatMoney(normalMaterialTotal)}</div>
+            ${
+                discountAmount > 0
+                    ? `<div style="color: #4ade80;">
+                        Bündnisrabatt (${buendnisRabatt}%):
+                        -${formatMoney(discountAmount)}
+                    </div>`
+                    : ""
+            }
+            <div>Netto: ${formatMoney(materialTotal)}</div>
+            <div>MwSt. 19 %: ${formatMoney(vat)}</div>
+            ${
+                delivery > 0
+                    ? `<div>Lieferung: ${formatMoney(delivery)}</div>`
+                    : ""
+            }
+            <strong>Gesamt: ${formatMoney(grandTotal)}</strong>
+        `;
     }
 
     if (submitTotal) {
@@ -651,6 +764,7 @@ function getAktuellenPreis(item) {
             formatMoney(remaining);
     }
 }
+    
             // ============================================================
     // WARENKORB ZEICHNEN
     // ============================================================
@@ -1290,6 +1404,12 @@ function getAktuellenPreis(item) {
 orderNotes +=
     "\n\nPREISAUFTEILUNG\n" +
     "Materialsumme: " +
+    formatMoney(normalMaterialTotal) +
+    "\nBündnisrabatt (" +
+    buendnisRabatt +
+    " %): -" +
+    formatMoney(discountAmount) +
+    "\nMaterialsumme nach Rabatt: " +
     formatMoney(materialTotal) +
     "\nMehrwertsteuer 19 %: " +
     formatMoney(vat) +
@@ -1299,7 +1419,6 @@ orderNotes +=
     formatMoney(delivery) +
     "\nGesamtpreis: " +
     formatMoney(grandTotal);
-
 
             // ----------------------------------------------------
             // VERZAUBERUNGEN IN DIE NOTIZ ÜBERNEHMEN
