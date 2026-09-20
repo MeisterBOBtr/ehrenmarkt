@@ -7405,6 +7405,19 @@ window.buendnisAnnehmen = async function(id) {
         return;
     }
 
+    const { error: mitgliedError } = await supabase
+    .from("buendnis_mitglieder")
+    .insert({
+        buendnis_id: buendnisId,
+        user_id: buendnis.user_id,
+        minecraft_name: buendnis.minecraft_name,
+        active: true
+    });
+
+if (mitgliedError) {
+    throw mitgliedError;
+}
+
     verwaltungZeigeErfolg(
         "buendnisseMessage",
         `Bündnis ${buendnisId} wurde erfolgreich angenommen.`
