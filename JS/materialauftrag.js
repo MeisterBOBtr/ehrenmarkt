@@ -728,16 +728,9 @@ await ladeBuendnisRabatt();
         grandTotal * 0.75;
 
     if (cartTotal) {
-        cartTotal.innerHTML = `
-            <div>Material: ${formatMoney(normalMaterialTotal)}</div>
-            ${
-                discountAmount > 0
-                    ? `<div style="color: #4ade80;">
-                        Bündnisrabatt (${buendnisRabatt}%):
-                        -${formatMoney(discountAmount)}
-                    </div>`
-                    : ""
-            }
+    cartTotal.textContent =
+        formatMoney(grandTotal);
+}
             <div>Netto: ${formatMoney(materialTotal)}</div>
             <div>MwSt. 19 %: ${formatMoney(vat)}</div>
             ${
