@@ -724,81 +724,149 @@ async function loadBookkeepingData(){
    NAVIGATION
 ===================================================== */
 
-function showArea(id,button){
+function showArea(id, button){
+
+    const selected =
+        document.getElementById(id);
+
+    if(!selected){
+        console.error(
+            "Buchhaltungs-Bereich nicht gefunden:",
+            id
+        );
+        return;
+    }
+
 
     const areas =
         document.querySelectorAll(
             ".open-area"
         );
 
+
     const buttons =
         document.querySelectorAll(
             ".nav-button"
         );
 
-    const selected =
-        document.getElementById(id);
 
-
-    if(
-        selected &&
-        selected.classList.contains("active")
-    ){
-
-        selected.classList.remove(
+    const isOpen =
+        selected.classList.contains(
             "active"
         );
 
-        button.classList.remove(
-            "active"
-        );
+
+    areas.forEach(
+        area => {
+
+            area.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    buttons.forEach(
+        btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    if(isOpen){
 
         return;
 
     }
 
 
-    areas.forEach(area => {
-
-        area.classList.remove(
-            "active"
-        );
-
-    });
+    selected.classList.add(
+        "active"
+    );
 
 
-    buttons.forEach(btn => {
-
-        btn.classList.remove(
-            "active"
-        );
-
-    });
-
-
-    if(selected){
-
-        selected.classList.add(
-            "active"
-        );
+    if(button){
 
         button.classList.add(
             "active"
         );
 
+    }
 
-        setTimeout(() => {
+
+    setTimeout(
+        () => {
 
             selected.scrollIntoView({
                 behavior:"smooth",
                 block:"start"
             });
 
-        },100);
-
-    }
+        },
+        100
+    );
 
 }
+
+
+/* =====================================================
+   NAVIGATION SICHER INITIALISIEREN
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        document
+            .querySelectorAll(
+                ".nav-button"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const onclick =
+                                button
+                                    .getAttribute(
+                                        "onclick"
+                                    );
+
+
+                            if(!onclick)
+                                return;
+
+
+                            const match =
+                                onclick.match(
+                                    /showArea\(['"]([^'"]+)['"]/
+                                );
+
+
+                            if(!match)
+                                return;
+
+
+                            showArea(
+                                match[1],
+                                button
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+);
 
 
 /* =====================================================
