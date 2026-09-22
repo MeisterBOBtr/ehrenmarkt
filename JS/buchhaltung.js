@@ -724,65 +724,47 @@ async function loadBookkeepingData(){
    NAVIGATION
 ===================================================== */
 
-function showArea(id, button){
+window.showArea = function(id, button){
 
     const selected =
         document.getElementById(id);
 
     if(!selected){
+
         console.error(
-            "Buchhaltungs-Bereich nicht gefunden:",
+            "Bereich nicht gefunden:",
             id
         );
-        return;
-    }
-
-
-    const areas =
-        document.querySelectorAll(
-            ".open-area"
-        );
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".nav-button"
-        );
-
-
-    const isOpen =
-        selected.classList.contains(
-            "active"
-        );
-
-
-    areas.forEach(
-        area => {
-
-            area.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    buttons.forEach(
-        btn => {
-
-            btn.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    if(isOpen){
 
         return;
 
     }
+
+
+    document
+        .querySelectorAll(".open-area")
+        .forEach(
+            area => {
+
+                area.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(
+            btn => {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            }
+        );
 
 
     selected.classList.add(
@@ -811,8 +793,7 @@ function showArea(id, button){
         100
     );
 
-}
-
+};
 
 /* =====================================================
    NAVIGATION SICHER INITIALISIEREN
