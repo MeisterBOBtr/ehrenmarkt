@@ -1,7 +1,3 @@
-document.body.insertAdjacentHTML(
-    "afterbegin",
-    '<div style="position:fixed;top:10px;left:10px;right:10px;z-index:99999;background:#111;color:#0f0;padding:15px;text-align:center;border:2px solid #d4af37;">BUCHHALTUNG.JS GELADEN ✓</div>'
-);
 /* =====================================================
    EHRENMARKT
    CLAN-BUCHHALTUNG V0.1 BETA
@@ -728,7 +724,7 @@ async function loadBookkeepingData(){
    NAVIGATION
 ===================================================== */
 
-window.showArea = function(id, button){
+window.showArea = function(id,button){
 
     const areas =
         document.querySelectorAll(".open-area");
@@ -741,6 +737,17 @@ window.showArea = function(id, button){
 
     if(!selected){
         console.error("Bereich nicht gefunden:", id);
+        return;
+    }
+
+    if(selected.classList.contains("active")){
+
+        selected.classList.remove("active");
+
+        if(button){
+            button.classList.remove("active");
+        }
+
         return;
     }
 
@@ -759,11 +766,14 @@ window.showArea = function(id, button){
     }
 
     setTimeout(() => {
+
         selected.scrollIntoView({
             behavior:"smooth",
             block:"start"
         });
+
     },100);
+
 };
 
 
