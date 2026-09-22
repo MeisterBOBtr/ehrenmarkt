@@ -707,112 +707,46 @@ async function loadBookkeepingData(){
 
 
 /* =====================================================
-   NAVIGATION
+   NAVIGATION – SICHERER FIX
 ===================================================== */
 
-window.showArea = function(id,button){
+window.showArea = function(id, button) {
 
-    const areas =
-        document.querySelectorAll(
-            ".open-area"
-        );
+    const area = document.getElementById(id);
 
-    const buttons =
-        document.querySelectorAll(
-            ".nav-button"
-        );
-
-    const selected =
-        document.getElementById(id);
-
-
-    if(!selected){
-
-        console.error(
-            "Bereich nicht gefunden:",
-            id
-        );
-
+    if (!area) {
+        alert("Bereich nicht gefunden: " + id);
         return;
-
     }
 
+    // Alle Bereiche schließen
+    document.querySelectorAll(".open-area").forEach(function(el) {
+        el.classList.remove("active");
+    });
 
-    if(
-        selected.classList.contains(
-            "active"
-        )
-    ){
+    // Alle Buttons deaktivieren
+    document.querySelectorAll(".nav-button").forEach(function(el) {
+        el.classList.remove("active");
+    });
 
-        selected.classList.remove(
-            "active"
-        );
+    // Gewählten Bereich öffnen
+    area.classList.add("active");
 
-        if(button){
-
-            button.classList.remove(
-                "active"
-            );
-
-        }
-
-        return;
-
+    // Gewählten Button markieren
+    if (button) {
+        button.classList.add("active");
     }
 
-
-    areas.forEach(
-        area => {
-
-            area.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    buttons.forEach(
-        btn => {
-
-            btn.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    selected.classList.add(
-        "active"
-    );
-
-
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-
-    setTimeout(
-        () => {
-
-            selected.scrollIntoView({
-
-                behavior:"smooth",
-
-                block:"start"
-
-            });
-
-        },
-        100
-    );
-
+    // Zum geöffneten Bereich scrollen
+    setTimeout(function() {
+        area.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }, 50);
 };
+
+console.log("NAVIGATION GELADEN");
 
 
 /* =====================================================
