@@ -3,7 +3,7 @@
    CLAN-BUCHHALTUNG V0.1 BETA
    TEIL 1 VON 10
 ===================================================== */
-
+alert("BUCHHALTUNG JS GELADEN");
 
 /* =====================================================
    SUPABASE
