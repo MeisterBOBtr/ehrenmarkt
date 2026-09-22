@@ -726,73 +726,40 @@ async function loadBookkeepingData(){
 
 window.showArea = function(id, button){
 
+    const areas =
+        document.querySelectorAll(".open-area");
+
+    const buttons =
+        document.querySelectorAll(".nav-button");
+
     const selected =
         document.getElementById(id);
 
     if(!selected){
-
-        console.error(
-            "Bereich nicht gefunden:",
-            id
-        );
-
+        console.error("Bereich nicht gefunden:", id);
         return;
-
     }
 
+    areas.forEach(area => {
+        area.classList.remove("active");
+    });
 
-    document
-        .querySelectorAll(".open-area")
-        .forEach(
-            area => {
+    buttons.forEach(btn => {
+        btn.classList.remove("active");
+    });
 
-                area.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(
-            btn => {
-
-                btn.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    selected.classList.add(
-        "active"
-    );
-
+    selected.classList.add("active");
 
     if(button){
-
-        button.classList.add(
-            "active"
-        );
-
+        button.classList.add("active");
     }
 
-
-    setTimeout(
-        () => {
-
-            selected.scrollIntoView({
-                behavior:"smooth",
-                block:"start"
-            });
-
-        },
-        100
-    );
-
+    setTimeout(() => {
+        selected.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+    },100);
 };
 
 
