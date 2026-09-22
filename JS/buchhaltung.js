@@ -795,51 +795,6 @@ window.showArea = function(id, button){
 
 };
 
-/* =====================================================
-   NAVIGATION SICHER INITIALISIEREN
-===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        document
-            .querySelectorAll(".nav-button")
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            const onclick =
-                                button.getAttribute("onclick");
-
-                            if(!onclick)
-                                return;
-
-                            const match =
-                                onclick.match(
-                                    /showArea\(['"]([^'"]+)['"]/
-                                );
-
-                            if(!match)
-                                return;
-
-                            showArea(
-                                match[1],
-                                button
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-);
-
 
 /* =====================================================
    MODAL
