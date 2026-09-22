@@ -5,18 +5,17 @@
 ===================================================== */
 alert("BUCHHALTUNG JS GELADEN");
 
-/* =====================================================
+/* =========================================================
    SUPABASE
-===================================================== */
+   ========================================================= */
 
-const supabaseClient =
-    window.supabaseClient ||
-    (
-        window.supabase &&
-        typeof window.supabase.from === "function"
-            ? window.supabase
-            : null
-    );
+const supabaseClient = window.supabaseClient;
+
+if (!supabaseClient) {
+    console.error("Supabase Client wurde nicht geladen.");
+} else {
+    console.log("Supabase Client erfolgreich geladen.");
+}
 
 
 /* =====================================================
