@@ -1,6 +1,7 @@
-console.log("✅ BUCHHALTUNG.JS WIRD GELADEN");
-window.buchhaltungJsGeladen = true;
-
+document.body.insertAdjacentHTML(
+    "afterbegin",
+    '<div style="position:fixed;top:10px;left:10px;right:10px;z-index:99999;background:#111;color:#0f0;padding:15px;text-align:center;border:2px solid #d4af37;">BUCHHALTUNG.JS GELADEN ✓</div>'
+);
 /* =====================================================
    EHRENMARKT
    CLAN-BUCHHALTUNG V0.1 BETA
