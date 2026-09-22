@@ -4,8 +4,6 @@
    TEIL 1 VON 10
 ===================================================== */
 
-alert("BUCHHALTUNG JS GELADEN");
-
 
 /* =====================================================
    SUPABASE
@@ -841,12 +839,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function calculateFinancialOverview(){
 
-    const bookings =
-        Array.isArray(bookingsData)
-            ? bookingsData
-            : [];
-
-
     let totalDeposits = 0;
     let totalWithdrawals = 0;
 
@@ -1478,7 +1470,6 @@ window.openBookkeepingArea = function(id){
    AUFTRAGSABRECHNUNG – AKTUELLE ARBEITER
 ===================================================== */
 
-let currentWorkers = [];
 
 
 /* =====================================================
