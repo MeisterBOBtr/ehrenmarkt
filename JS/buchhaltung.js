@@ -644,25 +644,25 @@ async function loadBookkeepingData(){
 
 
         if(bookingsResult.error)
-            throw bookingsResult.error;
+    throw new Error("BUCHUNGEN: " + bookingsResult.error.message);
 
-        if(ordersResult.error)
-            throw ordersResult.error;
+if(ordersResult.error)
+    throw new Error("AUFTRAGSABRECHNUNGEN: " + ordersResult.error.message);
 
-        if(workersResult.error)
-            throw workersResult.error;
+if(workersResult.error)
+    throw new Error("AUFTRAGSARBEITER: " + workersResult.error.message);
 
-        if(employeesResult.error)
-            throw employeesResult.error;
+if(employeesResult.error)
+    throw new Error("MITARBEITER: " + employeesResult.error.message);
 
-        if(savingsResult.error)
-            throw savingsResult.error;
+if(savingsResult.error)
+    throw new Error("SPARKONTO: " + savingsResult.error.message);
 
-        if(cashChecksResult.error)
-            throw cashChecksResult.error;
+if(cashChecksResult.error)
+    throw new Error("KASSENABGLEICH: " + cashChecksResult.error.message);
 
-        if(logsResult.error)
-            throw logsResult.error;
+if(logsResult.error)
+    throw new Error("PROTOKOLL: " + logsResult.error.message);
 
 
         bookings =
