@@ -804,9 +804,7 @@ document.addEventListener(
     () => {
 
         document
-            .querySelectorAll(
-                ".nav-button"
-            )
+            .querySelectorAll(".nav-button")
             .forEach(
                 button => {
 
@@ -815,25 +813,18 @@ document.addEventListener(
                         () => {
 
                             const onclick =
-                                button
-                                    .getAttribute(
-                                        "onclick"
-                                    );
-
+                                button.getAttribute("onclick");
 
                             if(!onclick)
                                 return;
-
 
                             const match =
                                 onclick.match(
                                     /showArea\(['"]([^'"]+)['"]/
                                 );
 
-
                             if(!match)
                                 return;
-
 
                             showArea(
                                 match[1],
