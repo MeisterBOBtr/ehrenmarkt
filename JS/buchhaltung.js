@@ -1,15 +1,17 @@
 /* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 1 VON 10
+   FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
+   NEUAUFBAU – TEIL 1 VON 10
 ===================================================== */
+
+"use strict";
 
 
 /* =====================================================
    SUPABASE
 ===================================================== */
 
-const buchhaltungDB = window.supabaseClient || null;
+const buchhaltungDB =
+    window.supabaseClient || null;
 
 
 /* =====================================================
@@ -42,77 +44,55 @@ const TABLE_EMPLOYEES =
    DATEN
 ===================================================== */
 
+let currentUser = null;
+let currentEmployee = null;
+
 let bookings = [];
-
 let orderSettlements = [];
-
 let workers = [];
-
 let employees = [];
-
 let savingsTransactions = [];
-
 let cashChecks = [];
-
 let activityLogs = [];
-
-
-let savingsGoalValue = 0;
 
 let currentWorkers = [];
 
+let savingsGoalValue = 0;
+
 
 /* =====================================================
-   BENUTZER
+   SUPABASE PRÜFEN
 ===================================================== */
 
-let currentUser = null;
+function hasSupabase(){
 
-let currentEmployee = null;
+    return !!(
+        buchhaltungDB &&
+        typeof buchhaltungDB.from === "function"
+    );
+
+}
 
 
 /* =====================================================
    HILFSFUNKTIONEN
 ===================================================== */
 
-function getElement(id){
-
-    return document.getElementById(id);
-
-}
-
-
 function getValue(id){
 
     const element =
-        getElement(id);
+        document.getElementById(id);
 
     return element
-        ? element.value.trim()
+        ? String(element.value || "").trim()
         : "";
-
-}
-
-
-function setValue(id,value){
-
-    const element =
-        getElement(id);
-
-    if(element){
-
-        element.value =
-            value ?? "";
-
-    }
-
 }
 
 
 function setText(id,value){
 
     const element =
-        getElement(id);
+        document.getElementById(id);
 
     if(element){
 
@@ -127,7 +107,11 @@ function setText(id,value){
 function numberValue(value){
 
     const number =
-        Number(value);
+        Number(
+            String(value ?? "")
+                .replace(",", ".")
+                .replace(/[^\d.-]/g, "")
+        );
 
     return Number.isFinite(number)
         ? number
@@ -138,11 +122,29 @@ function numberValue(value){
 
 function money(value){
 
-    return numberValue(
-        value
-    ).toLocaleString(
-        "de-DE"
-    ) + " $";
+    return (
+        numberValue(value)
+            .toLocaleString(
+                "de-DE",
+                {
+                    minimumFractionDigits:0,
+                    maximumFractionDigits:2
+                }
+            )
+        + " $"
+    );
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
@@ -153,12 +155,11 @@ function nowLocal(){
         new Date();
 
     const offset =
-        date.getTimezoneOffset() *
-        60000;
+        date.getTimezoneOffset();
 
     return new Date(
         date.getTime() -
-        offset
+        offset * 60000
     )
     .toISOString()
     .slice(0,16);
@@ -174,184 +175,75 @@ function formatDate(value){
 
     }
 
-
     const date =
         new Date(value);
 
-
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
+    if(Number.isNaN(date.getTime())){
 
         return "—";
 
     }
 
-
     return date.toLocaleString(
         "de-DE",
         {
-
-            day:"2-digit",
-
-            month:"2-digit",
-
-            year:"numeric",
-
-            hour:"2-digit",
-
-            minute:"2-digit"
-
+            dateStyle:"short",
+            timeStyle:"short"
         }
     );
 
 }
 
 
-function escapeHtml(value){
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
 /* =====================================================
-   SUPABASE PRÜFEN
+   FEHLERMELDUNG
 ===================================================== */
 
-function hasSupabase(){
-
-    return !!(
-        buchhaltungDB &&
-        typeof buchhaltungDB.from ===
-            "function"
-    );
-
-}
-
-
-/* =====================================================
-   FEHLER
-===================================================== */
-
-function showDatabaseError(message){
+function showDatabaseError(error){
 
     console.error(
         "Buchhaltung:",
-        message
+        error
     );
 
+    const message =
+        error?.message ||
+        String(error || "Unbekannter Fehler.");
 
     alert(
         "Buchhaltung:\n\n" +
-        (
-            message?.message ||
-            message ||
-            "Unbekannter Fehler."
-        )
+        message
     );
 
 }
 
 
 /* =====================================================
-   DISCORD-BENACHRICHTIGUNG
+   MODAL-HILFE
 ===================================================== */
 
-async function sendDiscordNotification(
-    payload
-){
+function openModal(id){
 
-    if(!hasSupabase()){
+    const modal =
+        document.getElementById(id);
 
-        console.error(
-            "Supabase ist nicht verfügbar."
-        );
+    if(modal){
 
-        return false;
+        modal.classList.add("active");
 
     }
 
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-            await buchhaltungDB
-                .functions
-                .invoke(
-                    "buchhaltung",
-                    {
-                        body:
-                            payload
-                    }
-                );
+}
 
 
-        if(error){
+function closeModal(id){
 
-            console.error(
-                "Discord-Benachrichtigung:",
-                error
-            );
+    const modal =
+        document.getElementById(id);
 
-            return false;
+    if(modal){
 
-        }
-
-
-        if(
-            data &&
-            data.error
-        ){
-
-            console.error(
-                "Discord-Benachrichtigung:",
-                data.error
-            );
-
-            return false;
-
-        }
-
-
-        return true;
-
-    }
-    catch(error){
-
-        console.error(
-            "Discord-Benachrichtigung:",
-            error
-        );
-
-        return false;
+        modal.classList.remove("active");
 
     }
 
@@ -359,105 +251,7 @@ async function sendDiscordNotification(
 
 
 /* =====================================================
-   AKTUELLEN BENUTZER LADEN
-===================================================== */
-
-async function loadCurrentUser(){
-
-    if(!hasSupabase()){
-
-        return false;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await buchhaltungDB
-            .auth
-            .getUser();
-
-
-    if(error){
-
-        console.error(
-            "Benutzer:",
-            error
-        );
-
-        return false;
-
-    }
-
-
-    currentUser =
-        data?.user || null;
-
-
-    return !!currentUser;
-
-}
-
-
-/* =====================================================
-   AKTUELLEN MITARBEITER LADEN
-===================================================== */
-
-async function loadCurrentEmployee(){
-
-    if(
-        !currentUser ||
-        !hasSupabase()
-    ){
-
-        return false;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await buchhaltungDB
-            .from(
-                TABLE_EMPLOYEES
-            )
-            .select(
-                "*"
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .maybeSingle();
-
-
-    if(error){
-
-        console.error(
-            "Mitarbeiter:",
-            error
-        );
-
-        return false;
-
-    }
-
-
-    currentEmployee =
-        data || null;
-
-
-    return !!currentEmployee;
-
-}
-
-
-/* =====================================================
-   BERECHTIGUNGEN
+   BERECHTIGUNGEN – GRUNDLAGE
 ===================================================== */
 
 function getCurrentRank(){
@@ -468,11 +262,9 @@ function getCurrentRank(){
 
     }
 
-
-    return (
-        currentEmployee.rang ||
-        ""
-    );
+    return String(
+        currentEmployee.rang || ""
+    ).trim();
 
 }
 
@@ -481,7 +273,6 @@ function isLeitung(){
 
     const rang =
         getCurrentRank();
-
 
     return (
         rang === "Leitung" ||
@@ -519,7 +310,136 @@ function canCreateDeposit(){
 
 
 /* =====================================================
-   SUPABASE-DATEN LADEN
+   FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
+   TEIL 2 VON 10
+   BENUTZER + MITARBEITER + DATEN
+===================================================== */
+
+
+/* =====================================================
+   AKTUELLEN BENUTZER LADEN
+===================================================== */
+
+async function loadCurrentUser(){
+
+    if(!hasSupabase()){
+
+        showDatabaseError(
+            "Supabase ist nicht verfügbar."
+        );
+
+        return false;
+
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await buchhaltungDB
+                .auth
+                .getUser();
+
+        if(error){
+
+            throw error;
+
+        }
+
+        currentUser =
+            data?.user || null;
+
+        if(!currentUser){
+
+            showDatabaseError(
+                "Kein angemeldeter Benutzer gefunden."
+            );
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+    catch(error){
+
+        showDatabaseError(error);
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   MITARBEITERDATEN LADEN
+===================================================== */
+
+async function loadCurrentEmployee(){
+
+    if(
+        !currentUser ||
+        !hasSupabase()
+    ){
+
+        return false;
+
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await buchhaltungDB
+                .from(TABLE_EMPLOYEES)
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+        if(error){
+
+            throw error;
+
+        }
+
+        currentEmployee =
+            data || null;
+
+        if(!currentEmployee){
+
+            showDatabaseError(
+                "Dein Mitarbeiterprofil wurde nicht gefunden."
+            );
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+    catch(error){
+
+        showDatabaseError(error);
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   ALLE BUCHHALTUNGSDATEN LADEN
 ===================================================== */
 
 async function loadBookkeepingData(){
@@ -534,31 +454,20 @@ async function loadBookkeepingData(){
 
     }
 
-
     try{
 
         const [
-
             bookingsResult,
-
             ordersResult,
-
             workersResult,
-
             employeesResult,
-
             savingsResult,
-
             cashChecksResult,
-
             logsResult
-
         ] = await Promise.all([
 
             buchhaltungDB
-                .from(
-                    TABLE_BOOKINGS
-                )
+                .from(TABLE_BOOKINGS)
                 .select("*")
                 .order(
                     "datum",
@@ -568,9 +477,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_ORDERS
-                )
+                .from(TABLE_ORDERS)
                 .select("*")
                 .order(
                     "datum",
@@ -580,9 +487,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_ORDER_WORKERS
-                )
+                .from(TABLE_ORDER_WORKERS)
                 .select("*")
                 .order(
                     "created_at",
@@ -592,9 +497,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_EMPLOYEES
-                )
+                .from(TABLE_EMPLOYEES)
                 .select("*")
                 .order(
                     "name",
@@ -604,9 +507,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_SAVINGS
-                )
+                .from(TABLE_SAVINGS)
                 .select("*")
                 .order(
                     "datum",
@@ -616,9 +517,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_CASH_CHECKS
-                )
+                .from(TABLE_CASH_CHECKS)
                 .select("*")
                 .order(
                     "datum",
@@ -628,9 +527,7 @@ async function loadBookkeepingData(){
                 ),
 
             buchhaltungDB
-                .from(
-                    TABLE_LOGS
-                )
+                .from(TABLE_LOGS)
                 .select("*")
                 .order(
                     "datum",
@@ -642,27 +539,77 @@ async function loadBookkeepingData(){
         ]);
 
 
-        if(bookingsResult.error)
-    throw new Error("BUCHUNGEN: " + bookingsResult.error.message);
+        /* =============================================
+           FEHLER EINZELN PRÜFEN
+        ============================================= */
 
-if(ordersResult.error)
-    throw new Error("AUFTRAGSABRECHNUNGEN: " + ordersResult.error.message);
+        if(bookingsResult.error){
 
-if(workersResult.error)
-    throw new Error("AUFTRAGSARBEITER: " + workersResult.error.message);
+            throw new Error(
+                "BUCHUNGEN: " +
+                bookingsResult.error.message
+            );
 
-if(employeesResult.error)
-    throw new Error("MITARBEITER: " + employeesResult.error.message);
+        }
 
-if(savingsResult.error)
-    throw new Error("SPARKONTO: " + savingsResult.error.message);
+        if(ordersResult.error){
 
-if(cashChecksResult.error)
-    throw new Error("KASSENABGLEICH: " + cashChecksResult.error.message);
+            throw new Error(
+                "AUFTRAGSABRECHNUNGEN: " +
+                ordersResult.error.message
+            );
 
-if(logsResult.error)
-    throw new Error("PROTOKOLL: " + logsResult.error.message);
+        }
 
+        if(workersResult.error){
+
+            throw new Error(
+                "AUFTRAGSARBEITER: " +
+                workersResult.error.message
+            );
+
+        }
+
+        if(employeesResult.error){
+
+            throw new Error(
+                "MITARBEITER: " +
+                employeesResult.error.message
+            );
+
+        }
+
+        if(savingsResult.error){
+
+            throw new Error(
+                "SPARKONTO: " +
+                savingsResult.error.message
+            );
+
+        }
+
+        if(cashChecksResult.error){
+
+            throw new Error(
+                "KASSENABGLEICH: " +
+                cashChecksResult.error.message
+            );
+
+        }
+
+        if(logsResult.error){
+
+            throw new Error(
+                "PROTOKOLL: " +
+                logsResult.error.message
+            );
+
+        }
+
+
+        /* =============================================
+           DATEN ÜBERNEHMEN
+        ============================================= */
 
         bookings =
             bookingsResult.data || [];
@@ -691,10 +638,7 @@ if(logsResult.error)
     }
     catch(error){
 
-        showDatabaseError(
-            error.message ||
-            "Unbekannter Datenbankfehler."
-        );
+        showDatabaseError(error);
 
         return false;
 
@@ -704,2191 +648,567 @@ if(logsResult.error)
 
 
 /* =====================================================
-   NAVIGATION – SICHERER FIX
+   BENUTZERINFORMATION AKTUALISIEREN
 ===================================================== */
 
-window.showArea = function(id, button) {
+function updateUserInformation(){
 
-    const area = document.getElementById(id);
+    if(!currentEmployee){
 
-    if (!area) {
-        alert("Bereich nicht gefunden: " + id);
-        return;
-    }
-
-    // Alle Bereiche schließen
-    document.querySelectorAll(".open-area").forEach(function(el) {
-        el.classList.remove("active");
-    });
-
-    // Alle Buttons deaktivieren
-    document.querySelectorAll(".nav-button").forEach(function(el) {
-        el.classList.remove("active");
-    });
-
-    // Gewählten Bereich öffnen
-    area.classList.add("active");
-
-    // Gewählten Button markieren
-    if (button) {
-        button.classList.add("active");
-    }
-
-    // Zum geöffneten Bereich scrollen
-    setTimeout(function() {
-        area.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }, 50);
-};
-
-console.log("NAVIGATION GELADEN");
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-function openModal(id){
-
-    const modal =
-        document.getElementById(id);
-
-    if(modal){
-
-        modal.classList.add(
-            "active"
+        setText(
+            "currentUserName",
+            "Unbekannt"
         );
 
+        setText(
+            "currentUserRank",
+            "Keine Berechtigung"
+        );
+
+        return;
+
     }
+
+    setText(
+        "currentUserName",
+        currentEmployee.name ||
+        "Unbekannt"
+    );
+
+    setText(
+        "currentUserRank",
+        currentEmployee.rang ||
+        "Mitarbeiter"
+    );
 
 }
 
 
-function closeModal(id){
+/* =====================================================
+   BERECHTIGUNGSOBERFLÄCHE
+===================================================== */
 
-    const modal =
+function updatePermissionInterface(){
+
+    const managementAllowed =
+        canManageBookkeeping();
+
+    const depositAllowed =
+        canCreateDeposit();
+
+
+    document
+        .querySelectorAll(
+            "[data-management-only]"
+        )
+        .forEach(element => {
+
+            element.style.display =
+                managementAllowed
+                    ? ""
+                    : "none";
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-deposit-only]"
+        )
+        .forEach(element => {
+
+            element.style.display =
+                depositAllowed
+                    ? ""
+                    : "none";
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-employee-only]"
+        )
+        .forEach(element => {
+
+            element.style.display =
+                isMitarbeiter()
+                    ? ""
+                    : "none";
+
+        });
+
+}
+
+
+/* =====================================================
+   FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
+   TEIL 3 VON 10
+   NAVIGATION + FINANZÜBERSICHT
+===================================================== */
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+window.showArea = function(id, button){
+
+    const area =
         document.getElementById(id);
 
-    if(modal){
-
-        modal.classList.remove(
-            "active"
-        );
-
-    }
-
-       }
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 2 VON 10
-===================================================== */
-
-
-/* =====================================================
-   INITIALISIERUNG
-===================================================== */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    try {
-
-        await loadCurrentUser();
-
-       await loadCurrentEmployee();
-
-        await loadBookkeepingData();
-
-        applyPermissions();
-
-        renderOverview();
-
-        renderBookings();
-
-        renderOrderSettlements();
-
-        renderEmployees();
-
-        renderSavings();
-
-        renderCashChecks();
-
-        renderAuditLog();
-
-    } catch(error) {
+    if(!area){
 
         console.error(
-            "Fehler bei der Buchhaltungs-Initialisierung:",
-            error
+            "Bereich nicht gefunden:",
+            id
         );
 
-        showDatabaseError(
-            "Die Buchhaltung konnte nicht vollständig geladen werden."
+        return;
+
+    }
+
+
+    const alreadyOpen =
+        area.classList.contains("active");
+
+
+    document
+        .querySelectorAll(".open-area")
+        .forEach(element => {
+
+            element.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(element => {
+
+            element.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    /*
+     * Klick auf bereits geöffneten
+     * Bereich = Bereich schließen.
+     */
+
+    if(alreadyOpen){
+
+        return;
+
+    }
+
+
+    area.classList.add(
+        "active"
+    );
+
+
+    if(button){
+
+        button.classList.add(
+            "active"
         );
 
     }
 
-});
+
+    setTimeout(
+        () => {
+
+            area.scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            });
+
+        },
+        100
+    );
+
+};
 
 
 /* =====================================================
-   ÜBERSICHT – ZAHLEN BERECHNEN
+   BUCHUNGEN – GRUNDWERTE
 ===================================================== */
 
-function calculateFinancialOverview(){
+function getBookingType(booking){
 
-    let totalDeposits = 0;
-    let totalWithdrawals = 0;
+    return String(
+        booking?.art || ""
+    ).trim();
 
-    let totalWages = 0;
-    let totalClanExpenses = 0;
-
-    let historicalRevenue = 0;
+}
 
 
-    bookings.forEach(booking => {
+function getBookingAmount(booking){
 
-        const amount =
-            numberValue(
-                booking.betrag ??
-                booking.amount
-            );
-
-
-        const type =
-            booking.art ??
-            booking.type ??
-            "";
-
-
-        const category =
-            booking.kategorie ??
-            booking.category ??
-            "";
-
-
-        if(type === "Einzahlung"){
-
-            totalDeposits += amount;
-
-        }
-
-
-        if(type === "Auszahlung"){
-
-            totalWithdrawals += amount;
-
-        }
-
-
-        if(
-            category === "Gehalt" ||
-            category === "Arbeitergehalt"
-        ){
-
-            totalWages += amount;
-
-        }
-
-
-        if(
-            category === "Clan-Ausgabe" ||
-            category === "Ausgabe"
-        ){
-
-            totalClanExpenses += amount;
-
-        }
-
-    });
-
-
-    orderSettlements.forEach(order => {
-
-        historicalRevenue +=
-            numberValue(
-                order.gesamtbetrag ??
-                order.total_amount ??
-                order.betrag ??
-                order.amount
-            );
-
-    });
-
-
-    const currentClanBalance =
-        totalDeposits -
-        totalWithdrawals;
-
-
-    const savingsBalance =
-        getSavingsBalance();
-
-
-    const totalAssets =
-        currentClanBalance +
-        savingsBalance;
-
-
-    return {
-
-        currentClanBalance,
-
-        historicalRevenue,
-
-        totalDeposits,
-
-        totalWithdrawals,
-
-        totalWages,
-
-        totalClanExpenses,
-
-        savingsBalance,
-
-        totalAssets
-
-    };
+    return numberValue(
+        booking?.betrag
+    );
 
 }
 
 
 /* =====================================================
-   ÜBERSICHT – ANZEIGEN
+   EINZAHLUNGEN
+===================================================== */
+
+function getTotalDeposits(){
+
+    return bookings
+        .filter(
+            booking =>
+                getBookingType(
+                    booking
+                ) === "Einzahlung"
+        )
+        .reduce(
+            (sum,booking) =>
+                sum +
+                getBookingAmount(
+                    booking
+                ),
+            0
+        );
+
+}
+
+
+/* =====================================================
+   AUSZAHLUNGEN
+===================================================== */
+
+function getTotalWithdrawals(){
+
+    return bookings
+        .filter(
+            booking =>
+                getBookingType(
+                    booking
+                ) === "Auszahlung"
+        )
+        .reduce(
+            (sum,booking) =>
+                sum +
+                getBookingAmount(
+                    booking
+                ),
+            0
+        );
+
+}
+
+
+/* =====================================================
+   AKTUELLER CLANSTAND
+===================================================== */
+
+function getCurrentClanBalance(){
+
+    return (
+        getTotalDeposits() -
+        getTotalWithdrawals()
+    );
+
+}
+
+
+/* =====================================================
+   GESAMTER UMSATZ
+===================================================== */
+
+function getTotalRevenue(){
+
+    /*
+     * Historischer Gesamtwert der
+     * erfassten Einnahmen.
+     *
+     * Er wird NICHT vom aktuellen
+     * Clanstand abgezogen.
+     */
+
+    return getTotalDeposits();
+
+}
+
+
+/* =====================================================
+   ARBEITERGEHÄLTER
+===================================================== */
+
+function getTotalWorkerSalaries(){
+
+    return workers.reduce(
+        (sum,worker) =>
+            sum +
+            numberValue(
+                worker.gehalt
+            ),
+        0
+    );
+
+}
+
+
+/* =====================================================
+   CLANAUSGABEN
+===================================================== */
+
+function getTotalClanExpenses(){
+
+    return bookings
+        .filter(
+            booking => {
+
+                if(
+                    getBookingType(
+                        booking
+                    ) !== "Auszahlung"
+                ){
+
+                    return false;
+
+                }
+
+                const category =
+                    String(
+                        booking.kategorie ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                return (
+                    category ===
+                    "clan-ausgabe" ||
+                    category ===
+                    "clanausgabe" ||
+                    category ===
+                    "ausgabe"
+                );
+
+            }
+        )
+        .reduce(
+            (sum,booking) =>
+                sum +
+                getBookingAmount(
+                    booking
+                ),
+            0
+        );
+
+}
+
+
+/* =====================================================
+   SPARKONTO
+===================================================== */
+
+function getSavingsBalance(){
+
+    let balance = 0;
+
+
+    savingsTransactions.forEach(
+        transaction => {
+
+            const type =
+                String(
+                    transaction.art ||
+                    ""
+                ).trim();
+
+            const amount =
+                numberValue(
+                    transaction.betrag
+                );
+
+
+            if(
+                type ===
+                "Einzahlung"
+            ){
+
+                balance += amount;
+
+            }
+            else if(
+                type ===
+                "Auszahlung"
+            ){
+
+                balance -= amount;
+
+            }
+
+        }
+    );
+
+
+    return balance;
+
+}
+
+
+/* =====================================================
+   OFFENE AUFTRÄGE
+===================================================== */
+
+function getTotalOpenAmounts(){
+
+    return orderSettlements
+        .filter(
+            order => {
+
+                const status =
+                    String(
+                        order.status ||
+                        "Offen"
+                    ).trim();
+
+                return (
+                    status === "Offen" ||
+                    status ===
+                    "Teilweise bezahlt"
+                );
+
+            }
+        )
+        .reduce(
+            (sum,order) =>
+                sum +
+                numberValue(
+                    order.gesamtbetrag
+                ),
+            0
+        );
+
+}
+
+
+/* =====================================================
+   GESAMTVERMÖGEN
+===================================================== */
+
+function getTotalAssets(){
+
+    return (
+        getCurrentClanBalance() +
+        getSavingsBalance()
+    );
+
+}
+
+
+/* =====================================================
+   FINANZÜBERSICHT DARSTELLEN
 ===================================================== */
 
 function renderOverview(){
 
-    const overview =
-        calculateFinancialOverview();
+    const clanBalance =
+        getCurrentClanBalance();
+
+    const revenue =
+        getTotalRevenue();
+
+    const deposits =
+        getTotalDeposits();
+
+    const withdrawals =
+        getTotalWithdrawals();
+
+    const salaries =
+        getTotalWorkerSalaries();
+
+    const clanExpenses =
+        getTotalClanExpenses();
+
+    const savings =
+        getSavingsBalance();
+
+    const openAmounts =
+        getTotalOpenAmounts();
+
+    const assets =
+        getTotalAssets();
 
 
     setText(
         "currentClanBalance",
-        money(
-            overview.currentClanBalance
-        )
+        money(clanBalance)
     );
 
 
     setText(
         "totalRevenue",
-        money(
-            overview.historicalRevenue
-        )
+        money(revenue)
     );
 
 
     setText(
         "totalDeposits",
-        money(
-            overview.totalDeposits
-        )
+        money(deposits)
     );
 
 
     setText(
         "totalWithdrawals",
-        money(
-            overview.totalWithdrawals
-        )
+        money(withdrawals)
     );
 
 
     setText(
-        "totalWages",
-        money(
-            overview.totalWages
-        )
+        "totalWorkerSalaries",
+        money(salaries)
     );
 
 
     setText(
         "totalClanExpenses",
-        money(
-            overview.totalClanExpenses
-        )
+        money(clanExpenses)
     );
 
 
     setText(
-        "overviewSavings",
-        money(
-            overview.savingsBalance
-        )
+        "totalSavings",
+        money(savings)
+    );
+
+
+    setText(
+        "totalOpenAmounts",
+        money(openAmounts)
+    );
+
+
+    setText(
+        "totalBookings",
+        bookings.length
     );
 
 
     setText(
         "totalAssets",
-        money(
-            overview.totalAssets
-        )
-    );
-
-
-    /*
-       Offene Beträge werden separat
-       aus den Abrechnungen ermittelt.
-    */
-
-    const openAmount =
-        orderSettlements
-            .filter(order =>
-                order.status === "Offen" ||
-                order.status === "Teilweise bezahlt"
-            )
-            .reduce(
-                (sum, order) =>
-                    sum +
-                    numberValue(
-                        order.offener_betrag ??
-                        order.open_amount ??
-                        order.gesamtbetrag ??
-                        order.total_amount
-                    ),
-                0
-            );
-
-
-    setText(
-        "openAmounts",
-        money(openAmount)
+        money(assets)
     );
 
 }
 
 
 /* =====================================================
-   BUCHUNGEN – SORTIERUNG
-===================================================== */
-
-function sortBookings(){
-
-    bookingsData.sort((a,b) => {
-
-        const dateA =
-            new Date(
-                a.created_at ??
-                a.datum ??
-                a.createdAt ??
-                0
-            ).getTime();
-
-
-        const dateB =
-            new Date(
-                b.created_at ??
-                b.datum ??
-                b.createdAt ??
-                0
-            ).getTime();
-
-
-        return dateB - dateA;
-
-    });
-
-}
-
-
-/* =====================================================
-   BUCHUNGEN – ANZEIGE
-===================================================== */
-
-function renderBookings(){
-
-    const body =
-        document.getElementById(
-            "bookingTableBody"
-        );
-
-
-    if(!body) return;
-
-
-    sortBookings();
-
-
-    if(!bookingsData.length){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="8">
-                    Noch keine Buchungen vorhanden.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    body.innerHTML =
-        bookingsData.map(booking => {
-
-            const type =
-                booking.art ??
-                booking.type ??
-                "—";
-
-
-            const amount =
-                numberValue(
-                    booking.betrag ??
-                    booking.amount
-                );
-
-
-            const category =
-                booking.kategorie ??
-                booking.category ??
-                "—";
-
-
-            const from =
-                booking.von_wem ??
-                booking.from_person ??
-                booking.von ??
-                "—";
-
-
-            const to =
-                booking.an_wen ??
-                booking.to_person ??
-                booking.an ??
-                "—";
-
-
-            const purpose =
-                booking.zweck ??
-                booking.reason ??
-                booking.grund ??
-                "—";
-
-
-            const status =
-                booking.status ??
-                "—";
-
-
-            return `
-                <tr>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.buchungsnummer ??
-                            booking.booking_number ??
-                            booking.id ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(type)}
-                    </td>
-
-                    <td>
-                        ${money(amount)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(from)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(to)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(purpose)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(category)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(status)}
-                    </td>
-
-                </tr>
-            `;
-
-        }).join("");
-
-}
-
-
-/* =====================================================
-   BUCHUNGEN – FILTER
-===================================================== */
-
-window.filterBookings = function(){
-
-    const search =
-        getValue(
-            "bookingSearch"
-        ).toLowerCase();
-
-
-    const type =
-        getValue(
-            "bookingTypeFilter"
-        );
-
-
-    const category =
-        getValue(
-            "bookingCategoryFilter"
-        );
-
-
-    const body =
-        document.getElementById(
-            "bookingTableBody"
-        );
-
-
-    if(!body) return;
-
-
-    const filtered =
-        bookingsData.filter(booking => {
-
-            const text =
-                JSON.stringify(
-                    booking
-                ).toLowerCase();
-
-
-            const bookingType =
-                booking.art ??
-                booking.type ??
-                "";
-
-
-            const bookingCategory =
-                booking.kategorie ??
-                booking.category ??
-                "";
-
-
-            return (
-
-                (!search ||
-                    text.includes(search))
-
-                &&
-
-                (!type ||
-                    bookingType === type)
-
-                &&
-
-                (!category ||
-                    bookingCategory === category)
-
-            );
-
-        });
-
-
-    if(!filtered.length){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="8">
-                    Keine passenden Buchungen gefunden.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    body.innerHTML =
-        filtered.map(booking => {
-
-            const amount =
-                numberValue(
-                    booking.betrag ??
-                    booking.amount
-                );
-
-
-            return `
-                <tr>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.buchungsnummer ??
-                            booking.booking_number ??
-                            booking.id ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.art ??
-                            booking.type ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(amount)}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.von_wem ??
-                            booking.from_person ??
-                            booking.von ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.an_wen ??
-                            booking.to_person ??
-                            booking.an ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.zweck ??
-                            booking.reason ??
-                            booking.grund ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.kategorie ??
-                            booking.category ??
-                            "—"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            booking.status ??
-                            "—"
-                        )}
-                    </td>
-
-                </tr>
-            `;
-
-        }).join("");
-
-};
-
-
-/* =====================================================
-   STATUS-KLASSE
-===================================================== */
-
-function getStatusClass(status){
-
-    switch(status){
-
-        case "Bezahlt":
-            return "status-paid";
-
-        case "Teilweise bezahlt":
-            return "status-partial";
-
-        case "Offen":
-            return "status-open";
-
-        case "Storniert":
-            return "status-cancelled";
-
-        default:
-            return "";
-
-    }
-
-}
-
-
-/* =====================================================
-   STATUS-TEXT
-===================================================== */
-
-function statusBadge(status){
-
-    return `
-        <span class="status-badge ${getStatusClass(status)}">
-            ${escapeHtml(status || "—")}
-        </span>
-    `;
-
-}
-
-
-/* =====================================================
-   BEREICH ÖFFNEN
-===================================================== */
-
-window.openBookkeepingArea = function(id){
-
-    const area =
-        document.getElementById(id);
-
-
-    if(!area) return;
-
-
-    area.classList.toggle(
-        "active"
-    );
-
-};
-
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 3 VON 10
-===================================================== */
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNG – AKTUELLE ARBEITER
-===================================================== */
-
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNG ÖFFNEN
-===================================================== */
-
-window.openOrderModal = function(){
-
-    if(!canManageBookkeeping()){
-
-        alert(
-            "Nur Leitung und Stadtleitung dürfen Auftragsabrechnungen erstellen."
-        );
-
-        return;
-
-    }
-
-
-    currentWorkers = [];
-
-    renderCurrentWorkers();
-
-    updateWorkerTotals();
-
-
-    const modal =
-        document.getElementById(
-            "orderModal"
-        );
-
-
-    if(modal){
-
-        modal.classList.add(
-            "active"
-        );
-
-    }
-
-};
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNG SCHLIESSEN
-===================================================== */
-
-window.closeOrderModal = function(){
-
-    const modal =
-        document.getElementById(
-            "orderModal"
-        );
-
-
-    if(modal){
-
-        modal.classList.remove(
-            "active"
-        );
-
-    }
-
-};
-
-
-/* =====================================================
-   ARBEITER HINZUFÜGEN
-===================================================== */
-
-window.addWorkerRow = function(){
-
-    if(!canManageBookkeeping()){
-
-        alert(
-            "Nur Leitung und Stadtleitung dürfen Arbeiter hinzufügen."
-        );
-
-        return;
-
-    }
-
-
-    currentWorkers.push({
-
-        name: "",
-
-        salary: 0,
-
-        note: ""
-
-    });
-
-
-    renderCurrentWorkers();
-
-    updateWorkerTotals();
-
-};
-
-
-/* =====================================================
-   ARBEITER ANZEIGEN
-===================================================== */
-
-function renderCurrentWorkers(){
-
-    const container =
-        document.getElementById(
-            "workerList"
-        );
-
-
-    if(!container) return;
-
-
-    if(!currentWorkers.length){
-
-        container.innerHTML = `
-            <div class="worker-empty">
-                Noch keine Arbeiter hinzugefügt.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        currentWorkers.map(
-            (worker,index) => {
-
-                return `
-
-                    <div
-                        class="worker-row"
-                        data-worker-index="${index}"
-                    >
-
-                        <div class="form-group">
-
-                            <label>
-                                Arbeiter
-                            </label>
-
-                            <input
-                                type="text"
-                                value="${escapeHtml(
-                                    worker.name || ""
-                                )}"
-                                placeholder="Name / Minecraft-Name"
-                                oninput="
-                                    updateWorker(
-                                        ${index},
-                                        'name',
-                                        this.value
-                                    )
-                                "
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Gehalt
-                            </label>
-
-                            <input
-                                type="number"
-                                min="0"
-                                step="1"
-                                value="${numberValue(
-                                    worker.salary
-                                )}"
-                                placeholder="0"
-                                oninput="
-                                    updateWorker(
-                                        ${index},
-                                        'salary',
-                                        this.value
-                                    )
-                                "
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Notiz
-                            </label>
-
-                            <input
-                                type="text"
-                                value="${escapeHtml(
-                                    worker.note || ""
-                                )}"
-                                placeholder="Optional"
-                                oninput="
-                                    updateWorker(
-                                        ${index},
-                                        'note',
-                                        this.value
-                                    )
-                                "
-                            >
-
-                        </div>
-
-
-                        <button
-                            type="button"
-                            class="danger-button"
-                            onclick="
-                                removeWorker(${index})
-                            "
-                        >
-                            Entfernen
-                        </button>
-
-                    </div>
-
-                `;
-
-            }
-        ).join("");
-
-}
-
-
-/* =====================================================
-   ARBEITER AKTUALISIEREN
-===================================================== */
-
-window.updateWorker = function(
-    index,
-    key,
-    value
-){
-
-    if(!canManageBookkeeping()){
-
-        return;
-
-    }
-
-
-    if(
-        !currentWorkers[index]
-    ){
-
-        return;
-
-    }
-
-
-    if(key === "salary"){
-
-        currentWorkers[index][key] =
-            numberValue(value);
-
-    }
-    else{
-
-        currentWorkers[index][key] =
-            value;
-
-    }
-
-
-    updateWorkerTotals();
-
-};
-
-
-/* =====================================================
-   ARBEITER ENTFERNEN
-===================================================== */
-
-window.removeWorker = function(index){
-
-    if(!canManageBookkeeping()){
-
-        return;
-
-    }
-
-
-    currentWorkers.splice(
-        index,
-        1
-    );
-
-
-    renderCurrentWorkers();
-
-    updateWorkerTotals();
-
-};
-
-
-/* =====================================================
-   ARBEITERSUMMEN
-===================================================== */
-
-function updateWorkerTotals(){
-
-    const total =
-        currentWorkers.reduce(
-            (
-                sum,
-                worker
-            ) =>
-                sum +
-                numberValue(
-                    worker.salary
-                ),
-            0
-        );
-
-
-    const orderTotal =
-        numberValue(
-            getValue(
-                "orderTotal"
-            )
-        );
-
-
-    const clan =
-        numberValue(
-            getValue(
-                "orderClanAmount"
-            )
-        );
-
-
-    const remaining =
-        orderTotal -
-        clan -
-        total;
-
-
-    setText(
-        "orderWorkerCount",
-        currentWorkers.length
-    );
-
-
-    setText(
-        "orderSalaryTotal",
-        money(total)
-    );
-
-
-    setText(
-        "orderRemainingAmount",
-        money(remaining)
-    );
-
-
-    const warning =
-        getElement(
-            "orderDistributionWarning"
-        );
-
-
-    if(!warning){
-
-        return;
-
-    }
-
-
-    if(
-        remaining === 0 &&
-        orderTotal > 0
-    ){
-
-        warning.textContent =
-            "Die Verteilung ist vollständig.";
-
-        warning.className =
-            "distribution-warning success-text";
-
-    }
-    else if(
-        remaining < 0
-    ){
-
-        warning.textContent =
-            "Die Verteilung überschreitet den Gesamtbetrag.";
-
-        warning.className =
-            "distribution-warning danger-text";
-
-    }
-    else{
-
-        warning.textContent =
-            "Es ist noch ein Betrag nicht verteilt.";
-
-        warning.className =
-            "distribution-warning";
-
-    }
-
-}
-
-
-/* =====================================================
-   AUFTRAGSWERTE ÜBERWACHEN
-===================================================== */
-
-document.addEventListener(
-    "input",
-    event => {
-
-        if(
-            event.target.id ===
-                "orderTotal" ||
-
-            event.target.id ===
-                "orderClanAmount"
-        ){
-
-            updateWorkerTotals();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNG SPEICHERN
-===================================================== */
-
-window.saveOrderSettlement =
-async function(){
-
-    if(!canManageBookkeeping()){
-
-        alert(
-            "Nur Leitung und Stadtleitung dürfen Auftragsabrechnungen speichern."
-        );
-
-        return;
-
-    }
-
-
-    const orderNumber =
-        getValue(
-            "orderNumber"
-        );
-
-
-    const total =
-        numberValue(
-            getValue(
-                "orderTotal"
-            )
-        );
-
-
-    const clan =
-        numberValue(
-            getValue(
-                "orderClanAmount"
-            )
-        );
-
-
-    if(!orderNumber){
-
-        alert(
-            "Bitte eine Auftragsnummer eingeben."
-        );
-
-        return;
-
-    }
-
-
-    if(total <= 0){
-
-        alert(
-            "Bitte einen gültigen Gesamtbetrag eingeben."
-        );
-
-        return;
-
-    }
-
-
-    if(clan < 0){
-
-        alert(
-            "Der Clanbetrag darf nicht negativ sein."
-        );
-
-        return;
-
-    }
-
-
-    if(clan > total){
-
-        alert(
-            "Der Clanbetrag darf den Gesamtbetrag nicht überschreiten."
-        );
-
-        return;
-
-    }
-
-
-    const salaries =
-        currentWorkers.reduce(
-            (
-                sum,
-                worker
-            ) =>
-                sum +
-                numberValue(
-                    worker.salary
-                ),
-            0
-        );
-
-
-    const remaining =
-        total -
-        clan -
-        salaries;
-
-
-    if(remaining < 0){
-
-        alert(
-            "Die Verteilung überschreitet den Gesamtbetrag."
-        );
-
-        return;
-
-    }
-
-
-    const settlementPayload = {
-
-        auftragsnummer:
-            orderNumber,
-
-        gesamtbetrag:
-            total,
-
-        clanbetrag:
-            clan,
-
-        gesamt_gehaelter:
-            salaries,
-
-        status:
-            getValue(
-                "orderStatus"
-            ) ||
-            "Offen",
-
-        datum:
-            getValue(
-                "orderDate"
-            ) ||
-            new Date().toISOString(),
-
-        erstellt_von:
-            currentUser?.id ||
-            null,
-
-        erstellt_von_name:
-            currentEmployee?.name ||
-            getValue(
-                "orderCreatedBy"
-            ) ||
-            "Manuell",
-
-        notiz:
-            getValue(
-                "orderNote"
-            )
-
-    };
-
-
-    if(!hasSupabase()){
-
-        showDatabaseError(
-            "Supabase ist nicht verfügbar."
-        );
-
-        return;
-
-    }
-
-
-    const {
-        data: settlement,
-        error
-    } =
-        await buchhaltungDB
-            .from(
-                TABLE_ORDERS
-            )
-            .insert(
-                settlementPayload
-            )
-            .select()
-            .single();
-
-
-    if(error){
-
-        console.error(
-            "Auftragsabrechnung:",
-            error
-        );
-
-        alert(
-            "Die Auftragsabrechnung konnte nicht gespeichert werden."
-        );
-
-        return;
-
-    }
-
-
-    /* =============================================
-       ARBEITER SPEICHERN
-    ============================================= */
-
-    if(
-        settlement &&
-        currentWorkers.length
-    ){
-
-        const workerRows =
-            currentWorkers.map(
-                worker => ({
-
-                    auftragsabrechnung_id:
-                        settlement.id,
-
-                    arbeiter_name:
-                        worker.name,
-
-                    gehalt:
-                        numberValue(
-                            worker.salary
-                        ),
-
-                    notiz:
-                        worker.note || null
-
-                })
-            );
-
-
-        const {
-            error:
-                workerError
-        } =
-            await buchhaltungDB
-                .from(
-                    TABLE_ORDER_WORKERS
-                )
-                .insert(
-                    workerRows
-                );
-
-
-        if(workerError){
-
-            console.error(
-                "Arbeiter-Abrechnung:",
-                workerError
-            );
-
-        }
-
-    }
-
-
-    /* =============================================
-       NEU LADEN
-    ============================================= */
-
-    await loadBookkeepingData();
-
-    renderOverview();
-
-    renderOrderSettlements();
-
-    renderEmployees();
-
-
-    currentWorkers = [];
-
-    renderCurrentWorkers();
-
-    updateWorkerTotals();
-
-    closeOrderModal();
-
-
-    await sendDiscordNotification(
-        "Auftragsabrechnung",
-        {
-            auftragsnummer:
-                orderNumber,
-
-            gesamtbetrag:
-                total,
-
-            clanbetrag:
-                clan,
-
-            gesamt_gehaelter:
-                salaries,
-
-            erstellt_von:
-                settlementPayload.erstellt_von_name
-
-        }
-    );
-
-
-    alert(
-        "Auftragsabrechnung wurde gespeichert."
-    );
-
-};
-
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
+   BUCHUNGEN
    TEIL 4 VON 10
-===================================================== */
-
-
-/* =====================================================
-   AUFTRAGSFORMULAR LEEREN
-===================================================== */
-
-function clearOrderForm(){
-
-    [
-        "orderNumber",
-        "orderTotal",
-        "orderClanAmount",
-        "orderNote"
-    ].forEach(id => {
-
-        const element =
-            document.getElementById(id);
-
-        if(element){
-
-            element.value = "";
-
-        }
-
-    });
-
-
-    const date =
-        document.getElementById(
-            "orderDate"
-        );
-
-    if(date){
-
-        date.value = "";
-
-    }
-
-
-    const status =
-        document.getElementById(
-            "orderStatus"
-        );
-
-    if(status){
-
-        status.value = "Offen";
-
-    }
-
-
-    const createdBy =
-        document.getElementById(
-            "orderCreatedBy"
-        );
-
-    if(createdBy){
-
-        createdBy.value =
-            currentEmployee?.name ||
-            currentEmployee?.username ||
-            "";
-
-    }
-
-
-    currentWorkers = [];
-
-    renderCurrentWorkers();
-
-    updateWorkerTotals();
-
-}
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNGEN ANZEIGEN
-===================================================== */
-
-function renderOrderSettlements(){
-
-    const body =
-        document.getElementById(
-            "orderTableBody"
-        );
-
-
-    if(!body) return;
-
-
-    if(
-        !Array.isArray(
-            orderSettlements
-        ) ||
-        orderSettlements.length === 0
-    ){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="9">
-                    Noch keine Auftragsabrechnungen vorhanden.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    body.innerHTML =
-        orderSettlements
-            .map(order => {
-
-                const orderId =
-                    order.auftragsnummer ||
-                    order.id ||
-                    "—";
-
-
-                const total =
-                    numberValue(
-                        order.gesamtbetrag ??
-                        order.total ??
-                        order.total_amount
-                    );
-
-
-                const clan =
-                    numberValue(
-                        order.clanbetrag ??
-                        order.clan ??
-                        order.clan_amount
-                    );
-
-
-                const salaries =
-                    numberValue(
-                        order.gesamt_gehaelter ??
-                        order.salaries ??
-                        order.total_wages
-                    );
-
-
-                const status =
-                    order.status ||
-                    "Offen";
-
-
-                const date =
-                    order.datum ||
-                    order.created_at ||
-                    "";
-
-
-                const orderWorkers =
-                    Array.isArray(workers)
-                        ? workers.filter(
-                            worker =>
-                                String(
-                                    worker.auftragsabrechnung_id
-                                ) ===
-                                String(order.id)
-                        )
-                        : [];
-
-
-                return `
-
-                    <tr>
-
-                        <td>
-                            ${escapeHtml(
-                                orderId
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${money(
-                                total
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${money(
-                                clan
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${money(
-                                salaries
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${orderWorkers.length}
-                        </td>
-
-
-                        <td>
-                            ${statusBadge(
-                                status
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                formatDate(
-                                    date
-                                )
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                order.erstellt_von_name ||
-                                order.created_by_name ||
-                                "—"
-                            )}
-                        </td>
-
-
-                        <td>
-
-                            <button
-                                type="button"
-                                class="secondary-button"
-                                onclick="
-                                    viewOrderSettlement(
-                                        '${escapeHtml(
-                                            String(order.id || "")
-                                        )}'
-                                    )
-                                "
-                            >
-                                Anzeigen
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            })
-            .join("");
-
-}
-
-
-/* =====================================================
-   DATUM FORMATIEREN
-===================================================== */
-
-function formatDate(value){
-
-    if(!value){
-
-        return "—";
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
-
-        return String(value);
-
-    }
-
-
-    return date.toLocaleString(
-        "de-DE",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
-
-}
-
-
-/* =====================================================
-   AUFTRAGSABRECHNUNG ANZEIGEN
-===================================================== */
-
-window.viewOrderSettlement =
-function(id){
-
-    const order =
-        orderSettlements.find(
-            item =>
-                String(
-                    item.id
-                ) ===
-                String(id)
-        );
-
-
-    if(!order){
-
-        alert(
-            "Auftragsabrechnung wurde nicht gefunden."
-        );
-
-        return;
-
-    }
-
-
-    const orderWorkers =
-        Array.isArray(workers)
-            ? workers.filter(
-                worker =>
-                    String(
-                        worker.auftragsabrechnung_id
-                    ) ===
-                    String(order.id)
-            )
-            : [];
-
-
-    const total =
-        numberValue(
-            order.gesamtbetrag ??
-            order.total ??
-            order.total_amount
-        );
-
-
-    const clan =
-        numberValue(
-            order.clanbetrag ??
-            order.clan ??
-            order.clan_amount
-        );
-
-
-    const salaries =
-        numberValue(
-            order.gesamt_gehaelter ??
-            order.salaries ??
-            order.total_wages
-        );
-
-
-    const workerText =
-        orderWorkers.length
-            ? orderWorkers
-                .map(worker => `
-                    <div class="worker-detail">
-
-                        <strong>
-                            ${escapeHtml(
-                                worker.name ||
-                                "Unbekannt"
-                            )}
-                        </strong>
-
-                        <span>
-                            ${money(
-                                numberValue(
-                                    worker.gehalt ??
-                                    worker.salary
-                                )
-                            )}
-                        </span>
-
-                    </div>
-                `)
-                .join("")
-            : `
-                <div class="worker-empty">
-                    Keine Arbeiter hinterlegt.
-                </div>
-            `;
-
-
-    const content = `
-
-        <div class="detail-box">
-
-            <h3>
-                Auftragsabrechnung
-            </h3>
-
-
-            <div class="detail-grid">
-
-                <div>
-                    <span>
-                        Auftragsnummer
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(
-                            order.auftragsnummer ||
-                            order.id ||
-                            "—"
-                        )}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>
-                        Status
-                    </span>
-
-                    <strong>
-                        ${statusBadge(
-                            order.status ||
-                            "Offen"
-                        )}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>
-                        Gesamtbetrag
-                    </span>
-
-                    <strong>
-                        ${money(total)}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>
-                        Clananteil
-                    </span>
-
-                    <strong>
-                        ${money(clan)}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>
-                        Gehälter gesamt
-                    </span>
-
-                    <strong>
-                        ${money(salaries)}
-                    </strong>
-                </div>
-
-
-                <div>
-                    <span>
-                        Restbetrag
-                    </span>
-
-                    <strong>
-                        ${money(
-                            total -
-                            clan -
-                            salaries
-                        )}
-                    </strong>
-                </div>
-
-            </div>
-
-
-            <h4>
-                Arbeiter
-            </h4>
-
-
-            <div class="worker-detail-list">
-
-                ${workerText}
-
-            </div>
-
-
-            <div class="detail-note">
-
-                <strong>
-                    Notiz
-                </strong>
-
-                <p>
-                    ${escapeHtml(
-                        order.notiz ||
-                        "Keine Notiz vorhanden."
-                    )}
-                </p>
-
-            </div>
-
-
-            <div class="detail-meta">
-
-                Erstellt von:
-                ${escapeHtml(
-                    order.erstellt_von_name ||
-                    "—"
-                )}
-
-                ·
-
-                ${escapeHtml(
-                    formatDate(
-                        order.datum ||
-                        order.created_at
-                    )
-                )}
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    openDetailModal(
-        "Auftragsabrechnung",
-        content
-    );
-
-};
-
-
-/* =====================================================
-   DETAIL-MODAL
-===================================================== */
-
-function openDetailModal(
-    title,
-    content
-){
-
-    let modal =
-        document.getElementById(
-            "bookkeepingDetailModal"
-        );
-
-
-    if(!modal){
-
-        modal =
-            document.createElement(
-                "div"
-            );
-
-        modal.id =
-            "bookkeepingDetailModal";
-
-        modal.className =
-            "bookkeeping-detail-modal";
-
-
-        modal.innerHTML = `
-
-            <div class="detail-modal-content">
-
-                <div class="detail-modal-header">
-
-                    <h2 id="detailModalTitle">
-                        ${escapeHtml(title)}
-                    </h2>
-
-                    <button
-                        type="button"
-                        class="secondary-button"
-                        onclick="
-                            closeDetailModal()
-                        "
-                    >
-                        Schließen
-                    </button>
-
-                </div>
-
-
-                <div id="detailModalBody"></div>
-
-            </div>
-
-        `;
-
-
-        document.body.appendChild(
-            modal
-        );
-
-    }
-
-
-    setText(
-        "detailModalTitle",
-        title
-    );
-
-
-    const body =
-        document.getElementById(
-            "detailModalBody"
-        );
-
-
-    if(body){
-
-        body.innerHTML =
-            content;
-
-    }
-
-
-    modal.classList.add(
-        "active"
-    );
-
-}
-
-
-/* =====================================================
-   DETAIL-MODAL SCHLIESSEN
-===================================================== */
-
-window.closeDetailModal =
-function(){
-
-    const modal =
-        document.getElementById(
-            "bookkeepingDetailModal"
-        );
-
-
-    if(modal){
-
-        modal.classList.remove(
-            "active"
-        );
-
-    }
-
-};
-
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 5 VON 10
 ===================================================== */
 
 
@@ -2909,31 +1229,27 @@ window.openBookingModal = function(){
     }
 
 
-    clearBookingForm();
-
-
     const type =
-        getElement(
+        document.getElementById(
             "bookingType"
         );
 
 
     /*
      * Mitarbeiter dürfen ausschließlich
-     * eine Einzahlung erstellen.
+     * Einzahlungen erstellen.
      */
 
-    if(isMitarbeiter()){
+    if(
+        isMitarbeiter() &&
+        type
+    ){
 
-        if(type){
+        type.value =
+            "Einzahlung";
 
-            type.value =
-                "Einzahlung";
-
-            type.disabled =
-                true;
-
-        }
+        type.disabled =
+            true;
 
     }
     else if(type){
@@ -2945,7 +1261,7 @@ window.openBookingModal = function(){
 
 
     const createdBy =
-        getElement(
+        document.getElementById(
             "bookingCreatedBy"
         );
 
@@ -2956,15 +1272,13 @@ window.openBookingModal = function(){
     ){
 
         createdBy.value =
-            currentEmployee.name ||
-            currentEmployee.username ||
-            "";
+            currentEmployee.name || "";
 
     }
 
 
     const date =
-        getElement(
+        document.getElementById(
             "bookingDate"
         );
 
@@ -2991,11 +1305,10 @@ window.openBookingModal = function(){
    BUCHUNGSMODAL SCHLIESSEN
 ===================================================== */
 
-window.closeBookingModal =
-function(){
+window.closeBookingModal = function(){
 
     const type =
-        getElement(
+        document.getElementById(
             "bookingType"
         );
 
@@ -3016,32 +1329,23 @@ function(){
 
 
 /* =====================================================
-   BUCHUNGSFORMULAR LEEREN
+   FORMULAR ZURÜCKSETZEN
 ===================================================== */
 
 function clearBookingForm(){
 
     [
-
         "bookingNumber",
-
         "bookingAmount",
-
         "bookingFrom",
-
         "bookingTo",
-
         "bookingPurpose",
-
         "bookingOrderNumber",
-
         "bookingNote"
-
     ].forEach(id => {
 
         const element =
-            getElement(id);
-
+            document.getElementById(id);
 
         if(element){
 
@@ -3054,10 +1358,9 @@ function clearBookingForm(){
 
 
     const type =
-        getElement(
+        document.getElementById(
             "bookingType"
         );
-
 
     if(type){
 
@@ -3071,10 +1374,9 @@ function clearBookingForm(){
 
 
     const payment =
-        getElement(
+        document.getElementById(
             "bookingPaymentMethod"
         );
-
 
     if(payment){
 
@@ -3085,10 +1387,9 @@ function clearBookingForm(){
 
 
     const status =
-        getElement(
+        document.getElementById(
             "bookingStatus"
         );
-
 
     if(status){
 
@@ -3099,10 +1400,9 @@ function clearBookingForm(){
 
 
     const category =
-        getElement(
+        document.getElementById(
             "bookingCategory"
         );
-
 
     if(category){
 
@@ -3113,10 +1413,9 @@ function clearBookingForm(){
 
 
     const createdBy =
-        getElement(
+        document.getElementById(
             "bookingCreatedBy"
         );
-
 
     if(
         createdBy &&
@@ -3124,18 +1423,15 @@ function clearBookingForm(){
     ){
 
         createdBy.value =
-            currentEmployee.name ||
-            currentEmployee.username ||
-            "";
+            currentEmployee.name || "";
 
     }
 
 
     const date =
-        getElement(
+        document.getElementById(
             "bookingDate"
         );
-
 
     if(date){
 
@@ -3151,12 +1447,9 @@ function clearBookingForm(){
    BUCHUNG SPEICHERN
 ===================================================== */
 
-window.saveBooking =
-async function(){
+window.saveBooking = async function(){
 
-    if(
-        !canCreateDeposit()
-    ){
+    if(!canCreateDeposit()){
 
         alert(
             "Du hast keine Berechtigung, eine Buchung zu erstellen."
@@ -3209,9 +1502,7 @@ async function(){
         );
 
 
-    if(
-        amount <= 0
-    ){
+    if(amount <= 0){
 
         alert(
             "Bitte einen gültigen Betrag eingeben."
@@ -3223,8 +1514,7 @@ async function(){
 
 
     /*
-     * Sicherheitsprüfung:
-     * Mitarbeiter können niemals
+     * Mitarbeiter dürfen niemals
      * eine Auszahlung erstellen.
      */
 
@@ -3241,6 +1531,10 @@ async function(){
 
     }
 
+
+    /*
+     * Buchungsnummer.
+     */
 
     const bookingNumber =
         getValue(
@@ -3271,7 +1565,8 @@ async function(){
 
 
     /*
-     * Vollständige Buchungsdaten.
+     * Exakt passend zur
+     * Supabase-Tabelle.
      */
 
     const payload = {
@@ -3339,9 +1634,13 @@ async function(){
     };
 
 
+    /*
+     * In Supabase speichern.
+     */
+
     if(!hasSupabase()){
 
-        showDatabaseError(
+        alert(
             "Supabase ist nicht verfügbar."
         );
 
@@ -3349,17 +1648,6 @@ async function(){
 
     }
 
-
-    /*
-     * Buchung in der Datenbank speichern.
-     *
-     * WICHTIG:
-     * Diese Funktion wird nur durch die
-     * manuelle Buchhaltung ausgelöst.
-     *
-     * Ein normaler Portal-Auftrag wird
-     * hier NICHT automatisch eingetragen.
-     */
 
     const {
         data,
@@ -3383,7 +1671,6 @@ async function(){
             error
         );
 
-
         alert(
             "Buchung konnte nicht gespeichert werden.\n\n" +
             error.message
@@ -3404,7 +1691,7 @@ async function(){
 
 
     /*
-     * Protokoll-Eintrag.
+     * Protokoll erstellen.
      */
 
     const logPayload = {
@@ -3445,12 +1732,8 @@ async function(){
 
 
     const {
-        data:
-            logData,
-
         error:
             logError
-
     } =
         await buchhaltungDB
             .from(
@@ -3458,82 +1741,28 @@ async function(){
             )
             .insert(
                 logPayload
-            )
-            .select()
-            .single();
+            );
 
 
-    if(
-        !logError &&
-        logData
-    ){
+    if(logError){
 
-        activityLogs.unshift(
-            logData
+        console.warn(
+            "Protokoll konnte nicht gespeichert werden:",
+            logError
         );
 
     }
 
 
     /*
-     * Discord-Benachrichtigung.
-     */
-
-    await sendDiscordNotification({
-
-        type:
-            "Buchung",
-
-        title:
-            type === "Einzahlung"
-                ? "Neue Einzahlung"
-                : "Neue Auszahlung",
-
-        amount:
-            amount,
-
-        from:
-            payload.von,
-
-        to:
-            payload.an,
-
-        purpose:
-            payload.zweck,
-
-        category:
-            payload.kategorie,
-
-        orderNumber:
-            payload.auftragsnummer,
-
-        status:
-            payload.status,
-
-        createdBy:
-            createdBy,
-
-        date:
-            date,
-
-        description:
-            bookingNumber,
-
-        note:
-            payload.notiz
-
-    });
-
-
-    /*
-     * Anzeige aktualisieren.
+     * Alles neu berechnen.
      */
 
     renderBookings();
 
     renderOverview();
 
-    renderAuditLog();
+    renderLogs();
 
 
     clearBookingForm();
@@ -3542,183 +1771,34 @@ async function(){
 
 
     alert(
-        "Buchung wurde gespeichert."
+        "Buchung erfolgreich gespeichert."
     );
 
 };
 
 
 /* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 6 VON 10
+   BUCHUNGEN ANZEIGEN
 ===================================================== */
 
-
-/* =====================================================
-   SPARKONTO – BILANZ
-===================================================== */
-
-function getSavingsBalance(){
-
-    const deposits =
-        savingsTransactions
-            .filter(
-                transaction =>
-                    (
-                        transaction.art ||
-                        transaction.type
-                    ) ===
-                    "Einzahlung"
-            )
-            .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
-                    sum +
-                    numberValue(
-                        transaction.betrag ??
-                        transaction.amount
-                    ),
-                0
-            );
-
-
-    const withdrawals =
-        savingsTransactions
-            .filter(
-                transaction =>
-                    (
-                        transaction.art ||
-                        transaction.type
-                    ) ===
-                    "Auszahlung"
-            )
-            .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
-                    sum +
-                    numberValue(
-                        transaction.betrag ??
-                        transaction.amount
-                    ),
-                0
-            );
-
-
-    return (
-        deposits -
-        withdrawals
-    );
-
-}
-
-
-/* =====================================================
-   SPARKONTO – ÜBERSICHT
-===================================================== */
-
-function updateSavingsOverview(){
-
-    const balance =
-        getSavingsBalance();
-
-
-    const goal =
-        numberValue(
-            savingsGoalValue
-        );
-
-
-    const progress =
-        goal > 0
-            ? Math.min(
-                100,
-                Math.max(
-                    0,
-                    (
-                        balance /
-                        goal
-                    ) * 100
-                )
-            )
-            : 0;
-
-
-    setText(
-        "savingsBalance",
-        money(balance)
-    );
-
-
-    setText(
-        "savingsGoal",
-        money(goal)
-    );
-
-
-    setText(
-        "savingsProgress",
-        progress.toFixed(1) +
-        "%"
-    );
-
-
-    const progressBar =
-        document.getElementById(
-            "savingsProgressBar"
-        );
-
-
-    if(progressBar){
-
-        progressBar.style.width =
-            progress + "%";
-
-    }
-
-}
-
-
-/* =====================================================
-   SPARKONTO – ANZEIGE
-===================================================== */
-
-function renderSavings(){
+function renderBookings(){
 
     const body =
         document.getElementById(
-            "savingsTableBody"
+            "bookingTableBody"
         );
 
 
-    updateSavingsOverview();
+    if(!body) return;
 
 
-    if(!body){
-
-        return;
-
-    }
-
-
-    if(
-        !Array.isArray(
-            savingsTransactions
-        ) ||
-        !savingsTransactions.length
-    ){
+    if(!bookings.length){
 
         body.innerHTML = `
             <tr class="empty-row">
-
-                <td colspan="6">
-                    Noch keine Sparkonto-Buchungen vorhanden.
+                <td colspan="12">
+                    Noch keine Buchungen vorhanden.
                 </td>
-
             </tr>
         `;
 
@@ -3728,37 +1808,29 @@ function renderSavings(){
 
 
     body.innerHTML =
-        savingsTransactions
-            .slice()
-            .reverse()
+        bookings
             .map(
-                transaction => {
+                booking => {
 
                     const type =
-                        transaction.art ||
-                        transaction.type ||
+                        booking.art ||
                         "—";
-
 
                     const amount =
                         numberValue(
-                            transaction.betrag ??
-                            transaction.amount
+                            booking.betrag
                         );
 
 
                     return `
-
                         <tr>
 
                             <td>
                                 ${escapeHtml(
-                                    transaction.buchungsnummer ||
-                                    transaction.id ||
+                                    booking.buchungsnummer ||
                                     "—"
                                 )}
                             </td>
-
 
                             <td>
                                 ${escapeHtml(
@@ -3766,41 +1838,75 @@ function renderSavings(){
                                 )}
                             </td>
 
-
                             <td>
                                 ${money(
                                     amount
                                 )}
                             </td>
 
-
                             <td>
                                 ${escapeHtml(
-                                    transaction.von ||
-                                    transaction.from ||
+                                    booking.von ||
                                     "—"
                                 )}
                             </td>
 
-
                             <td>
                                 ${escapeHtml(
-                                    transaction.an ||
-                                    transaction.to ||
+                                    booking.an ||
                                     "—"
                                 )}
                             </td>
 
+                            <td>
+                                ${escapeHtml(
+                                    booking.zweck ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.kategorie ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.auftragsnummer ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.zahlungsart ||
+                                    "—"
+                                )}
+                            </td>
 
                             <td>
                                 ${formatDate(
-                                    transaction.datum ||
-                                    transaction.date
+                                    booking.datum
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.erstellt_von_name ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.status ||
+                                    "—"
                                 )}
                             </td>
 
                         </tr>
-
                     `;
 
                 }
@@ -3811,66 +1917,688 @@ function renderSavings(){
 
 
 /* =====================================================
-   SPARKONTO – SPARZIEL SETZEN
+   BUCHUNGEN FILTERN
 ===================================================== */
 
-window.setSavingsGoal =
-function(){
+window.filterBookings = function(){
 
-    if(
-        !canManageBookkeeping()
-    ){
+    const search =
+        getValue(
+            "bookingSearch"
+        )
+        .toLowerCase()
+        .trim();
 
-        alert(
-            "Nur Leitung und Stadtleitung dürfen das Sparziel verwalten."
+
+    const type =
+        getValue(
+            "bookingTypeFilter"
         );
+
+
+    const category =
+        getValue(
+            "bookingCategoryFilter"
+        );
+
+
+    const filtered =
+        bookings.filter(
+            booking => {
+
+                const text = [
+
+                    booking.buchungsnummer,
+                    booking.art,
+                    booking.betrag,
+                    booking.von,
+                    booking.an,
+                    booking.zweck,
+                    booking.kategorie,
+                    booking.auftragsnummer,
+                    booking.zahlungsart,
+                    booking.erstellt_von_name,
+                    booking.status,
+                    booking.notiz
+
+                ]
+                .join(" ")
+                .toLowerCase();
+
+
+                return (
+
+                    (!search ||
+                        text.includes(
+                            search
+                        ))
+
+                    &&
+
+                    (!type ||
+                        booking.art ===
+                        type)
+
+                    &&
+
+                    (!category ||
+                        booking.kategorie ===
+                        category)
+
+                );
+
+            }
+        );
+
+
+    const body =
+        document.getElementById(
+            "bookingTableBody"
+        );
+
+
+    if(!body) return;
+
+
+    if(!filtered.length){
+
+        body.innerHTML = `
+            <tr class="empty-row">
+                <td colspan="12">
+                    Keine passenden Buchungen gefunden.
+                </td>
+            </tr>
+        `;
 
         return;
 
     }
 
 
-    const value =
-        numberValue(
-            getValue(
-                "savingsGoal"
+    body.innerHTML =
+        filtered
+            .map(
+                booking => {
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.buchungsnummer ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.art ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${money(
+                                    booking.betrag
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.von ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.an ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.zweck ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.kategorie ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.auftragsnummer ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.zahlungsart ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    booking.datum
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.erstellt_von_name ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    booking.status ||
+                                    "—"
+                                )}
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
             )
-        );
-
-
-    if(value < 0){
-
-        alert(
-            "Das Sparziel darf nicht negativ sein."
-        );
-
-        return;
-
-    }
-
-
-    savingsGoalValue =
-        value;
-
-
-    updateSavingsOverview();
+            .join("");
 
 };
 
 
 /* =====================================================
-   SPARKONTO – MODAL ÖFFNEN
+   AUFTRAGSABRECHNUNGEN + ARBEITER
+   TEIL 5 VON 10
 ===================================================== */
 
-window.openSavingsModal =
-function(){
 
-    if(
-        !canManageBookkeeping()
-    ){
+/* =====================================================
+   AUFTRAGSMODAL ÖFFNEN
+===================================================== */
+
+window.openOrderModal = function(){
+
+    if(!canManageBookkeeping()){
 
         alert(
-            "Nur Leitung und Stadtleitung dürfen das Sparkonto verwalten."
+            "Nur Leitung und Stadtleitung dürfen Auftragsabrechnungen erstellen."
+        );
+
+        return;
+
+    }
+
+    clearOrderForm();
+
+    const date =
+        document.getElementById("orderDate");
+
+    if(date){
+        date.value = nowLocal();
+    }
+
+    openModal("orderModal");
+
+};
+
+
+/* =====================================================
+   AUFTRAGSMODAL SCHLIESSEN
+===================================================== */
+
+window.closeOrderModal = function(){
+
+    closeModal("orderModal");
+
+};
+
+
+/* =====================================================
+   ARBEITER HINZUFÜGEN
+===================================================== */
+
+window.addOrderWorker = function(){
+
+    if(!canManageBookkeeping()){
+
+        alert(
+            "Nur Leitung und Stadtleitung dürfen Arbeiter hinzufügen."
+        );
+
+        return;
+
+    }
+
+
+    const name =
+        getValue("workerName");
+
+    const salary =
+        numberValue(
+            getValue("workerSalary")
+        );
+
+    const note =
+        getValue("workerNote");
+
+
+    if(!name){
+
+        alert(
+            "Bitte einen Arbeiter eingeben."
+        );
+
+        return;
+
+    }
+
+
+    if(salary <= 0){
+
+        alert(
+            "Bitte ein gültiges Gehalt eingeben."
+        );
+
+        return;
+
+    }
+
+
+    currentWorkers.push({
+
+        name:name,
+
+        salary:salary,
+
+        note:note
+
+    });
+
+
+    [
+        "workerName",
+        "workerSalary",
+        "workerNote"
+    ].forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if(element){
+            element.value = "";
+        }
+
+    });
+
+
+    renderCurrentWorkers();
+
+    updateWorkerTotals();
+
+};
+
+
+/* =====================================================
+   ARBEITER AUS AKTUELLEM AUFTRAG ENTFERNEN
+===================================================== */
+
+window.removeOrderWorker = function(index){
+
+    if(!canManageBookkeeping()){
+        return;
+    }
+
+
+    if(
+        index < 0 ||
+        index >= currentWorkers.length
+    ){
+        return;
+    }
+
+
+    currentWorkers.splice(
+        index,
+        1
+    );
+
+
+    renderCurrentWorkers();
+
+    updateWorkerTotals();
+
+};
+
+
+/* =====================================================
+   AKTUELLE ARBEITER ANZEIGEN
+===================================================== */
+
+function renderCurrentWorkers(){
+
+    const container =
+        document.getElementById(
+            "currentWorkers"
+        );
+
+
+    if(!container){
+        return;
+    }
+
+
+    if(!currentWorkers.length){
+
+        container.innerHTML = `
+            <div class="empty-row">
+                Noch keine Arbeiter hinzugefügt.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        currentWorkers
+            .map(
+                (worker,index) => `
+
+                    <div class="worker-row">
+
+                        <div>
+                            <strong>
+                                ${escapeHtml(
+                                    worker.name
+                                )}
+                            </strong>
+
+                            <span>
+                                ${money(
+                                    worker.salary
+                                )}
+                            </span>
+
+                            ${
+                                worker.note
+                                    ? `
+                                        <small>
+                                            ${escapeHtml(
+                                                worker.note
+                                            )}
+                                        </small>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                        ${
+                            canManageBookkeeping()
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="table-action"
+                                        onclick="removeOrderWorker(${index})"
+                                    >
+                                        Entfernen
+                                    </button>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   ARBEITER-SUMMEN
+===================================================== */
+
+function updateWorkerTotals(){
+
+    const total =
+        currentWorkers.reduce(
+            (sum,worker) =>
+                sum +
+                numberValue(
+                    worker.salary
+                ),
+            0
+        );
+
+
+    const orderTotal =
+        numberValue(
+            getValue("orderTotal")
+        );
+
+
+    const clanAmount =
+        numberValue(
+            getValue(
+                "orderClanAmount"
+            )
+        );
+
+
+    const remaining =
+        orderTotal -
+        clanAmount -
+        total;
+
+
+    setText(
+        "orderWorkerCount",
+        currentWorkers.length
+    );
+
+
+    setText(
+        "orderSalaryTotal",
+        money(total)
+    );
+
+
+    setText(
+        "orderRemainingAmount",
+        money(remaining)
+    );
+
+
+    const warning =
+        document.getElementById(
+            "orderDistributionWarning"
+        );
+
+
+    if(!warning){
+        return;
+    }
+
+
+    if(
+        orderTotal > 0 &&
+        remaining === 0
+    ){
+
+        warning.textContent =
+            "Die Verteilung ist vollständig.";
+
+        warning.className =
+            "distribution-warning success-text";
+
+    }
+    else if(
+        remaining < 0
+    ){
+
+        warning.textContent =
+            "Die Verteilung überschreitet den Gesamtbetrag.";
+
+        warning.className =
+            "distribution-warning danger-text";
+
+    }
+    else{
+
+        warning.textContent =
+            "Es ist noch ein Betrag nicht verteilt.";
+
+        warning.className =
+            "distribution-warning";
+
+    }
+
+}
+
+
+/* =====================================================
+   WERTE AUTOMATISCH AKTUALISIEREN
+===================================================== */
+
+document.addEventListener(
+    "input",
+    event => {
+
+        if(
+            event.target.id ===
+                "orderTotal" ||
+
+            event.target.id ===
+                "orderClanAmount" ||
+
+            event.target.id ===
+                "workerSalary"
+        ){
+
+            updateWorkerTotals();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUFTRAGSABRECHNUNG SPEICHERN
+===================================================== */
+
+window.saveOrderSettlement = async function(){
+
+    if(!canManageBookkeeping()){
+
+        alert(
+            "Nur Leitung und Stadtleitung dürfen Auftragsabrechnungen speichern."
+        );
+
+        return;
+
+    }
+
+
+    const orderNumber =
+        getValue(
+            "orderNumber"
+        );
+
+
+    const total =
+        numberValue(
+            getValue(
+                "orderTotal"
+            )
+        );
+
+
+    const clan =
+        numberValue(
+            getValue(
+                "orderClanAmount"
+            )
+        );
+
+
+    const salaries =
+        currentWorkers.reduce(
+            (sum,worker) =>
+                sum +
+                numberValue(
+                    worker.salary
+                ),
+            0
+        );
+
+
+    if(!orderNumber){
+
+        alert(
+            "Bitte eine Auftragsnummer eingeben."
+        );
+
+        return;
+
+    }
+
+
+    if(total <= 0){
+
+        alert(
+            "Bitte einen gültigen Gesamtbetrag eingeben."
+        );
+
+        return;
+
+    }
+
+
+    if(clan < 0){
+
+        alert(
+            "Der Clanbetrag darf nicht negativ sein."
+        );
+
+        return;
+
+    }
+
+
+    if(clan > total){
+
+        alert(
+            "Der Clanbetrag darf den Gesamtbetrag nicht überschreiten."
+        );
+
+        return;
+
+    }
+
+
+    const remaining =
+        total -
+        clan -
+        salaries;
+
+
+    if(remaining < 0){
+
+        alert(
+            "Die Verteilung überschreitet den Gesamtbetrag."
         );
 
         return;
@@ -3879,127 +2607,62 @@ function(){
 
 
     const date =
-        getElement(
-            "savingsDate"
-        );
-
-
-    if(date){
-
-        date.value =
-            nowLocal();
-
-    }
-
-
-    openModal(
-        "savingsModal"
-    );
-
-};
-
-
-/* =====================================================
-   SPARKONTO – MODAL SCHLIESSEN
-===================================================== */
-
-window.closeSavingsModal =
-function(){
-
-    closeSavings();
-
-};
-
-
-/* =====================================================
-   SPARKONTO – SCHLIESSEN
-===================================================== */
-
-function closeSavings(){
-
-    closeModal(
-        "savingsModal"
-    );
-
-}
-
-
-/* =====================================================
-   SPARKONTO – FORMULAR LEEREN
-===================================================== */
-
-function clearSavingsForm(){
-
-    [
-
-        "savingsNumber",
-
-        "savingsAmount",
-
-        "savingsFrom",
-
-        "savingsTo",
-
-        "savingsPurpose",
-
-        "savingsNote"
-
-    ].forEach(
-        id => {
-
-            const element =
-                document.getElementById(
-                    id
-                );
-
-
-            if(element){
-
-                element.value =
-                    "";
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   SPARKONTO – BUCHUNG SPEICHERN
-===================================================== */
-
-window.saveSavings =
-async function(){
-
-    if(
-        !canManageBookkeeping()
-    ){
-
-        alert(
-            "Nur Leitung und Stadtleitung dürfen das Sparkonto verwalten."
-        );
-
-        return;
-
-    }
-
-
-    const type =
         getValue(
-            "savingsType"
+            "orderDate"
         ) ||
-        "Einzahlung";
+        new Date().toISOString();
 
 
-    if(
-        type !== "Einzahlung" &&
-        type !== "Auszahlung"
-    ){
+    const createdBy =
+        currentEmployee?.name ||
+        getValue(
+            "orderCreatedBy"
+        ) ||
+        "Manuell";
 
-        alert(
-            "Ungültige Sparkonto-Buchungsart."
+
+    const settlementPayload = {
+
+        auftragsnummer:
+            orderNumber,
+
+        gesamtbetrag:
+            total,
+
+        clanbetrag:
+            clan,
+
+        gesamt_gehaelter:
+            salaries,
+
+        status:
+            getValue(
+                "orderStatus"
+            ) ||
+            "Offen",
+
+        datum:
+            date,
+
+        erstellt_von:
+            currentUser?.id ||
+            null,
+
+        erstellt_von_name:
+            createdBy,
+
+        notiz:
+            getValue(
+                "orderNote"
+            )
+
+    };
+
+
+    if(!hasSupabase()){
+
+        showDatabaseError(
+            "Supabase ist nicht verfügbar."
         );
 
         return;
@@ -4007,18 +2670,26 @@ async function(){
     }
 
 
-    const amount =
-        numberValue(
-            getValue(
-                "savingsAmount"
+    const {
+        data: settlement,
+        error
+    } =
+        await buchhaltungDB
+            .from(
+                TABLE_ORDERS
             )
-        );
+            .insert(
+                settlementPayload
+            )
+            .select()
+            .single();
 
 
-    if(amount <= 0){
+    if(error){
 
-        alert(
-            "Bitte einen gültigen Betrag eingeben."
+        showDatabaseError(
+            "Auftragsabrechnung: " +
+            error.message
         );
 
         return;
@@ -4027,35 +2698,976 @@ async function(){
 
 
     /*
-     * Keine negative Sparkonto-Bilanz.
+     * Arbeiter zum gespeicherten
+     * Auftrag hinzufügen.
      */
 
     if(
-        type === "Auszahlung" &&
-        amount > getSavingsBalance()
+        settlement &&
+        currentWorkers.length
     ){
 
-        alert(
-            "Die Auszahlung überschreitet das aktuelle Sparkonto-Guthaben."
+        const workerRows =
+            currentWorkers.map(
+                worker => ({
+
+                    auftragsabrechnung_id:
+                        settlement.id,
+
+                    arbeiter_name:
+                        worker.name,
+
+                    gehalt:
+                        numberValue(
+                            worker.salary
+                        ),
+
+                    notiz:
+                        worker.note ||
+                        null
+
+                })
+            );
+
+
+        const {
+            error:
+                workerError
+        } =
+            await buchhaltungDB
+                .from(
+                    TABLE_ORDER_WORKERS
+                )
+                .insert(
+                    workerRows
+                );
+
+
+        if(workerError){
+
+            /*
+             * Die Auftragsabrechnung bleibt
+             * bestehen. Der Fehler wird aber
+             * deutlich angezeigt.
+             */
+
+            alert(
+                "Auftragsabrechnung wurde gespeichert, " +
+                "aber die Arbeiter konnten nicht gespeichert werden.\n\n" +
+                workerError.message
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Daten vollständig neu aus
+     * Supabase laden.
+     */
+
+    await loadBookkeepingData();
+
+
+    renderOrderSettlements();
+
+    renderEmployees();
+
+    renderOverview();
+
+
+    currentWorkers = [];
+
+    clearOrderForm();
+
+    closeOrderModal();
+
+
+    alert(
+        "Auftragsabrechnung wurde gespeichert."
+    );
+
+};
+
+
+/* =====================================================
+   AUFTRAGSABRECHNUNGEN ANZEIGEN
+===================================================== */
+
+function renderOrderSettlements(){
+
+    const body =
+        document.getElementById(
+            "orderTableBody"
         );
+
+
+    if(!body){
+        return;
+    }
+
+
+    if(
+        !Array.isArray(
+            orderSettlements
+        ) ||
+        !orderSettlements.length
+    ){
+
+        body.innerHTML = `
+            <tr class="empty-row">
+                <td colspan="9">
+                    Noch keine Auftragsabrechnungen vorhanden.
+                </td>
+            </tr>
+        `;
 
         return;
 
     }
 
 
-    const bookingNumber =
-        getValue(
-            "savingsNumber"
-        ) ||
-        "SK-" +
-        String(
-            savingsTransactions.length + 1
-        ).padStart(
-            4,
-            "0"
+    body.innerHTML =
+        orderSettlements
+            .map(
+                order => {
+
+                    const total =
+                        numberValue(
+                            order.gesamtbetrag
+                        );
+
+                    const clan =
+                        numberValue(
+                            order.clanbetrag
+                        );
+
+                    const salaries =
+                        numberValue(
+                            order.gesamt_gehaelter
+                        );
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(
+                                    order.auftragsnummer ||
+                                    order.id ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${money(total)}
+                            </td>
+
+                            <td>
+                                ${money(clan)}
+                            </td>
+
+                            <td>
+                                ${money(salaries)}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    order.status ||
+                                    "Offen"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    order.erstellt_von_name ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    order.datum
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    order.notiz ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                <button
+                                    type="button"
+                                    class="table-action"
+                                    onclick="viewOrder('${String(
+                                        order.id
+                                    ).replace(
+                                        /'/g,
+                                        "\\'"
+                                    )}')"
+                                >
+                                    Details
+                                </button>
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   AUFTRAGSDETAILS
+===================================================== */
+
+window.viewOrder = function(id){
+
+    const order =
+        orderSettlements.find(
+            item =>
+                String(item.id) ===
+                String(id)
         );
 
+
+    if(!order){
+        return;
+    }
+
+
+    const orderWorkers =
+        workers.filter(
+            worker =>
+                String(
+                    worker.auftragsabrechnung_id
+                ) ===
+                String(order.id)
+        );
+
+
+    let workerText =
+        "Keine Arbeiter";
+
+
+    if(orderWorkers.length){
+
+        workerText =
+            orderWorkers
+                .map(
+                    worker =>
+                        (
+                            worker.arbeiter_name ||
+                            "Unbekannt"
+                        ) +
+                        ": " +
+                        money(
+                            worker.gehalt
+                        )
+                )
+                .join("\n");
+
+    }
+
+
+    alert(
+
+        "Auftrag " +
+        (
+            order.auftragsnummer ||
+            order.id
+        ) +
+
+        "\n\nGesamt: " +
+        money(
+            order.gesamtbetrag
+        ) +
+
+        "\nAn Clan: " +
+        money(
+            order.clanbetrag
+        ) +
+
+        "\nArbeitergehälter: " +
+        money(
+            order.gesamt_gehaelter
+        ) +
+
+        "\n\nArbeiter:\n" +
+        workerText +
+
+        "\n\nStatus: " +
+        (
+            order.status ||
+            "—"
+        ) +
+
+        "\nErstellt von: " +
+        (
+            order.erstellt_von_name ||
+            "—"
+        ) +
+
+        "\nDatum: " +
+        formatDate(
+            order.datum
+        ) +
+
+        (
+            order.notiz
+                ? "\n\nNotiz:\n" +
+                  order.notiz
+                : ""
+        )
+
+    );
+
+};
+
+
+/* =========================================================
+   TEIL 6 – MITARBEITER
+   ========================================================= */
+
+function renderEmployees(){
+    const tbody = document.getElementById("employeeTableBody");
+
+    if(!tbody){
+        return;
+    }
+
+    if(!Array.isArray(employees) || employees.length === 0){
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    Keine Mitarbeiter vorhanden.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = employees.map(employee => {
+
+        const employeeName =
+            employee.name ||
+            employee.username ||
+            "Unbekannt";
+
+        const rank =
+            employee.rang ||
+            employee.role ||
+            "—";
+
+        const employeeId = employee.user_id || employee.id || "";
+
+        const employeeBookings =
+            bookings.filter(booking =>
+                booking.erstellt_von === employeeId ||
+                booking.erstellt_von_name === employeeName
+            );
+
+        const deposits =
+            employeeBookings
+                .filter(booking => booking.art === "Einzahlung")
+                .reduce(
+                    (sum, booking) =>
+                        sum + numberValue(booking.betrag),
+                    0
+                );
+
+        const withdrawals =
+            employeeBookings
+                .filter(booking => booking.art === "Auszahlung")
+                .reduce(
+                    (sum, booking) =>
+                        sum + numberValue(booking.betrag),
+                    0
+                );
+
+        const salary =
+            orderSettlements.reduce((sum, order) => {
+
+                const orderWorkers =
+                    workers.filter(worker =>
+                        worker.auftragsabrechnung_id === order.id &&
+                        worker.arbeiter_name === employeeName
+                    );
+
+                return sum +
+                    orderWorkers.reduce(
+                        (workerSum, worker) =>
+                            workerSum + numberValue(worker.gehalt),
+                        0
+                    );
+
+            }, 0);
+
+        return `
+            <tr>
+                <td>${escapeHtml(employeeName)}</td>
+                <td>${escapeHtml(rank)}</td>
+                <td>${formatMoney(salary)}</td>
+                <td>${formatMoney(deposits)}</td>
+                <td>${formatMoney(withdrawals)}</td>
+                <td>
+                    <button
+                        class="small-button"
+                        onclick="viewEmployee('${escapeHtml(employeeId)}')"
+                    >
+                        Anzeigen
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+/* ---------------------------------------------------------
+   MITARBEITER ANZEIGEN
+   --------------------------------------------------------- */
+
+window.viewEmployee = function(employeeId){
+
+    const employee =
+        employees.find(item =>
+            (item.user_id || item.id) === employeeId
+        );
+
+    if(!employee){
+        alert("Mitarbeiter wurde nicht gefunden.");
+        return;
+    }
+
+    const employeeName =
+        employee.name ||
+        employee.username ||
+        "Unbekannt";
+
+    const employeeBookings =
+        bookings.filter(booking =>
+            booking.erstellt_von === employeeId ||
+            booking.erstellt_von_name === employeeName
+        );
+
+    const deposits =
+        employeeBookings
+            .filter(booking => booking.art === "Einzahlung")
+            .reduce(
+                (sum, booking) =>
+                    sum + numberValue(booking.betrag),
+                0
+            );
+
+    const withdrawals =
+        employeeBookings
+            .filter(booking => booking.art === "Auszahlung")
+            .reduce(
+                (sum, booking) =>
+                    sum + numberValue(booking.betrag),
+                0
+            );
+
+    const employeeWorkers =
+        workers.filter(worker =>
+            worker.arbeiter_name === employeeName
+        );
+
+    const salary =
+        employeeWorkers.reduce(
+            (sum, worker) =>
+                sum + numberValue(worker.gehalt),
+            0
+        );
+
+    alert(
+        "Mitarbeiter\n\n" +
+        "Name: " + employeeName + "\n" +
+        "Rang: " +
+        (employee.rang || employee.role || "—") +
+        "\n\n" +
+        "Gehälter: " +
+        formatMoney(salary) +
+        "\n" +
+        "Einzahlungen: " +
+        formatMoney(deposits) +
+        "\n" +
+        "Auszahlungen: " +
+        formatMoney(withdrawals)
+    );
+};
+
+
+/* ---------------------------------------------------------
+   MITARBEITER SUCHEN
+   --------------------------------------------------------- */
+
+window.filterEmployees = function(){
+
+    const input =
+        document.getElementById("employeeSearch");
+
+    if(!input){
+        return;
+    }
+
+    const search =
+        input.value
+            .trim()
+            .toLowerCase();
+
+    const tbody =
+        document.getElementById("employeeTableBody");
+
+    if(!tbody){
+        return;
+    }
+
+    const filtered =
+        employees.filter(employee => {
+
+            const name =
+                String(
+                    employee.name ||
+                    employee.username ||
+                    ""
+                ).toLowerCase();
+
+            const rank =
+                String(
+                    employee.rang ||
+                    employee.role ||
+                    ""
+                ).toLowerCase();
+
+            return (
+                name.includes(search) ||
+                rank.includes(search)
+            );
+        });
+
+    if(filtered.length === 0){
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    Keine Mitarbeiter gefunden.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const originalEmployees = employees;
+
+    employees = filtered;
+    renderEmployees();
+    employees = originalEmployees;
+};
+
+
+/* ---------------------------------------------------------
+   MITARBEITER-BEREICH AKTUALISIEREN
+   --------------------------------------------------------- */
+
+function updateEmployeeOverview(){
+    renderEmployees();
+}
+
+/* =========================================================
+   TEIL 7 – SPARKONTO
+   ========================================================= */
+
+function renderSavings(){
+    const tbody =
+        document.getElementById("savingsTableBody");
+
+    if(!tbody){
+        return;
+    }
+
+    if(
+        !Array.isArray(savingsTransactions) ||
+        savingsTransactions.length === 0
+    ){
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    Noch keine Sparkonto-Buchungen vorhanden.
+                </td>
+            </tr>
+        `;
+    }else{
+
+        tbody.innerHTML =
+            savingsTransactions.map(transaction => {
+
+                const type =
+                    transaction.art ||
+                    transaction.typ ||
+                    "—";
+
+                const amount =
+                    numberValue(transaction.betrag);
+
+                return `
+                    <tr>
+                        <td>
+                            ${escapeHtml(
+                                transaction.buchungsnummer ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(type)}
+                        </td>
+
+                        <td>
+                            ${formatMoney(amount)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.zweck ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.erstellt_von_name ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                transaction.datum
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.notiz ||
+                                "—"
+                            )}
+                        </td>
+                    </tr>
+                `;
+
+            }).join("");
+    }
+
+    updateSavingsOverview();
+}
+
+
+/* ---------------------------------------------------------
+   SPARKONTO AKTUELLER STAND
+   --------------------------------------------------------- */
+
+function getSavingsBalance(){
+
+    if(
+        !Array.isArray(savingsTransactions)
+    ){
+        return 0;
+    }
+
+    return savingsTransactions.reduce(
+        (balance, transaction) => {
+
+            const amount =
+                numberValue(transaction.betrag);
+
+            const type =
+                String(
+                    transaction.art ||
+                    transaction.typ ||
+                    ""
+                ).toLowerCase();
+
+            if(
+                type === "einzahlung" ||
+                type === "einlage" ||
+                type === "deposit"
+            ){
+                return balance + amount;
+            }
+
+            if(
+                type === "auszahlung" ||
+                type === "entnahme" ||
+                type === "withdrawal"
+            ){
+                return balance - amount;
+            }
+
+            return balance;
+        },
+        0
+    );
+}
+
+
+/* ---------------------------------------------------------
+   SPARKONTO-ÜBERSICHT
+   --------------------------------------------------------- */
+
+function updateSavingsOverview(){
+
+    const balance =
+        getSavingsBalance();
+
+    const balanceElements = [
+        "savingsBalance",
+        "sparkontoStand",
+        "savingsCurrentBalance"
+    ];
+
+    balanceElements.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if(element){
+            element.textContent =
+                formatMoney(balance);
+        }
+    });
+
+    const goal =
+        numberValue(savingsGoalValue);
+
+    const progress =
+        goal > 0
+            ? Math.min(
+                100,
+                (balance / goal) * 100
+            )
+            : 0;
+
+    const progressElements = [
+        "savingsProgress",
+        "sparkontoProgress"
+    ];
+
+    progressElements.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if(element){
+            element.textContent =
+                progress.toFixed(1) + "%";
+        }
+    });
+
+    const progressBars = [
+        "savingsProgressBar",
+        "sparkontoProgressBar"
+    ];
+
+    progressBars.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if(element){
+            element.style.width =
+                progress + "%";
+        }
+    });
+}
+
+
+/* ---------------------------------------------------------
+   SPARZIEL SETZEN
+   --------------------------------------------------------- */
+
+window.setSavingsGoal =
+function(){
+
+    if(!canManageBookkeeping()){
+        alert(
+            "Nur Leitung und Stadtleitung dürfen " +
+            "das Sparziel verwalten."
+        );
+        return;
+    }
+
+    const input =
+        document.getElementById("savingsGoal");
+
+    if(!input){
+        return;
+    }
+
+    const value =
+        numberValue(input.value);
+
+    if(value < 0){
+        alert(
+            "Das Sparziel darf nicht negativ sein."
+        );
+        return;
+    }
+
+    savingsGoalValue =
+        value;
+
+    updateSavingsOverview();
+
+    alert(
+        "Sparziel wurde gesetzt:\n\n" +
+        formatMoney(value)
+    );
+};
+
+
+/* ---------------------------------------------------------
+   SPARKONTO-BUCHUNG MODAL
+   --------------------------------------------------------- */
+
+window.openSavingsModal =
+function(){
+
+    if(!canManageBookkeeping()){
+        alert(
+            "Nur Leitung und Stadtleitung dürfen " +
+            "das Sparkonto verwalten."
+        );
+        return;
+    }
+
+    const modal =
+        document.getElementById("savingsModal");
+
+    if(modal){
+        modal.classList.add("active");
+    }
+};
+
+
+window.closeSavingsModal =
+function(){
+
+    const modal =
+        document.getElementById("savingsModal");
+
+    if(modal){
+        modal.classList.remove("active");
+    }
+};
+
+
+/* ---------------------------------------------------------
+   SPARKONTO-FORMULAR LEEREN
+   --------------------------------------------------------- */
+
+function clearSavingsForm(){
+
+    [
+        "savingsBookingNumber",
+        "savingsAmount",
+        "savingsPurpose",
+        "savingsNote"
+    ].forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if(element){
+            element.value = "";
+        }
+    });
+
+    const date =
+        document.getElementById("savingsDate");
+
+    if(date){
+        date.value = "";
+    }
+
+    const type =
+        document.getElementById("savingsType");
+
+    if(type){
+        type.value = "Einzahlung";
+    }
+}
+
+
+/* ---------------------------------------------------------
+   SPARKONTO-BUCHUNG SPEICHERN
+   --------------------------------------------------------- */
+
+window.saveSavingsTransaction =
+async function(){
+
+    if(!canManageBookkeeping()){
+        alert(
+            "Nur Leitung und Stadtleitung dürfen " +
+            "Sparkonto-Buchungen erstellen."
+        );
+        return;
+    }
+
+    if(!hasSupabase()){
+        showDatabaseError(
+            "Supabase ist nicht verfügbar."
+        );
+        return;
+    }
+
+    const type =
+        getValue("savingsType") ||
+        "Einzahlung";
+
+    const amount =
+        numberValue(
+            getValue("savingsAmount")
+        );
+
+    if(amount <= 0){
+        alert(
+            "Bitte einen gültigen Betrag eingeben."
+        );
+        return;
+    }
+
+    if(
+        type === "Auszahlung" &&
+        amount > getSavingsBalance()
+    ){
+        alert(
+            "Die Auszahlung darf den " +
+            "aktuellen Sparkontostand nicht überschreiten."
+        );
+        return;
+    }
+
+    const bookingNumber =
+        getValue("savingsBookingNumber") ||
+        "SP-" +
+        String(
+            savingsTransactions.length + 1
+        ).padStart(4,"0");
+
+    const createdBy =
+        currentEmployee?.name ||
+        currentEmployee?.username ||
+        currentUser?.email ||
+        "Unbekannt";
 
     const payload = {
 
@@ -4068,25 +3680,11 @@ async function(){
         betrag:
             amount,
 
-        von:
-            getValue(
-                "savingsFrom"
-            ),
-
-        an:
-            getValue(
-                "savingsTo"
-            ),
-
         zweck:
-            getValue(
-                "savingsPurpose"
-            ),
+            getValue("savingsPurpose"),
 
         datum:
-            getValue(
-                "savingsDate"
-            ) ||
+            getValue("savingsDate") ||
             new Date().toISOString(),
 
         erstellt_von:
@@ -4094,618 +3692,365 @@ async function(){
             null,
 
         erstellt_von_name:
-            currentEmployee?.name ||
-            "Manuell",
+            createdBy,
 
         notiz:
-            getValue(
-                "savingsNote"
-            )
-
+            getValue("savingsNote")
     };
 
+    try{
 
-    if(!hasSupabase()){
+        const { data, error } =
+            await buchhaltungDB
+                .from(TABLE_SAVINGS)
+                .insert(payload)
+                .select()
+                .single();
 
-        showDatabaseError(
-            "Supabase ist nicht verfügbar."
+        if(error){
+            throw error;
+        }
+
+        if(data){
+            savingsTransactions.unshift(data);
+        }
+
+        await writeActivityLog(
+            "Sparkonto",
+            type +
+            " über " +
+            formatMoney(amount) +
+            " gespeichert."
         );
 
-        return;
+        renderSavings();
 
-    }
+        clearSavingsForm();
 
-
-    const {
-        data,
-        error
-    } =
-        await buchhaltungDB
-            .from(
-                TABLE_SAVINGS
-            )
-            .insert(
-                payload
-            )
-            .select()
-            .single();
-
-
-    if(error){
-
-        console.error(
-            "Sparkonto:",
-            error
-        );
-
+        closeSavingsModal();
 
         alert(
-            "Sparkonto-Buchung konnte nicht gespeichert werden.\n\n" +
-            error.message
+            "Sparkonto-Buchung wurde gespeichert."
         );
 
-        return;
+    }catch(error){
 
+        alert(
+            "Sparkonto-Buchung konnte nicht " +
+            "gespeichert werden.\n\n" +
+            (
+                error?.message ||
+                "Unbekannter Fehler."
+            )
+        );
     }
+};
 
 
-    savingsTransactions.unshift(
-        data
-    );
+/* ---------------------------------------------------------
+   SPARKONTO AKTUALISIEREN
+   --------------------------------------------------------- */
 
+function updateSavings(){
 
     renderSavings();
+        }
 
-    renderOverview();
+/* =========================================================
+   TEIL 8 – KASSENABGLEICH
+   ========================================================= */
 
+function calculateCurrentClanBalance(){
 
-    await sendDiscordNotification({
+    if(!Array.isArray(bookings)){
+        return 0;
+    }
 
-        type:
-            "Sparkonto",
+    return bookings.reduce(
+        (balance, booking) => {
 
-        title:
-            "Neue Sparkonto-Buchung",
+            const amount =
+                numberValue(booking.betrag);
 
-        amount:
-            amount,
+            const type =
+                String(
+                    booking.art || ""
+                ).toLowerCase();
 
-        from:
-            payload.von,
+            if(type === "einzahlung"){
+                return balance + amount;
+            }
 
-        to:
-            payload.an,
+            if(type === "auszahlung"){
+                return balance - amount;
+            }
 
-        purpose:
-            payload.zweck,
-
-        category:
-            "Sparkonto",
-
-        createdBy:
-            payload.erstellt_von_name,
-
-        date:
-            payload.datum,
-
-        description:
-            bookingNumber,
-
-        note:
-            payload.notiz
-
-    });
-
-
-    clearSavingsForm();
-
-    closeSavings();
-
-
-    alert(
-        "Sparkonto-Buchung wurde gespeichert."
+            return balance;
+        },
+        0
     );
-
-};
-
-
-/* =====================================================
-   HTML-KOMPATIBLE FUNKTIONEN
-===================================================== */
-
-window.saveSavingsTransaction =
-function(){
-
-    return saveSavings();
-
-};
+}
 
 
-window.saveSavingsGoal =
-function(){
+/* ---------------------------------------------------------
+   KASSENABGLEICH RENDERN
+   --------------------------------------------------------- */
 
-    return setSavingsGoal();
+function renderCashChecks(){
 
-};
+    const tbody =
+        document.getElementById("cashCheckTableBody");
 
+    if(!tbody){
+        return;
+    }
 
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 7 VON 10
-   MITARBEITERÜBERSICHT
-===================================================== */
-
-
-/* =====================================================
-   MITARBEITERÜBERSICHT
-===================================================== */
-
-function renderEmployees(){
-
-    const body =
-        document.getElementById(
-            "employeeTableBody"
-        );
-
-    if(!body) return;
-
-
-    if(!employees || employees.length === 0){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="6">
-                    Keine Mitarbeiter vorhanden.
+    if(
+        !Array.isArray(cashChecks) ||
+        cashChecks.length === 0
+    ){
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    Noch keine Kassenabgleiche vorhanden.
                 </td>
             </tr>
         `;
-
         return;
-
     }
 
+    tbody.innerHTML =
+        cashChecks.map(check => {
 
-    body.innerHTML =
-        employees.map(employee => {
-
-            const name =
-                getEmployeeName(employee);
-
-
-            /* -----------------------------------------
-               AUFTRAGSARBEITER
-            ----------------------------------------- */
-
-            const employeeWorkers =
-                (workers || []).filter(worker => {
-
-                    const workerName =
-                        String(
-                            worker.name ||
-                            worker.arbeiter_name ||
-                            worker.username ||
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-                    return (
-                        workerName ===
-                        String(name)
-                            .trim()
-                            .toLowerCase()
-                    );
-
-                });
-
-
-            const salary =
-                employeeWorkers.reduce(
-                    (sum, worker) =>
-                        sum +
-                        numberValue(
-                            worker.gehalt
-                        ),
-                    0
+            const portalStand =
+                numberValue(
+                    check.portalstand
                 );
 
+            const ingameStand =
+                numberValue(
+                    check.ingame_stand
+                );
 
-            /* -----------------------------------------
-               BUCHUNGEN DES MITARBEITERS
-            ----------------------------------------- */
-
-            const employeeBookings =
-                (bookings || []).filter(booking => {
-
-                    const from =
-                        String(
-                            booking.von ||
-                            booking.from ||
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    const to =
-                        String(
-                            booking.an ||
-                            booking.to ||
-                            ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    const employeeName =
-                        String(name)
-                            .trim()
-                            .toLowerCase();
-
-
-                    return (
-                        from === employeeName ||
-                        to === employeeName
-                    );
-
-                });
-
-
-            /* -----------------------------------------
-               EINZAHLUNGEN
-            ----------------------------------------- */
-
-            const deposits =
-                employeeBookings
-                    .filter(
-                        booking =>
-                            (
-                                booking.art ||
-                                booking.type
-                            ) ===
-                            "Einzahlung"
-                    )
-                    .reduce(
-                        (sum, booking) =>
-                            sum +
-                            numberValue(
-                                booking.betrag ??
-                                booking.amount
-                            ),
-                        0
-                    );
-
-
-            /* -----------------------------------------
-               AUSZAHLUNGEN
-            ----------------------------------------- */
-
-            const withdrawals =
-                employeeBookings
-                    .filter(
-                        booking =>
-                            (
-                                booking.art ||
-                                booking.type
-                            ) ===
-                            "Auszahlung"
-                    )
-                    .reduce(
-                        (sum, booking) =>
-                            sum +
-                            numberValue(
-                                booking.betrag ??
-                                booking.amount
-                            ),
-                        0
-                    );
-
-
-            /* -----------------------------------------
-               OFFENE BETRÄGE
-            ----------------------------------------- */
-
-            const openAmounts =
-                employeeBookings
-                    .filter(
-                        booking =>
-                            booking.status ===
-                            "Offen" ||
-                            booking.status ===
-                            "Teilweise bezahlt"
-                    )
-                    .reduce(
-                        (sum, booking) =>
-                            sum +
-                            numberValue(
-                                booking.betrag ??
-                                booking.amount
-                            ),
-                        0
-                    );
-
+            const difference =
+                ingameStand - portalStand;
 
             return `
                 <tr>
-
                     <td>
-                        ${escapeHtml(name)}
+                        ${escapeHtml(
+                            check.buchungsnummer ||
+                            "—"
+                        )}
                     </td>
 
                     <td>
-                        ${employeeWorkers.length}
+                        ${formatMoney(portalStand)}
                     </td>
 
                     <td>
-                        ${money(salary)}
+                        ${formatMoney(ingameStand)}
                     </td>
 
                     <td>
-                        ${money(deposits)}
+                        ${formatMoney(difference)}
                     </td>
 
                     <td>
-                        ${money(withdrawals)}
+                        ${escapeHtml(
+                            check.notiz ||
+                            "—"
+                        )}
                     </td>
 
                     <td>
-                        ${money(openAmounts)}
+                        ${escapeHtml(
+                            check.erstellt_von_name ||
+                            "—"
+                        )}
                     </td>
 
+                    <td>
+                        ${formatDate(
+                            check.datum
+                        )}
+                    </td>
                 </tr>
             `;
 
         }).join("");
-
 }
 
 
-/* =====================================================
-   MITARBEITER SUCHEN
-===================================================== */
+/* ---------------------------------------------------------
+   KASSENABGLEICH MODAL
+   --------------------------------------------------------- */
 
-window.filterEmployees = function(){
+window.openCashCheckModal =
+function(){
 
-    const search =
-        getValue("employeeSearch")
-            .toLowerCase();
-
-
-    const body =
-        document.getElementById(
-            "employeeTableBody"
-        );
-
-    if(!body) return;
-
-
-    const filtered =
-        employees.filter(employee => {
-
-            const text =
-                JSON.stringify(employee)
-                    .toLowerCase();
-
-            return (
-                !search ||
-                text.includes(search)
-            );
-
-        });
-
-
-    if(filtered.length === 0){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="6">
-                    Keine passenden Mitarbeiter gefunden.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    const previousEmployees =
-        employees;
-
-
-    employees =
-        filtered;
-
-
-    renderEmployees();
-
-
-    employees =
-        previousEmployees;
-
-};
-
-
-/* =====================================================
-   MITARBEITERNAME ERMITTELN
-===================================================== */
-
-function getEmployeeName(employee){
-
-    return (
-        employee?.name ||
-        employee?.username ||
-        employee?.minecraft_name ||
-        employee?.display_name ||
-        "Unbekannt"
-    );
-
-}
-
-
-/* =====================================================
-   MITARBEITERÜBERSICHT AKTUALISIEREN
-===================================================== */
-
-function updateEmployeeOverview(){
-
-    renderEmployees();
-
-}
-
-
-/* =====================================================
-   MITARBEITER-DATEN NACH LADEN AKTUALISIEREN
-===================================================== */
-
-function refreshEmployeeSection(){
-
-    if(
-        typeof renderEmployees ===
-        "function"
-    ){
-
-        renderEmployees();
-
-    }
-
-}
-
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 8 VON 10
-   KASSENABGLEICH & FINANZKONTROLLE
-===================================================== */
-
-
-/* =====================================================
-   KASSENABGLEICH ÖFFNEN
-===================================================== */
-
-window.openCashCheck = function(){
-
-    const modal =
-        document.getElementById(
-            "cashCheckModal"
-        );
-
-    if(!modal) return;
-
-    modal.classList.add("active");
-
-
-    const portalBalance =
-        getCurrentClanBalance();
-
-    setValue(
-        "cashPortalInput",
-        portalBalance
-    );
-
-
-    setValue(
-        "cashIngameInput",
-        ""
-    );
-
-    setValue(
-        "cashCheckNote",
-        ""
-    );
-
-};
-
-
-/* =====================================================
-   KASSENABGLEICH SCHLIESSEN
-===================================================== */
-
-window.closeCashCheck = function(){
-
-    const modal =
-        document.getElementById(
-            "cashCheckModal"
-        );
-
-    if(!modal) return;
-
-    modal.classList.remove("active");
-
-};
-
-
-/* =====================================================
-   KASSENABGLEICH SPEICHERN
-===================================================== */
-
-window.saveCashCheck = async function(){
-
-    if(!isManagement()){
-
+    if(!canManageBookkeeping()){
         alert(
-            "Nur Leitung und Stadtleitung dürfen einen Kassenabgleich erfassen."
+            "Nur Leitung und Stadtleitung dürfen " +
+            "einen Kassenabgleich durchführen."
         );
-
         return;
-
     }
 
+    const portalInput =
+        document.getElementById("cashPortalStand");
 
-    const portal =
+    if(portalInput){
+        portalInput.value =
+            calculateCurrentClanBalance();
+    }
+
+    const modal =
+        document.getElementById("cashCheckModal");
+
+    if(modal){
+        modal.classList.add("active");
+    }
+};
+
+
+window.closeCashCheckModal =
+function(){
+
+    const modal =
+        document.getElementById("cashCheckModal");
+
+    if(modal){
+        modal.classList.remove("active");
+    }
+};
+
+
+/* ---------------------------------------------------------
+   ABGLEICH BERECHNEN
+   --------------------------------------------------------- */
+
+window.calculateCashDifference =
+function(){
+
+    const portalStand =
         numberValue(
-            getValue(
-                "cashPortalInput"
-            )
+            getValue("cashPortalStand")
         );
 
-
-    const ingame =
+    const ingameStand =
         numberValue(
-            getValue(
-                "cashIngameInput"
-            )
+            getValue("cashIngameStand")
         );
-
 
     const difference =
-        ingame - portal;
+        ingameStand - portalStand;
+
+    const output =
+        document.getElementById(
+            "cashDifference"
+        );
+
+    if(output){
+        output.textContent =
+            formatMoney(difference);
+    }
+
+    const warning =
+        document.getElementById(
+            "cashDifferenceWarning"
+        );
+
+    if(warning){
+
+        if(difference !== 0){
+
+            warning.textContent =
+                "⚠️ Kassenabweichung: " +
+                formatMoney(difference);
+
+            warning.style.display =
+                "block";
+
+        }else{
+
+            warning.textContent =
+                "✓ Kasse stimmt überein.";
+
+            warning.style.display =
+                "block";
+        }
+    }
+
+    return difference;
+};
 
 
-    const date =
-        getValue(
-            "cashCheckDate"
-        ) ||
-        nowLocal();
+/* ---------------------------------------------------------
+   KASSENABGLEICH SPEICHERN
+   --------------------------------------------------------- */
 
+window.saveCashCheck =
+async function(){
+
+    if(!canManageBookkeeping()){
+        alert(
+            "Nur Leitung und Stadtleitung dürfen " +
+            "Kassenabgleiche speichern."
+        );
+        return;
+    }
+
+    if(!hasSupabase()){
+        showDatabaseError(
+            "Supabase ist nicht verfügbar."
+        );
+        return;
+    }
+
+    const portalStand =
+        numberValue(
+            getValue("cashPortalStand")
+        );
+
+    const ingameStand =
+        numberValue(
+            getValue("cashIngameStand")
+        );
+
+    const difference =
+        ingameStand - portalStand;
 
     const createdBy =
         currentEmployee?.name ||
         currentEmployee?.username ||
-        "Manuell";
+        currentUser?.email ||
+        "Unbekannt";
 
-
-    const note =
-        getValue(
-            "cashCheckNote"
-        );
-
+    const bookingNumber =
+        getValue("cashCheckNumber") ||
+        "KA-" +
+        String(
+            cashChecks.length + 1
+        ).padStart(4,"0");
 
     const payload = {
 
+        buchungsnummer:
+            bookingNumber,
+
         portalstand:
-            portal,
+            portalStand,
 
         ingame_stand:
-            ingame,
+            ingameStand,
 
         abweichung:
             difference,
 
         datum:
-            date,
+            getValue("cashCheckDate") ||
+            new Date().toISOString(),
 
         erstellt_von:
             currentUser?.id ||
@@ -4715,1324 +4060,702 @@ window.saveCashCheck = async function(){
             createdBy,
 
         notiz:
-            note ||
-            null
-
+            getValue("cashCheckNote")
     };
 
+    try{
 
-    if(!hasSupabase()){
+        const { data, error } =
+            await buchhaltungDB
+                .from(TABLE_CASH_CHECKS)
+                .insert(payload)
+                .select()
+                .single();
 
-        alert(
-            "Supabase ist nicht verfügbar."
-        );
+        if(error){
+            throw error;
+        }
 
-        return;
+        if(data){
+            cashChecks.unshift(data);
+        }
 
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await buchhaltungDB
-            .from(
-                TABLE_CASH_CHECKS
-            )
-            .insert(
-                payload
-            )
-            .select()
-            .single();
-
-
-    if(error){
-
-        console.error(
-            "Kassenabgleich:",
-            error
-        );
-
-        showDatabaseError(
-            error,
-            "Kassenabgleich konnte nicht gespeichert werden."
-        );
-
-        return;
-
-    }
-
-
-    cashChecks.unshift(
-        data
-    );
-
-
-    /* -----------------------------------------
-       PROTOKOLL
-    ----------------------------------------- */
-
-    await buchhaltungDB
-        .from(
-            TABLE_LOGS
-        )
-        .insert({
-
-            typ:
-                "Erstellt",
-
-            bereich:
-                "Kassenabgleich",
-
-            aktion:
-                "Kassenabgleich gespeichert",
-
-            beschreibung:
-                `Portal: ${money(portal)} · Ingame: ${money(ingame)} · Abweichung: ${money(difference)}`,
-
-            erstellt_von:
-                currentUser?.id ||
-                null,
-
-            erstellt_von_name:
-                createdBy,
-
-            datum:
-                date,
-
-            status:
-                difference === 0
-                    ? "OK"
-                    : "Abweichung",
-
-            neue_werte:
-                payload
-
-        });
-
-
-    /* -----------------------------------------
-       DISCORD
-    ----------------------------------------- */
-
-    await sendDiscordNotification({
-
-        type:
+        await writeActivityLog(
             "Kassenabgleich",
-
-        title:
-            "Neuer Kassenabgleich",
-
-        amount:
-            difference,
-
-        from:
-            "Portal",
-
-        to:
-            "Ingame",
-
-        purpose:
-            "Kassenabgleich",
-
-        category:
-            "Kontrolle",
-
-        orderNumber:
-            "",
-
-        status:
-            difference === 0
-                ? "OK"
-                : "Abweichung",
-
-        createdBy:
-            createdBy,
-
-        date:
-            date,
-
-        note:
-            note ||
-            "",
-
-        description:
-            `Portalstand: ${money(portal)} | Ingame-Stand: ${money(ingame)} | Abweichung: ${money(difference)}`
-
-    });
-
-
-    renderCashChecks();
-
-    renderLogs();
-
-    runFinancialControl();
-
-    closeCashCheck();
-
-};
-
-
-/* =====================================================
-   KASSENABGLEICHE ANZEIGEN
-===================================================== */
-
-function renderCashChecks(){
-
-    const body =
-        document.getElementById(
-            "cashcheckTableBody"
+            "Portalstand: " +
+            formatMoney(portalStand) +
+            " | Ingame-Stand: " +
+            formatMoney(ingameStand) +
+            " | Abweichung: " +
+            formatMoney(difference)
         );
-
-    if(!body) return;
-
-
-    const portalBalance =
-        getCurrentClanBalance();
-
-
-    setText(
-        "cashPortalBalance",
-        money(portalBalance)
-    );
-
-
-    if(!cashChecks || cashChecks.length === 0){
-
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="6">
-                    Noch keine Kassenabgleiche vorhanden.
-                </td>
-            </tr>
-        `;
-
-        setText(
-            "cashIngameBalance",
-            "0 $"
-        );
-
-        setText(
-            "cashDifference",
-            "0 $"
-        );
-
-        setText(
-            "cashcheckStatus",
-            "Noch kein Kassenabgleich durchgeführt."
-        );
-
-        return;
-
-    }
-
-
-    const latest =
-        cashChecks[0];
-
-
-    const latestIngame =
-        numberValue(
-            latest.ingame_stand ??
-            latest.ingame
-        );
-
-
-    const latestDifference =
-        numberValue(
-            latest.abweichung ??
-            latest.difference
-        );
-
-
-    setText(
-        "cashIngameBalance",
-        money(latestIngame)
-    );
-
-
-    setText(
-        "cashDifference",
-        money(latestDifference)
-    );
-
-
-    setText(
-        "cashcheckStatus",
-        latestDifference === 0
-            ? "Kassenstand stimmt mit dem Ingame-Bestand überein."
-            : "Es besteht eine Abweichung zwischen Portal und Ingame."
-    );
-
-
-    body.innerHTML =
-        cashChecks.map(check => {
-
-            const difference =
-                numberValue(
-                    check.abweichung ??
-                    check.difference
-                );
-
-
-            return `
-                <tr>
-
-                    <td>
-                        ${escapeHtml(
-                            formatDate(
-                                check.datum ||
-                                check.date
-                            )
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(
-                            check.portalstand ??
-                            check.portal
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(
-                            check.ingame_stand ??
-                            check.ingame
-                        )}
-                    </td>
-
-                    <td>
-                        ${money(
-                            difference
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            check.erstellt_von_name ||
-                            "Unbekannt"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            check.notiz ||
-                            ""
-                        )}
-                    </td>
-
-                </tr>
-            `;
-
-        }).join("");
-
-}
-
-
-/* =====================================================
-   FINANZKONTROLLE
-===================================================== */
-
-function runFinancialControl(){
-
-    const warnings = [];
-
-
-    const clanBalance =
-        getCurrentClanBalance();
-
-
-    const savingsBalance =
-        getSavingsBalance();
-
-
-    /* -----------------------------------------
-       CLANKASSE
-    ----------------------------------------- */
-
-    if(clanBalance < 0){
-
-        warnings.push(
-            "Die Clankasse weist einen negativen Stand auf."
-        );
-
-    }
-
-
-    /* -----------------------------------------
-       SPARKONTO
-    ----------------------------------------- */
-
-    if(savingsBalance < 0){
-
-        warnings.push(
-            "Das Sparkonto weist einen negativen Bestand auf."
-        );
-
-    }
-
-
-    /* -----------------------------------------
-       AUFTRAGSVERTEILUNG
-    ----------------------------------------- */
-
-    orderSettlements.forEach(order => {
-
-        const total =
-            numberValue(
-                order.gesamtbetrag ??
-                order.total
-            );
-
-
-        const clanAmount =
-            numberValue(
-                order.clanbetrag ??
-                order.clan
-            );
-
-
-        const orderWorkers =
-            workers.filter(
-                worker =>
-                    worker.auftragsabrechnung_id ===
-                    order.id
-            );
-
-
-        const workerTotal =
-            orderWorkers.reduce(
-                (sum, worker) =>
-                    sum +
-                    numberValue(
-                        worker.gehalt
-                    ),
-                0
-            );
-
-
-        const distributed =
-            clanAmount +
-            workerTotal;
-
-
-        const remaining =
-            total -
-            distributed;
-
-
-        if(remaining > 0){
-
-            warnings.push(
-                `Auftrag ${
-                    order.auftragsnummer ||
-                    order.id
-                } ist noch nicht vollständig verteilt. Restbetrag: ${money(remaining)}`
-            );
-
-        }
-
-
-        if(distributed > total){
-
-            warnings.push(
-                `Auftrag ${
-                    order.auftragsnummer ||
-                    order.id
-                } überschreitet den Gesamtbetrag.`
-            );
-
-        }
-
-    });
-
-
-    /* -----------------------------------------
-       KASSENABGLEICH
-    ----------------------------------------- */
-
-    cashChecks.forEach(check => {
-
-        const difference =
-            numberValue(
-                check.abweichung ??
-                check.difference
-            );
-
-
-        if(difference !== 0){
-
-            warnings.push(
-                `Kassenabgleich vom ${
-                    formatDate(
-                        check.datum ||
-                        check.date
-                    )
-                }: Abweichung ${money(difference)}`
-            );
-
-        }
-
-    });
-
-
-    const warningList =
-        document.getElementById(
-            "warningList"
-        );
-
-
-    if(!warningList) return;
-
-
-    if(warnings.length === 0){
-
-        warningList.innerHTML = `
-            <div class="control-ok">
-                Keine finanziellen Auffälligkeiten gefunden.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    warningList.innerHTML =
-        warnings.map(warning => `
-            <div class="control-warning">
-                ${escapeHtml(warning)}
-            </div>
-        `).join("");
-
-}
-
-
-/* =====================================================
-   FINANZKONTROLLE ÖFFNEN
-===================================================== */
-
-window.openFinancialControl = function(){
-
-    runFinancialControl();
-
-};
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 9 VON 10
-   MONATSBILANZ
-===================================================== */
-
-
-/* =====================================================
-   MONATSBILANZ AKTUALISIEREN
-===================================================== */
-
-function updateMonthly(){
-
-    const period =
-        getValue(
-            "monthlyPeriod"
-        ) ||
-        new Date()
-            .toISOString()
-            .slice(0,7);
-
-
-    const parts =
-        period.split("-");
-
-
-    const year =
-        Number(
-            parts[0]
-        );
-
-
-    const month =
-        Number(
-            parts[1]
-        );
-
-
-    let income = 0;
-
-    let expenses = 0;
-
-    let wages = 0;
-
-    let count = 0;
-
-
-    /* -----------------------------------------
-       BUCHUNGEN DES MONATS
-    ----------------------------------------- */
-
-    (bookings || []).forEach(
-        booking => {
-
-            const dateValue =
-                booking.datum ||
-                booking.date;
-
-
-            if(!dateValue){
-                return;
-            }
-
-
-            const date =
-                new Date(
-                    dateValue
-                );
-
-
-            if(
-                date.getFullYear() !==
-                    year ||
-
-                date.getMonth() + 1 !==
-                    month
-            ){
-
-                return;
-
-            }
-
-
-            count++;
-
-
-            const type =
-                booking.art ||
-                booking.type;
-
-
-            const amount =
-                numberValue(
-                    booking.betrag ??
-                    booking.amount
-                );
-
-
-            /* ---------------------------------
-               EINNAHMEN
-            --------------------------------- */
-
-            if(
-                type ===
-                "Einzahlung"
-            ){
-
-                income +=
-                    amount;
-
-            }
-
-
-            /* ---------------------------------
-               AUSGABEN
-            --------------------------------- */
-
-            else if(
-                type ===
-                "Auszahlung"
-            ){
-
-                expenses +=
-                    amount;
-
-            }
-
-
-            /* ---------------------------------
-               GEHÄLTER
-            --------------------------------- */
-
-            const category =
-                booking.kategorie ||
-                booking.category;
-
-
-            if(
-                category ===
-                "Gehalt"
-            ){
-
-                wages +=
-                    amount;
-
-            }
-
-        }
-    );
-
-
-    /* -----------------------------------------
-       VERÄNDERUNG
-    ----------------------------------------- */
-
-    const change =
-        income -
-        expenses;
-
-
-    /* -----------------------------------------
-       AUSGABE
-    ----------------------------------------- */
-
-    setText(
-        "monthlyIncome",
-        money(
-            income
-        )
-    );
-
-
-    setText(
-        "monthlyExpenses",
-        money(
-            expenses
-        )
-    );
-
-
-    setText(
-        "monthlyWages",
-        money(
-            wages
-        )
-    );
-
-
-    setText(
-        "monthlyChange",
-        money(
-            change
-        )
-    );
-
-
-    setText(
-        "monthlyBookingCount",
-        count
-    );
-
-
-    setText(
-        "monthlyLabel",
-        `${String(
-            month
-        ).padStart(
-            2,
-            "0"
-        )}/${year}`
-    );
-
-}
-
-
-/* =====================================================
-   HTML-ALIAS
-   Das HTML verwendet updateMonthlyBalance()
-===================================================== */
-
-window.updateMonthlyBalance =
-    function(){
-
-        updateMonthly();
-
-    };
-
-
-/* =====================================================
-   MONATSBILANZ INITIALISIEREN
-===================================================== */
-
-function initializeMonthly(){
-
-    const input =
-        document.getElementById(
-            "monthlyPeriod"
-        );
-
-
-    if(!input){
-        return;
-    }
-
-
-    /* Aktuellen Monat nur setzen,
-       wenn noch keiner ausgewählt wurde. */
-
-    if(!input.value){
-
-        input.value =
-            new Date()
-                .toISOString()
-                .slice(
-                    0,
-                    7
-                );
-
-    }
-
-
-    updateMonthly();
-
-}
-
-
-/* =====================================================
-   MONATSBILANZ BEI BUCHUNGSÄNDERUNG
-===================================================== */
-
-function refreshMonthlyBalance(){
-
-    const area =
-        document.getElementById(
-            "area-monthly"
-        );
-
-
-    if(
-        area &&
-        area.classList.contains(
-            "active"
-        )
-    ){
-
-        updateMonthly();
-
-    }
-
-}
-
-
-/* =====================================================
-   FINANZÜBERSICHT AKTUALISIEREN
-===================================================== */
-
-function refreshFinancialOverview(){
-
-    if(
-        typeof calculateFinancialOverview ===
-        "function"
-    ){
-
-        calculateFinancialOverview();
-
-    }
-
-
-    if(
-        typeof renderOverview ===
-        "function"
-    ){
-
-        renderOverview();
-
-    }
-
-
-    if(
-        typeof updateSavingsOverview ===
-        "function"
-    ){
-
-        updateSavingsOverview();
-
-    }
-
-
-    if(
-        typeof runFinancialControl ===
-        "function"
-    ){
-
-        runFinancialControl();
-
-    }
-
-}
-
-
-/* =====================================================
-   ALLE AUSWERTUNGEN AKTUALISIEREN
-===================================================== */
-
-function refreshAllFinancialViews(){
-
-    if(
-        typeof renderBookings ===
-        "function"
-    ){
-
-        renderBookings();
-
-    }
-
-
-    if(
-        typeof renderOrderSettlements ===
-        "function"
-    ){
-
-        renderOrderSettlements();
-
-    }
-
-
-    if(
-        typeof renderEmployees ===
-        "function"
-    ){
-
-        renderEmployees();
-
-    }
-
-
-    if(
-        typeof renderSavings ===
-        "function"
-    ){
-
-        renderSavings();
-
-    }
-
-
-    if(
-        typeof renderCashChecks ===
-        "function"
-    ){
 
         renderCashChecks();
 
-    }
+        closeCashCheckModal();
 
-
-    refreshFinancialOverview();
-
-    refreshMonthlyBalance();
-
-}
-
-
-/* =====================================================
-   MONATSBILANZ BEI ÄNDERUNG AUTOMATISCH AKTUALISIEREN
-===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        initializeMonthly();
-
-    }
-);
-
-
-/* =====================================================
-   EHRENMARKT
-   CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 10 VON 10
-   PROTOKOLL · RECHTE · ABSCHLUSS
-===================================================== */
-
-
-/* =====================================================
-   PROTOKOLL ANZEIGEN
-===================================================== */
-
-function renderLogs(){
-
-    const body =
-        document.getElementById(
-            "logTableBody"
+        alert(
+            difference === 0
+                ? "Kassenabgleich gespeichert. Die Kasse stimmt überein."
+                : "Kassenabgleich gespeichert.\n\n" +
+                  "Abweichung: " +
+                  formatMoney(difference)
         );
 
-    if(!body) return;
+    }catch(error){
+
+        alert(
+            "Kassenabgleich konnte nicht " +
+            "gespeichert werden.\n\n" +
+            (
+                error?.message ||
+                "Unbekannter Fehler."
+            )
+        );
+    }
+};
 
 
-    if(!logs || logs.length === 0){
+/* ---------------------------------------------------------
+   KASSENABGLEICH AKTUALISIEREN
+   --------------------------------------------------------- */
 
-        body.innerHTML = `
-            <tr class="empty-row">
-                <td colspan="7">
+function updateCashCheckOverview(){
+    renderCashChecks();
+           }
+
+/* =========================================================
+   TEIL 9 – PROTOKOLL / AUDIT
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   PROTOKOLL RENDERN
+   --------------------------------------------------------- */
+
+function renderActivityLogs(){
+
+    const tbody =
+        document.getElementById("activityLogTableBody");
+
+    if(!tbody){
+        return;
+    }
+
+    if(
+        !Array.isArray(activityLogs) ||
+        activityLogs.length === 0
+    ){
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
                     Noch keine Protokolleinträge vorhanden.
                 </td>
             </tr>
         `;
-
         return;
-
     }
 
-
-    body.innerHTML =
-        logs.map(log => {
-
-            const date =
-                log.datum ||
-                log.date;
-
-
-            const creator =
-                log.erstellt_von_name ||
-                log.created_by_name ||
-                "Unbekannt";
-
-
-            const action =
-                log.aktion ||
-                log.action ||
-                "—";
-
-
-            const area =
-                log.bereich ||
-                log.area ||
-                "—";
-
-
-            const status =
-                log.status ||
-                "—";
-
+    tbody.innerHTML =
+        activityLogs.map(log => {
 
             return `
                 <tr>
-
                     <td>
                         ${escapeHtml(
-                            formatDate(date)
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            creator
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            area
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            action
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            status
+                            log.aktion ||
+                            log.art ||
+                            "—"
                         )}
                     </td>
 
                     <td>
                         ${escapeHtml(
                             log.beschreibung ||
-                            log.description ||
+                            log.details ||
                             "—"
                         )}
                     </td>
 
                     <td>
-
-                        <button
-                            class="small-button"
-                            onclick="openLogDetail('${log.id}')"
-                        >
-                            Details
-                        </button>
-
+                        ${escapeHtml(
+                            log.erstellt_von_name ||
+                            "—"
+                        )}
                     </td>
 
+                    <td>
+                        ${formatDate(
+                            log.datum
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.status ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.notiz ||
+                            "—"
+                        )}
+                    </td>
                 </tr>
             `;
 
         }).join("");
-
 }
 
 
-/* =====================================================
-   PROTOKOLL-DETAILS
-===================================================== */
+/* ---------------------------------------------------------
+   PROTOKOLL SUCHEN
+   --------------------------------------------------------- */
 
-window.openLogDetail = function(id){
+window.filterActivityLogs =
+function(){
 
-    const log =
-        logs.find(
-            entry =>
-                String(entry.id) ===
-                String(id)
+    const input =
+        document.getElementById(
+            "activityLogSearch"
         );
 
-
-    if(!log){
-
-        alert(
-            "Protokolleintrag wurde nicht gefunden."
+    const tbody =
+        document.getElementById(
+            "activityLogTableBody"
         );
 
+    if(!input || !tbody){
         return;
-
     }
 
+    const search =
+        input.value
+            .trim()
+            .toLowerCase();
 
-    const modal =
-        document.getElementById(
-            "logDetailModal"
-        );
+    const filtered =
+        activityLogs.filter(log => {
 
+            const values = [
 
-    const content =
-        document.getElementById(
-            "logDetailContent"
-        );
+                log.aktion,
 
+                log.art,
 
-    if(!modal || !content){
+                log.beschreibung,
+
+                log.details,
+
+                log.erstellt_von_name,
+
+                log.status,
+
+                log.notiz
+            ];
+
+            return values.some(value =>
+                String(value || "")
+                    .toLowerCase()
+                    .includes(search)
+            );
+        });
+
+    if(filtered.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    Keine Protokolleinträge gefunden.
+                </td>
+            </tr>
+        `;
 
         return;
-
     }
 
+    tbody.innerHTML =
+        filtered.map(log => {
 
-    content.innerHTML = `
+            return `
+                <tr>
+                    <td>
+                        ${escapeHtml(
+                            log.aktion ||
+                            log.art ||
+                            "—"
+                        )}
+                    </td>
 
-        <div class="detail-row">
-            <span>Buchungs-ID</span>
-            <strong>
-                ${escapeHtml(
-                    String(
-                        log.id ||
-                        "—"
-                    )
-                )}
-            </strong>
-        </div>
+                    <td>
+                        ${escapeHtml(
+                            log.beschreibung ||
+                            log.details ||
+                            "—"
+                        )}
+                    </td>
 
+                    <td>
+                        ${escapeHtml(
+                            log.erstellt_von_name ||
+                            "—"
+                        )}
+                    </td>
 
-        <div class="detail-row">
-            <span>Datum</span>
-            <strong>
-                ${escapeHtml(
-                    formatDate(
-                        log.datum ||
-                        log.date
-                    )
-                )}
-            </strong>
-        </div>
+                    <td>
+                        ${formatDate(
+                            log.datum
+                        )}
+                    </td>
 
+                    <td>
+                        ${escapeHtml(
+                            log.status ||
+                            "—"
+                        )}
+                    </td>
 
-        <div class="detail-row">
-            <span>Erstellt von</span>
-            <strong>
-                ${escapeHtml(
-                    log.erstellt_von_name ||
-                    log.created_by_name ||
-                    "Unbekannt"
-                )}
-            </strong>
-        </div>
+                    <td>
+                        ${escapeHtml(
+                            log.notiz ||
+                            "—"
+                        )}
+                    </td>
+                </tr>
+            `;
 
-
-        <div class="detail-row">
-            <span>Bereich</span>
-            <strong>
-                ${escapeHtml(
-                    log.bereich ||
-                    log.area ||
-                    "—"
-                )}
-            </strong>
-        </div>
-
-
-        <div class="detail-row">
-            <span>Aktion</span>
-            <strong>
-                ${escapeHtml(
-                    log.aktion ||
-                    log.action ||
-                    "—"
-                )}
-            </strong>
-        </div>
-
-
-        <div class="detail-row">
-            <span>Status</span>
-            <strong>
-                ${escapeHtml(
-                    log.status ||
-                    "—"
-                )}
-            </strong>
-        </div>
-
-
-        <div class="detail-row">
-            <span>Beschreibung</span>
-            <strong>
-                ${escapeHtml(
-                    log.beschreibung ||
-                    log.description ||
-                    "—"
-                )}
-            </strong>
-        </div>
-
-    `;
-
-
-    modal.classList.add(
-        "active"
-    );
-
+        }).join("");
 };
 
 
-/* =====================================================
-   PROTOKOLL-DETAILS SCHLIESSEN
-===================================================== */
+/* ---------------------------------------------------------
+   PROTOKOLL NACH ZEITRAUM FILTERN
+   --------------------------------------------------------- */
 
-window.closeLogDetail = function(){
+window.filterActivityLogsByPeriod =
+function(period){
 
-    const modal =
-        document.getElementById(
-            "logDetailModal"
-        );
-
-
-    if(modal){
-
-        modal.classList.remove(
-            "active"
-        );
-
+    if(!Array.isArray(activityLogs)){
+        return;
     }
 
+    const now =
+        new Date();
+
+    let startDate = null;
+
+    if(period === "tag"){
+
+        startDate =
+            new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+
+    }else if(period === "monat"){
+
+        startDate =
+            new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                1
+            );
+
+    }else if(period === "jahr"){
+
+        startDate =
+            new Date(
+                now.getFullYear(),
+                0,
+                1
+            );
+    }
+
+    const tbody =
+        document.getElementById(
+            "activityLogTableBody"
+        );
+
+    if(!tbody){
+        return;
+    }
+
+    const filtered =
+        startDate
+            ? activityLogs.filter(log => {
+
+                if(!log.datum){
+                    return false;
+                }
+
+                return (
+                    new Date(log.datum) >=
+                    startDate
+                );
+            })
+            : activityLogs;
+
+    if(filtered.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    Keine Einträge für diesen Zeitraum.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    tbody.innerHTML =
+        filtered.map(log => {
+
+            return `
+                <tr>
+                    <td>
+                        ${escapeHtml(
+                            log.aktion ||
+                            log.art ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.beschreibung ||
+                            log.details ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.erstellt_von_name ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            log.datum
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.status ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            log.notiz ||
+                            "—"
+                        )}
+                    </td>
+                </tr>
+            `;
+
+        }).join("");
 };
 
 
-/* =====================================================
-   RECHTE ANZEIGEN
-===================================================== */
+/* ---------------------------------------------------------
+   AUDIT-EINTRAG SCHREIBEN
+   --------------------------------------------------------- */
 
-function renderBookkeepingPermissions(){
+async function writeActivityLog(
+    action,
+    description,
+    status = "Erfolgreich",
+    note = ""
+){
 
-    const employee =
-        document.getElementById(
-            "permissionEmployee"
-        );
-
-
-    const management =
-        document.getElementById(
-            "permissionManagement"
-        );
-
-
-    const cityManagement =
-        document.getElementById(
-            "permissionCityManagement"
-        );
-
-
-    if(employee){
-
-        employee.textContent =
-            "Einzahlungen erfassen";
-
+    if(!hasSupabase()){
+        return false;
     }
 
+    const createdBy =
+        currentEmployee?.name ||
+        currentEmployee?.username ||
+        currentUser?.email ||
+        "Unbekannt";
 
-    if(management){
+    const payload = {
 
-        management.textContent =
-            "Vollzugriff";
+        aktion:
+            action,
 
+        beschreibung:
+            description,
+
+        erstellt_von:
+            currentUser?.id ||
+            null,
+
+        erstellt_von_name:
+            createdBy,
+
+        datum:
+            new Date().toISOString(),
+
+        status:
+            status,
+
+        notiz:
+            note || null
+    };
+
+    try{
+
+        const { data, error } =
+            await buchhaltungDB
+                .from(TABLE_LOGS)
+                .insert(payload)
+                .select()
+                .single();
+
+        if(error){
+            console.error(
+                "Protokoll konnte nicht gespeichert werden:",
+                error
+            );
+
+            return false;
+        }
+
+        if(data){
+            activityLogs.unshift(data);
+        }
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Audit-Fehler:",
+            error
+        );
+
+        return false;
     }
-
-
-    if(cityManagement){
-
-        cityManagement.textContent =
-            "Vollzugriff";
-
-    }
-
 }
 
 
-/* =====================================================
-   BEREICHSBERECHTIGUNGEN
-===================================================== */
+/* ---------------------------------------------------------
+   PROTOKOLL AKTUALISIEREN
+   --------------------------------------------------------- */
 
-function applyBookkeepingPermissions(){
+function updateActivityLog(){
 
-    const employee =
-        isEmployee();
-
-
-    const management =
-        isManagement();
-
-
-    document
-        .querySelectorAll(
-            ".management-only"
-        )
-        .forEach(
-            element => {
-
-                element.style.display =
-                    management
-                        ? ""
-                        : "none";
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            ".employee-booking"
-        )
-        .forEach(
-            element => {
-
-                element.style.display =
-                    employee ||
-                    management
-                        ? ""
-                        : "none";
-
-            }
-        );
-
+    renderActivityLogs();
 }
 
 
-/* =====================================================
-   BUCHHALTUNG ABSCHLIESSEN
-===================================================== */
+/* ---------------------------------------------------------
+   PROTOKOLL-BEREICH INITIALISIEREN
+   --------------------------------------------------------- */
 
-function finalizeBookkeeping(){
+function initActivityLog(){
 
-    renderOverview();
+    renderActivityLogs();
+
+    const search =
+        document.getElementById(
+            "activityLogSearch"
+        );
+
+    if(search){
+        search.addEventListener(
+            "input",
+            filterActivityLogs
+        );
+    }
+                           }
+
+/* =========================================================
+   TEIL 10 – ABSCHLUSS / BERECHTIGUNGEN / INITIALISIERUNG
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   BERECHTIGUNGEN
+   --------------------------------------------------------- */
+
+function updatePermissionInterface(){
+
+    const isManagement =
+        canManageBookkeeping();
+
+    const isEmployee =
+        isMitarbeiter();
+
+    document
+        .querySelectorAll("[data-management-only]")
+        .forEach(element => {
+
+            element.style.display =
+                isManagement
+                    ? ""
+                    : "none";
+        });
+
+    document
+        .querySelectorAll("[data-deposit-only]")
+        .forEach(element => {
+
+            element.style.display =
+                isEmployee || isManagement
+                    ? ""
+                    : "none";
+        });
+
+    document
+        .querySelectorAll("[data-bookkeeping-admin]")
+        .forEach(element => {
+
+            element.disabled =
+                !isManagement;
+        });
+}
+
+
+/* ---------------------------------------------------------
+   MONATSÜBERSICHT
+   --------------------------------------------------------- */
+
+function calculateMonthlyOverview(){
+
+    const selectedMonthElement =
+        document.getElementById(
+            "monthlyMonth"
+        );
+
+    const selectedMonth =
+        selectedMonthElement?.value ||
+        new Date()
+            .toISOString()
+            .slice(0,7);
+
+    const monthBookings =
+        bookings.filter(booking => {
+
+            if(!booking.datum){
+                return false;
+            }
+
+            return String(
+                booking.datum
+            ).slice(0,7) === selectedMonth;
+        });
+
+    const income =
+        monthBookings
+            .filter(booking =>
+                String(
+                    booking.art || ""
+                ).toLowerCase() === "einzahlung"
+            )
+            .reduce(
+                (sum, booking) =>
+                    sum + numberValue(booking.betrag),
+                0
+            );
+
+    const expenses =
+        monthBookings
+            .filter(booking =>
+                String(
+                    booking.art || ""
+                ).toLowerCase() === "auszahlung"
+            )
+            .reduce(
+                (sum, booking) =>
+                    sum + numberValue(booking.betrag),
+                0
+            );
+
+    const wages =
+        orderSettlements
+            .filter(order => {
+
+                if(!order.datum){
+                    return false;
+                }
+
+                return String(
+                    order.datum
+                ).slice(0,7) === selectedMonth;
+            })
+            .reduce(
+                (sum, order) =>
+                    sum +
+                    numberValue(
+                        order.gesamt_gehaelter
+                    ),
+                0
+            );
+
+    const change =
+        income - expenses;
+
+    const elements = {
+
+        monthlyIncome:
+            income,
+
+        monthlyExpenses:
+            expenses,
+
+        monthlyWages:
+            wages,
+
+        monthlyChange:
+            change
+    };
+
+    Object.entries(elements)
+        .forEach(([id,value]) => {
+
+            const element =
+                document.getElementById(id);
+
+            if(element){
+                element.textContent =
+                    formatMoney(value);
+            }
+        });
+}
+
+
+window.updateMonthlyOverview =
+function(){
+
+    calculateMonthlyOverview();
+};
+
+
+/* ---------------------------------------------------------
+   HAUPTÜBERSICHT AKTUALISIEREN
+   --------------------------------------------------------- */
+
+function updateFinancialOverview(){
+
+    if(
+        typeof calculateFinancialOverview ===
+        "function"
+    ){
+        calculateFinancialOverview();
+    }
+
+    updateSavingsOverview();
+
+    calculateMonthlyOverview();
 
     renderBookings();
 
@@ -6044,107 +4767,133 @@ function finalizeBookkeeping(){
 
     renderCashChecks();
 
-    renderLogs();
-
-    runFinancialControl();
-
-    updateMonthly();
-
+    renderActivityLogs();
 }
 
 
-/* =====================================================
-   GESAMTE SEITE NACH DATENÄNDERUNG AKTUALISIEREN
-===================================================== */
+/* ---------------------------------------------------------
+   GESAMTE BUCHHALTUNG AKTUALISIEREN
+   --------------------------------------------------------- */
 
-window.refreshBookkeeping =
-    function(){
+async function refreshBookkeeping(){
 
-        finalizeBookkeeping();
+    const loaded =
+        await loadBookkeepingData();
 
-    };
-
-
-/* =====================================================
-   BERECHTIGUNGEN NACH LOGIN AKTUALISIEREN
-===================================================== */
-
-function refreshBookkeepingPermissions(){
-
-    if(
-        typeof applyBookkeepingPermissions ===
-        "function"
-    ){
-
-        applyBookkeepingPermissions();
-
+    if(!loaded){
+        return false;
     }
 
+    updateFinancialOverview();
 
-    if(
-        typeof renderBookkeepingPermissions ===
-        "function"
-    ){
+    updatePermissionInterface();
 
-        renderBookkeepingPermissions();
-
-    }
-
+    return true;
 }
 
 
-/* =====================================================
-   ABSCHLUSS BEIM LADEN
-===================================================== */
+/* ---------------------------------------------------------
+   INITIALISIERUNG
+   --------------------------------------------------------- */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
+async function initializeBookkeeping(){
 
-        refreshBookkeepingPermissions();
+    try{
 
-        setTimeout(
-            function(){
+        await loadCurrentUser();
 
-                if(
-                    typeof finalizeBookkeeping ===
-                    "function"
-                ){
+        await loadCurrentEmployee();
 
-                    finalizeBookkeeping();
+        if(!currentUser){
+            updatePermissionInterface();
 
-                }
+            return;
+        }
 
-            },
-            250
+        const loaded =
+            await loadBookkeepingData();
+
+        if(!loaded){
+            return;
+        }
+
+        updateFinancialOverview();
+
+        updatePermissionInterface();
+
+        initActivityLog();
+
+        /* Monatsauswahl */
+
+        const monthlyMonth =
+            document.getElementById(
+                "monthlyMonth"
+            );
+
+        if(monthlyMonth){
+
+            monthlyMonth.value =
+                new Date()
+                    .toISOString()
+                    .slice(0,7);
+
+            monthlyMonth.addEventListener(
+                "change",
+                calculateMonthlyOverview
+            );
+        }
+
+        /* Sparkonto */
+
+        updateSavingsOverview();
+
+        /* Kassenabgleich */
+
+        renderCashChecks();
+
+        /* Protokoll */
+
+        renderActivityLogs();
+
+        console.log(
+            "Buchhaltung erfolgreich initialisiert."
         );
 
-    }
-);
-
-
-/* =====================================================
-   FEHLERBEHANDLUNG
-===================================================== */
-
-window.addEventListener(
-    "error",
-    function(event){
+    }catch(error){
 
         console.error(
-            "Buchhaltung JavaScript Fehler:",
-            event.error ||
-            event.message
+            "Initialisierungsfehler:",
+            error
         );
 
+        showDatabaseError(
+            error?.message ||
+            "Die Buchhaltung konnte nicht vollständig geladen werden."
+        );
     }
-);
+}
 
 
-/* =====================================================
-   ABSCHLUSS
-===================================================== */
+/* ---------------------------------------------------------
+   SEITENSTART
+   --------------------------------------------------------- */
 
-console.log(
-    "Ehrenmarkt Clan-Buchhaltung V0.1 Beta geladen."
-);
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeBookkeeping
+    );
+
+}else{
+
+    initializeBookkeeping();
+}
+
+
+/* =========================================================
+   ENDE – BUCHHALTUNG V0.1 BETA
+   ========================================================= */
