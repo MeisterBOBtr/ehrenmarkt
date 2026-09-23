@@ -6807,6 +6807,91 @@ else{
 
 }
 
+/* =====================================================
+   BUCHHALTUNGS-NAVIGATOR
+===================================================== */
+
+window.showArea = function(id, button){
+
+    const selected =
+        document.getElementById(id);
+
+    if(!selected){
+
+        console.error(
+            "Bereich nicht gefunden:",
+            id
+        );
+
+        return;
+
+    }
+
+
+    /* Alle Bereiche schließen */
+
+    document
+        .querySelectorAll(".open-area")
+        .forEach(
+            area => {
+
+                area.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    /* Alle Buttons deaktivieren */
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(
+            btn => {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    /* Gewählten Bereich öffnen */
+
+    selected.classList.add(
+        "active"
+    );
+
+
+    /* Gewählten Button markieren */
+
+    if(button){
+
+        button.classList.add(
+            "active"
+        );
+
+    }
+
+
+    /* Zum Bereich scrollen */
+
+    setTimeout(
+        () => {
+
+            selected.scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            });
+
+        },
+        100
+    );
+
+};
+
 
 /* =====================================================
    SICHERHEITS-CHECK
