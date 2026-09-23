@@ -2061,6 +2061,8 @@ function(){
             )
             .join("");
 
+   updateBookingSummary(bookings);
+
 };
 
 
