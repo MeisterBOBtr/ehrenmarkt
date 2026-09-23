@@ -136,6 +136,10 @@ function money(value){
 
 }
 
+function formatMoney(value){
+    return money(value);
+}
+
 
 function escapeHtml(value){
 
