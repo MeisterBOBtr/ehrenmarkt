@@ -10524,6 +10524,8 @@ async function refreshBookkeeping(){
 
             await loadCurrentEmployee();
 
+        }
+
 /*
    Beim ersten Öffnen der Buchhaltung
    wird einmalig nach dem eigenen
