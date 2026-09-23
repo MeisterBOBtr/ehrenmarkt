@@ -10523,12 +10523,17 @@ async function refreshBookkeeping(){
         if(currentUser){
 
             await loadCurrentEmployee();
-        }
 
+/*
+   Beim ersten Öffnen der Buchhaltung
+   wird einmalig nach dem eigenen
+   Buchhaltungsnamen gefragt.
+*/
+await ensureBookkeepingName();
 
-        await loadBookkeepingData();
+await loadBookkeepingData();
 
-        renderAllBookkeeping();
+renderAllBookkeeping();
 
         renderCurrentUserPermissions();
 
