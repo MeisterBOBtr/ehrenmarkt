@@ -4733,6 +4733,15 @@ function renderSavingsOverview(){
    TEIL 6 VON 12
    BUCHHALTUNG – MITARBEITER
 ================================ */
+function getCurrentUserName(){
+    return (
+        currentEmployee?.name ||
+        currentEmployee?.username ||
+        currentEmployee?.minecraft_name ||
+        currentUser?.email ||
+        "Unbekannt"
+    );
+}
 
 function normalizePersonName(value){
     return String(value || "")
