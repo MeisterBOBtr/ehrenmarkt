@@ -798,6 +798,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await loadCurrentUser();
 
+       await loadCurrentEmployee();
+
         await loadBookkeepingData();
 
         applyPermissions();
