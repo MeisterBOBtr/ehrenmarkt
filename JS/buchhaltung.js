@@ -1843,7 +1843,70 @@ function renderBookings(){
 
 }
 
-updateBookingSummary(bookings);
+/* =====================================================
+   BUCHUNGSÜBERSICHT
+===================================================== */
+
+function updateBookingSummary(list = bookings){
+
+    let income = 0;
+    let expenses = 0;
+
+    list.forEach(
+        booking => {
+
+            const amount =
+                numberValue(
+                    booking.betrag
+                );
+
+            if(
+                booking.art === "Einzahlung"
+            ){
+
+                income += amount;
+
+            }
+
+            else if(
+                booking.art === "Auszahlung"
+            ){
+
+                expenses += amount;
+
+            }
+
+        }
+    );
+
+
+    const net =
+        income - expenses;
+
+
+    setText(
+        "bookingIncome",
+        money(income)
+    );
+
+    setText(
+        "bookingExpense",
+        money(expenses)
+    );
+
+    setText(
+        "bookingNet",
+        money(net)
+    );
+
+    setText(
+        "bookingCount",
+        list.length
+    );
+
+}
+
+
 
 
 /* =====================================================
