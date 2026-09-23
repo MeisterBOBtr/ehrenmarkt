@@ -918,14 +918,11 @@ function getTotalAssets(){
 function calculateFinancialOverview(){
 
     let totalDeposits = 0;
-
     let totalWithdrawals = 0;
-
     let totalWages = 0;
-
     let totalClanExpenses = 0;
-
     let historicalRevenue = 0;
+    let openAmount = 0;
 
 
     /* =================================================
@@ -940,12 +937,10 @@ function calculateFinancialOverview(){
                     booking.betrag
                 );
 
-
             const type =
                 String(
                     booking.art || ""
                 ).trim();
-
 
             const category =
                 String(
@@ -953,9 +948,7 @@ function calculateFinancialOverview(){
                 ).trim();
 
 
-            /* -----------------------------------------
-               EINZAHLUNGEN
-            ----------------------------------------- */
+            /* EINZAHLUNGEN */
 
             if(
                 type === "Einzahlung"
@@ -966,9 +959,7 @@ function calculateFinancialOverview(){
             }
 
 
-            /* -----------------------------------------
-               AUSZAHLUNGEN
-            ----------------------------------------- */
+            /* AUSZAHLUNGEN */
 
             else if(
                 type === "Auszahlung"
@@ -979,9 +970,7 @@ function calculateFinancialOverview(){
             }
 
 
-            /* -----------------------------------------
-               GEHÄLTER
-            ----------------------------------------- */
+            /* ARBEITERGEHÄLTER */
 
             if(
                 category === "Gehalt" ||
@@ -993,9 +982,7 @@ function calculateFinancialOverview(){
             }
 
 
-            /* -----------------------------------------
-               CLAN-AUSGABEN
-            ----------------------------------------- */
+            /* CLANAUSGABEN */
 
             if(
                 category === "Clan-Ausgabe" ||
@@ -1012,253 +999,8 @@ function calculateFinancialOverview(){
 
     /* =================================================
        HISTORISCHER GESAMTUMSATZ
-    ================================================= */
 
-    orderSettlements.forEach(
-        order => {
-
-            historicalRevenue +=
-                numberValue(
-                    order.gesamtbetrag
-                );
-
-        }
-    );
-
-
-    /* =================================================
-       AKTUELLER CLANSTAND
-    ================================================= */
-
-    const currentClanBalance =
-        totalDeposits -
-        totalWithdrawals;
-
-
-    /* =================================================
-       SPARKONTO
-    ================================================= */
-
-    const savingsBalance =
-        getSavingsBalance();
-
-
-    /* =================================================
-       GESAMTVERMÖGEN
-    ================================================= */
-
-    const totalAssets =
-        currentClanBalance +
-        savingsBalance;
-
-
-    return {
-
-        currentClanBalance,
-
-        historicalRevenue,
-
-        totalDeposits,
-
-        totalWithdrawals,
-
-        totalWages,
-
-        totalClanExpenses,
-
-        savingsBalance,
-
-        totalAssets
-
-    };
-
-}
-
-
-/* =====================================================
-   FINANZÜBERSICHT ANZEIGEN
-===================================================== */
-
-function renderOverview(){
-
-    const overview =
-        calculateFinancialOverview();
-
-
-    /* -----------------------------------------
-       AKTUELLER CLANSTAND
-    ----------------------------------------- */
-
-    setText(
-        "currentClanBalance",
-        money(
-            overview.currentClanBalance
-        )
-    );
-
-
-    /* -----------------------------------------
-       GESAMTER UMSATZ / GESAMT JEMALS
-    ----------------------------------------- */
-
-    setText(
-        "historicalRevenue",
-        money(
-            overview.historicalRevenue
-        )
-    );
-
-
-    setText(
-        "totalRevenue",
-        money(
-            overview.historicalRevenue
-        )
-    );
-
-
-    /* -----------------------------------------
-       GESAMTE EINZAHLUNGEN
-    ----------------------------------------- */
-
-    setText(
-        "totalDeposits",
-        money(
-            overview.totalDeposits
-        )
-    );
-
-
-    /* -----------------------------------------
-       GESAMTE AUSZAHLUNGEN
-    ----------------------------------------- */
-
-    setText(
-        "totalWithdrawals",
-        money(
-            overview.totalWithdrawals
-        )
-    );
-
-
-    /* -----------------------------------------
-       ARBEITERGEHÄLTER
-    ----------------------------------------- */
-
-    setText(
-        "totalWages",
-        money(
-            overview.totalWages
-        )
-    );
-
-
-    /* -----------------------------------------
-       CLANAUSGABEN
-    ----------------------------------------- */
-
-/* =====================================================
-   FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 3 VON 10
-   FINANZÜBERSICHT
-===================================================== */
-
-
-/* =====================================================
-   FINANZWERTE BERECHNEN
-===================================================== */
-
-function calculateFinancialOverview(){
-
-    let totalDeposits = 0;
-    let totalWithdrawals = 0;
-    let totalWages = 0;
-    let totalClanExpenses = 0;
-    let historicalRevenue = 0;
-
-
-    /* =================================================
-       NORMALE BUCHUNGEN
-    ================================================= */
-
-    bookings.forEach(
-        booking => {
-
-            const amount =
-                numberValue(
-                    booking.betrag
-                );
-
-
-            const type =
-                String(
-                    booking.art || ""
-                ).trim();
-
-
-            const category =
-                String(
-                    booking.kategorie || ""
-                ).trim();
-
-
-            /* EINZAHLUNGEN */
-
-            if(
-                type === "Einzahlung"
-            ){
-
-                totalDeposits +=
-                    amount;
-
-            }
-
-
-            /* AUSZAHLUNGEN */
-
-            else if(
-                type === "Auszahlung"
-            ){
-
-                totalWithdrawals +=
-                    amount;
-
-            }
-
-
-            /* ARBEITERGEHÄLTER */
-
-            if(
-                category === "Gehalt" ||
-                category === "Arbeitergehalt"
-            ){
-
-                totalWages +=
-                    amount;
-
-            }
-
-
-            /* CLANAUSGABEN */
-
-            if(
-                category === "Clan-Ausgabe" ||
-                category === "Ausgabe"
-            ){
-
-                totalClanExpenses +=
-                    amount;
-
-            }
-
-        }
-    );
-
-
-    /* =================================================
-       HISTORISCHER GESAMTUMSATZ
-
-       Nur manuelle Auftragsabrechnungen.
+       Nur Auftragsabrechnungen.
        Normale Einzahlungen werden NICHT
        automatisch als Umsatz gezählt.
     ================================================= */
@@ -1305,9 +1047,6 @@ function calculateFinancialOverview(){
        OFFENE BETRÄGE
     ================================================= */
 
-    let openAmount = 0;
-
-
     orderSettlements.forEach(
         order => {
 
@@ -1327,23 +1066,19 @@ function calculateFinancialOverview(){
                         order.gesamtbetrag
                     );
 
-
                 const clanAmount =
                     numberValue(
                         order.clanbetrag
                     );
-
 
                 const wages =
                     numberValue(
                         order.gesamt_gehaelter
                     );
 
-
                 const alreadyDistributed =
                     clanAmount +
                     wages;
-
 
                 const remaining =
                     total -
@@ -1368,21 +1103,13 @@ function calculateFinancialOverview(){
     return {
 
         currentClanBalance,
-
         historicalRevenue,
-
         totalDeposits,
-
         totalWithdrawals,
-
         totalWages,
-
         totalClanExpenses,
-
         savingsBalance,
-
         totalAssets,
-
         openAmount
 
     };
@@ -1400,10 +1127,6 @@ function renderOverview(){
         calculateFinancialOverview();
 
 
-    /* =================================================
-       AKTUELLER CLANSTAND
-    ================================================= */
-
     setText(
         "currentClanBalance",
         money(
@@ -1411,10 +1134,6 @@ function renderOverview(){
         )
     );
 
-
-    /* =================================================
-       GESAMTER UMSATZ / GESAMT JEMALS
-    ================================================= */
 
     setText(
         "historicalRevenue",
@@ -1432,10 +1151,6 @@ function renderOverview(){
     );
 
 
-    /* =================================================
-       GESAMTE EINZAHLUNGEN
-    ================================================= */
-
     setText(
         "totalDeposits",
         money(
@@ -1444,10 +1159,6 @@ function renderOverview(){
     );
 
 
-    /* =================================================
-       GESAMTE AUSZAHLUNGEN
-    ================================================= */
-
     setText(
         "totalWithdrawals",
         money(
@@ -1455,316 +1166,6 @@ function renderOverview(){
         )
     );
 
-
-    /* =================================================
-       ARBEITERGEHÄLTER
-    ================================================= */
-
-    setText(
-        "totalWages",
-        money(
-/* =====================================================
-   FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
-   TEIL 3 VON 10
-   FINANZÜBERSICHT
-===================================================== */
-
-
-/* =====================================================
-   FINANZWERTE BERECHNEN
-===================================================== */
-
-function calculateFinancialOverview(){
-
-    let totalDeposits = 0;
-    let totalWithdrawals = 0;
-    let totalWages = 0;
-    let totalClanExpenses = 0;
-    let historicalRevenue = 0;
-
-
-    /* =================================================
-       NORMALE BUCHUNGEN
-    ================================================= */
-
-    bookings.forEach(
-        booking => {
-
-            const amount =
-                numberValue(
-                    booking.betrag
-                );
-
-
-            const type =
-                String(
-                    booking.art || ""
-                ).trim();
-
-
-            const category =
-                String(
-                    booking.kategorie || ""
-                ).trim();
-
-
-            /* EINZAHLUNGEN */
-
-            if(
-                type === "Einzahlung"
-            ){
-
-                totalDeposits +=
-                    amount;
-
-            }
-
-
-            /* AUSZAHLUNGEN */
-
-            else if(
-                type === "Auszahlung"
-            ){
-
-                totalWithdrawals +=
-                    amount;
-
-            }
-
-
-            /* ARBEITERGEHÄLTER */
-
-            if(
-                category === "Gehalt" ||
-                category === "Arbeitergehalt"
-            ){
-
-                totalWages +=
-                    amount;
-
-            }
-
-
-            /* CLANAUSGABEN */
-
-            if(
-                category === "Clan-Ausgabe" ||
-                category === "Ausgabe"
-            ){
-
-                totalClanExpenses +=
-                    amount;
-
-            }
-
-        }
-    );
-
-
-    /* =================================================
-       HISTORISCHER GESAMTUMSATZ
-
-       Nur manuelle Auftragsabrechnungen.
-       Normale Einzahlungen werden NICHT
-       automatisch als Umsatz gezählt.
-    ================================================= */
-
-    orderSettlements.forEach(
-        order => {
-
-            historicalRevenue +=
-                numberValue(
-                    order.gesamtbetrag
-                );
-
-        }
-    );
-
-
-    /* =================================================
-       AKTUELLER CLANSTAND
-    ================================================= */
-
-    const currentClanBalance =
-        totalDeposits -
-        totalWithdrawals;
-
-
-    /* =================================================
-       SPARKONTO
-    ================================================= */
-
-    const savingsBalance =
-        getSavingsBalance();
-
-
-    /* =================================================
-       GESAMTVERMÖGEN
-    ================================================= */
-
-    const totalAssets =
-        currentClanBalance +
-        savingsBalance;
-
-
-    /* =================================================
-       OFFENE BETRÄGE
-    ================================================= */
-
-    let openAmount = 0;
-
-
-    orderSettlements.forEach(
-        order => {
-
-            const status =
-                String(
-                    order.status || ""
-                ).trim();
-
-
-            if(
-                status === "Offen" ||
-                status === "Teilweise bezahlt"
-            ){
-
-                const total =
-                    numberValue(
-                        order.gesamtbetrag
-                    );
-
-
-                const clanAmount =
-                    numberValue(
-                        order.clanbetrag
-                    );
-
-
-                const wages =
-                    numberValue(
-                        order.gesamt_gehaelter
-                    );
-
-
-                const alreadyDistributed =
-                    clanAmount +
-                    wages;
-
-
-                const remaining =
-                    total -
-                    alreadyDistributed;
-
-
-                if(
-                    remaining > 0
-                ){
-
-                    openAmount +=
-                        remaining;
-
-                }
-
-            }
-
-        }
-    );
-
-
-    return {
-
-        currentClanBalance,
-
-        historicalRevenue,
-
-        totalDeposits,
-
-        totalWithdrawals,
-
-        totalWages,
-
-        totalClanExpenses,
-
-        savingsBalance,
-
-        totalAssets,
-
-        openAmount
-
-    };
-
-}
-
-
-/* =====================================================
-   FINANZÜBERSICHT ANZEIGEN
-===================================================== */
-
-function renderOverview(){
-
-    const overview =
-        calculateFinancialOverview();
-
-
-    /* =================================================
-       AKTUELLER CLANSTAND
-    ================================================= */
-
-    setText(
-        "currentClanBalance",
-        money(
-            overview.currentClanBalance
-        )
-    );
-
-
-    /* =================================================
-       GESAMTER UMSATZ / GESAMT JEMALS
-    ================================================= */
-
-    setText(
-        "historicalRevenue",
-        money(
-            overview.historicalRevenue
-        )
-    );
-
-
-    setText(
-        "totalRevenue",
-        money(
-            overview.historicalRevenue
-        )
-    );
-
-
-    /* =================================================
-       GESAMTE EINZAHLUNGEN
-    ================================================= */
-
-    setText(
-        "totalDeposits",
-        money(
-            overview.totalDeposits
-        )
-    );
-
-
-    /* =================================================
-       GESAMTE AUSZAHLUNGEN
-    ================================================= */
-
-    setText(
-        "totalWithdrawals",
-        money(
-            overview.totalWithdrawals
-        )
-    );
-
-
-    /* =================================================
-       ARBEITERGEHÄLTER
-    ================================================= */
 
     setText(
         "totalWages",
@@ -1773,10 +1174,6 @@ function renderOverview(){
         )
     );
 
-
-    /* =================================================
-       CLANAUSGABEN
-    ================================================= */
 
     setText(
         "totalClanExpenses",
@@ -1786,10 +1183,6 @@ function renderOverview(){
     );
 
 
-    /* =================================================
-       SPARKONTO
-    ================================================= */
-
     setText(
         "savingsBalance",
         money(
@@ -1797,10 +1190,6 @@ function renderOverview(){
         )
     );
 
-
-    /* =================================================
-       OFFENE BETRÄGE
-    ================================================= */
 
     setText(
         "openAmount",
@@ -1810,10 +1199,6 @@ function renderOverview(){
     );
 
 
-    /* =================================================
-       GESAMTVERMÖGEN
-    ================================================= */
-
     setText(
         "totalAssets",
         money(
@@ -1822,19 +1207,11 @@ function renderOverview(){
     );
 
 
-    /* =================================================
-       ANZAHL BUCHUNGEN
-    ================================================= */
-
     setText(
         "bookingCount",
         bookings.length
     );
 
-
-    /* =================================================
-       ANZAHL AUFTRAGSABRECHNUNGEN
-    ================================================= */
 
     setText(
         "orderCount",
@@ -1858,6 +1235,9 @@ function refreshFinancialOverview(){
 /* =====================================================
    TEIL 3 ENDE
 ===================================================== */
+
+
+        
 /* =====================================================
    FALKENSTEIN – CLAN-BUCHHALTUNG V0.1 BETA
    TEIL 4 VON 10
