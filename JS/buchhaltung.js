@@ -1843,6 +1843,8 @@ function renderBookings(){
 
 }
 
+updateBookingSummary(bookings);
+
 
 /* =====================================================
    BUCHUNGEN FILTERN
