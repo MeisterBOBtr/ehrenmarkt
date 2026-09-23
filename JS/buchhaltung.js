@@ -471,7 +471,6 @@ function getCurrentRank(){
 
     return (
         currentEmployee.rang ||
-        currentEmployee.role ||
         ""
     );
 
