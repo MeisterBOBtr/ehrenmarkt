@@ -34,8 +34,9 @@ const TABLE_ORDERS =
 const TABLE_ORDER_WORKERS =
     "buchhaltung_auftragsarbeiter";
 
-const TABLE_LOG =
-    "buchhaltung_protokoll";
+const TABLE_LOGS = "buchhaltung_protokoll";
+
+const TABLE_ACTIVITY_LOG = TABLE_LOGS;
 
 const TABLE_CASH =
     "buchhaltung_kassenabgleich";
