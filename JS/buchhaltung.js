@@ -1208,9 +1208,9 @@ function renderOverview(){
 
 
     setText(
-        "bookingCount",
-        bookings.length
-    );
+    "totalBookings",
+    bookings.length
+);
 
 
     setText(
