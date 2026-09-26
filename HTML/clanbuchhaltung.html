@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ehrenmarkt – Clan-Buchhaltung V1.0 Komplett-Vorschau</title>
+<style>
+:root{--bg:#050505;--p:#111;--p2:#151515;--line:rgba(212,175,55,.28);--txt:#f4f4f4;--muted:#9b9b9b;--gold:#d4af37;--gold-light:#f4d878;--gold-dark:#80630d;--green:#56c878;--red:#d95c5c;--blue:#76aaff;--orange:#d99a42}
+*{box-sizing:border-box}body{
+margin:0;
+min-height:100vh;
+font-family:Arial,Helvetica,sans-serif;
+color:var(--txt);
+background:
+linear-gradient(rgba(0,0,0,.34),rgba(0,0,0,.60)),
+url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Buchhaltung.png")
+center center / cover fixed no-repeat;
+background-color:#050505;
+font-size:14px;
+}.page{max-width:1250px;margin:auto;padding:14px}.top,.hero,.section,.nav,.card{background:rgba(20,24,29,.96);border:1px solid var(--line);border-radius:17px}.top{padding:20px;display:flex;justify-content:space-between;gap:20px}.k{color:var(--gold);font-size:11px;letter-spacing:1.6px}.top h1{margin:7px 0;font-size:27px}.tag{font-size:11px;padding:5px 8px;border-radius:20px;background:#302817;color:var(--gold)}.muted{color:var(--muted)}.hero{margin-top:12px;padding:23px;border-color:#665225}.hero small{color:var(--muted);letter-spacing:1px}.hero strong{display:block;color:var(--gold);font-size:35px;margin:7px 0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}.card{padding:15px}.label{color:var(--muted);font-size:11px}.value{font-size:21px;font-weight:700;margin-top:7px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}.blue{color:var(--blue)}.orange{color:var(--orange)}.layout{display:grid;grid-template-columns:205px 1fr;gap:12px;margin-top:14px}.nav{padding:7px;height:max-content;position:sticky;top:8px}.nav button{width:100%;padding:11px;text-align:left;background:none;border:0;color:var(--muted);border-radius:9px;cursor:pointer}.nav button.active,.nav button:hover{background:#272d35;color:#fff}.section{display:none;padding:19px}.section.active{display:block}.section h2{margin:0 0 5px}.toolbar,.form,.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar input,.toolbar select,.form input,.form select,.form textarea{background:#0d1014;color:#fff;border:1px solid var(--line);border-radius:9px;padding:10px}.toolbar input{flex:1;min-width:180px}.form label{display:grid;gap:5px;color:var(--muted);min-width:190px;flex:1}.form textarea{min-height:70px;resize:vertical}.btn{border:0;border-radius:9px;padding:10px 14px;cursor:pointer}.primary{background:#c9a54e;color:#111;font-weight:700}.dark{background:#252b33;color:#fff}.notice{padding:12px;border:1px solid #68562b;background:#211d11;border-radius:10px;margin:12px 0}.danger{border-color:#684040;background:#251515}.rows{display:grid;gap:8px}.row{display:flex;justify-content:space-between;gap:12px;padding:13px;background:var(--p2);border:1px solid var(--line);border-radius:10px}.row small{display:block;color:var(--muted);margin-top:4px}.wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{font-size:12px;color:var(--muted)}.status{padding:4px 8px;border-radius:20px;background:#202a24;color:var(--green);font-size:12px}.status.warn{background:#302617;color:var(--orange)}.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mini .card{background:#11151a}.footer{text-align:center;color:var(--muted);font-size:12px;margin:14px}.chart-hero{padding:18px 20px 15px}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:18px}.chart-head h2{margin:4px 0 2px;font-size:20px}.chart-current{min-width:190px;padding:10px 13px;border:1px solid #5f4e28;border-radius:11px;background:#18160f}.chart-current span{display:block;color:var(--muted);font-size:9px;letter-spacing:1px}.chart-current strong{display:block;color:var(--gold);font-size:24px;margin-top:3px}.finance-chart{margin-top:16px;display:grid;gap:9px}.chart-row{display:grid;grid-template-columns:125px 1fr 115px;align-items:center;gap:10px}.chart-label{font-size:12px;color:#d8dde3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-row b{text-align:right;font-size:12px}.bar-track{height:13px;background:#0c0f13;border:1px solid #252c34;border-radius:99px;overflow:hidden}.bar{height:100%;border-radius:99px}.b-gold{background:linear-gradient(90deg,#b9913e,#e2c56e)}.b-green{background:#55c980}.b-white{background:#cbd2da}.b-red,.b-red2{background:#d16d76}.b-red2{background:#b85f68}.b-blue{background:#668fdc}.b-orange,.b-orange2{background:#d8994f}.b-yellow{background:#d8b35a}.chart-note{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px;color:var(--muted);font-size:10px}.chart-note span:nth-child(1){color:var(--green)}.chart-note span:nth-child(2){color:var(--blue)}.chart-note span:nth-child(3){color:var(--red)}.chart-note span:nth-child(4){color:var(--orange)}@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}.layout{grid-template-columns:1fr}.nav{position:static;display:flex;overflow:auto}.nav button{min-width:max-content}.top{display:block}.mini{grid-template-columns:1fr 1fr}}@media(max-width:500px){body{background-attachment:scroll;background-position:center top;}.grid{grid-template-columns:1fr 1fr}.form label{min-width:100%}.hero strong{font-size:28px}.chart-head{display:block}.chart-current{margin-top:12px}.chart-row{grid-template-columns:92px 1fr 90px;gap:6px}.chart-label{font-size:10px}.chart-row b{font-size:10px}.finance-chart{gap:8px}}
+
+.chartbox{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:#101419}.charthead{display:flex;justify-content:space-between;gap:10px;align-items:center}.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:12px;margin-top:2px}.legend span{display:flex;align-items:center;gap:6px}.lg{display:inline-block;width:10px;height:10px;border-radius:3px}.greenbg{background:#64d38d}.redbg{background:#e77b7b}.orangebg{background:#e7aa61}.goldbg{background:#d8b35a}
+
+.glass-look,.top,.hero,.section,.nav,.card,.chartbox{
+background:linear-gradient(135deg,rgba(0,0,0,.76),rgba(18,18,18,.52)) !important;
+border-color:rgba(212,175,55,.28) !important;
+box-shadow:inset 0 0 35px rgba(255,255,255,.025),0 18px 45px rgba(0,0,0,.45);
+backdrop-filter:blur(9px);
+-webkit-backdrop-filter:blur(9px);
+}
+.top{
+border-color:rgba(212,175,55,.40) !important;
+background:linear-gradient(135deg,rgba(0,0,0,.86),rgba(22,18,7,.68)) !important;
+box-shadow:inset 0 0 50px rgba(212,175,55,.035),0 20px 50px rgba(0,0,0,.55);
+}
+.hero{
+border-color:rgba(212,175,55,.30) !important;
+background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(40,31,8,.50)) !important;
+}
+.card,.section,.nav{border-radius:14px}
+.k,.gold,.hero strong,.value.gold{color:var(--gold-light)}
+.primary{background:var(--gold);color:#111}
+.tag{background:rgba(212,175,55,.14);color:var(--gold-light)}
+</style></head><body><div class="page">
+<header class="top"><div><div class="k">EHRENMARKT · FALKENSTEIN</div><h1>Clan-Buchhaltung <span class="tag">V1.0 VORSCHAU</span></h1><div class="muted">Komplette manuelle Finanzverwaltung</div></div><div class="muted">Stadtleitung<br>aktuell angemeldet</div></header>
+<section class="hero chart-hero">
+  <div class="chart-head"><div><small>FINANZÜBERSICHT</small><h2>Clan-Finanzen auf einen Blick</h2><span class="muted">Aktuelle Werte aus der Übersicht · Demo-Daten der V1.0-Vorschau</span></div><div class="chart-current"><span>AKTUELL VERFÜGBAR</span><strong>1.850.000 $</strong></div></div>
+  <div class="finance-chart" aria-label="Diagramm der aktuellen Clan-Finanzen">
+    <div class="chart-row"><div class="chart-label">Gesamtvermögen</div><div class="bar-track"><div class="bar b-gold" style="width:100%"></div></div><b>4.725.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Einnahmen</div><div class="bar-track"><div class="bar b-green" style="width:90%"></div></div><b>4.250.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Aktuell verfügbar</div><div class="bar-track"><div class="bar b-white" style="width:39%"></div></div><b>1.850.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Ausgaben</div><div class="bar-track"><div class="bar b-red" style="width:23.3%"></div></div><b>1.100.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Gehälter</div><div class="bar-track"><div class="bar b-red2" style="width:14.8%"></div></div><b>700.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Sparkonto</div><div class="bar-track"><div class="bar b-blue" style="width:13.8%"></div></div><b>650.000 $</b></div>
+    <div class="chart-row"><div class="chart-label">Offene Darlehen</div><div class="bar-track"><div class="bar b-orange" style="width:6.9%"></div></div><b>325.000 $</b></div>
+    <div class="chart-row small-chart"><div class="chart-label">Fällige Zinsen</div><div class="bar-track"><div class="bar b-yellow" style="width:.69%;min-width:5px"></div></div><b>32.500 $</b></div>
+    <div class="chart-row small-chart"><div class="chart-label">Mahngebühren</div><div class="bar-track"><div class="bar b-orange2" style="width:.32%;min-width:5px"></div></div><b>15.000 $</b></div>
+  </div>
+  <div class="chart-note"><span>● Einnahmen / Vermögen</span><span>● Verfügbar / Sparkonto</span><span>● Ausgaben / Gehälter</span><span>● Darlehen / Gebühren</span></div>
+</section>
+
+<div class="layout"><nav class="nav">
+<button class="active" onclick="show('overview',this)">🏠 Übersicht</button>
+<button onclick="show('orders',this)">📋 Aufträge</button>
+<button onclick="show('income',this)">💰 Einnahmen</button>
+<button onclick="show('payout',this)">💳 Auszahlungen</button>
+<button onclick="show('loan',this)">💸 Geldverleih</button>
+<button onclick="show('saving',this)">🏦 Sparkonto</button>
+<button onclick="show('bookings',this)">📑 Buchungen</button>
+<button onclick="show('month',this)">📅 Monatsauswertung</button>
+<button onclick="show('year',this)">📆 Jahresauswertung</button>
+<button onclick="show('stats',this)">📊 Statistiken</button>
+<button onclick="show('control',this)">✅ Kontrolle</button>
+<button onclick="show('protocols',this)">📜 Protokolle</button>
+</nav><main>
+
+<section id="overview" class="section active">
+<h2>Finanzübersicht</h2>
+<p class="muted">Alle wichtigen Finanzbewegungen auf einen Blick.</p>
+<div class="chartbox">
+  <div class="charthead"><div><b>Clan-Finanzen</b><div class="muted">Einnahmen · Ausgaben · Gehälter · Vermögen</div></div><span class="tag">V1.0</span></div>
+  <svg viewBox="0 0 760 285" role="img" aria-label="Diagramm der Clan-Finanzen" style="width:100%;height:auto;display:block;margin-top:12px">
+    <line x1="55" y1="235" x2="735" y2="235" stroke="#343b44" stroke-width="1"/>
+    <line x1="55" y1="180" x2="735" y2="180" stroke="#252b32" stroke-width="1"/>
+    <line x1="55" y1="125" x2="735" y2="125" stroke="#252b32" stroke-width="1"/>
+    <line x1="55" y1="70" x2="735" y2="70" stroke="#252b32" stroke-width="1"/>
+    <text x="55" y="262" fill="#9da6b1" font-size="12">Einnahmen</text>
+    <text x="225" y="262" fill="#9da6b1" font-size="12">Ausgaben</text>
+    <text x="395" y="262" fill="#9da6b1" font-size="12">Gehälter</text>
+    <text x="565" y="262" fill="#9da6b1" font-size="12">Gesamtvermögen</text>
+    <rect x="75" y="55" width="105" height="180" rx="9" fill="#64d38d"/>
+    <rect x="245" y="141" width="105" height="94" rx="9" fill="#e77b7b"/>
+    <rect x="415" y="175" width="105" height="60" rx="9" fill="#e7aa61"/>
+    <rect x="585" y="23" width="105" height="212" rx="9" fill="#d8b35a"/>
+    <text x="127" y="45" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4,25 Mio.</text>
+    <text x="297" y="131" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">1,10 Mio.</text>
+    <text x="467" y="165" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">700 Tsd.</text>
+    <text x="637" y="14" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">4,725 Mio.</text>
+  </svg>
+  <div class="legend"><span><i class="lg greenbg"></i>Einnahmen</span><span><i class="lg redbg"></i>Ausgaben</span><span><i class="lg orangebg"></i>Gehälter</span><span><i class="lg goldbg"></i>Gesamtvermögen</span></div>
+</div>
+<div class="notice">🏰 <b>Gesamtvermögen:</b> Dieser Wert wird niemals durch Ausgaben, Gehälter oder Umbuchungen reduziert. Er zeigt, was der Clan insgesamt erwirtschaftet bzw. erhalten hat.</div>
+<div class="mini">
+<div class="card"><div class="label">AKTUELL VERFÜGBAR</div><div class="value gold">1.850.000 $</div></div>
+<div class="card"><div class="label">SPARKONTO</div><div class="value blue">650.000 $</div></div>
+<div class="card"><div class="label">OFFENE DARLEHEN</div><div class="value">325.000 $</div></div>
+</div>
+</section>
+
+<section id="orders" class="section"><h2>Aufträge</h2><p class="muted">Nur vollständig abgeschlossene und bereits bezahlte Aufträge werden manuell eingetragen.</p>
+<div class="notice">⚠️ Nach dem Speichern nicht änderbar oder stornierbar. Abschlussdatum, Uhrzeit und „eingetragen von“ werden automatisch gespeichert.</div>
+<div class="form"><label>Auftragsnummer<input placeholder="frei eingebbar"></label><label>Auftragstitel<input placeholder="z. B. Stadtmauer Falkenstein"></label><label>Auftragssumme<input placeholder="1.000.000 $"></label><label>Clan-Anteil<input placeholder="Restbetrag / manuell anpassbar"></label></div>
+<h3>Mitarbeiter & Gehälter</h3><div class="form"><label>Mitarbeiter<select><option>Matze</option><option>Michelle227701</option><option>AmadeusTwo</option><option>Julius</option></select></label><label>Gehalt<input placeholder="200.000 $"></label></div><button class="btn dark">+ Mitarbeiter hinzufügen</button>
+<div class="notice">Gesamtgehälter werden addiert. Der verbleibende Betrag bildet den Clan-Anteil. Der Clan-Anteil kann manuell reduziert werden; der Restbetrag sinkt entsprechend.</div><button class="btn primary">Auftrag endgültig speichern</button></section>
+
+<section id="income" class="section"><h2>Einnahmen</h2><p class="muted">Alle Einnahmen werden hier getrennt erfasst.</p>
+<div class="grid"><div class="card"><b>Auftrag</b><p class="muted">Auftragsnummer, Titel, Summe, Mitarbeiter, Gehälter, Clan-Anteil.</p><button class="btn primary">Auftrag buchen</button></div><div class="card"><b>Spende</b><p class="muted">Nur Betrag eingeben. „Von wem“, Datum und Zweck automatisch.</p><button class="btn primary">Spende buchen</button></div><div class="card"><b>Einzahlung</b><p class="muted">Manuelle Einnahme in die Clan-Kasse.</p><button class="btn primary">Einzahlung buchen</button></div><div class="card"><b>Sonstige Einnahme</b><p class="muted">Betrag + kurze Notiz.</p><button class="btn primary">Einnahme buchen</button></div></div>
+<div class="notice">⚠️ Spenden sind nach dem Eintragen nicht stornierbar.</div></section>
+
+<section id="payout" class="section"><h2>Auszahlungen</h2><p class="muted">Manuelle Auszahlungen aus der Clan-Kasse.</p>
+<div class="grid"><div class="card"><b>Auftragsgehälter</b><p class="muted">Wer im Auftrag beteiligt war und welches Gehalt er erhält.</p><button class="btn primary">Gehalt erfassen</button></div><div class="card"><b>Monatlicher Lohn</b><p class="muted">Mitarbeiter auswählen, Monat auswählen, Betrag manuell eintragen. Nur Stadtleitung zahlt aus.</p><button class="btn primary">Monatslohn</button></div><div class="card"><b>Sonstige Auszahlung</b><p class="muted">Betrag + Zweck/Notiz.</p><button class="btn primary">Auszahlung buchen</button></div></div>
+<div class="wrap"><table><tr><th>Datum</th><th>Mitarbeiter</th><th>Art</th><th>Monat</th><th>Betrag</th><th>Ausgezahlt von</th></tr><tr><td>25.09.2026</td><td>Matze</td><td>Monatslohn</td><td>September 2026</td><td class="red">120.000 $</td><td>Stadtleitung</td></tr></table></div></section>
+
+<section id="loan" class="section"><h2>Geldverleih</h2><p class="muted">Antrag wird vorher über ein Discord-Ticket gestellt. Genehmigung nur durch Stadtleitung. Maximal ein aktives Darlehen je Mitglied.</p>
+<div class="grid"><div class="card"><div class="label">OFFEN VERLIEHEN</div><div class="value">325.000 $</div></div><div class="card"><div class="label">FÄLLIGE ZINSEN</div><div class="value gold">32.500 $</div></div><div class="card"><div class="label">MAHNGEBÜHREN</div><div class="value orange">15.000 $</div></div><div class="card"><div class="label">AKTIVE DARLEHEN</div><div class="value">3</div></div></div>
+<div class="notice">📢 24 Stunden vor einer Rate geht die Erinnerung in den Geldverleih-Discord-Kanal. Überfällig: Erinnerung + Mahnung. Erste Mahnung einmalig 3 % des ursprünglichen Darlehens. Nach 4 Mahnungen kein weiterer Geldverleih; die dauerhafte Sperre wird außerhalb des Systems geführt.</div>
+<div class="form"><label>Mitglied<input value="AmadeusTwo" readonly></label><label>Darlehensbetrag<input placeholder="300.000 $"></label><label>Zinsen (0–30 %)<input placeholder="10 %"></label><label>Rückzahlungsart<select><option>Sofort</option><option>Wöchentlich</option></select></label><label>Rückzahlungsrate<input placeholder="30.000 $"></label></div>
+<button class="btn primary">Darlehen anlegen</button>
+<h3>Aktive Darlehen</h3><div class="wrap"><table><tr><th>Mitglied</th><th>Ursprünglich</th><th>Zins</th><th>Gesamt</th><th>Zurückgezahlt</th><th>Offen</th><th>Nächste Rate</th><th>Mahnung</th></tr><tr><td>AmadeusTwo</td><td>300.000 $</td><td>10 %</td><td>330.000 $</td><td>120.000 $</td><td>210.000 $</td><td>30.09. · 30.000 $</td><td>0</td></tr><tr><td>Michelle227701</td><td>150.000 $</td><td>5 %</td><td>157.500 $</td><td>42.500 $</td><td>115.000 $</td><td>02.10. · 25.000 $</td><td>1</td></tr></table></div>
+<div class="notice">💳 Mitglieder sehen ihr eigenes Darlehen und können nur auf „Rate einzahlen“ klicken. Der vereinbarte Betrag wird automatisch übernommen. Vorher muss die Zahlung ingame über <b>/Clan</b> erfolgt sein.</div></section>
+
+<section id="saving" class="section"><h2>Sparkonto</h2><p class="muted">Sparkonto ist Bestandteil des Gesamtvermögens. Umbuchungen verändern das Gesamtvermögen nicht.</p>
+<div class="grid"><div class="card"><div class="label">SPARKONTO</div><div class="value blue">650.000 $</div></div><div class="card"><b>Aufs Sparkonto</b><p class="muted">Betrag manuell von verfügbar zu Sparkonto verschieben.</p><button class="btn primary">Einzahlen</button></div><div class="card"><b>Vom Sparkonto</b><p class="muted">Betrag manuell zurück zur Clan-Kasse holen.</p><button class="btn primary">Zurückholen</button></div></div></section>
+
+<section id="bookings" class="section"><h2>Buchungen</h2><p class="muted">Zentrale Historie, neueste Buchung zuerst.</p><div class="toolbar"><input placeholder="Suche nach Auftrag, Mitglied, Betrag …"><select><option>Alle Arten</option><option>Einnahmen</option><option>Auszahlungen</option><option>Geldverleih</option><option>Sparkonto</option></select><select><option>Dieser Monat</option><option>Heute</option><option>Diese Woche</option><option>Dieses Jahr</option><option>Eigener Zeitraum</option></select></div><div class="wrap"><table><tr><th>Datum</th><th>Art</th><th>Betrag</th><th>Zweck</th><th>Von</th><th>Eingetragen von</th><th>Status</th></tr><tr><td>25.09.2026 21:44</td><td>Einnahme</td><td class="green">+1.000.000 $</td><td>Auftrag BA-2026-014</td><td>Clan</td><td>John</td><td><span class="status">Gebucht</span></td></tr><tr><td>25.09.2026 20:15</td><td>Auszahlung</td><td class="red">−120.000 $</td><td>Monatslohn</td><td>Clan</td><td>Stadtleitung</td><td><span class="status">Gebucht</span></td></tr></table></div><div class="actions"><button class="btn dark">Gefilterte Buchungen exportieren</button><button class="btn dark">Alle Buchungen exportieren</button><span class="muted">Export: nur Leitung & Stadtleitung</span></div></section>
+
+<section id="month" class="section"><h2>Monatsauswertung</h2><p class="muted">Monat auswählen und alle Werte dieses Monats ansehen.</p><div class="toolbar"><select><option>September 2026</option><option>August 2026</option><option>Juli 2026</option></select></div><div class="grid"><div class="card"><div class="label">EINNAHMEN</div><div class="value green">1.275.000 $</div></div><div class="card"><div class="label">AUSGABEN</div><div class="value red">320.000 $</div></div><div class="card"><div class="label">GEHÄLTER</div><div class="value red">240.000 $</div></div><div class="card"><div class="label">AUFTRÄGE</div><div class="value">6</div></div></div></section>
+
+<section id="year" class="section"><h2>Jahresauswertung</h2><p class="muted">Monatswerte zusammengefasst.</p><div class="grid"><div class="card"><div class="label">JAHR 2026 EINNAHMEN</div><div class="value green">4.250.000 $</div></div><div class="card"><div class="label">JAHR 2026 AUSGABEN</div><div class="value red">1.100.000 $</div></div><div class="card"><div class="label">JAHR 2026 GEHÄLTER</div><div class="value red">700.000 $</div></div><div class="card"><div class="label">AUFTRÄGE</div><div class="value">24</div></div></div></section>
+
+<section id="stats" class="section"><h2>Statistiken</h2><p class="muted">Zeitraum: Monat, Jahr oder eigener Zeitraum.</p><div class="toolbar"><select><option>September 2026</option><option>Jahr 2026</option><option>Eigener Zeitraum</option></select></div><div class="grid"><div class="card"><div class="label">EINNAHMEN</div><div class="value green">1.275.000 $</div></div><div class="card"><div class="label">AUSGABEN</div><div class="value red">320.000 $</div></div><div class="card"><div class="label">GEHÄLTER</div><div class="value red">240.000 $</div></div><div class="card"><div class="label">AUFTRÄGE</div><div class="value">6</div></div></div><div class="notice">📊 Hier kommt in der echten V1.0 die Diagrammseite für Einnahmen, Ausgaben und Gehälter.</div></section>
+
+
+<section id="protocols" class="section">
+<h2>Protokolle</h2>
+<p class="muted">Getrennte Nachweise für Ingame-Vorgänge und Buchhaltung.</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="label">INGAME-PROTOKOLL</div>
+    <div class="value blue">Nachweis</div>
+    <p class="muted">Manuelle Einträge zu Ingame-Geldständen, Kassenabgleichen und relevanten Vorgängen.</p>
+    <button class="btn primary" type="button" onclick="protocolTab('ingame')">Ingame-Protokoll öffnen</button>
+  </div>
+  <div class="card">
+    <div class="label">BUCHHALTUNGS-PROTOKOLL</div>
+    <div class="value gold">Nachweis</div>
+    <p class="muted">Erfasst Buchungen, Aufträge, Geldverleih, Sparkonto und weitere Buchhaltungsaktionen.</p>
+    <button class="btn primary" type="button" onclick="protocolTab('bookkeeping')">Buchhaltungs-Protokoll öffnen</button>
+  </div>
+</div>
+
+<div id="protocol-ingame" class="protocol-panel">
+<h3>🎮 Ingame-Protokoll</h3>
+<p class="muted">Beispielhafte Einträge für den Nachweis im Spiel.</p>
+<div class="wrap"><table>
+<tr><th>Datum</th><th>Vorgang</th><th>Ingame-Stand</th><th>Abweichung</th><th>Von</th><th>Notiz</th></tr>
+<tr><td>25.09.2026 22:10</td><td>Kassenabgleich</td><td>1.850.000 $</td><td class="green">0 $</td><td>Stadtleitung</td><td>/Clan geprüft</td></tr>
+<tr><td>25.09.2026 20:40</td><td>Geldverleih</td><td>1.550.000 $</td><td class="red">−300.000 $</td><td>Stadtleitung</td><td>Darlehen an AmadeusTwo</td></tr>
+</table></div>
+</div>
+
+<div id="protocol-bookkeeping" class="protocol-panel" style="display:none">
+<h3>📒 Buchhaltungs-Protokoll</h3>
+<p class="muted">Nachweis darüber, wer wann welche Buchhaltungsaktion durchgeführt hat.</p>
+<div class="toolbar"><input placeholder="Protokoll durchsuchen …"><select><option>Alle Vorgänge</option><option>Buchung</option><option>Auftrag</option><option>Geldverleih</option><option>Sparkonto</option><option>Kassenabgleich</option></select></div>
+<div class="wrap"><table>
+<tr><th>Datum</th><th>Bereich</th><th>Aktion</th><th>Referenz</th><th>Eingetragen von</th><th>Details</th></tr>
+<tr><td>25.09.2026 21:44</td><td>Einnahmen</td><td>Auftrag gebucht</td><td>BA-2026-014</td><td>Stadtleitung</td><td>1.000.000 $</td></tr>
+<tr><td>25.09.2026 20:15</td><td>Auszahlungen</td><td>Monatslohn</td><td>LOHN-09-2026</td><td>Stadtleitung</td><td>120.000 $</td></tr>
+<tr><td>25.09.2026 20:40</td><td>Geldverleih</td><td>Darlehen angelegt</td><td>DL-2026-003</td><td>Stadtleitung</td><td>300.000 $</td></tr>
+</table></div>
+</div>
+
+<div class="notice">ℹ️ In der echten V1.0 werden beide Protokolle getrennt geführt. Das Ingame-Protokoll dokumentiert die Ingame-Seite; das Buchhaltungs-Protokoll dokumentiert die Aktionen innerhalb der Buchhaltung.</div>
+</section>
+<section id="control" class="section"><h2>Kontrolle</h2><p class="muted">Schneller Finanzcheck.</p><div class="rows"><div class="row"><b>Aktuell verfügbar</b><b>1.850.000 $</b></div><div class="row"><b>Sparkonto</b><b>650.000 $</b></div><div class="row"><b>Offene Darlehen</b><b>325.000 $</b></div><div class="row"><b>Überfällige Raten</b><b class="orange">1</b></div><div class="row"><b>Gesamtvermögen</b><b class="gold">4.725.000 $</b></div></div><div class="notice">✅ In der echten V1.0 werden hier die Werte automatisch gegeneinander geprüft.</div></section>
+
+</main></div><div class="footer">Komplette V1.0-Vorschau · Demo-Daten · noch keine Supabase-Anbindung · V0.1 bleibt als Backup bestehen</div></div>
+<script>function show(id,b){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');b.classList.add('active')}</script>
+</body></html>
