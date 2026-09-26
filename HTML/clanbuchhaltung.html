@@ -154,20 +154,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../supabase.js"></script>
 <script src="../JS/buchhaltung.js"></script>
-<script>
-/* HTML-Kompatibilität: das vorhandene buchhaltung.js enthält versehentlich
-   eine rekursive zweite Definition von getSystemEmployeeName().
-   Das HTML überschreibt nur diesen fehlerhaften Helfer; die Buchhaltungslogik
-   und Supabase-Abfragen bleiben im vorhandenen JS. */
-try {
-  getSystemEmployeeName = function(){
-    const employee = (typeof currentEmployee !== "undefined" && currentEmployee) ? currentEmployee : {};
-    const user = (typeof currentUser !== "undefined" && currentUser) ? currentUser : {};
-    const metadata = user.user_metadata || {};
-    return String(employee.name || employee.username || employee.minecraft_name || employee.display_name || metadata.minecraft_name || metadata.username || metadata.name || user.email || "Unbekannt").trim() || "Unbekannt";
-  };
-  ensureBookkeepingName = function(){ return getSystemEmployeeName(); };
-} catch(e) { console.error("Buchhaltung-Kompatibilität:", e); }
-</script>
+
 </body>
 </html>
