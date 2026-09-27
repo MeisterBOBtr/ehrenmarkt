@@ -1,5 +1,5 @@
 /*
- * EHRENMARKT – CLAN BUCHHALTUNG
+ * EHRENMARKT – CLAN-BUCHHALTUNG
  * Komplett neu aufgebautes Frontend-JavaScript.
  * Wichtig: Es wird ausschließlich der zentrale Supabase-Client aus ../supabase.js verwendet.
  * Es wird KEIN eigener Supabase-Client und KEIN eigener storageKey erzeugt.
