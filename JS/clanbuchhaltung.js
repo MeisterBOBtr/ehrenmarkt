@@ -1,4 +1,4 @@
-/* ============================================================
+/* ===========================================================
    EHRENMARKT – CLAN-BUCHHALTUNG
    JS passend zu clanbuchhaltung (3).html
    V2 – Supabase + Mitarbeiter + Finanzwerte + Discord
