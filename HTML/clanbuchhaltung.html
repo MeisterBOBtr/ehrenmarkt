@@ -1,0 +1,1815 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ehrenmarkt – Clan-Buchhaltung V1.0</title>
+<style>
+:root{--bg:#050505;--panel:rgba(12,14,17,.84);--panel2:rgba(18,18,18,.70);--line:rgba(212,175,55,.28);--txt:#f4f4f4;--muted:#9b9b9b;--gold:#d4af37;--gold-light:#f4d878;--green:#56c878;--red:#d95c5c;--blue:#76aaff;--orange:#d99a42}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:var(--txt);background:linear-gradient(rgba(0,0,0,.34),rgba(0,0,0,.62)),url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Buchhaltung.png") center top/cover fixed no-repeat;background-color:#050505;font-size:14px}.page{max-width:1400px;margin:auto;padding:14px}.glass,.top,.hero,.navigator,.open-area,.card,.chartbox,.modal-box{background:linear-gradient(135deg,rgba(0,0,0,.78),rgba(18,18,18,.52));border:1px solid var(--line);box-shadow:inset 0 0 35px rgba(255,255,255,.025),0 18px 45px rgba(0,0,0,.45);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}.top{padding:18px 20px;border-radius:17px;display:flex;justify-content:space-between;gap:20px}.k{color:var(--gold);font-size:10px;letter-spacing:1.6px}.top h1{margin:6px 0;font-size:25px}.tag{font-size:10px;padding:4px 7px;border-radius:20px;background:rgba(212,175,55,.14);color:var(--gold-light)}.muted{color:var(--muted)}.hero{margin-top:12px;padding:18px 20px;border-radius:17px}.hero-head{display:flex;justify-content:space-between;gap:18px;align-items:center}.hero h2{margin:4px 0;font-size:20px}.hero-current{min-width:190px;padding:10px 13px;border:1px solid #5f4e28;border-radius:11px;background:#18160f}.hero-current span{display:block;color:var(--muted);font-size:9px;letter-spacing:1px}.hero-current strong{display:block;color:var(--gold);font-size:24px;margin-top:3px}.finance-bars{display:grid;gap:8px;margin-top:14px}.finance-row{display:grid;grid-template-columns:115px 1fr 105px;align-items:center;gap:9px}.finance-label{font-size:11px;color:#d8dde3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bar-track{height:12px;background:#0c0f13;border:1px solid #252c34;border-radius:99px;overflow:hidden}.bar{height:100%;border-radius:99px;width:0;transition:width .35s ease}.b-gold{background:linear-gradient(90deg,#b9913e,#e2c56e)}.b-green{background:#55c980}.b-red{background:#d16d76}.b-blue{background:#668fdc}.b-orange{background:#d8994f}.finance-row b{text-align:right;font-size:11px}.layout{display:grid;grid-template-columns:205px minmax(0,1fr);gap:12px;margin-top:14px;align-items:start}.nav{padding:7px;height:max-content;position:sticky;top:8px;border-radius:14px}.nav-button{width:100%;padding:10px 11px;margin:1px 0;text-align:left;background:none;border:0;color:var(--muted);border-radius:9px;cursor:pointer}.nav-button.active,.nav-button:hover{background:#272d35;color:#fff}.nav-button.active{box-shadow:inset 3px 0 var(--gold)}.nav-icon{display:inline-block;width:22px;color:var(--gold-light)}.nav-button small{display:block;color:#777;font-size:9px;margin-left:22px;margin-top:2px}.open-area{display:none;padding:19px;border-radius:14px}.open-area.active{display:block;animation:openArea .18s ease}@keyframes openArea{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}.section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:12px}.section-heading h2{margin:0 0 5px}.section-heading p{margin:0;color:var(--muted)}.gold-button,.btn,.small-button{border:0;border-radius:9px;padding:9px 13px;cursor:pointer}.gold-button,.primary{background:var(--gold);color:#111;font-weight:700}.secondary,.dark{background:#252b33;color:#fff}.info-banner,.notice{padding:11px 13px;border:1px solid #68562b;background:#211d11;border-radius:10px;margin:11px 0}.danger{border-color:#684040;background:#251515}.employee-stat-grid,.order-stat-grid,.booking-summary,.control-grid,.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:11px 0}.mini-card,.card{padding:13px;border-radius:12px}.mini-card{background:rgba(17,21,26,.78);border:1px solid var(--line)}.mini-card span,.label{display:block;color:var(--muted);font-size:10px}.mini-card strong,.value{display:block;font-size:18px;margin-top:5px}.filter-bar,.toolbar,.form,.actions{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}.filter-bar input,.filter-bar select,.toolbar input,.toolbar select,.form input,.form select,.form textarea{background:#0d1014;color:#fff;border:1px solid var(--line);border-radius:9px;padding:9px}.filter-bar input,.toolbar input{flex:1;min-width:170px}.form label{display:grid;gap:5px;color:var(--muted);min-width:190px;flex:1}.form textarea{min-height:70px}.table-wrap,.wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{font-size:11px;color:var(--muted)}.empty-row td{text-align:center;color:var(--muted);padding:18px}.status{padding:4px 8px;border-radius:20px;background:#202a24;color:var(--green);font-size:11px}.amount-positive,.green{color:var(--green)}.amount-negative,.red{color:var(--red)}.gold,.gold-text{color:var(--gold-light)}.blue{color:var(--blue)}.orange{color:var(--orange)}.chartbox{padding:16px;border-radius:14px;margin:12px 0}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.chart-title{font-weight:700}.chart-bars{display:grid;gap:10px;margin-top:14px}.chart-line{display:grid;grid-template-columns:105px 1fr 105px;gap:8px;align-items:center}.chart-line span{font-size:10px;color:#cfd4da}.chart-line b{text-align:right;font-size:10px}.chartbar-track{height:16px;border-radius:99px;background:#0a0d10;border:1px solid #262d34;overflow:hidden}.chartbar{height:100%;border-radius:99px;width:0;transition:width .35s ease}.chart-green{background:#55c980}.chart-red{background:#d16d76}.chart-gold{background:#d8b35a}.chart-blue{background:#668fdc}.footer{text-align:center;color:#888;font-size:11px;margin:13px}.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.control-grid{grid-template-columns:repeat(3,1fr)}.control-card{padding:13px;border:1px solid var(--line);border-radius:11px;background:rgba(15,18,22,.75)}.control-card h3{margin:0 0 5px}.control-card p{color:var(--muted);font-size:11px}.savings-hero{display:grid;grid-template-columns:1fr 1fr;gap:10px}.savings-main,.savings-goal,.savings-goal-box{padding:15px;border:1px solid var(--line);border-radius:12px;background:rgba(15,18,22,.72)}.savings-main strong,.savings-goal strong{display:block;font-size:30px;color:var(--gold);margin:6px 0}.progress-track{height:12px;background:#0b0d10;border:1px solid #292e34;border-radius:99px;overflow:hidden}.progress-bar{height:100%;background:var(--gold);width:0}.goal-input{display:flex;align-items:center;gap:6px}.goal-input input{flex:1;background:#0d1014;color:#fff;border:1px solid var(--line);padding:9px;border-radius:9px}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;align-items:center;justify-content:center;padding:15px}.modal.active{display:flex}.modal-box{width:min(720px,100%);max-height:90vh;overflow:auto;border-radius:15px;padding:18px}.modal-header{display:flex;justify-content:space-between;gap:10px}.close-btn{background:#252b33;color:#fff;border:0;border-radius:8px;padding:8px 11px}.success-text{color:var(--green)}.danger-text{color:var(--red)}.info-banner{display:block}.loading{opacity:.6}@media(max-width:900px){.layout{grid-template-columns:1fr}.nav{position:static}.nav-button{display:block}.employee-stat-grid,.order-stat-grid,.booking-summary,.overview-grid{grid-template-columns:repeat(2,1fr)}.control-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){body{background-attachment:scroll}.page{padding:9px}.top{display:block}.hero-head{display:block}.hero-current{margin-top:10px}.finance-row{grid-template-columns:82px 1fr 78px}.finance-label{font-size:9px}.layout{display:block}.nav{margin-bottom:10px}.open-area{padding:13px}.employee-stat-grid,.order-stat-grid,.booking-summary,.overview-grid,.control-grid,.savings-hero{grid-template-columns:1fr 1fr}.section-heading{display:block}.section-heading .gold-button{margin-top:9px;width:100%}.chart-line{grid-template-columns:80px 1fr 80px}.top h1{font-size:22px}}
+
+.finance-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.76);align-items:center;justify-content:center;padding:14px;overflow:auto}.finance-modal.active{display:flex}.finance-modal .modal-box{max-height:92vh;overflow:auto;width:min(760px,100%)}.modal-close{cursor:pointer}
+</style></head><body><div class="page">
+<header class="top"><div><div class="k">EHRENMARKT · FALKENSTEIN</div><h1>Clan-Buchhaltung <span class="tag">V1.0</span></h1><div class="muted">Dynamische Finanzverwaltung · Supabase</div></div><div class="muted" id="userStatusBox"><span id="currentUserName">—</span><br><span id="currentUserRank">—</span><br><span id="currentUserPermission">Verbindung wird geprüft...</span></div></header>
+<section class="hero"><div class="hero-head"><div><small class="muted">FINANZÜBERSICHT</small><h2>Clan-Finanzen auf einen Blick</h2><span class="muted">Live-Werte aus den gespeicherten Buchhaltungsdaten</span></div><div class="hero-current"><span>AKTUELL VERFÜGBAR</span><strong id="currentClanBalanceHero">0 $</strong></div></div><div class="finance-bars">
+<div class="finance-row"><span class="finance-label">Gesamtvermögen</span><div class="bar-track"><div class="bar b-gold" id="topBarAssets"></div></div><b id="topAssets">0 $</b></div>
+<div class="finance-row"><span class="finance-label">Einnahmen</span><div class="bar-track"><div class="bar b-green" id="topBarIncome"></div></div><b id="topIncome">0 $</b></div>
+<div class="finance-row"><span class="finance-label">Ausgaben</span><div class="bar-track"><div class="bar b-red" id="topBarExpenses"></div></div><b id="topExpenses">0 $</b></div>
+<div class="finance-row"><span class="finance-label">Gehälter</span><div class="bar-track"><div class="bar b-orange" id="topBarWages"></div></div><b id="topWages">0 $</b></div>
+<div class="finance-row"><span class="finance-label">Sparkonto</span><div class="bar-track"><div class="bar b-blue" id="topBarSavings"></div></div><b id="topSavings">0 $</b></div>
+</div></section>
+<div class="layout"><nav class="nav">
+<button type="button" class="nav-button active" onclick="openAreaDirect('area-overview',this)"><span class="nav-icon">⌂</span><strong>Übersicht</strong><small>Finanzübersicht</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-orders',this)"><span class="nav-icon">▣</span><strong>Aufträge</strong><small>Auftragsabrechnungen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-income',this)"><span class="nav-icon">◉</span><strong>Einnahmen</strong><small>Einnahmen verwalten</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-payout',this)"><span class="nav-icon">↓</span><strong>Auszahlungen</strong><small>Auszahlungen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-loan',this)"><span class="nav-icon">€</span><strong>Geldverleih</strong><small>Darlehen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-savings',this)"><span class="nav-icon">◇</span><strong>Sparkonto</strong><small>Sparziel & Rücklagen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-bookings',this)"><span class="nav-icon">↕</span><strong>Buchungen</strong><small>Alle Geldbewegungen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-monthly',this)"><span class="nav-icon">▤</span><strong>Monatsauswertung</strong><small>Monatswerte</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-year',this)"><span class="nav-icon">▤</span><strong>Jahresauswertung</strong><small>Jahreswerte</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-stats',this)"><span class="nav-icon">▥</span><strong>Statistiken</strong><small>Auswertungen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-control',this)"><span class="nav-icon">✓</span><strong>Kontrolle</strong><small>Finanzprüfung</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-employees',this)"><span class="nav-icon">♙</span><strong>Mitarbeiter</strong><small>Gehälter & Bewegungen</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-cashcheck',this)"><span class="nav-icon">≡</span><strong>Kassenabgleich</strong><small>Portal & Ingame</small></button>
+<button type="button" class="nav-button" onclick="openAreaDirect('area-log',this)"><span class="nav-icon">≡</span><strong>Protokolle</strong><small>Aktivitäten</small></button>
+</nav><main>
+<section class="open-area active" id="area-overview"><div class="section-heading"><div><h2>Finanzübersicht</h2><p>Alle wichtigen Finanzwerte werden aus Supabase geladen.</p></div><button class="gold-button" id="reloadBookkeeping" onclick="reloadBookkeepingPage()">↻ Aktualisieren</button></div>
+<div class="overview-grid">
+<div class="mini-card"><span>AKTUELL VERFÜGBAR</span><strong id="currentClanBalance">0 $</strong></div>
+<div class="mini-card"><span>GESAMTVERMÖGEN</span><strong id="totalAssets">0 $</strong></div>
+<div class="mini-card"><span>EINNAHMEN</span><strong id="totalIncome" class="green">0 $</strong></div>
+<div class="mini-card"><span>AUSGABEN</span><strong id="totalExpenses" class="red">0 $</strong></div>
+<div class="mini-card"><span>GEHÄLTER</span><strong id="totalWages" class="red">0 $</strong></div>
+<div class="mini-card"><span>SPARKONTO</span><strong id="totalSavings" class="blue">0 $</strong></div>
+<div class="mini-card"><span>OFFENE BETRÄGE</span><strong id="openAmount">0 $</strong></div>
+<div class="mini-card"><span>BUCHUNGEN</span><strong id="totalBookings">0</strong></div>
+</div>
+<div class="chartbox"><div class="chart-head"><div><div class="chart-title">Finanzdiagramm</div><div class="muted">Live-Verhältnis der wichtigsten Werte</div></div><span class="tag">V1.0</span></div><div class="chart-bars">
+<div class="chart-line"><span>Einnahmen</span><div class="chartbar-track"><div class="chartbar chart-green" id="chartIncome"></div></div><b id="chartIncomeValue">0 $</b></div>
+<div class="chart-line"><span>Ausgaben</span><div class="chartbar-track"><div class="chartbar chart-red" id="chartExpenses"></div></div><b id="chartExpensesValue">0 $</b></div>
+<div class="chart-line"><span>Gehälter</span><div class="chartbar-track"><div class="chartbar chart-gold" id="chartWages"></div></div><b id="chartWagesValue">0 $</b></div>
+<div class="chart-line"><span>Sparkonto</span><div class="chartbar-track"><div class="chartbar chart-blue" id="chartSavings"></div></div><b id="chartSavingsValue">0 $</b></div>
+</div></div>
+<div class="notice" id="connection">Daten werden geladen...</div></section>
+<section class="open-area glass" id="area-orders">
+<div class="section-heading">
+<div>
+<h2>
+                Auftragsabrechnungen
+            </h2>
+<p>
+                Manuelle finanzielle Abrechnung von Aufträgen.
+                Normale Portal-Aufträge werden hier nicht automatisch übernommen.
+            </p>
+</div>
+<button class="gold-button" onclick="openOrderModal()">
+            + Auftragsabrechnung
+        </button>
+</div>
+<div class="info-banner">
+<strong>
+            Manuelle Erfassung
+        </strong>
+<span>
+            Eine Auftragsabrechnung dokumentiert nur die
+            finanzielle Verteilung. Der normale Auftrag im Portal
+            wird dadurch nicht verändert.
+        </span>
+</div>
+<div class="order-stat-grid">
+<div class="mini-card">
+<span>
+                Aufträge
+            </span>
+<strong id="orderCount">
+                0
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Gesamtbetrag
+            </span>
+<strong id="orderTotalSum">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Clananteil
+            </span>
+<strong id="orderClanSum">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Gehälter
+            </span>
+<strong id="orderSalarySum">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Offene Beträge
+            </span>
+<strong id="orderOpenSum">
+                0 $
+            </strong>
+</div>
+</div>
+<div class="filter-bar">
+<input id="orderSearch" oninput="filterOrders()" placeholder="Auftrag suchen..." type="text"/>
+<select id="orderStatusFilter" onchange="filterOrders()">
+<option value="">
+                Alle Status
+            </option>
+<option value="Offen">
+                Offen
+            </option>
+<option value="Teilweise bezahlt">
+                Teilweise bezahlt
+            </option>
+<option value="Bezahlt">
+                Bezahlt
+            </option>
+<option value="Storniert">
+                Storniert
+            </option>
+</select>
+<select id="orderDateFilter" onchange="filterOrders()">
+<option value="">
+                Alle Zeiträume
+            </option>
+<option value="day">
+                Heute
+            </option>
+<option value="month">
+                Dieser Monat
+            </option>
+<option value="year">
+                Dieses Jahr
+            </option>
+<option value="all">
+                Gesamt
+            </option>
+</select>
+</div>
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Auftrag
+                    </th>
+<th>
+                        Gesamt
+                    </th>
+<th>
+                        Clan
+                    </th>
+<th>
+                        Arbeiter
+                    </th>
+<th>
+                        Gehälter
+                    </th>
+<th>
+                        Status
+                    </th>
+<th>
+                        Erfasst von
+                    </th>
+<th>
+                        Datum
+                    </th>
+<th>
+                        Aktion
+                    </th>
+</tr>
+</thead>
+<tbody id="orderTableBody">
+<tr class="empty-row">
+<td colspan="9">
+                        Noch keine Auftragsabrechnungen vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="info-banner secondary-info">
+<strong>
+            Hinweis
+        </strong>
+<span>
+            Auftragsabrechnungen und tatsächliche Geldbewegungen
+            sind getrennt. Eine Abrechnung verändert den Clanstand
+            nicht automatisch.
+        </span>
+</div>
+</section>
+<section class="open-area glass" id="area-bookings">
+<div class="section-heading">
+<div>
+<h2>Buchungen</h2>
+<p>
+                Manuelle Ein- und Auszahlungen der Clankasse.
+            </p>
+</div>
+<button class="gold-button" onclick="openBookingModal()">
+            + Buchung erfassen
+        </button>
+</div>
+<div class="info-banner">
+<strong>
+            Manuelle Finanzbuchung
+        </strong>
+<span>
+            Jede Geldbewegung wird bewusst und nachvollziehbar
+            manuell erfasst. Normale Portal-Aufträge verändern
+            diese Übersicht nicht automatisch.
+        </span>
+</div>
+<!-- =================================================
+         BUCHUNGSÜBERSICHT
+    ================================================= -->
+<div class="booking-summary">
+<div class="mini-card">
+<span>
+                Einzahlungen
+            </span>
+<strong id="bookingIncome">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Auszahlungen
+            </span>
+<strong id="bookingExpense">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Netto
+            </span>
+<strong id="bookingNet">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Buchungen
+            </span>
+<strong id="bookingCount">
+                0
+            </strong>
+</div>
+</div>
+<!-- =================================================
+         FILTER
+    ================================================= -->
+<div class="filter-bar">
+<input id="bookingSearch" oninput="filterBookings()" placeholder="Buchung suchen..." type="text"/>
+<select id="bookingTypeFilter" onchange="filterBookings()">
+<option value="">
+                Alle Arten
+            </option>
+<option value="Einzahlung">
+                Einzahlung
+            </option>
+<option value="Auszahlung">
+                Auszahlung
+            </option>
+</select>
+<select id="bookingCategoryFilter" onchange="filterBookings()">
+<option value="">
+                Alle Kategorien
+            </option>
+<option value="Auftrag">
+                Auftrag
+            </option>
+<option value="Gehalt">
+                Gehalt
+            </option>
+<option value="Material">
+                Material
+            </option>
+<option value="Clan-Ausgabe">
+                Clan-Ausgabe
+            </option>
+<option value="Sparkonto">
+                Sparkonto
+            </option>
+<option value="Sonstiges">
+                Sonstiges
+            </option>
+</select>
+</div>
+<!-- =================================================
+         BUCHUNGSTABELLE
+    ================================================= -->
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Buchungsnummer
+                    </th>
+<th>
+                        Art
+                    </th>
+<th>
+                        Betrag
+                    </th>
+<th>
+                        Von
+                    </th>
+<th>
+                        An
+                    </th>
+<th>
+                        Zweck
+                    </th>
+<th>
+                        Kategorie
+                    </th>
+<th>
+                        Auftrag
+                    </th>
+<th>
+                        Zahlungsart
+                    </th>
+<th>
+                        Datum
+                    </th>
+<th>
+                        Erfasst von
+                    </th>
+<th>
+                        Status
+                    </th>
+</tr>
+</thead>
+<tbody id="bookingTableBody">
+<tr class="empty-row">
+<td colspan="12">
+                        Noch keine Buchungen vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="open-area glass" id="area-employees">
+<div class="section-heading">
+<div>
+<h2>
+                Mitarbeiter
+            </h2>
+<p>
+                Finanzielle Übersicht der einzelnen Mitarbeiter.
+            </p>
+</div>
+</div>
+<div class="employee-stat-grid">
+<div class="mini-card">
+<span>
+                Mitarbeiter
+            </span>
+<strong id="employeeCount">
+                0
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Gehälter
+            </span>
+<strong id="employeeSalaryTotal">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Einzahlungen
+            </span>
+<strong id="employeeDepositTotal">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Auszahlungen
+            </span>
+<strong id="employeeWithdrawalTotal">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Offene Beträge
+            </span>
+<strong id="employeeOpenTotal">
+                0 $
+            </strong>
+</div>
+</div>
+<div class="filter-bar">
+<input id="employeeSearch" oninput="filterEmployees()" placeholder="Mitarbeiter suchen..." type="text"/>
+</div>
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Mitarbeiter
+                    </th>
+<th>
+                        Aufträge
+                    </th>
+<th>
+                        Gehalt erhalten
+                    </th>
+<th>
+                        Einzahlungen
+                    </th>
+<th>
+                        Auszahlungen
+                    </th>
+<th>
+                        Offener Betrag
+                    </th>
+<th>
+                        Notiz
+                    </th>
+</tr>
+</thead>
+<tbody id="employeeTableBody">
+<tr class="empty-row">
+<td colspan="7">
+                        Noch keine Mitarbeiterdaten vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="open-area glass" id="area-savings">
+<div class="section-heading">
+<div>
+<h2>
+                Sparkonto
+            </h2>
+<p>
+                Separates Clanvermögen und Rücklagen.
+                Das Sparkonto wird nicht mit der normalen
+                Clankasse vermischt.
+            </p>
+</div>
+<button class="gold-button" onclick="openSavingsModal()">
+            + Sparkonto-Buchung
+        </button>
+</div>
+<!-- =================================================
+         SPARKONTO HAUPTÜBERSICHT
+    ================================================= -->
+<div class="savings-hero">
+<div class="savings-main">
+<span>
+                Aktueller Sparkontostand
+            </span>
+<strong id="savingsBalance">
+                0 $
+            </strong>
+<small>
+                Separates Clanvermögen
+            </small>
+</div>
+<div class="savings-goal">
+<span>
+                Sparziel
+            </span>
+<strong id="savingsGoalDisplay">
+                0 $
+            </strong>
+<div class="progress-track">
+<div class="progress-bar" id="savingsProgress" style="width:0%"></div>
+</div>
+<small id="savingsProgressText">
+                0 % erreicht
+            </small>
+</div>
+</div>
+<!-- =================================================
+         SPARKONTO STATISTIK
+    ================================================= -->
+<div class="booking-summary">
+<div class="mini-card">
+<span>
+                Einzahlungen
+            </span>
+<strong id="savingsDeposits">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Auszahlungen
+            </span>
+<strong id="savingsWithdrawals">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Aktueller Stand
+            </span>
+<strong id="savingsCurrent">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Transaktionen
+            </span>
+<strong id="savingsTransactionCount">
+                0
+            </strong>
+</div>
+</div>
+<!-- =================================================
+         SPARZIEL
+    ================================================= -->
+<div class="savings-goal-box">
+<div>
+<span class="modal-kicker">
+                SPARZIEL
+            </span>
+<h3>
+                Clan-Sparziel
+            </h3>
+<p>
+                Das Sparziel dient nur als Orientierung.
+                Es verändert den Kontostand nicht automatisch.
+            </p>
+</div>
+<div class="goal-input">
+<input id="savingsGoal" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                $
+            </span>
+<button class="gold-button" onclick="saveSavingsGoal()">
+                Ziel speichern
+            </button>
+</div>
+</div>
+<!-- =================================================
+         SPARKONTO HISTORIE
+    ================================================= -->
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Nummer
+                    </th>
+<th>
+                        Art
+                    </th>
+<th>
+                        Betrag
+                    </th>
+<th>
+                        Von
+                    </th>
+<th>
+                        An
+                    </th>
+<th>
+                        Zweck
+                    </th>
+<th>
+                        Datum
+                    </th>
+<th>
+                        Erfasst von
+                    </th>
+<th>
+                        Status
+                    </th>
+</tr>
+</thead>
+<tbody id="savingsTableBody">
+<tr class="empty-row">
+<td colspan="9">
+                        Noch keine Sparkonto-Buchungen vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="open-area glass" id="area-monthly">
+<div class="section-heading">
+<div>
+<h2>
+                Monatsbilanz
+            </h2>
+<p>
+                Finanzielle Entwicklung für einen ausgewählten Monat.
+            </p>
+</div>
+</div>
+<div class="month-selector">
+<label>
+            Monat auswählen
+        </label>
+<input id="monthlyPeriod" onchange="updateMonthlyBalance()" type="month"/>
+</div>
+<div class="monthly-grid">
+<div class="mini-card">
+<span>
+                Einnahmen
+            </span>
+<strong class="green-text" id="monthlyIncome">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Ausgaben
+            </span>
+<strong class="red-text" id="monthlyExpenses">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Arbeitergehälter
+            </span>
+<strong id="monthlyWages">
+                0 $
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Veränderung
+            </span>
+<strong class="gold-text" id="monthlyChange">
+                0 $
+            </strong>
+</div>
+</div>
+<div class="monthly-summary">
+<div>
+<span>
+                Ausgewählter Zeitraum
+            </span>
+<strong id="monthlyLabel">
+                Kein Monat ausgewählt
+            </strong>
+</div>
+<div>
+<span>
+                Buchungen
+            </span>
+<strong id="monthlyBookingCount">
+                0
+            </strong>
+</div>
+</div>
+</section>
+<section class="open-area glass" id="area-cashcheck">
+<div class="section-heading">
+<div>
+<h2>
+                Kassenabgleich
+            </h2>
+<p>
+                Vergleich zwischen Buchhaltungsstand und tatsächlichem
+                Ingame-Bestand.
+            </p>
+</div>
+<button class="gold-button" onclick="openCashCheck()">
+            + Abgleich erfassen
+        </button>
+</div>
+<div class="cashcheck-main">
+<div class="cashcheck-value">
+<span>
+                Buchhaltungsstand
+            </span>
+<strong id="cashPortalBalance">
+                0 $
+            </strong>
+</div>
+<div class="cashcheck-value">
+<span>
+                Ingame-Stand
+            </span>
+<strong id="cashIngameBalance">
+                0 $
+            </strong>
+</div>
+<div class="cashcheck-value" id="cashDifferenceBox">
+<span>
+                Abweichung
+            </span>
+<strong id="cashDifference">
+                0 $
+            </strong>
+</div>
+</div>
+<div class="cashcheck-status" id="cashcheckStatus">
+        Noch kein Kassenabgleich durchgeführt.
+    </div>
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Datum
+                    </th>
+<th>
+                        Portalstand
+                    </th>
+<th>
+                        Ingame-Stand
+                    </th>
+<th>
+                        Abweichung
+                    </th>
+<th>
+                        Erfasst von
+                    </th>
+<th>
+                        Notiz
+                    </th>
+</tr>
+</thead>
+<tbody id="cashcheckTableBody">
+<tr class="empty-row">
+<td colspan="6">
+                        Noch keine Kassenabgleiche vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="open-area glass" id="area-control">
+<div class="section-heading">
+<div>
+<h2>
+                Kontrolle
+            </h2>
+<p>
+                Automatische Prüfung der manuell erfassten
+                Buchhaltungsdaten.
+            </p>
+</div>
+<button class="gold-button" onclick="runFinancialControl()">
+            Kontrolle starten
+        </button>
+</div>
+<!-- =================================================
+         KONTROLLSTATUS
+    ================================================= -->
+<div class="control-status" id="controlStatus">
+<div class="control-status-icon">
+            ✓
+        </div>
+<div>
+<strong>
+                Kontrolle bereit
+            </strong>
+<span>
+                Noch keine Prüfung durchgeführt.
+            </span>
+</div>
+</div>
+<!-- =================================================
+         KONTROLLKARTEN
+    ================================================= -->
+<div class="control-grid">
+<!-- KASSENSTAND -->
+<div class="control-card" id="controlCash">
+<div class="control-card-icon">
+                $
+            </div>
+<div>
+<h3>
+                    Kassenstand
+                </h3>
+<p>
+                    Prüfung auf Abweichungen zwischen
+                    Buchhaltung und Kassenabgleich.
+                </p>
+<strong>
+                    Keine Abweichung
+                </strong>
+</div>
+</div>
+<!-- AUFTRÄGE -->
+<div class="control-card" id="controlOrders">
+<div class="control-card-icon">
+                #
+            </div>
+<div>
+<h3>
+                    Auftragsabrechnungen
+                </h3>
+<p>
+                    Prüfung auf nicht vollständig
+                    verteilte Beträge.
+                </p>
+<strong>
+                    Keine offenen Prüfungen
+                </strong>
+</div>
+</div>
+<!-- AUSZAHLUNGEN -->
+<div class="control-card" id="controlPayouts">
+<div class="control-card-icon">
+                ↓
+            </div>
+<div>
+<h3>
+                    Auszahlungen
+                </h3>
+<p>
+                    Prüfung auf Auszahlungen,
+                    die den Clanstand überschreiten.
+                </p>
+<strong>
+                    Keine Überschreitung
+                </strong>
+</div>
+</div>
+<!-- SPARKONTO -->
+<div class="control-card" id="controlSavings">
+<div class="control-card-icon">
+                ◇
+            </div>
+<div>
+<h3>
+                    Sparkonto
+                </h3>
+<p>
+                    Prüfung, ob das Sparkonto einen
+                    negativen Bestand aufweist.
+                </p>
+<strong>
+                    Bestand gültig
+                </strong>
+</div>
+</div>
+<!-- DATEN -->
+<div class="control-card" id="controlData">
+<div class="control-card-icon">
+                ✓
+            </div>
+<div>
+<h3>
+                    Datensätze
+                </h3>
+<p>
+                    Prüfung auf unvollständige oder
+                    fehlerhafte Pflichtangaben.
+                </p>
+<strong>
+                    Keine Fehler
+                </strong>
+</div>
+</div>
+<!-- RECHTE -->
+<div class="control-card" id="controlRights">
+<div class="control-card-icon">
+                ◆
+            </div>
+<div>
+<h3>
+                    Berechtigungen
+                </h3>
+<p>
+                    Nur berechtigte Personen dürfen
+                    Finanzdaten verwalten.
+                </p>
+<strong>
+                    Zugriff geschützt
+                </strong>
+</div>
+</div>
+</div>
+<!-- =================================================
+         WARNUNGEN
+    ================================================= -->
+<div class="control-warnings">
+<div class="section-heading">
+<div>
+<h2>
+                    Warnungen
+                </h2>
+<p>
+                    Auffälligkeiten, die geprüft werden sollten.
+                </p>
+</div>
+</div>
+<div class="warning-list" id="warningList">
+<div class="no-warning">
+<span class="warning-check">
+                    ✓
+                </span>
+<div>
+<strong>
+                        Keine Warnungen
+                    </strong>
+<p>
+                        Aktuell wurden keine auffälligen
+                        Buchungen gefunden.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<!-- =================================================
+         LETZTE KONTROLLE
+    ================================================= -->
+<div class="last-control">
+<span>
+            Letzte Kontrolle
+        </span>
+<strong id="lastControlDate">
+            Noch nicht durchgeführt
+        </strong>
+</div>
+</section>
+<section class="open-area glass" id="area-log">
+<div class="section-heading">
+<div>
+<h2>
+                Protokoll
+            </h2>
+<p>
+                Nachvollziehbare Übersicht über erfasste und
+                geänderte Buchhaltungsvorgänge.
+            </p>
+</div>
+</div>
+<!-- =================================================
+         PROTOKOLL ÜBERSICHT
+    ================================================= -->
+<div class="log-summary">
+<div class="mini-card">
+<span>
+                Aktivitäten
+            </span>
+<strong id="logCount">
+                0
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Heute
+            </span>
+<strong id="logToday">
+                0
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Änderungen
+            </span>
+<strong id="logChanges">
+                0
+            </strong>
+</div>
+<div class="mini-card">
+<span>
+                Stornos
+            </span>
+<strong id="logCancellations">
+                0
+            </strong>
+</div>
+</div>
+<!-- =================================================
+         FILTER
+    ================================================= -->
+<div class="filter-bar">
+<input id="logSearch" oninput="filterLogs()" placeholder="Protokoll durchsuchen..." type="text"/>
+<select id="logTypeFilter" onchange="filterLogs()">
+<option value="">
+                Alle Aktivitäten
+            </option>
+<option value="Erstellt">
+                Erstellt
+            </option>
+<option value="Geändert">
+                Geändert
+            </option>
+<option value="Storniert">
+                Storniert
+            </option>
+<option value="Kontrolle">
+                Kontrolle
+            </option>
+<option value="System">
+                System
+            </option>
+</select>
+<select id="logPeriodFilter" onchange="filterLogs()">
+<option value="all">
+                Gesamt
+            </option>
+<option value="day">
+                Heute
+            </option>
+<option value="month">
+                Dieser Monat
+            </option>
+<option value="year">
+                Dieses Jahr
+            </option>
+</select>
+</div>
+<!-- =================================================
+         PROTOKOLL TABELLE
+    ================================================= -->
+<div class="table-wrap">
+<table class="finance-table">
+<thead>
+<tr>
+<th>
+                        Datum
+                    </th>
+<th>
+                        Art
+                    </th>
+<th>
+                        Bereich
+                    </th>
+<th>
+                        Beschreibung
+                    </th>
+<th>
+                        Erstellt von
+                    </th>
+<th>
+                        Status
+                    </th>
+</tr>
+</thead>
+<tbody id="logTableBody">
+<tr class="empty-row">
+<td colspan="6">
+                        Noch keine Aktivitäten vorhanden.
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- =================================================
+         AUDIT HINWEIS
+    ================================================= -->
+<div class="audit-box">
+<div class="audit-icon">
+            ✓
+        </div>
+<div>
+<strong>
+                Finanzielle Änderungen bleiben nachvollziehbar
+            </strong>
+<p>
+                Finanzdatensätze sollten nicht einfach gelöscht werden.
+                Korrekturen werden nach Möglichkeit über Änderungen
+                oder Stornierungen dokumentiert.
+            </p>
+</div>
+</div>
+</section>
+<section class="open-area glass" id="area-rights">
+<div class="section-heading">
+<div>
+<h2>
+                Rechte &amp; Zugriff
+            </h2>
+<p>
+                Verwaltung des Zugriffs auf die Clan-Buchhaltung.
+            </p>
+</div>
+</div>
+<div class="rights-grid">
+<div class="right-card">
+<div class="right-icon">
+                ◆
+            </div>
+<div>
+<h3>
+                    Leitung
+                </h3>
+<p>
+                    Vollzugriff auf die Buchhaltung,
+                    Finanzbuchungen, Auftragsabrechnungen,
+                    Sparkonto und Kontrolle.
+                </p>
+<span class="access-badge">
+                    Vollzugriff
+                </span>
+</div>
+</div>
+<div class="right-card">
+<div class="right-icon">
+                ◆
+            </div>
+<div>
+<h3>
+                    Stadtleitung
+                </h3>
+<p>
+                    Vollzugriff auf die Buchhaltung,
+                    Finanzbuchungen, Auftragsabrechnungen,
+                    Sparkonto und Kontrolle.
+                </p>
+<span class="access-badge">
+                    Vollzugriff
+                </span>
+</div>
+</div>
+</div>
+</section>
+<section class="open-area" id="area-income"><div class="section-heading"><div><h2>Einnahmen</h2><p>Spenden und sonstige Einnahmen werden getrennt erfasst.</p></div></div>
+<div class="grid overview-grid"><div class="card"><b>Spende</b><p class="muted">Mitglieder können ihre Spende selbst eintragen.</p><div class="form"><label>Betrag<input id="donationAmount" type="number" min="0" step="1" placeholder="0"></label></div><button class="gold-button" data-bookkeeping-deposit onclick="saveDonationEntry()">Spende speichern</button></div>
+<div class="card"><b>Sonstige Einnahme</b><div class="form"><label>Art<select id="incomeType"><option>Einzahlung</option><option>Sonstige Einnahme</option></select></label><label>Zweck<input id="incomePurpose" placeholder="Zweck"></label><label>Notiz<textarea id="incomeNote" placeholder="Optional"></textarea></label></div><button class="gold-button" data-bookkeeping-management onclick="saveIncomeEntry()">Einnahme speichern</button></div></div>
+<div id="incomeStatus" class="info-banner" style="display:none"></div><div class="table-wrap"><table class="finance-table"><thead><tr><th>Datum</th><th>Art</th><th>Betrag</th><th>Von</th><th>Zweck</th></tr></thead><tbody id="incomeTableBody"><tr class="empty-row"><td colspan="5">Noch keine Einnahmen.</td></tr></tbody></table></div></section>
+
+<section class="open-area" id="area-payout"><div class="section-heading"><div><h2>Auszahlungen</h2><p>Nur Stadtleitung darf Auszahlungen erfassen.</p></div></div><div class="form"><label>Art<select id="payoutType"><option>Monatsgehalt</option><option>Sonstige Auszahlung</option></select></label><label>Mitarbeiter<select id="payoutEmployee"><option value="">Mitarbeiter auswählen</option></select></label><label>Monat<input id="payoutMonth" type="month"></label><label>Betrag<input id="payoutAmount" type="number" min="0" step="1"></label><label>Zweck/Notiz<input id="payoutPurpose"></label></div><button class="gold-button" data-bookkeeping-payout onclick="savePayoutEntry()">Auszahlung speichern</button><div id="payoutStatus" class="info-banner" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Datum</th><th>Art</th><th>Mitarbeiter</th><th>Betrag</th><th>Zweck</th></tr></thead><tbody id="payoutTableBody"><tr class="empty-row"><td colspan="5">Noch keine Auszahlungen.</td></tr></tbody></table></div></section>
+
+<section class="open-area" id="area-loan"><div class="section-heading"><div><h2>Geldverleih</h2><p>Darlehen und Rückzahlungen werden getrennt protokolliert.</p></div></div><div class="overview-grid"><div class="mini-card"><span>AKTIVE DARLEHEN</span><strong id="loanOpenCount">0</strong></div><div class="mini-card"><span>OFFEN VERLIEHEN</span><strong id="loanOpenSum">0 $</strong></div><div class="mini-card"><span>FÄLLIGE ZINSEN</span><strong id="loanDueInterest" class="gold">0 $</strong></div><div class="mini-card"><span>MAHNGEBÜHREN</span><strong id="loanLateFees" class="orange">0 $</strong></div></div><div class="form"><label>Mitglied<select id="loanMember"><option value="">Mitglied auswählen</option></select></label><label>Darlehensbetrag<input id="loanAmount" type="number" min="0"></label><label>Zinsen %<input id="loanInterest" type="number" min="0" max="30" step="0.01"></label><label>Rückzahlungsart<select id="loanMode"><option value="sofort">Sofort</option><option value="woechentlich">Wöchentlich</option></select></label><label>Rate<input id="loanInstallment" type="number" min="0"></label><label>Erste Fälligkeit<input id="loanFirstDue" type="date"></label></div><button class="gold-button" data-bookkeeping-management onclick="saveLoan()">Darlehen anlegen</button><div id="loanStatus" class="info-banner" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Mitglied</th><th>Ursprünglich</th><th>Gesamt</th><th>Offen</th><th>Nächste Rate</th><th>Status</th><th>Aktion</th></tr></thead><tbody id="loanTableBody"><tr class="empty-row"><td colspan="7">Keine Darlehen.</td></tr></tbody></table></div></section>
+
+<section class="open-area" id="area-year"><div class="section-heading"><div><h2>Jahresauswertung</h2><p>Jahreswerte auf Basis der geladenen Buchungen.</p></div></div><div class="overview-grid"><div class="mini-card"><span>EINNAHMEN</span><strong id="yearIncome">—</strong></div><div class="mini-card"><span>AUSGABEN</span><strong id="yearExpenses">—</strong></div><div class="mini-card"><span>GEHÄLTER</span><strong id="yearWages">—</strong></div><div class="mini-card"><span>AUFTRÄGE</span><strong id="yearOrders">—</strong></div></div><div class="notice">Die V1.0-Basis rendert die Monatsauswertung dynamisch. Jahreswerte werden hier ohne Demo-Daten angezeigt.</div></section>
+
+<section class="open-area" id="area-stats"><div class="section-heading"><div><h2>Statistiken</h2><p>Aktuelle Finanzkennzahlen und Verhältnisdiagramm.</p></div></div><div class="chartbox"><div class="chart-title">Einnahmen · Ausgaben · Gehälter · Sparkonto</div><div class="chart-bars"><div class="chart-line"><span>Einnahmen</span><div class="chartbar-track"><div class="chartbar chart-green" id="statsIncomeBar"></div></div><b id="statsIncome">0 $</b></div><div class="chart-line"><span>Ausgaben</span><div class="chartbar-track"><div class="chartbar chart-red" id="statsExpenseBar"></div></div><b id="statsExpenses">0 $</b></div><div class="chart-line"><span>Gehälter</span><div class="chartbar-track"><div class="chartbar chart-gold" id="statsWagesBar"></div></div><b id="statsWages">0 $</b></div><div class="chart-line"><span>Sparkonto</span><div class="chartbar-track"><div class="chartbar chart-blue" id="statsSavingsBar"></div></div><b id="statsSavings">0 $</b></div></div></div></section>
+
+</main></div><div class="footer">Ehrenmarkt · Clan-Buchhaltung V1.0</div></div>
+<div class="finance-modal" id="bookingModal">
+<div class="modal-box large-modal">
+<!-- =================================================
+             MODAL HEADER
+        ================================================= -->
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    FINANZVERWALTUNG
+                </span>
+<h2>
+                    Buchung erfassen
+                </h2>
+<p>
+                    Eine finanzielle Bewegung vollständig dokumentieren.
+                </p>
+</div>
+<button class="modal-close" onclick="closeBookingModal()">
+                ×
+            </button>
+</div>
+<!-- =================================================
+             WARNUNG
+        ================================================= -->
+<div class="modal-warning">
+<strong>
+                Wichtig
+            </strong>
+<span>
+                Diese Buchung wird ausschließlich manuell in der
+                Buchhaltung gespeichert. Ein Portal-Auftrag wird
+                dadurch nicht automatisch verändert.
+            </span>
+</div>
+<!-- =================================================
+             FORMULAR
+        ================================================= -->
+<div class="form-grid">
+<!-- BUCHUNGSNUMMER -->
+<div class="form-group">
+<label>
+                    Buchungsnummer
+                </label>
+<input id="bookingNumber" placeholder="z. B. BK-0001" type="text"/>
+</div>
+<!-- ART -->
+<div class="form-group">
+<label>
+                    Art
+                </label>
+<select id="bookingType">
+<option value="Einzahlung">
+                        Einzahlung
+                    </option>
+<option value="Auszahlung">
+                        Auszahlung
+                    </option>
+</select>
+</div>
+<!-- BETRAG -->
+<div class="form-group">
+<label>
+                    Betrag
+                </label>
+<div class="money-input">
+<input id="bookingAmount" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<!-- ZAHLUNGSART -->
+<div class="form-group">
+<label>
+                    Zahlungsart
+                </label>
+<select id="bookingPaymentMethod">
+<option value="Ingame-Bargeld">
+                        Ingame-Bargeld
+                    </option>
+<option value="Überweisung">
+                        Überweisung
+                    </option>
+<option value="Clankasse">
+                        Clankasse
+                    </option>
+<option value="Sparkonto">
+                        Sparkonto
+                    </option>
+<option value="Sonstiges">
+                        Sonstiges
+                    </option>
+</select>
+</div>
+<!-- VON -->
+<div class="form-group">
+<label>
+                    Von wem?
+                </label>
+<input aria-readonly="true" id="bookingFrom" readonly="" type="text"/>
+</div>
+<!-- AN -->
+<div class="form-group">
+<label>
+                    An wen?
+                </label>
+<select id="bookingTo">
+<option value="Clan-Kasse">Clan-Kasse</option>
+<option value="Sparkonto">Sparkonto</option>
+</select>
+</div>
+<!-- ZWECK -->
+<div class="form-group full">
+<label>
+                    Zweck / Grund
+                </label>
+<input id="bookingPurpose" placeholder="z. B. Einzahlung für Auftrag #125" type="text"/>
+</div>
+<!-- KATEGORIE -->
+<div class="form-group">
+<label>
+                    Kategorie
+                </label>
+<select id="bookingCategory">
+<option value="Auftrag">
+                        Auftrag
+                    </option>
+<option value="Gehalt">
+                        Gehalt
+                    </option>
+<option value="Material">
+                        Material
+                    </option>
+<option value="Clan-Ausgabe">
+                        Clan-Ausgabe
+                    </option>
+<option value="Sparkonto">
+                        Sparkonto
+                    </option>
+<option value="Sonstiges">
+                        Sonstiges
+                    </option>
+</select>
+</div>
+<!-- AUFTRAG -->
+<div class="form-group">
+<label>
+                    Auftragsnummer
+                </label>
+<input id="bookingOrderNumber" placeholder="Optional" type="text"/>
+</div>
+<!-- DATUM -->
+<div class="form-group">
+<label>
+                    Datum / Uhrzeit
+                </label>
+<input id="bookingDate" type="datetime-local"/>
+</div>
+<!-- STATUS -->
+<div class="form-group">
+<label>
+                    Status
+                </label>
+<select id="bookingStatus">
+<option value="Offen">
+                        Offen
+                    </option>
+<option value="Teilweise bezahlt">
+                        Teilweise bezahlt
+                    </option>
+<option value="Bezahlt">
+                        Bezahlt
+                    </option>
+<option value="Storniert">
+                        Storniert
+                    </option>
+</select>
+</div>
+<!-- NOTIZ -->
+<div class="form-group full">
+<label>
+                    Notiz
+                </label>
+<textarea id="bookingNote" placeholder="Zusätzliche Informationen..." rows="4"></textarea>
+</div>
+</div>
+<!-- =================================================
+             MODAL FOOTER
+        ================================================= -->
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeBookingModal()">
+                Abbrechen
+            </button>
+<button class="gold-button" onclick="saveBooking()">
+                Buchung speichern
+            </button>
+</div>
+</div>
+</div>
+<div class="finance-modal" id="orderModal">
+<div class="modal-box large-modal">
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    MANUELLE FINANZERFASSUNG
+                </span>
+<h2>
+                    Auftragsabrechnung
+                </h2>
+<p>
+                    Finanzielle Verteilung eines Auftrags dokumentieren.
+                </p>
+</div>
+<button class="modal-close" onclick="closeOrderModal()">
+                ×
+            </button>
+</div>
+<div class="modal-warning">
+<strong>
+                Keine automatische Änderung
+            </strong>
+<span>
+                Der normale Portal-Auftrag wird durch diese
+                Abrechnung nicht verändert.
+            </span>
+</div>
+<div class="form-grid">
+<div class="form-group">
+<label>
+                    Auftragsnummer
+                </label>
+<input id="orderNumber" placeholder="z. B. #125" type="text"/>
+</div>
+<div class="form-group">
+<label>
+                    Datum
+                </label>
+<input id="orderDate" type="datetime-local"/>
+</div>
+<div class="form-group">
+<label>
+                    Gesamtbetrag
+                </label>
+<div class="money-input">
+<input id="orderTotal" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Betrag an den Clan
+                </label>
+<div class="money-input">
+<input id="orderClanAmount" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Status
+                </label>
+<select id="orderStatus">
+<option value="Offen">
+                        Offen
+                    </option>
+<option value="Teilweise bezahlt">
+                        Teilweise bezahlt
+                    </option>
+<option value="Bezahlt">
+                        Bezahlt
+                    </option>
+<option value="Storniert">
+                        Storniert
+                    </option>
+</select>
+</div>
+<div class="form-group">
+<label>
+                    Erfasst von
+                </label>
+<input id="orderCreatedBy" placeholder="Name" type="text"/>
+</div>
+<div class="form-group full">
+<label>
+                    Notiz
+                </label>
+<textarea id="orderNote" placeholder="Zusätzliche Informationen..." rows="3"></textarea>
+</div>
+</div>
+<!-- =================================================
+             ARBEITER
+        ================================================= -->
+<div class="worker-section">
+<div class="worker-section-header">
+<div>
+<h3>
+                        Arbeiter
+                    </h3>
+<p>
+                        Gehälter manuell zur Abrechnung hinzufügen.
+                    </p>
+</div>
+<button class="secondary-button" onclick="addWorkerRow()" type="button">
+                    + Arbeiter hinzufügen
+                </button>
+</div>
+<div class="worker-list" id="workerList">
+<div class="worker-empty">
+                    Noch keine Arbeiter hinzugefügt.
+                </div>
+</div>
+<div class="worker-total-box">
+<div>
+<span>
+                        Arbeiter
+                    </span>
+<strong id="orderWorkerCount">
+                        0
+                    </strong>
+</div>
+<div>
+<span>
+                        Gehälter gesamt
+                    </span>
+<strong id="orderSalaryTotal">
+                        0 $
+                    </strong>
+</div>
+<div>
+<span>
+                        Restbetrag
+                    </span>
+<strong id="orderRemainingAmount">
+                        0 $
+                    </strong>
+</div>
+</div>
+</div>
+<div class="distribution-warning" id="orderDistributionWarning">
+            Bitte Gesamtbetrag, Clananteil und Arbeitergehälter prüfen.
+        </div>
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeOrderModal()">
+                Abbrechen
+            </button>
+<button class="gold-button" onclick="saveOrderSettlement()">
+                Abrechnung speichern
+            </button>
+</div>
+</div>
+</div>
+<div class="finance-modal" id="savingsModal">
+<div class="modal-box">
+<!-- =================================================
+             HEADER
+        ================================================= -->
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    SPARKONTO
+                </span>
+<h2>
+                    Sparkonto-Buchung
+                </h2>
+<p>
+                    Ein- oder Auszahlung des separaten Clanvermögens.
+                </p>
+</div>
+<button class="modal-close" onclick="closeSavingsModal()">
+                ×
+            </button>
+</div>
+<!-- =================================================
+             WARNUNG
+        ================================================= -->
+<div class="modal-warning">
+<strong>
+                Getrenntes Vermögen
+            </strong>
+<span>
+                Diese Buchung gehört zum Sparkonto und verändert
+                nicht automatisch den normalen Clankassenstand.
+            </span>
+</div>
+<!-- =================================================
+             FORMULAR
+        ================================================= -->
+<div class="form-grid">
+<div class="form-group">
+<label>
+                    Buchungsnummer
+                </label>
+<input id="savingsNumber" placeholder="z. B. SP-0001" type="text"/>
+</div>
+<div class="form-group">
+<label>
+                    Art
+                </label>
+<select id="savingsType">
+<option value="Einzahlung">
+                        Einzahlung
+                    </option>
+<option value="Auszahlung">
+                        Auszahlung
+                    </option>
+</select>
+</div>
+<div class="form-group">
+<label>
+                    Betrag
+                </label>
+<div class="money-input">
+<input id="savingsAmount" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Von wem?
+                </label>
+<input id="savingsFrom" placeholder="z. B. Clankasse" type="text"/>
+</div>
+<div class="form-group">
+<label>
+                    An wen?
+                </label>
+<input id="savingsTo" placeholder="z. B. Sparkonto" type="text"/>
+</div>
+<div class="form-group">
+<label>
+                    Datum / Uhrzeit
+                </label>
+<input id="savingsDate" type="datetime-local"/>
+</div>
+<div class="form-group full">
+<label>
+                    Zweck / Grund
+                </label>
+<input id="savingsPurpose" placeholder="z. B. Rücklage für neues Projekt" type="text"/>
+</div>
+<div class="form-group full">
+<label>
+                    Notiz
+                </label>
+<textarea id="savingsNote" placeholder="Zusätzliche Informationen..." rows="4"></textarea>
+</div>
+</div>
+<!-- =================================================
+             FOOTER
+        ================================================= -->
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeSavingsModal()">
+                Abbrechen
+            </button>
+<button class="gold-button" onclick="saveSavingsTransaction()">
+                Sparkonto speichern
+            </button>
+</div>
+</div>
+</div>
+<div class="finance-modal" id="workerModal">
+<div class="modal-box">
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    MITARBEITER
+                </span>
+<h2>
+                    Arbeiter hinzufügen
+                </h2>
+<p>
+                    Mitarbeiter zur aktuellen Auftragsabrechnung hinzufügen.
+                </p>
+</div>
+<button class="modal-close" onclick="closeWorkerModal()">
+                ×
+            </button>
+</div>
+<div class="form-grid">
+<div class="form-group full">
+<label>
+                    Mitarbeiter
+                </label>
+<input id="workerName" placeholder="Minecraft-Name" type="text"/>
+</div>
+<div class="form-group">
+<label>
+                    Gehalt
+                </label>
+<div class="money-input">
+<input id="workerSalary" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Notiz
+                </label>
+<input id="workerNote" placeholder="Optional" type="text"/>
+</div>
+</div>
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeWorkerModal()">
+                Abbrechen
+            </button>
+<button class="gold-button" onclick="saveWorker()">
+                Arbeiter hinzufügen
+            </button>
+</div>
+</div>
+</div>
+<div class="finance-modal" id="cashCheckModal">
+<div class="modal-box">
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    KONTROLLE
+                </span>
+<h2>
+                    Kassenabgleich
+                </h2>
+<p>
+                    Vergleiche den Portalstand mit dem tatsächlichen
+                    Ingame-Guthaben.
+                </p>
+</div>
+<button class="modal-close" onclick="closeCashCheck()">
+                ×
+            </button>
+</div>
+<div class="form-grid">
+<div class="form-group">
+<label>
+                    Portalstand
+                </label>
+<div class="money-input">
+<input id="cashPortalInput" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Ingame-Stand
+                </label>
+<div class="money-input">
+<input id="cashIngameInput" min="0" placeholder="0" step="1" type="number"/>
+<span>
+                        $
+                    </span>
+</div>
+</div>
+<div class="form-group">
+<label>
+                    Datum / Uhrzeit
+                </label>
+<input id="cashCheckDate" type="datetime-local"/>
+</div>
+<div class="form-group">
+<label>
+                    Erfasst von
+                </label>
+<input id="cashCheckCreatedBy" placeholder="Name" type="text"/>
+</div>
+<div class="form-group full">
+<label>
+                    Notiz
+                </label>
+<textarea id="cashCheckNote" placeholder="z. B. Abweichung durch noch nicht eingetragene Zahlung..." rows="4"></textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeCashCheck()">
+                Abbrechen
+            </button>
+<button class="gold-button" onclick="saveCashCheck()">
+                Abgleich speichern
+            </button>
+</div>
+</div>
+</div>
+<div class="finance-modal" id="logDetailModal">
+<div class="modal-box">
+<div class="modal-header">
+<div>
+<span class="modal-kicker">
+                    AUDIT-PROTOKOLL
+                </span>
+<h2>
+                    Aktivitätsdetails
+                </h2>
+<p>
+                    Vollständige Informationen zum ausgewählten Vorgang.
+                </p>
+</div>
+<button class="modal-close" onclick="closeLogDetail()">
+                ×
+            </button>
+</div>
+<div class="log-detail" id="logDetailContent">
+<div class="log-detail-row">
+<span>
+                    Aktivität
+                </span>
+<strong>
+                    Keine Auswahl
+                </strong>
+</div>
+</div>
+<div class="modal-footer">
+<button class="secondary-button" onclick="closeLogDetail()">
+                Schließen
+            </button>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../JS/buchhaltung.js"></script>
+<script>
+(function(){
+  function moneyText(v){ return String(v||'0').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.'); }
+  function num(id){ const e=document.getElementById(id); if(!e)return 0; const n=parseFloat(moneyText(e.textContent)); return Number.isFinite(n)?Math.max(0,n):0; }
+  window.openAreaDirect=function(id,button){
+    if(typeof window.showArea==='function'){
+      window.showArea(id,button);
+    }else{
+      const target=document.getElementById(id); if(!target)return;
+      document.querySelectorAll('.open-area').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.nav-button').forEach(x=>x.classList.remove('active'));
+      target.classList.add('active'); if(button)button.classList.add('active');
+    }
+    try{
+      if(id==='area-employees' && typeof renderEmployees==='function') renderEmployees();
+      else if(id==='area-savings' && typeof renderSavings==='function') renderSavings();
+      else if(id==='area-monthly' && typeof renderMonthlyOverview==='function') renderMonthlyOverview();
+      else if(id==='area-cashcheck' && typeof renderCashChecks==='function') renderCashChecks();
+      else if(id==='area-control' && typeof runFinancialControl==='function') runFinancialControl();
+      else if(id==='area-log' && typeof renderActivityLogs==='function') renderActivityLogs();
+    }catch(e){ console.warn('Bereich konnte nicht aktualisiert werden:',e); }
+    const target=document.getElementById(id); if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  function setBar(barId,value,max){ const e=document.getElementById(barId); if(e)e.style.width=(max>0?Math.min(100,value/max*100):0)+'%'; }
+  function updateCharts(){
+    const income=num('totalIncome'), expenses=num('totalExpenses'), wages=num('totalWages'), savings=num('totalSavings'), assets=num('totalAssets');
+    const max=Math.max(income,expenses,wages,savings,assets,1);
+    [['chartIncome',income],['chartExpenses',expenses],['chartWages',wages],['chartSavings',savings],['statsIncomeBar',income],['statsExpenseBar',expenses],['statsWagesBar',wages],['statsSavingsBar',savings],['topBarAssets',assets],['topBarIncome',income],['topBarExpenses',expenses],['topBarWages',wages],['topBarSavings',savings]].forEach(([id,v])=>setBar(id,v,max));
+    [['chartIncomeValue',income],['chartExpensesValue',expenses],['chartWagesValue',wages],['chartSavingsValue',savings],['statsIncome',income],['statsExpenses',expenses],['statsWages',wages],['statsSavings',savings],['topAssets',assets],['topIncome',income],['topExpenses',expenses],['topWages',wages],['topSavings',savings]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=(v||0).toLocaleString('de-DE')+' $';});
+    const hero=document.getElementById('currentClanBalanceHero'), source=document.getElementById('currentClanBalance'); if(hero&&source) hero.textContent=source.textContent;
+  }
+  const obs=new MutationObserver(updateCharts); obs.observe(document.body,{subtree:true,childList:true,characterData:true}); window.addEventListener('load',()=>setTimeout(updateCharts,250)); setInterval(updateCharts,1000);
+})();
+</script></body></html>
