@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ehrenmarkt Info – OPSUCHT Auktionshaus</title>
+<style>
+:root{--bg:#07090c;--p:#0f1217;--p2:#161b22;--b:#303640;--t:#f5f6f8;--m:#9ca3af;--g:#d9a83f;--g2:#f3c65d;--green:#63d391;--red:#ef6b6b}
+*{box-sizing:border-box}html,body{margin:0}body{background:radial-gradient(circle at 50% -15%,#5b401d33,transparent 35%),linear-gradient(180deg,#090b0f,#07090c);color:var(--t);font-family:Arial,sans-serif}a{color:inherit;text-decoration:none}
+.topbar{height:72px;position:sticky;top:0;z-index:10;background:#080a0deF;backdrop-filter:blur(12px);border-bottom:1px solid #2a2f37;display:flex;align-items:center;padding:0 4%;gap:25px}.brand{display:flex;align-items:center;gap:11px;min-width:245px}.crest{width:38px;height:42px;border:1px solid var(--g);border-radius:8px 8px 13px 13px;display:grid;place-items:center;color:var(--g2);font-size:20px;background:linear-gradient(145deg,#261b0a,#0e1014)}.brandText strong{display:block;font-family:Georgia,serif;letter-spacing:1.6px;font-size:21px;color:#f4d58a}.brandText span{display:block;font-size:8px;letter-spacing:2px;color:#a9adb5;margin-top:2px}.nav{display:flex;gap:5px}.nav a{padding:12px 13px;border-radius:8px;color:#a9adb5;font-size:11px}.nav a.active{background:linear-gradient(180deg,#5a4218,#2b210e);color:#fff;border:1px solid #8d6925}.topActions{margin-left:auto}.circle{width:39px;height:39px;border:1px solid #2b3038;border-radius:50%;display:grid;place-items:center;color:var(--g2);background:#0c0f13}
+main{max-width:1510px;margin:auto;padding:0 24px 50px}.hero{position:relative;overflow:hidden;min-height:220px;margin:0 -24px 20px;padding:45px 24px 28px;background:radial-gradient(circle at 15% 50%,#9a651b33,transparent 28%),linear-gradient(90deg,#11130f,#17130e 45%,#0b0d10);border-bottom:1px solid #332a1b}.hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent)}.k{color:#c6a052;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:800}.hero h1{font-family:Georgia,serif;font-size:clamp(31px,4vw,48px);margin:8px 0;color:#f5d681}.hero p{margin:0;color:#c2c5cb;font-size:14px}.liveLine{display:flex;gap:9px;margin-top:17px;align-items:center}.liveBadge,.discord{border-radius:999px;padding:7px 11px;font-size:10px}.liveBadge{border:1px solid #35583f;background:#0d1711;color:#72d494}.discord{border:1px solid #55441e;background:#171208;color:#eac66a}.stats{display:flex;gap:9px;position:absolute;right:24px;bottom:28px}.stat{min-width:140px;background:#0b0e12e8;border:1px solid #3c301d;border-radius:10px;padding:11px 14px}.stat b{display:block;font-size:21px;color:#f2d17d}.stat span{font-size:9px;color:#aeb2b9}.status{margin:16px 0 11px;background:#0d1014;border:1px solid #242a32;border-radius:8px;padding:9px 12px;font-size:10px;color:var(--m)}.status.ok{color:var(--green)}.status.bad{color:var(--red)}
+.tools{display:grid;grid-template-columns:2.1fr 1fr 1fr auto;gap:9px;margin-bottom:17px}.search,select,.refresh{height:43px;background:#0d1116;border:1px solid #303641;color:#eef0f3;border-radius:9px;padding:0 13px;outline:none;font-size:12px}.search:focus,select:focus{border-color:#a47b2b}.refresh{padding:0 17px;background:linear-gradient(180deg,#f0c55d,#c4932f);color:#171208;font-weight:800;border:0;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:linear-gradient(155deg,#161b22,#0d1015);border:1px solid #303640;border-radius:10px;overflow:hidden;box-shadow:0 7px 25px #0004;transition:.16s}.card:hover{transform:translateY(-2px);border-color:#a17b30}.image{height:140px;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle at 50% 45%,#242b34,#0c1015 72%);padding:14px}.image img{max-width:105px;max-height:105px;object-fit:contain}.fallback{font-size:45px;opacity:.7}.favorite{position:absolute;right:9px;top:7px;color:var(--g2);font-size:18px}.body{padding:11px}.tag{font-size:8px;color:#d2aa52;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.name{font-size:13px;font-weight:800;margin:5px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.price{font-size:17px;font-weight:900;color:#f1c95e}.meta{display:flex;justify-content:space-between;gap:6px;margin-top:6px;color:#a8adb5;font-size:9px}.time{color:#d8bd6e}.seller{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qty{background:#222831;border:1px solid #2e343d;border-radius:5px;padding:3px 6px;color:#e7e9ec}.view{width:100%;height:33px;margin-top:10px;background:linear-gradient(180deg,#f0c45b,#c18d28);color:#171207;border:0;border-radius:6px;font-size:10px;font-weight:900;cursor:pointer}.empty{grid-column:1/-1;text-align:center;padding:40px 20px;border:1px solid #282e37;background:#0e1116;border-radius:10px;color:#8f96a0}
+.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:15px;z-index:30;overflow:auto}.overlay.show{display:flex}.modal{width:min(760px,100%);background:linear-gradient(160deg,#171c23,#0d1015);border:1px solid #3c414b;border-radius:14px;box-shadow:0 25px 90px #000;max-height:92vh;overflow:auto}.modalTop{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid #2b313a}.close{background:#252b33;color:#fff;border:0;border-radius:7px;padding:7px 10px}.detailHero{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:18px}.detailImg{height:220px;border-radius:10px;background:radial-gradient(circle,#29303a,#0b0e12 72%);display:flex;align-items:center;justify-content:center}.detailImg img{max-width:170px;max-height:170px}.detailTitle{font-size:24px;font-weight:900;margin:5px 0 10px}.bigprice{font-size:27px;color:#f1c95e;font-weight:900}.info{margin-top:13px;border-top:1px solid #2b3139;padding-top:8px}.infoRow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:12px}.infoRow span{color:#9da3ad}.detailActions{padding:0 18px 18px}.discordDetail{display:block;text-align:center;border:1px solid #5d4820;background:#191308;color:#eac66a;border-radius:8px;padding:10px;font-size:11px}
+@media(max-width:1120px){.nav{display:none}.stats{position:static;margin-top:20px}.hero{min-height:auto}.tools{grid-template-columns:1fr 1fr}.search{grid-column:1/-1}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:720px){main{padding:0 12px 35px}.hero{margin:0 -12px 15px;padding:32px 14px 20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.stat{min-width:0;padding:9px}.stat b{font-size:16px}.stat span{font-size:8px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.image{height:118px}.image img{max-width:82px;max-height:82px}.body{padding:9px}.name{font-size:12px}.price{font-size:15px}.meta{font-size:8px}.detailHero{grid-template-columns:1fr}.detailImg{height:190px}.topbar{height:62px;padding:0 12px}.brand{min-width:0}.brandText strong{font-size:18px}.brandText span{font-size:7px}.crest{width:32px;height:35px;font-size:17px}}@media(max-width:430px){.tools{grid-template-columns:1fr}.search{grid-column:auto}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.image{height:106px}.image img{max-width:70px;max-height:70px}.stats{grid-template-columns:1fr 1fr 1fr}.stat:nth-child(3){display:none}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><div class="crest">⚔</div><div class="brandText"><strong>EHRENMARKT</strong><span>INFO · AUKTIONSHAUS</span></div></a><nav class="nav"><a href="/">Startseite</a><a class="active" href="/ehrenmarkt-info.html">Auktionen</a><a href="/verleih.html">Verleih</a><a href="/bauauftrag.html">Bauaufträge</a></nav><div class="topActions"><a class="circle" href="https://discord.gg/opsucht" target="_blank" rel="noopener">⌁</a></div></header>
+<main><section class="hero"><div class="k">Ehrenmarkt · Live-Informationen</div><h1>OPSUCHT Auktionshaus</h1><p>Live-Daten vom OPSUCHT Minecraft Server – übersichtlich auf Ehrenmarkt Info.</p><div class="liveLine"><span class="liveBadge">● LIVE-DATEN</span><a class="discord" href="https://discord.gg/opsucht" target="_blank" rel="noopener">OPSUCHT Discord ↗</a></div><div class="stats"><div class="stat"><b id="statAuctions">—</b><span>aktive Auktionen</span></div><div class="stat"><b id="statCategories">—</b><span>Kategorien</span></div><div class="stat"><b id="statItems">—</b><span>verschiedene Items</span></div></div></section><div id="status" class="status">⏳ Lade Live-Daten …</div><div class="tools"><input id="search" class="search" placeholder="Item, Verkäufer oder Kategorie suchen …"><select id="cat"><option value="">Alle Kategorien</option></select><select id="sort"><option value="ending">Bald ablaufend</option><option value="default">Standard</option><option value="newest">Neueste</option><option value="priceLow">Preis aufsteigend</option><option value="priceHigh">Preis absteigend</option></select><button class="refresh" onclick="load()">↻ Aktualisieren</button></div><div id="grid" class="grid"></div></main>
+
+<div id="overlay" class="overlay" onclick="if(event.target===this)closeDetail()">
+<div class="modal">
+<div class="modalTop"><strong>🔨 Auktion</strong><button class="close" onclick="closeDetail()">✕</button></div>
+<div id="detail"></div>
+</div></div>
+
+<script>
+const API="https://api.opsucht.net/auctions";
+let auctions=[],categories=[],refreshTimer=null;
+
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function deep(o,keys){if(!o||typeof o!=="object")return;for(const k of keys)if(o[k]!==undefined&&o[k]!==null&&o[k]!=="")return o[k];for(const v of Object.values(o))if(v&&typeof v==="object"){const x=deep(v,keys);if(x!==undefined)return x}}
+function str(o,k){const v=deep(o,k);return v===undefined?undefined:String(v)}
+function num(o,k){const v=deep(o,k);return typeof v==="number"?v:(v!==undefined&&!isNaN(Number(v))?Number(v):undefined)}
+function name(a){return str(a,["displayName","itemName","name","display_name"])||"Unbekanntes Item"}
+function sellerId(a){return str(a,["sellerUuid","sellerUUID","sellerId","sellerID","seller","ownerUuid","ownerUUID","ownerId","ownerID"])}
+function seller(a){return str(a,["sellerName","username","playerName","ownerName","createdBy"])||sellerId(a)||"Nicht angegeben"}
+function category(a){return str(a,["categoryName","category","displayName","categoryDisplayName"])||"Unbekannt"}
+function current(a){return num(a,["currentBid","highestBid","currentPrice","bid","price","amount","highestPrice"])}
+function instant(a){return num(a,["instantBuyPrice","instantBoughtPrice","buyNowPrice","instantPrice","fixedPrice"])}
+function quantity(a){return num(a,["quantity","amount","count","itemAmount"])}
+function bids(a){return num(a,["bidCount","bids","numberOfBids","offers"])}
+function dateVal(a,keys){return deep(a,keys)}
+function dateObj(v){if(v===undefined)return null;const d=new Date(v);return isNaN(d)?null:d}
+function fmtDate(v){const d=dateObj(v);return !d?"—":d.toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})}
+function endDate(a){return dateObj(dateVal(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"]))}
+function remainingSeconds(a){const d=endDate(a);return d?Math.floor((d-Date.now())/1000):null}
+function left(a){const n=remainingSeconds(a);if(n===null)return"—";if(n<=0)return"abgelaufen";let s=n,d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);let sec=s%60;return d?`${d} T. ${h} Std.`:h?`${h} Std. ${m} Min.`:m?`${m} Min.`:`${sec} Sek.`}
+function image(a){const u=deep(a,["imageUrl","iconUrl","image","icon","displayIcon","texture","thumbnail"]);return typeof u==="string"&&/^https?:\/\//i.test(u)?u:null}
+function money(v){return v===undefined?"—":Number(v).toLocaleString("de-DE")+" $"}
+function activeOnly(){auctions=auctions.filter(a=>{const n=remainingSeconds(a);return n===null||n>0})}
+function sorted(list){
+ const mode=document.getElementById("sort").value;
+ return [...list].sort((a,b)=>{
+  if(mode==="ending")return (remainingSeconds(a)??1e30)-(remainingSeconds(b)??1e30);
+  if(mode==="newest"){const ad=dateObj(dateVal(a,["createdAt","created","startTime","startedAt"])),bd=dateObj(dateVal(b,["createdAt","created","startTime","startedAt"]));return (bd?.getTime()??0)-(ad?.getTime()??0)}
+  if(mode==="priceLow")return (current(a)??1e30)-(current(b)??1e30);
+  if(mode==="priceHigh")return (current(b)??-1)-(current(a)??-1);
+  return 0;
+ });
+}
+function render(){
+ activeOnly();
+ document.getElementById("statAuctions").textContent=auctions.length.toLocaleString("de-DE");
+ document.getElementById("statCategories").textContent=new Set(auctions.map(category)).size.toLocaleString("de-DE");
+ document.getElementById("statItems").textContent=new Set(auctions.map(name)).size.toLocaleString("de-DE");
+ const q=document.getElementById("search").value.toLowerCase(),c=document.getElementById("cat").value;
+ let list=auctions.filter(a=>(!c||category(a)===c)&&(!q||[name(a),seller(a),category(a)].join(" ").toLowerCase().includes(q)));
+ list=sorted(list);
+ const box=document.getElementById("grid");
+ if(!list.length){box.innerHTML='<div class="empty">Keine passenden aktiven Auktionen gefunden.</div>';return}
+ box.innerHTML=list.map(a=>{const im=image(a);return `<article class="card"><div class="image">${im?`<img src="${esc(im)}" alt="" onerror="this.remove();this.parentElement.insertAdjacentHTML('beforeend','<div class=fallback>🧱</div>')">`:'<div class="fallback">🧱</div>'}</div><div class="body"><div class="tag">${esc(category(a))}</div><div class="name" title="${esc(name(a))}">${esc(name(a))}</div><div class="price">${money(current(a))}</div><div class="muted">⏳ ${esc(left(a))}</div><button class="view" data-key="${esc(getKey(a))}">Auktion ansehen</button></div></article>`}).join("");
+ document.querySelectorAll(".view").forEach(btn=>btn.onclick=()=>openDetail(btn.dataset.key));
+}
+function getKey(a){return str(a,["id","uid","auctionId","auctionID"])||JSON.stringify(a)}
+function findAuction(key){return auctions.find(a=>getKey(a)===key)}
+async function resolvePlayer(uuid){
+ if(!uuid||uuid.includes("-")===false)return null;
+ try{
+  const r=await fetch("https://playerdb.co/api/player/minecraft/"+encodeURIComponent(uuid),{cache:"force-cache"});
+  if(!r.ok)return null;const d=await r.json();
+  return d?.data?.player?.username||d?.data?.player?.name||null;
+ }catch{return null}
+}
+async function openDetail(key){const a=findAuction(key);if(!a)return;const im=image(a),end=endDate(a),uuid=sellerId(a);document.getElementById("detail").innerHTML=`<div class="detailHero"><div class="detailImg">${im?`<img src="${esc(im)}" alt="">`:'<div class="fallback">🧱</div>'}</div><div><div class="tag">${esc(category(a))}</div><div class="detailTitle">${esc(name(a))}</div><div class="bigprice">${money(current(a))}</div><div class="info"><div class="infoRow"><span>⚡ Sofortkauf</span><b>${money(instant(a))}</b></div><div class="infoRow"><span>👤 Verkäufer</span><b id="sellerDetail">${esc(seller(a))}</b></div><div class="infoRow"><span>📦 Menge</span><b>${quantity(a)??"—"}</b></div><div class="infoRow"><span>🔨 Gebote</span><b>${bids(a)??"—"}</b></div><div class="infoRow"><span>⏳ Noch</span><b>${esc(left(a))}</b></div><div class="infoRow"><span>🏁 Ende</span><b>${esc(fmtDate(end))}</b></div></div></div></div><div class="detailActions"><a class="discordDetail" href="https://discord.gg/opsucht" target="_blank" rel="noopener">OPSUCHT Discord öffnen ↗</a></div>`;document.getElementById("overlay").classList.add("show");if(uuid){const n=await resolvePlayer(uuid);const el=document.getElementById("sellerDetail");if(el&&n)el.textContent=n}}
+function closeDetail(){document.getElementById("overlay").classList.remove("show")}
+async function load(){
+ const st=document.getElementById("status");st.className="status";st.textContent="⏳ Lade echte Live-Auktionsdaten …";
+ try{
+  const r=await fetch(API+"/active",{cache:"no-store"});const text=await r.text();if(!r.ok)throw Error("HTTP "+r.status);
+  const d=JSON.parse(text);auctions=Array.isArray(d)?d:(d.auctions||d.data||[]);activeOnly();
+  try{const cr=await fetch(API+"/categories",{cache:"no-store"}),cd=await cr.json();categories=Array.isArray(cd)?cd:(cd.categories||cd.data||[])}catch{}
+  const names=[...new Set([...categories.map(x=>x.displayName||x.name).filter(Boolean),...auctions.map(category).filter(x=>x!=="Unbekannt")])];
+  document.getElementById("cat").innerHTML='<option value="">Alle Kategorien</option>'+names.map(x=>`<option>${esc(x)}</option>`).join("");
+  render();st.className="status ok";st.textContent=`🟢 Live verbunden · ${auctions.length.toLocaleString("de-DE")} aktive Auktionen`;
+ }catch(e){st.className="status bad";st.textContent="🔴 Fehler: "+e.message;document.getElementById("grid").innerHTML='<div class="empty">Auktionen konnten nicht geladen werden.</div>'}
+}
+document.getElementById("search").oninput=render;document.getElementById("cat").onchange=render;document.getElementById("sort").onchange=render;load();
+refreshTimer=setInterval(render,1000);
+</script>
+</body>
+</html>
