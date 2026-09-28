@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<title>Ehrenmarkt Info – OPSUCHT Auktionshaus</title>
+<style>
+:root{--gold:#e7b75b;--gold2:#ffd989;--text:#f5f3ee;--muted:#a8adb7;--panel:rgba(8,10,15,.84);--panel2:rgba(15,18,25,.9);--line:rgba(231,183,91,.28);--green:#63d391;--red:#ed7373}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;background:#05070b url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Dunkel.png") center/cover fixed no-repeat}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,5,8,.38),rgba(3,5,8,.76));z-index:-2}
+#particles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.p{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:#ffb34b;box-shadow:0 0 12px #ff5b16;animation:rise linear infinite;opacity:.75}
+.p:nth-child(1){left:5%;animation-duration:7s}.p:nth-child(2){left:17%;animation-duration:9s;animation-delay:2s}.p:nth-child(3){left:31%;animation-duration:6s;animation-delay:1s}.p:nth-child(4){left:48%;animation-duration:10s;animation-delay:4s}.p:nth-child(5){left:64%;animation-duration:7s;animation-delay:2.5s}.p:nth-child(6){left:79%;animation-duration:8s;animation-delay:1.5s}.p:nth-child(7){left:93%;animation-duration:6s;animation-delay:3s}
+@keyframes rise{to{transform:translateY(-110vh) translateX(35px);opacity:0}}
+.wrap{max-width:1520px;margin:auto;padding:20px 24px 45px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.brand small{display:block;color:var(--gold);font-weight:900;letter-spacing:3px;font-size:12px}.brand h1{margin:3px 0 0;font-size:30px;letter-spacing:.8px}.brand p{margin:5px 0 0;color:#c9ccd2;font-size:13px}
+.discord{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:rgba(5,7,11,.82);color:#fff;text-decoration:none;font-weight:800;font-size:13px}.discord:hover{border-color:var(--gold2);box-shadow:0 0 18px rgba(231,183,91,.12)}
+.hero{position:relative;z-index:400;margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:15px;background:rgba(5,7,11,.68);backdrop-filter:blur(9px);box-shadow:0 18px 45px rgba(0,0,0,.25)}
+.heroTop{display:flex;justify-content:space-between;align-items:end;gap:18px}.live{color:var(--green);font-size:12px;font-weight:800}.live:before{content:"";display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:7px;box-shadow:0 0 9px rgba(99,211,145,.7)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{padding:9px 12px;border:1px solid #343945;border-radius:9px;background:rgba(13,16,22,.78);font-size:11px;color:var(--muted)}.stat strong{color:var(--gold2);font-size:15px;margin-right:4px}
+.controls{position:relative;z-index:10000;margin-top:15px;display:grid;grid-template-columns:minmax(240px,1.6fr) 190px 190px;gap:10px}
+.categoryWrap{position:relative;z-index:10010}.categoryBtn{width:100%;height:100%;min-height:43px;padding:12px 40px 12px 13px;border:1px solid #353944;border-radius:9px;background:#10131a;color:#fff;outline:0;text-align:left;font:inherit;cursor:pointer;position:relative}.categoryBtn:after{content:"⌄";position:absolute;right:13px;top:50%;transform:translateY(-52%);color:var(--gold2);font-size:18px}.categoryBtn:hover,.categoryBtn.open{border-color:var(--gold)} .categoryMenu{position:absolute;z-index:100000;left:0;right:0;top:calc(100% + 7px);max-height:300px;overflow:auto;padding:6px;background:rgba(10,12,17,.98);border:1px solid var(--line);border-radius:11px;box-shadow:0 20px 50px rgba(0,0,0,.72);opacity:0;transform:translateY(-5px) scale(.98);pointer-events:none;transition:.15s ease}.categoryMenu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.categoryOption{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:0;border-radius:7px;background:transparent;color:#e9ebef;text-align:left;font:inherit;font-size:12px;cursor:pointer}.categoryOption:hover{background:rgba(231,183,91,.10);color:#fff}.categoryOption.active{background:rgba(231,183,91,.15);color:var(--gold2);font-weight:800}.categoryOption .check{opacity:0;color:var(--gold2)}.categoryOption.active .check{opacity:1}.statusbar{display:none!important}.statusbar.error{display:none!important}
+
+input,select{width:100%;padding:12px 13px;border:1px solid #353944;border-radius:9px;background:#10131a;color:#fff;outline:0}input:focus,select:focus{border-color:var(--gold)}
+.sortWrap{position:relative;z-index:10010}.sortBtn{width:100%;min-height:43px;padding:12px 40px 12px 13px;border:1px solid #353944;border-radius:9px;background:#10131a;color:#fff;text-align:left;font:inherit;cursor:pointer;position:relative}.sortBtn:after{content:"⌄";position:absolute;right:13px;top:50%;transform:translateY(-52%);color:var(--gold2);font-size:18px}.sortBtn:hover,.sortBtn.open{border-color:var(--gold)}.sortMenu{position:absolute;z-index:100000;left:0;right:0;top:calc(100% + 7px);padding:6px;background:rgba(8,10,15,.98);border:1px solid var(--line);border-radius:11px;box-shadow:0 20px 50px rgba(0,0,0,.72);opacity:0;transform:translateY(-5px) scale(.98);pointer-events:none;transition:.15s ease}.sortMenu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.sortOption{width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:0;border-radius:7px;background:transparent;color:#e9ebef;text-align:left;font:inherit;font-size:12px;cursor:pointer}.sortOption:hover{background:rgba(231,183,91,.10);color:#fff}.sortOption.active{background:rgba(231,183,91,.15);color:var(--gold2);font-weight:800}.sortOption .check{opacity:0;color:var(--gold2)}.sortOption.active .check{opacity:1}
+.pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:16px}.page{min-width:34px;height:32px;border:1px solid #353944;border-radius:7px;background:#10131a;color:#c8cbd1;font-weight:800;cursor:pointer}.page:disabled{opacity:.35;cursor:not-allowed}.pageInfo{padding:0 8px;color:var(--muted);font-size:11px}
+.main{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 365px;gap:18px;margin-top:18px;align-items:start}
+.detailBackdrop{display:none}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid #303540;border-radius:12px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.27);transition:.18s}.card:hover{transform:translateY(-2px);border-color:rgba(231,183,91,.55)}
+.thumb{height:142px;display:grid;place-items:center;position:relative;background:linear-gradient(180deg,rgba(25,29,38,.95),rgba(9,11,16,.95))}.thumb img{max-width:94px;max-height:94px;object-fit:contain;image-rendering:auto}.placeholder{font-size:62px;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
+.badge{position:absolute;top:9px;right:9px;padding:4px 7px;border-radius:6px;background:#0b0e14;border:1px solid var(--line);font-size:10px;color:var(--gold2)}
+.body{padding:11px}.name{font-weight:850;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sub{font-size:11px;color:var(--muted);margin-top:3px}.price{margin-top:9px;color:var(--gold2);font-weight:900;font-size:18px}.meta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;font-size:10.5px;color:#c3c7cf}.time.soon{color:var(--red);font-weight:800}.btn{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:9px;background:linear-gradient(180deg,#4c381b,#2b2113);color:#ffe5a7;font-weight:850;cursor:pointer}.btn:hover{filter:brightness(1.12)}
+ .detail{position:fixed;z-index:70;left:50%;top:50%;width:min(410px,calc(100vw - 28px));max-height:min(720px,calc(100vh - 28px));overflow:auto;background:rgba(7,9,13,.97);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 28px 90px rgba(0,0,0,.92),0 0 0 1px rgba(201,149,61,.16);transform:translate(-50%,-46%) scale(.94);opacity:0;pointer-events:none;transition:transform .2s ease,opacity .2s ease}.detail.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}.detail h2{margin:0;font-size:19px}.detailImage{height:165px;margin:11px 0;border-radius:10px;background:linear-gradient(180deg,#171b23,#0b0d12);display:grid;place-items:center}.detailImage img{max-width:125px;max-height:125px}.detailImage .placeholder{font-size:90px}.detailPrice{margin-top:7px;font-size:25px;font-weight:900;color:var(--gold2)}.rows{margin-top:12px;border-top:1px solid #292e37}.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #252a32;font-size:11.5px}.row span{color:var(--muted)}.empty{padding:10px;background:#10131a;border-radius:8px;color:var(--muted);font-size:11px}.sectionTitle{margin:16px 0 8px;font-size:13px;font-weight:900;color:var(--gold2)}.bidList{display:grid;gap:7px}.bidItem{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #252a32;border-radius:8px;background:#0e1117}.bidWho{min-width:0}.bidName{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bidTime{font-size:10px;color:var(--muted);margin-top:2px}.bidAmount{color:var(--gold2);font-weight:900;white-space:nowrap}.detailClose{display:block;position:absolute;right:12px;top:10px;border:1px solid var(--line);background:#11141a;color:#fff;border-radius:7px;width:30px;height:30px;cursor:pointer}.detailClose:hover{filter:brightness(1.2)}
+.detailBackdrop{display:block;position:fixed;inset:0;background:rgba(0,0,0,.06);z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}.detailBackdrop.open{opacity:1;pointer-events:auto}
+.burst{position:fixed;left:50%;top:50%;width:20px;height:20px;z-index:1000;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 0 18px rgba(255,120,20,.75))}.burst i{position:absolute;left:0;top:0;width:44px;height:44px;background-size:contain;background-position:center;background-repeat:no-repeat;image-rendering:auto;filter:drop-shadow(0 0 7px rgba(255,120,20,.8));animation:burst .62s cubic-bezier(.15,.8,.2,1) forwards;opacity:0}.burst i:nth-child(odd){background-image:url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/lava.png")}.burst i:nth-child(even){background-image:url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/flame.png")}.burst i:nth-child(1){--x:0px;--y:-76px;--r:-12deg}.burst i:nth-child(2){--x:48px;--y:-58px;--r:18deg}.burst i:nth-child(3){--x:74px;--y:-18px;--r:35deg}.burst i:nth-child(4){--x:70px;--y:30px;--r:70deg}.burst i:nth-child(5){--x:40px;--y:66px;--r:105deg}.burst i:nth-child(6){--x:-6px;--y:78px;--r:150deg}.burst i:nth-child(7){--x:-52px;--y:60px;--r:190deg}.burst i:nth-child(8){--x:-76px;--y:20px;--r:225deg}.burst i:nth-child(9){--x:-72px;--y:-28px;--r:260deg}.burst i:nth-child(10){--x:-46px;--y:-62px;--r:300deg}.burst i:nth-child(11){--x:22px;--y:-54px;--r:330deg}.burst i:nth-child(12){--x:24px;--y:42px;--r:360deg}@keyframes burst{0%{transform:translate(0,0) scale(.15) rotate(0);opacity:0}8%{opacity:1;transform:translate(0,0) scale(1.35) rotate(0)}35%{opacity:1}72%{opacity:.9}100%{transform:translate(calc(var(--x)*1.55),calc(var(--y)*1.55)) scale(1.05) rotate(var(--r));opacity:0}}.smoke{position:fixed;left:50%;top:50%;width:30px;height:30px;z-index:999;pointer-events:none;transform:translate(-50%,-50%)}.smoke i{position:absolute;left:0;top:0;width:62px;height:62px;border-radius:50%;background:radial-gradient(circle,rgba(155,155,155,.82) 0%,rgba(105,105,105,.48) 45%,rgba(70,70,70,0) 75%);filter:blur(5px);animation:smoke 2.25s cubic-bezier(.2,.75,.25,1) forwards;opacity:0}.smoke i:nth-child(1){--sx:-92px;--sy:-155px;--sc:2.25}.smoke i:nth-child(2){--sx:-48px;--sy:-205px;--sc:2.8}.smoke i:nth-child(3){--sx:10px;--sy:-240px;--sc:3.0}.smoke i:nth-child(4){--sx:72px;--sy:-190px;--sc:2.7}.smoke i:nth-child(5){--sx:110px;--sy:-125px;--sc:2.1}.smoke i:nth-child(6){--sx:85px;--sy:-95px;--sc:2.5}.smoke i:nth-child(7){--sx:-5px;--sy:-115px;--sc:2.4}.smoke i:nth-child(8){--sx:-75px;--sy:-105px;--sc:2.6}@keyframes smoke{0%{transform:translate(0,0) scale(.35);opacity:0}18%{opacity:.7}100%{transform:translate(var(--sx),var(--sy)) scale(var(--sc));opacity:0}}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:980px){.hero{z-index:400}.main{grid-template-columns:1fr}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{grid-template-columns:1fr 1fr}.heroTop{align-items:flex-start;flex-direction:column}.stats{display:none}}
+@media(max-width:520px){.wrap{padding:14px}.brand h1{font-size:23px}.brand p{font-size:11px}.discord{font-size:11px;padding:8px 10px}.controls{grid-template-columns:1fr}.grid{gap:9px}.thumb{height:112px}.thumb img{max-width:70px;max-height:70px}.placeholder{font-size:48px}.body{padding:9px}.price{font-size:15px}.detail{padding:13px}}
+
+.burst,.smoke{z-index:99999!important}.burst i,.smoke i{will-change:transform,opacity}
+</style>
+</head>
+<body>
+<div id="particles"><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i></div>
+
+<div class="wrap">
+<header>
+  <div class="brand">
+    <small>EHRENMARKT INFO</small>
+    <h1>OPSUCHT AUKTIONSHAUS</h1>
+    <p>Live-Daten vom OPSUCHT Minecraft Server</p>
+  </div>
+  <a class="discord" href="https://discord.gg/opsucht" target="_blank" rel="noopener">◈ OPSUCHT Discord ↗</a>
+</header>
+
+<section class="hero">
+  <div class="heroTop">
+    <div>
+      <div class="live">Live aus dem OPSUCHT-Netzwerk</div>
+      <div style="margin-top:7px;color:#c8cbd1;font-size:12px">Öffentliche Auktionsdaten direkt aus der OPSUCHT-API – ohne Ehrenmarkt-Login.</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="activeCount">–</strong> aktive Auktionen</div>
+      <div class="stat"><strong id="catCount">–</strong> Kategorien</div>
+    </div>
+  </div>
+  <div class="controls">
+    <input id="search" placeholder="🔎 Item oder Kategorie suchen …">
+    <div class="categoryWrap" id="categoryWrap"><button type="button" class="categoryBtn" id="categoryBtn" aria-haspopup="listbox" aria-expanded="false">Alle Kategorien</button><div class="categoryMenu" id="categoryMenu" role="listbox"></div></div>
+    <div class="sortWrap" id="sortWrap"><button type="button" class="sortBtn" id="sortBtn" aria-haspopup="listbox" aria-expanded="false">Bald ablaufend</button><div class="sortMenu" id="sortMenu" role="listbox"></div></div>
+  </div>
+</section>
+
+<div id="detailBackdrop" class="detailBackdrop" onclick="closeDetail()"></div>
+<main class="main">
+<section>
+  <div id="grid" class="grid"></div>
+  <div id="pagination" class="pagination"></div>
+  <div id="statusbar" class="statusbar">Lade aktuelle Auktionen …</div>
+</section>
+
+<aside class="detail" id="detail">
+  <h2>Auktion</h2>
+  <div class="detailImage"><div class="placeholder">▣</div></div>
+  <div class="name">Wähle eine Auktion</div>
+  <div class="sub">Die Details werden hier angezeigt.</div>
+</aside>
+</main>
+</div>
+
+<script>
+const API="https://api.opsucht.net/auctions";
+const ACTIVE=API+"/active";
+const CATEGORIES=API+"/categories";
+const PER_PAGE=24;
+let auctions=[], filtered=[], currentPage=1, selected=null, categoryData=[], selectedCategory="";
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function pick(o, keys, fallback=null){
+  for(const k of keys){ if(o && o[k]!==undefined && o[k]!==null && o[k]!=="") return o[k]; }
+  return fallback;
+}
+function textValue(v, fallback=""){
+  if(v===null || v===undefined || v==="") return fallback;
+  if(typeof v==="string" || typeof v==="number") return String(v);
+  if(typeof v==="object"){
+    const n=pick(v,["displayName","display_name","name","title","label","username","playerName","text","value"],null);
+    if(n!==null) return textValue(n,fallback);
+  }
+  return fallback;
+}
+function deepPick(o, keys, fallback=null, depth=4){
+  if(!o || depth<0) return fallback;
+  const direct=pick(o,keys,null);
+  if(direct!==null) return direct;
+  for(const v of Object.values(o)){
+    if(v && typeof v==="object"){
+      const found=deepPick(v,keys,null,depth-1);
+      if(found!==null) return found;
+    }
+  }
+  return fallback;
+}
+function num(v){
+  if(typeof v==="number"&&Number.isFinite(v)) return v;
+  if(typeof v==="string"){ const n=Number(v.replace(/[^\d.-]/g,"")); return Number.isFinite(n)?n:null; }
+  if(v && typeof v==="object") return num(pick(v,["value","amount","price","bid"],null));
+  return null;
+}
+function money(v){const n=num(v);return n===null?"–":n.toLocaleString("de-DE")+" $"}
+function nameOf(a){
+  return textValue(deepPick(a,["displayName","display_name","itemName","item_name","name","title","label"],null,5),"Unbekanntes Item");
+}
+const CATEGORY_LABELS={custom_items:"Custom-Items",op_items:"OP-Items",parent_armor:"Rüstungen",parent_cards_and_booster_packs:"Karten & Boosterpacks",parent_other:"Sonstiges",parent_tools_combat:"Werkzeuge & Kampf",parent_tools:"Werkzeuge",parent_combat:"Kampf",parent_food:"Nahrung",parent_blocks:"Blöcke",parent_cosmetics:"Kosmetik",parent_pets:"Pets",parent_minions:"Minions",parent_keys:"Schlüssel",parent_misc:"Sonstiges",sub_booster_packs:"Boosterpacks",sub_booster_pack_card_1_stars:"Boosterpack Karten – 1 Stern",sub_booster_pack_card_2_stars:"Boosterpack Karten – 2 Sterne",sub_booster_pack_card_3_stars:"Boosterpack Karten – 3 Sterne",sub_booster_pack_card_4_and_5_stars:"Boosterpack Karten – 4 & 5 Sterne",sub_boots:"Schuhe",sub_swords:"Schwerter",sub_tools:"Werkzeuge",sub_other:"Sonstiges"};
+function categoryLabel(v){const raw=textValue(v,"").trim();if(!raw)return "Sonstiges";if(CATEGORY_LABELS[raw])return CATEGORY_LABELS[raw];return raw.replace(/^parent_/i,"").replace(/^sub_/i,"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());}
+function categoryOf(a){return categoryLabel(deepPick(a,["categoryName","categoryDisplayName","category","type"],null,4));}
+function auctionIdOf(a){
+  const direct=pick(a,["uid","uuid","id","auctionId","auctionID","auction_id","auctionUuid","auctionUUID","auction_uuid"],null);
+  return textValue(direct,"");
+}
+function sellerId(a){
+  return deepPick(a,["sellerUuid","sellerUUID","sellerId","sellerID","seller","ownerUuid","ownerUUID","ownerId","ownerID","owner"],null,4);
+}
+function sellerOf(a){
+  const v=deepPick(a,["sellerName","sellerUsername","sellerPlayerName","username","playerName","ownerName","createdBy","seller","owner"],null,6);
+  const name=textValue(v,"");
+  return name || sellerId(a) || "Nicht angegeben";
+}
+function currentPrice(a){return num(deepPick(a,["currentBid","highestBid","currentPrice","bid","price","amount","highestPrice"],null,5))}
+function startPrice(a){return num(deepPick(a,["startBid","startingBid","startPrice","startingPrice","minimumBid","minBid","initialBid","initialPrice"],null,5))}
+function instantPrice(a){return num(deepPick(a,["instantBuyPrice","buyNowPrice","instantPrice","fixedPrice","instantBoughtPrice"],null,5))}
+function quantityOf(a){return num(deepPick(a,["quantity","itemAmount","count","amount"],null,5)) ?? 1}
+function bidsOf(a){
+  const direct=pick(a,["bids","bidHistory","bid_history","offers","bidHistoryEntries","bid_history_entries","auctionBids","auction_bids"],null);
+  if(direct && typeof direct==="object" && !Array.isArray(direct)){
+    // OPSUCHT liefert die Gebote im aktiven Auktionsdatensatz als Map: UUID -> Betrag.
+    const entries=Object.entries(direct).filter(([k,v])=>v!==null && v!==undefined && (typeof v==="number" || (typeof v==="string" && Number.isFinite(Number(v)))));
+    if(entries.length) return entries.map(([uuid,amount])=>{
+      const key=normalizeUuid(uuid)?.toLowerCase();
+      const cachedName=key ? playerNameCache.get(key) : null;
+      return {uuid,price:num(amount),name:cachedName || "Bieter",time:null};
+    });
+  }
+  const roots=[];
+  if(direct!==null) roots.push(direct);
+  const out=[];
+  const seen=new Set();
+  function collect(v,depth=6){
+    if(v===null||v===undefined||depth<0)return;
+    if(Array.isArray(v)){for(const x of v)collect(x,depth-1);return;}
+    if(typeof v!=="object")return;
+    if(seen.has(v))return; seen.add(v);
+    const looksLikeBid=["amount","bid","bidAmount","price","value","playerUuid","bidderUuid","bidder","bidderName","createdAt","placedAt"].some(k=>v[k]!==undefined&&v[k]!==null);
+    if(looksLikeBid) out.push(v);
+    for(const k of ["data","items","entries","history","results","bids","offers","bidHistory","bid_history"]){if(v[k]!==undefined)collect(v[k],depth-1);}
+  }
+  roots.forEach(v=>collect(v));
+  return out;
+}
+function endText(a){const e=endOf(a);if(e===null)return "Nicht angegeben";const ms=endMs(a);return ms===null?textValue(e,"Nicht angegeben"):new Date(ms).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"medium"});}
+function formatBidTime(v){if(v===null||v===undefined||v==="")return "";let ms=null;if(typeof v==="number")ms=v<1e12?v*1000:v;else{const n=Number(v);if(Number.isFinite(n))ms=n<1e12?n*1000:n;else{const t=Date.parse(v);if(Number.isFinite(t))ms=t;}}return ms?new Date(ms).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"}):textValue(v,"");}
+function endOf(a){return pick(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"],null)}
+function endMs(a){
+  const e=endOf(a); if(e===null)return null;
+  if(typeof e==="number") return e<1e12?e*1000:e;
+  const n=Number(e); if(Number.isFinite(n)) return n<1e12?n*1000:n;
+  const t=Date.parse(e); return Number.isFinite(t)?t:null;
+}
+function createdMs(a){
+  const v=pick(a,["createdAt","createdTime","startTime","startedAt","timestamp"],null); if(v===null)return 0;
+  if(typeof v==="number")return v<1e12?v*1000:v;
+  const n=Number(v);if(Number.isFinite(n))return n<1e12?n*1000:n;
+  const t=Date.parse(v);return Number.isFinite(t)?t:0;
+}
+function imageOf(a){
+  const v=deepPick(a,["imageUrl","iconUrl","image","icon","displayIcon","thumbnail","texture","image_url","icon_url","url"],null,6);
+  if(typeof v==="string" && /^https?:\/\//i.test(v)) return v;
+  if(v && typeof v==="object"){
+    const u=pick(v,["url","src","href","imageUrl","iconUrl"],null);
+    if(typeof u==="string" && /^https?:\/\//i.test(u)) return u;
+  }
+  return null;
+}
+function remainingMs(a){const e=endMs(a);return e===null?null:e-Date.now()}
+function timeText(a){
+  const ms=remainingMs(a); if(ms===null)return "Restzeit unbekannt";
+  if(ms<=0)return "abgelaufen";
+  let s=Math.floor(ms/1000),d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;
+  if(d)return `${d} Tg. ${h} Std.`;
+  if(h)return `${h} Std. ${m} Min.`;
+  return `${m} Min. ${s} Sek.`;
+}
+function isActive(a){const r=remainingMs(a);return r===null||r>0}
+
+const playerNameCache=new Map();
+function normalizeUuid(u){
+  const raw=String(u||"").trim().replace(/[^0-9a-f]/gi,"");
+  if(raw.length!==32)return null;
+  return `${raw.slice(0,8)}-${raw.slice(8,12)}-${raw.slice(12,16)}-${raw.slice(16,20)}-${raw.slice(20)}`;
+}
+async function getJson(url){
+  const r=await fetch(url,{cache:"no-store",mode:"cors"});
+  if(!r.ok)throw new Error(String(r.status));
+  return await r.json();
+}
+async function resolvePlayer(uuid){
+  const u=normalizeUuid(uuid);
+  if(!u)return null;
+  const key=u.toLowerCase();
+  if(playerNameCache.has(key))return playerNameCache.get(key);
+  const undashed=u.replace(/-/g,"");
+  const providers=[
+    async()=>{const d=await getJson(`https://mowojang.matdoes.dev/${undashed}`);return d?.username||d?.name||null;},
+    async()=>{const d=await getJson(`https://api.ashcon.app/mojang/v2/user/${u}`);return d?.username||d?.name||null;},
+    async()=>{const d=await getJson(`https://playerdb.co/api/player/minecraft/${u}`);return d?.data?.player?.username||d?.data?.player?.displayName||d?.username||d?.name||null;},
+    async()=>{const d=await getJson(`https://api.minetools.eu/uuid/${undashed}`);return d?.name||d?.username||null;},
+    async()=>{const d=await getJson(`https://sessionserver.mojang.com/session/minecraft/profile/${undashed}`);return d?.name||null;}
+  ];
+  for(const provider of providers){
+    try{
+      const name=await provider();
+      if(name){playerNameCache.set(key,String(name));return String(name);}
+    }catch{}
+  }
+  // Last resort: a public CORS relay, only for the name lookup. The auction data itself still comes directly from OPSUCHT.
+  const relayTargets=[
+    `https://api.ashcon.app/mojang/v2/user/${u}`,
+    `https://playerdb.co/api/player/minecraft/${u}`
+  ];
+  for(const target of relayTargets){
+    try{
+      const d=await getJson(`https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`);
+      const name=d?.username||d?.name||d?.data?.player?.username||d?.data?.player?.displayName||null;
+      if(name){playerNameCache.set(key,String(name));return String(name);}
+    }catch{}
+  }
+  return null;
+}
+
+function normalizeBids(a){
+  return bidsOf(a).map(b=>{
+    if(typeof b==="number"||typeof b==="string") return {name:"Bieter",uuid:null,price:num(b),time:null};
+    const who=deepPick(b,["playerName","username","bidderName","bidder_name","name","player","bidder","user","owner"],null,5);
+    const uuid=deepPick(b,["playerUuid","playerUUID","player_uuid","uuid","bidderUuid","bidderUUID","bidder_uuid","userUuid","userUUID","user_uuid"],null,5);
+    const rawUuid=textValue(uuid,"") || null;
+    const cachedName=rawUuid ? playerNameCache.get(normalizeUuid(rawUuid)?.toLowerCase()) : null;
+    return {name:cachedName || textValue(who,"Bieter"),uuid:rawUuid,price:num(deepPick(b,["amount","price","bid","value","bidAmount","bid_amount","offer","offerAmount"],null,5)),time:deepPick(b,["createdAt","timestamp","time","placedAt","date"],null,3)};
+  }).filter(x=>x.price!==null).sort((a,b)=>b.price-a.price);
+}
+function xTime(v){if(v===null||v===undefined)return "";if(typeof v==="number")return new Date(v<1e12?v*1000:v).toISOString();return String(v)}
+
+
+function card(a,i){
+  const img=imageOf(a), q=quantityOf(a), p=currentPrice(a)??instantPrice(a), rem=remainingMs(a);
+  return `<article class="card">
+    <div class="thumb">${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:''}<div class="placeholder" ${img?'style="display:none"':''}>▣</div><span class="badge">×${q.toLocaleString("de-DE")}</span></div>
+    <div class="body">
+      <div class="name">${esc(nameOf(a))}</div>
+      <div class="sub">${esc(categoryOf(a))}</div>
+      <div class="price">${money(p)}</div>
+      <div class="meta"><span class="time ${rem!==null&&rem<10*60*1000?"soon":""}">⏱ ${esc(timeText(a))}</span></div>
+      <button class="btn" onclick="selectAuction(${i})">Auktion ansehen</button>
+    </div>
+  </article>`;
+}
+
+function selectAuction(i){
+  selected=filtered[i];
+  if(!selected)return;
+  renderDetail();
+  $("detail").classList.add("open");
+  $("detailBackdrop").classList.add("open");
+  burst();
+  resolveDetailNames(selected);
+  loadAuctionDetails(selected);
+}
+async function loadAuctionDetails(a){
+  const id=auctionIdOf(a); if(!id)return;
+  const urls=[`${API}/${encodeURIComponent(id)}`,`${API}/${encodeURIComponent(id)}/bids`];
+  for(const url of urls){
+    try{
+      const r=await fetch(url,{cache:"no-store"});
+      if(!r.ok)continue;
+      const d=await r.json();
+      const detail=d?.auction||d?.data?.auction||d?.data||d;
+      if(detail && typeof detail==="object") Object.assign(a,detail);
+      if(Array.isArray(d?.bids)) a.bids=d.bids;
+      if(Array.isArray(d?.data?.bids)) a.bids=d.data.bids;
+      if(Array.isArray(detail?.bids)) a.bids=detail.bids;
+      if(selected===a){renderDetail();resolveDetailNames(a);}
+      if(bidsOf(a).length)break;
+    }catch{}
+  }
+}
+function burst(){
+  const old=$("burst"); if(old) old.remove();
+  const oldSmoke=$("smoke"); if(oldSmoke) oldSmoke.remove();
+  const b=document.createElement("div"); b.id="burst"; b.className="burst";
+  for(let i=0;i<12;i++) b.appendChild(document.createElement("i"));
+  document.body.appendChild(b);
+  setTimeout(()=>{
+    const s=document.createElement("div"); s.id="smoke"; s.className="smoke";
+    for(let i=0;i<8;i++) s.appendChild(document.createElement("i"));
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),2350);
+  },430);
+  setTimeout(()=>b.remove(),950);
+}
+function closeDetail(){
+  $("detail").classList.remove("open");
+  $("detailBackdrop").classList.remove("open");
+}
+function renderDetail(){
+  const a=selected;if(!a)return;
+  const img=imageOf(a), p=currentPrice(a), start=startPrice(a), instant=instantPrice(a), q=quantityOf(a);
+  const bids=normalizeBids(a);
+  const seller=sellerOf(a);
+  const reportedBidCount=num(deepPick(a,["bidCount","numberOfBids","number_of_bids","totalBids","total_bids"],null,4)) ?? (bidsOf(a).length || null);
+  const bidHtml=bids.length ? `<div class="sectionTitle">Gebote${reportedBidCount!==null?` (${reportedBidCount})`:``}</div><div class="bidList">${bids.map((b,i)=>`<div class="bidItem"><div class="bidWho"><div class="bidName" id="bid-name-${i}">${esc(b.name)}</div><div class="bidTime">${esc(formatBidTime(b.time))}</div></div><div class="bidAmount">${money(b.price)}</div></div>`).join("")}</div>` : `<div class="sectionTitle">Gebote${reportedBidCount!==null?` (${reportedBidCount})`:``}</div><div class="empty">${reportedBidCount>0?"Gebote vorhanden, Details werden von der API nicht mitgeliefert.":"Keine Gebote übermittelt."}</div>`;
+  $("detail").innerHTML=`<button class="detailClose" onclick="closeDetail()" aria-label="Schließen">×</button><h2>Auktion</h2>
+    <div class="detailImage">${img?`<img src="${esc(img)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:''}<div class="placeholder" ${img?'style="display:none"':''}>▣</div></div>
+    <div class="name">${esc(nameOf(a))}</div>
+    <div class="sub">${esc(categoryOf(a))} · Menge ${q.toLocaleString("de-DE")}</div>
+    <div class="detailPrice">${money(p??start??instant)}</div>
+    <div class="rows">
+      <div class="row"><span>Verkäufer</span><strong id="sellerName">${esc(seller)}</strong></div>
+      <div class="row"><span>Startgebot</span><strong>${start!==null?money(start):"Nicht angegeben"}</strong></div>
+      <div class="row"><span>Sofortkauf</span><strong>${instant!==null?money(instant):"Nicht angegeben"}</strong></div>
+      <div class="row"><span>Restzeit</span><strong>${esc(timeText(a))}</strong></div>
+      <div class="row"><span>Ende</span><strong>${esc(endText(a))}</strong></div>
+    </div>${bidHtml}`;
+}
+async function resolveDetailNames(a){
+  const sellerUuid=sellerId(a);
+  const rawSeller=deepPick(a,["sellerName","sellerUsername","sellerPlayerName","ownerName"],null,6);
+  if(sellerUuid && !rawSeller){
+    const n=await resolvePlayer(sellerUuid);
+    if(n && selected===a && $("sellerName")){ $("sellerName").textContent=n; }
+  }
+  const bids=normalizeBids(a);
+  await Promise.all(bids.map(async(b,i)=>{
+    if(!b.uuid)return;
+    const n=await resolvePlayer(b.uuid);
+    if(n && selected===a){
+      const el=$("bid-name-"+i);
+      if(el) el.textContent=n;
+    }
+  }));
+}
+
+function sortData(list){
+  const mode=SORT_MODE;
+  if(mode==="soon") list.sort((a,b)=>{
+    const ae=remainingMs(a), be=remainingMs(b);
+    if(ae===null && be===null) return createdMs(b)-createdMs(a);
+    if(ae===null) return 1;
+    if(be===null) return -1;
+    return ae-be;
+  });
+  else if(mode==="new") list.sort((a,b)=>createdMs(b)-createdMs(a));
+  else if(mode==="low") list.sort((a,b)=>(currentPrice(a)??instantPrice(a)??Infinity)-(currentPrice(b)??instantPrice(b)??Infinity));
+  else if(mode==="high") list.sort((a,b)=>(currentPrice(b)??instantPrice(b)??-Infinity)-(currentPrice(a)??instantPrice(a)??-Infinity));
+}
+
+function apply(){
+  const q=$("search").value.trim().toLowerCase(), c=selectedCategory;
+  filtered=auctions.filter(a=>isActive(a));
+  if(c)filtered=filtered.filter(a=>categoryOf(a)===c);
+  if(q)filtered=filtered.filter(a=>[nameOf(a),categoryOf(a)].join(" ").toLowerCase().includes(q));
+  sortData(filtered);
+  const pages=Math.max(1,Math.ceil(filtered.length/PER_PAGE)); if(currentPage>pages)currentPage=pages;
+  const start=(currentPage-1)*PER_PAGE;
+  const pageItems=filtered.slice(start,start+PER_PAGE);
+  $("grid").innerHTML=pageItems.length?pageItems.map((a,i)=>card(a,start+i)).join(""):`<div class="empty">Keine passenden aktiven Auktionen gefunden.</div>`;
+  renderPagination(pages);
+  $("statusbar").textContent=`${filtered.length.toLocaleString("de-DE")} passende aktive Auktionen`;
+  if(selected && !filtered.includes(selected)){$("detail").innerHTML='<h2>Auktion</h2><div class="empty" style="margin-top:12px">Die ausgewählte Auktion ist nicht mehr aktiv.</div>'}
+}
+function renderPagination(pages){const p=$("pagination");p.innerHTML=`<button class="page" onclick="go(${currentPage-1})" ${currentPage===1?"disabled":""}>‹</button><span class="pageInfo">Seite ${currentPage} von ${pages}</span><button class="page" onclick="go(${currentPage+1})" ${currentPage===pages?"disabled":""}>›</button>`;}
+function go(n){currentPage=n;apply();window.scrollTo({top:0,behavior:"smooth"})}
+
+async function load(){
+  try{
+    const [ar,cr]=await Promise.all([
+      fetch(ACTIVE,{cache:"no-store"}),fetch(CATEGORIES,{cache:"no-store"})
+    ]);
+    if(!ar.ok)throw new Error("Auktionen HTTP "+ar.status);
+    const ad=await ar.json(), cd=cr.ok?await cr.json():[];
+    auctions=Array.isArray(ad)?ad:(ad.auctions||ad.data||ad.items||[]);
+    categoryData=Array.isArray(cd)?cd:(cd.categories||cd.data||[]);
+    const cats=[...new Set([...categoryData.map(x=>categoryLabel(typeof x==="string"?x:textValue(pick(x,["name","displayName","title","label"],null),""))),...auctions.map(categoryOf)].filter(Boolean))].sort((a,b)=>a.localeCompare(b,"de"));
+    renderCategoryMenu(cats);
+    $("activeCount").textContent=auctions.filter(isActive).length.toLocaleString("de-DE");
+    $("catCount").textContent=cats.length.toLocaleString("de-DE");
+    $("statusbar").textContent="";
+    apply();
+    if(auctions.length){
+  selected=auctions.find(isActive)||auctions[0];
+  renderDetail();
+  $("detail").classList.remove("open");
+  $("detailBackdrop").classList.remove("open");
+}
+  }catch(e){
+    $("grid").innerHTML='<div class="empty">Die OPSUCHT-Daten konnten gerade nicht geladen werden.</div>';
+    $("statusbar").textContent="";
+  }
+}
+function renderCategoryMenu(cats){
+  const menu=$("categoryMenu");
+  if(!menu)return;
+  menu.innerHTML=`<button type="button" class="categoryOption active" data-cat=""><span>Alle Kategorien</span><span class="check">✓</span></button>`+
+    cats.map(c=>`<button type="button" class="categoryOption" data-cat="${esc(c)}"><span>${esc(c)}</span><span class="check">✓</span></button>`).join("");
+  menu.querySelectorAll(".categoryOption").forEach(btn=>btn.addEventListener("click",()=>{
+    selectedCategory=btn.dataset.cat||"";
+    $("categoryBtn").textContent=selectedCategory||"Alle Kategorien";
+    menu.querySelectorAll(".categoryOption").forEach(x=>x.classList.toggle("active",x===btn));
+    closeCategoryMenu(); currentPage=1; apply();
+  }));
+}
+function openCategoryMenu(){
+  $("categoryMenu").classList.add("open");
+  $("categoryBtn").classList.add("open");
+  $("categoryBtn").setAttribute("aria-expanded","true");
+}
+function closeCategoryMenu(){
+  $("categoryMenu").classList.remove("open");
+  $("categoryBtn").classList.remove("open");
+  $("categoryBtn").setAttribute("aria-expanded","false");
+}
+const SORTS={soon:"Bald ablaufend",new:"Neueste zuerst",low:"Preis aufsteigend",high:"Preis absteigend"};
+function renderSortMenu(){const m=$("sortMenu");m.innerHTML=Object.entries(SORTS).map(([v,l])=>`<button type="button" class="sortOption ${v==="soon"?"active":""}" data-sort="${v}"><span>${l}</span><span class="check">✓</span></button>`).join("");m.querySelectorAll(".sortOption").forEach(b=>b.addEventListener("click",()=>{SORT_MODE=b.dataset.sort;$("sortBtn").textContent=SORTS[SORT_MODE];m.querySelectorAll(".sortOption").forEach(x=>x.classList.toggle("active",x===b));closeSortMenu();currentPage=1;apply();}));}
+let SORT_MODE="soon";
+function openSortMenu(){$("sortMenu").classList.add("open");$("sortBtn").classList.add("open");$("sortBtn").setAttribute("aria-expanded","true");}
+function closeSortMenu(){$("sortMenu").classList.remove("open");$("sortBtn").classList.remove("open");$("sortBtn").setAttribute("aria-expanded","false");}
+$("sortBtn").addEventListener("click",e=>{e.stopPropagation();$("sortMenu").classList.contains("open")?closeSortMenu():openSortMenu()});
+$("categoryBtn").addEventListener("click",e=>{e.stopPropagation();$("categoryMenu").classList.contains("open")?closeCategoryMenu():openCategoryMenu()});
+document.addEventListener("click",e=>{if(!$('categoryWrap').contains(e.target))closeCategoryMenu();if(!$('sortWrap').contains(e.target))closeSortMenu();});
+$("search").addEventListener("input",()=>{currentPage=1;apply()});
+renderSortMenu();
+setInterval(()=>{apply();if(selected)renderDetail();},1000);
+load();
+</script>
+</body>
+</html>
