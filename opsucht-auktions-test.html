@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ehrenmarkt – OPSUCHT Auktionen Test</title>
+<style>
+:root{--bg:#090a0d;--p:#12151b;--p2:#181c23;--b:#292e38;--t:#f3f4f6;--m:#969daa;--g:#d9aa50;--g2:#f0c96c;--ok:#61d394;--bad:#e36b6b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#33271433,transparent 32%),var(--bg);color:var(--t);font-family:Arial,sans-serif}
+header{height:70px;padding:0 5%;display:flex;align-items:center;border-bottom:1px solid var(--b);background:#0b0c10}.logo{font-size:23px;font-weight:800}.logo span{color:var(--g)}
+main{max-width:1250px;margin:auto;padding:28px 5% 50px}.k{color:var(--g2);font-size:11px;letter-spacing:2px;font-weight:800}.hero h1{font-size:34px;margin:8px 0}.hero p{color:var(--m);line-height:1.5}
+.status{margin:22px 0 14px;background:var(--p);border:1px solid var(--b);border-radius:11px;padding:12px 15px;font-size:12px;color:var(--m)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.tools{display:flex;gap:10px;margin-bottom:18px}.search,select{flex:1;background:var(--p);border:1px solid var(--b);color:var(--t);padding:12px;border-radius:9px;outline:none}button{background:var(--g);border:0;border-radius:8px;padding:11px 15px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}.card{background:linear-gradient(155deg,var(--p2),var(--p));border:1px solid var(--b);border-radius:14px;overflow:hidden}
+.image{height:175px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#2a2e37,#101217 70%);padding:20px}.image img{max-width:125px;max-height:125px;object-fit:contain;image-rendering:auto}.fallback{font-size:55px}
+.body{padding:15px}.tag{font-size:10px;color:var(--g2);text-transform:uppercase;letter-spacing:1px}.name{font-size:18px;font-weight:750;margin:7px 0}.sub{color:var(--m);font-size:11px;word-break:break-word}
+.rows{margin-top:13px;border-top:1px solid var(--b);padding-top:10px}.row{display:flex;justify-content:space-between;gap:10px;margin:6px 0;font-size:12px}.row span:first-child{color:var(--m)}.price{color:var(--g2);font-weight:800;font-size:19px}
+.detail{margin-top:10px;padding:9px 10px;background:#0d0f13;border:1px solid var(--b);border-radius:8px;font-size:11px;color:var(--m)}
+footer{color:#686e78;font-size:11px;text-align:center;margin-top:35px}
+@media(max-width:650px){main{padding:24px 4%}.tools{flex-wrap:wrap}.search,select{min-width:100%}.grid{grid-template-columns:1fr}.hero h1{font-size:29px}}
+</style>
+</head>
+<body>
+<header><div class="logo">EHREN<span>MARKT</span> · OPSUCHT</div></header>
+<main>
+<section class="hero">
+<div class="k">ECHTE API-DATEN · TEST V2</div>
+<h1>Auktionen</h1>
+<p>Die Seite liest aktive OPSUCHT-Auktionen direkt aus der öffentlichen API. Es werden keine Daten in Supabase gespeichert.</p>
+</section>
+
+<div id="status" class="status">⏳ Lade …</div>
+<div class="tools">
+<input id="search" class="search" placeholder="Item, Verkäufer oder Kategorie suchen …">
+<select id="cat"><option value="">Alle Kategorien</option></select>
+<button onclick="load()">↻ Aktualisieren</button>
+</div>
+<div id="grid" class="grid"></div>
+<footer>Nur Anzeige der API-Daten · keine Speicherung bei Ehrenmarkt</footer>
+</main>
+
+<script>
+const API="https://api.opsucht.net/auctions/active";
+let auctions=[], categories=[];
+
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function deep(obj, keys){
+  if(!obj||typeof obj!=="object") return undefined;
+  for(const k of keys) if(obj[k]!==undefined&&obj[k]!==null&&obj[k]!=="") return obj[k];
+  for(const v of Object.values(obj)){
+    if(v&&typeof v==="object"){const x=deep(v,keys);if(x!==undefined)return x}
+  }
+}
+function firstString(obj,keys){const v=deep(obj,keys);return typeof v==="string"?v:undefined}
+function firstNumber(obj,keys){const v=deep(obj,keys);return typeof v==="number"?v:(v!==undefined&&v!==""&&!isNaN(Number(v))?Number(v):undefined)}
+function name(a){return firstString(a,["displayName","itemName","name","display_name"])||"Unbekanntes Item"}
+function seller(a){return firstString(a,["sellerName","seller","username","playerName","ownerName","createdBy"])||"Nicht angegeben"}
+function category(a){return firstString(a,["categoryName","category","displayName","categoryDisplayName"])||"Unbekannt"}
+function current(a){return firstNumber(a,["currentBid","highestBid","currentPrice","bid","price","amount","highestPrice"])}
+function instant(a){return firstNumber(a,["instantBuyPrice","instantBoughtPrice","buyNowPrice","instantPrice","fixedPrice"])}
+function quantity(a){return firstNumber(a,["quantity","amount","count","itemAmount"])}
+function bids(a){return firstNumber(a,["bidCount","bids","numberOfBids","offers"])}
+function id(a){return firstString(a,["id","uid","auctionId","auctionID"])||"—"}
+function dateVal(a,keys){return firstString(a,keys)||firstNumber(a,keys)}
+function fmtDate(v){
+ if(v===undefined)return "—";
+ const d=new Date(v); return isNaN(d)?String(v):d.toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"});
+}
+function remaining(a){
+ const end=dateVal(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"]);
+ if(end===undefined)return null;
+ const d=new Date(end);if(isNaN(d))return null;
+ let s=Math.max(0,Math.floor((d-Date.now())/1000));
+ const days=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);const sec=s%60;
+ return days?`${days} T. ${h} Std.`:h?`${h} Std. ${m} Min.`:m?`${m} Min. ${sec} Sek.`:`${sec} Sek.`;
+}
+function imageUrl(a){
+ let u=deep(a,["imageUrl","iconUrl","image","icon","displayIcon","texture","thumbnail"]);
+ if(typeof u==="string"&&/^https?:\/\//i.test(u))return u;
+ return null;
+}
+function money(v){return v===undefined?"—":Number(v).toLocaleString("de-DE")+" $"}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase(),c=document.getElementById("cat").value;
+ const list=auctions.filter(a=>(!c||category(a)===c)&&(!q||[name(a),seller(a),category(a)].join(" ").toLowerCase().includes(q)));
+ const box=document.getElementById("grid");
+ if(!list.length){box.innerHTML='<div style="color:#969daa">Keine passenden Auktionen.</div>';return}
+ box.innerHTML=list.map(a=>{
+  const img=imageUrl(a), end=dateVal(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"]);
+  return `<article class="card">
+   <div class="image">${img?`<img src="${esc(img)}" alt="" onerror="this.remove();this.parentElement.insertAdjacentHTML('beforeend','<div class=fallback>🧱</div>')">`:'<div class="fallback">🧱</div>'}</div>
+   <div class="body">
+    <div class="tag">${esc(category(a))}</div>
+    <div class="name">${esc(name(a))}</div>
+    <div class="sub">Auktions-ID: ${esc(id(a))}</div>
+    <div class="rows">
+      <div class="row"><span>💰 Aktuelles Gebot</span><b class="price">${money(current(a))}</b></div>
+      <div class="row"><span>⚡ Sofortkauf</span><b>${money(instant(a))}</b></div>
+      <div class="row"><span>👤 Verkäufer</span><b>${esc(seller(a))}</b></div>
+      <div class="row"><span>📦 Menge</span><b>${quantity(a)??"—"}</b></div>
+      <div class="row"><span>🔨 Gebote</span><b>${bids(a)??"—"}</b></div>
+      <div class="row"><span>⏳ Noch</span><b>${remaining(a)??"—"}</b></div>
+      <div class="row"><span>🏁 Ende</span><b>${fmtDate(end)}</b></div>
+    </div>
+    <div class="detail">📊 Durchschnittlicher Verkaufspreis: <strong>—</strong><br>Historische Daten werden bewusst nicht erfunden. Dafür brauchen wir eine separate bestätigte Verlaufsquelle.</div>
+   </div>
+  </article>`
+ }).join("");
+}
+async function load(){
+ const st=document.getElementById("status");st.className="status";st.textContent="⏳ Lade echte aktive Auktionen …";
+ try{
+  const r=await fetch(API,{cache:"no-store"});const text=await r.text();if(!r.ok)throw new Error("HTTP "+r.status);
+  let data=JSON.parse(text);auctions=Array.isArray(data)?data:(data.auctions||data.data||[]);
+  try{
+   const cr=await fetch("https://api.opsucht.net/auctions/categories",{cache:"no-store"});const cd=await cr.json();categories=Array.isArray(cd)?cd:(cd.categories||cd.data||[]);
+  }catch{}
+  const select=document.getElementById("cat");
+  const names=[...new Set([...categories.map(x=>x.displayName||x.name).filter(Boolean),...auctions.map(category).filter(x=>x!=="Unbekannt")])];
+  select.innerHTML='<option value="">Alle Kategorien</option>'+names.map(x=>`<option>${esc(x)}</option>`).join("");
+  render();st.className="status ok";st.textContent=`🟢 API erreichbar · ${auctions.length.toLocaleString("de-DE")} aktive Auktionen`;
+ }catch(e){st.className="status bad";st.textContent="🔴 Fehler: "+e.message;document.getElementById("grid").innerHTML='<div style="color:#e36b6b">Auktionen konnten nicht geladen werden.</div>'}
+}
+document.getElementById("search").addEventListener("input",render);document.getElementById("cat").addEventListener("change",render);load();
+</script>
+</body>
+</html>
