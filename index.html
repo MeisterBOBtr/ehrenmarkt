@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Ehrenmarkt – Die mittelalterliche Minecraft-Community
+    </title>
+
+    
+<style>
+:root{
+    --bg:#0d0a07;
+    --panel:rgba(23,17,12,.92);
+    --panel2:rgba(31,23,15,.94);
+    --gold:#d3a653;
+    --gold2:#f0ce7a;
+    --wood:#68451f;
+    --green:#29301f;
+    --text:#f3e7d0;
+    --muted:#b9aa91;
+    --red:#76262a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family:Georgia,"Times New Roman",serif;
+    background:
+        linear-gradient(rgba(7,6,5,.42),rgba(7,5,3,.86)),
+        url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
+        center/cover fixed no-repeat;
+}
+a{text-decoration:none;color:inherit}
+.page-shell{
+    width:100%;
+    padding:28px 14px;
+    display:flex;
+    justify-content:center;
+}
+.card{
+    width:min(960px,100%);
+    height:auto;
+    overflow:hidden;
+    border:1px solid rgba(211,166,83,.55);
+    border-radius:20px;
+    background:linear-gradient(180deg,rgba(18,13,9,.94),rgba(13,10,7,.97));
+    box-shadow:0 22px 70px rgba(0,0,0,.72);
+}
+.hero{
+    position:relative;
+    padding:48px 24px 38px;
+    text-align:center;
+    background:
+        linear-gradient(rgba(17,11,6,.15),rgba(17,11,6,.78)),
+        url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
+        center/cover no-repeat;
+    border-bottom:1px solid rgba(211,166,83,.35);
+}
+.crest{
+    width:52px;height:52px;
+    margin:0 auto 12px;
+    display:grid;place-items:center;
+    border:1px solid rgba(240,206,122,.6);
+    border-radius:50%;
+    color:var(--gold2);
+    background:rgba(12,8,5,.65);
+    font-size:28px;
+}
+.eyebrow,.section-kicker{
+    color:var(--gold);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2.2px;
+}
+.hero h1{
+    margin:8px 0 4px;
+    color:#f0c96e;
+    font-size:clamp(42px,8vw,70px);
+    letter-spacing:3px;
+    text-shadow:0 4px 14px #000;
+}
+.hero p{
+    margin:0;
+    color:#eadcc4;
+    font-size:17px;
+}
+.hero-line{
+    width:min(330px,80%);
+    margin:22px auto 0;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:var(--gold2);
+}
+.hero-line span{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold))}
+.hero-line span:last-child{background:linear-gradient(90deg,var(--gold),transparent)}
+.content{}
+.welcome,.services-wrap,.join,.account{
+    margin:0 22px;
+    padding:28px 0;
+}
+.welcome{text-align:center}
+.welcome h2,.section-heading h2,.join h2,.account h2{
+    margin:5px 0 9px;
+    color:var(--gold2);
+    font-size:25px;
+}
+.welcome p,.join p,.account p{
+    max-width:720px;
+    margin:0 auto;
+    color:var(--muted);
+    line-height:1.65;
+    font-size:14px;
+}
+.services-wrap,.join,.account{
+    border-top:1px solid rgba(211,166,83,.18);
+}
+.section-heading{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:16px;
+}
+.section-heading h2{margin-top:4px}
+.heading-mark{color:var(--gold);font-size:25px}
+.services{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+.service{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    min-height:92px;
+    padding:14px;
+    border:1px solid rgba(211,166,83,.22);
+    border-radius:13px;
+    background:linear-gradient(135deg,rgba(39,47,29,.72),rgba(28,21,14,.94));
+}
+.service-icon{
+    flex:0 0 52px;
+    width:52px;height:52px;
+    display:grid;place-items:center;
+    border:1px solid rgba(211,166,83,.38);
+    border-radius:11px;
+    background:rgba(9,7,5,.6);
+    font-size:27px;
+}
+.service h3{margin:0 0 4px;color:var(--gold2);font-size:16px}
+.service p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.join{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:25px;
+}
+.join-copy{max-width:570px}
+.join p{margin:0;max-width:none}
+.discord-buttons,.buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:45px;
+    padding:11px 17px;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:700;
+    border:1px solid;
+    transition:transform .18s,filter .18s;
+}
+.button:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.discord-button{background:#403554;border-color:#8068a6;color:#fff}
+.ehrenmarkt-discord-button{background:linear-gradient(#9b7537,#68491f);border-color:#d8b668;color:#fff}
+.account{text-align:center}
+.account p{margin-bottom:17px}
+.login-button{background:linear-gradient(#c79b48,#8f6b32);border-color:#e1bd6b;color:#fff}
+.register-button{background:rgba(25,18,12,.85);border-color:#b88a3b;color:var(--gold2)}
+.footer{
+    padding:19px 20px 24px;
+    text-align:center;
+    color:#817565;
+    font-size:12px;
+}
+.footer span{color:var(--gold);padding:0 8px}
+@media(max-width:700px){
+    .page-shell{padding:10px 8px}
+    .hero{padding:35px 15px 28px}
+    .hero h1{font-size:40px}
+    .hero p{font-size:14px}
+    .welcome,.services-wrap,.join,.account{margin:0 14px;padding:23px 0}
+    .services{grid-template-columns:1fr}
+    .join{display:block}
+    .discord-buttons{margin-top:17px}
+    .discord-buttons .button{flex:1}
+}
+@media(max-width:400px){
+    .hero h1{font-size:34px}
+    .service{min-height:84px}
+    .service-icon{flex-basis:46px;width:46px;height:46px}
+    .buttons{flex-direction:column}
+    .buttons .button{width:100%}
+}
+</style>
+
+
+</head>
+
+
+
+<body>
+    <div class="page-shell">
+        <main class="card">
+            <header class="hero">
+                <div class="crest">⚜</div>
+                <div class="eyebrow">EHRENMARKT · FALKENSTEIN</div>
+                <h1>Ehrenmarkt</h1>
+                <p>Die mittelalterliche Minecraft-Community</p>
+                <div class="hero-line"><span></span><b>✦</b><span></span></div>
+            </header>
+
+            <section class="welcome">
+                <div class="section-kicker">WILLKOMMEN</div>
+                <h2>Gemeinsam bauen. Handeln. Gestalten.</h2>
+                <p>
+                    Der Ehrenmarkt verbindet Spieler, Baumeister und Händler
+                    zu einer gemeinsamen Minecraft-Community rund um Falkenstein.
+                </p>
+            </section>
+
+            <section class="services-wrap">
+                <div class="section-heading">
+                    <div>
+                        <div class="section-kicker">UNSERE BEREICHE</div>
+                        <h2>Was wir anbieten</h2>
+                    </div>
+                    <span class="heading-mark">✦</span>
+                </div>
+
+                <div class="services">
+                    <article class="service">
+                        <div class="service-icon">🏗️</div>
+                        <div>
+                            <h3>Bauaufträge</h3>
+                            <p>Gebäude und Projekte planen und gemeinsam verwirklichen.</p>
+                        </div>
+                    </article>
+
+                    <article class="service">
+                        <div class="service-icon">📦</div>
+                        <div>
+                            <h3>Materialbestellungen</h3>
+                            <p>Benötigte Materialien bequem bestellen und organisieren.</p>
+                        </div>
+                    </article>
+
+                    <article class="service">
+                        <div class="service-icon">🚚</div>
+                        <div>
+                            <h3>Logistik</h3>
+                            <p>Materialien zuverlässig transportieren, lagern und liefern.</p>
+                        </div>
+                    </article>
+
+                    <article class="service">
+                        <div class="service-icon">⚙️</div>
+                        <div>
+                            <h3>Redstone</h3>
+                            <p>Technische Anlagen, Farmen und individuelle Redstone-Projekte.</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="join">
+                <div class="join-copy">
+                    <div class="section-kicker">WERDE TEIL DAVON</div>
+                    <h2>Neue Mitglieder gesucht</h2>
+                    <p>
+                        Du möchtest Teil unserer Gemeinschaft werden?
+                        Komm zu uns und baue gemeinsam mit anderen Spielern etwas Großes auf.
+                    </p>
+                </div>
+
+                <div class="discord-buttons">
+                    <a class="button discord-button" href="https://discord.gg/opsucht" target="_blank" rel="noopener">
+                        ⚔️ OPSUCHT Discord
+                    </a>
+                    <a class="button ehrenmarkt-discord-button" href="https://discord.gg/VdgB2aWNd2" target="_blank" rel="noopener">
+                        🏰 Falkenstein Discord
+                    </a>
+                </div>
+            </section>
+
+            <section class="account">
+                <div class="section-kicker">ZUGANG</div>
+                <h2>Bereit für Falkenstein?</h2>
+                <p>Erstelle dein Konto oder melde dich an, um den Ehrenmarkt zu betreten.</p>
+
+                <div class="buttons">
+                    <a class="button login-button" href="HTML/registrieren.html">⚜ Anmelden</a>
+                    <a class="button register-button" href="HTML/registrieren.html">⚜ Registrieren</a>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <span>✦</span>
+                Ehrenmarkt · Falkenstein
+                <span>✦</span>
+            </footer>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const user = await aktuellerBenutzer();
+                if (user) {
+                    window.location.replace("HTML/startseite.html");
+                }
+            } catch (error) {
+                console.error("Session-Prüfung fehlgeschlagen:", error);
+            }
+        });
+    </script>
+</body>
+
+</html>
