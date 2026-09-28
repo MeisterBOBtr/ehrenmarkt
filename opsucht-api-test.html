@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPSUCHT API Test – Ehrenmarkt</title>
+<style>
+:root{--bg:#090a0d;--panel:#12151b;--panel2:#181c23;--line:#292e38;--text:#f1f2f4;--muted:#969daa;--gold:#d8aa50;--green:#61d394;--red:#e26b6b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 20% 0%,rgba(216,170,80,.1),transparent 30%),var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{padding:24px 6%;border-bottom:1px solid var(--line);background:#0b0c10}
+.logo{font-size:24px;font-weight:800}.logo span{color:var(--gold)}
+main{max-width:1200px;margin:auto;padding:30px 6%}
+.note{background:rgba(216,170,80,.08);border:1px solid rgba(216,170,80,.25);padding:15px;border-radius:12px;color:#d7d9df;line-height:1.5}
+.tests{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px}
+.card h2{font-size:17px;margin:0 0 8px}.url{font-size:11px;color:var(--muted);word-break:break-all}
+button{margin-top:14px;background:var(--gold);border:0;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer}
+.status{margin-top:12px;font-size:12px}.ok{color:var(--green)}.error{color:var(--red)}.wait{color:var(--muted)}
+pre{white-space:pre-wrap;word-break:break-word;background:#08090c;border:1px solid var(--line);border-radius:9px;padding:13px;margin-top:13px;max-height:380px;overflow:auto;font-size:11px;color:#d7dae0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+@media(max-width:700px){.tests{grid-template-columns:1fr}main{padding:22px 4%}}
+</style>
+</head>
+<body>
+<header><div class="logo">EHREN<span>MARKT</span> · OPSUCHT API TEST</div></header>
+<main>
+<div class="note">
+<strong>Nur Test – keine Speicherung</strong><br>
+Diese Seite ruft öffentliche Endpunkte ab und zeigt die Antwort an. Es gibt keine Supabase-Verbindung,
+keine Datenbank und keinen Upload. Die Tests können direkt im Browser ausgeführt werden.
+</div>
+
+<div class="actions">
+<button onclick="runAll()">Alle Tests starten</button>
+<button class="secondary" onclick="clearResults()">Ergebnisse löschen</button>
+</div>
+
+<section class="tests">
+<div class="card">
+<h2>🔨 Auktionen</h2>
+<div class="url" id="url-auctions"></div>
+<div class="status wait" id="status-auctions">Noch nicht getestet</div>
+<pre id="result-auctions">—</pre>
+</div>
+
+<div class="card">
+<h2>📂 Kategorien</h2>
+<div class="url" id="url-categories"></div>
+<div class="status wait" id="status-categories">Noch nicht getestet</div>
+<pre id="result-categories">—</pre>
+</div>
+
+<div class="card">
+<h2>📜 Stream / Ereignisse</h2>
+<div class="url">Stream wird bewusst nicht dauerhaft geöffnet.</div>
+<div class="status wait" id="status-stream">Noch nicht getestet</div>
+<pre id="result-stream">Der Stream-Test prüft nur, ob der Endpunkt erreichbar ist.</pre>
+</div>
+
+<div class="card">
+<h2>💎 Shards</h2>
+<div class="url">Noch kein bestätigter öffentlicher Shard-Endpunkt.</div>
+<div class="status wait" id="status-shards">Nicht getestet</div>
+<pre id="result-shards">Wir testen hier zunächst keine erfundene URL. Wenn du einen konkreten Shard-Endpunkt findest, kannst du ihn unten einsetzen.</pre>
+</div>
+</section>
+
+<div class="card" style="margin-top:15px">
+<h2>🧪 Eigener Endpunkt testen</h2>
+<div class="url">Nur verwenden, wenn du einen öffentlichen OPSUCHT-Endpunkt kennst.</div>
+<input id="customUrl" style="width:100%;margin-top:12px;padding:12px;border-radius:8px;border:1px solid var(--line);background:#090a0d;color:white" placeholder="https://...">
+<button onclick="runCustom()">Endpunkt testen</button>
+<div class="status wait" id="status-custom">Noch nicht getestet</div>
+<pre id="result-custom">—</pre>
+</div>
+
+</main>
+
+<script>
+const BASE="https://api.opsucht.net";
+
+const endpoints={
+ auctions: BASE+"/auctions",
+ categories: BASE+"/auctions/categories",
+ stream: BASE+"/auctions/stream"
+};
+
+for(const [key,url] of Object.entries(endpoints)){
+ const el=document.getElementById("url-"+key);
+ if(el) el.textContent=url;
+}
+
+function setState(key,state,message){
+ const el=document.getElementById("status-"+key);
+ if(!el)return;
+ el.className="status "+(state==="ok"?"ok":state==="error"?"error":"wait");
+ el.textContent=message;
+}
+
+function pretty(data){
+ try{return JSON.stringify(data,null,2)}catch{return String(data)}
+}
+
+async function testEndpoint(key,url){
+ setState(key,"wait","⏳ Anfrage läuft …");
+ document.getElementById("result-"+key).textContent="Lade …";
+ try{
+   const response=await fetch(url,{method:"GET",cache:"no-store"});
+   const text=await response.text();
+   let data;
+   try{data=JSON.parse(text)}catch{data=text}
+   if(!response.ok){
+     setState(key,"error","❌ HTTP "+response.status+" "+response.statusText);
+   }else{
+     setState(key,"ok","✅ HTTP "+response.status+" · Antwort erhalten");
+   }
+   document.getElementById("result-"+key).textContent=pretty(data);
+ }catch(error){
+   setState(key,"error","❌ Browser/API-Fehler");
+   document.getElementById("result-"+key).textContent=
+     String(error)+"\n\nMögliche Ursache: CORS, Netzwerkfehler oder Endpunkt nicht erreichbar.";
+ }
+}
+
+async function runAll(){
+ await testEndpoint("auctions",endpoints.auctions);
+ await testEndpoint("categories",endpoints.categories);
+
+ setState("stream","wait","⏳ Stream wird kurz getestet …");
+ try{
+   const controller=new AbortController();
+   const timer=setTimeout(()=>controller.abort(),5000);
+   const response=await fetch(endpoints.stream,{method:"GET",signal:controller.signal,cache:"no-store"});
+   clearTimeout(timer);
+   const text=await response.text();
+   setState("stream",response.ok?"ok":"error",(response.ok?"✅":"❌")+" HTTP "+response.status+" · Stream-Endpunkt antwortet");
+   document.getElementById("result-stream").textContent=text||"(keine direkte Textantwort – möglicherweise Streaming-Endpunkt)";
+ }catch(error){
+   setState("stream","error","❌ Stream konnte nicht direkt gelesen werden");
+   document.getElementById("result-stream").textContent=
+     String(error)+"\n\nDas bedeutet nicht automatisch, dass der Stream nicht funktioniert. Streaming-Endpunkte verhalten sich im normalen fetch-Test anders.";
+ }
+}
+
+async function runCustom(){
+ const url=document.getElementById("customUrl").value.trim();
+ if(!url){setState("custom","error","❌ Bitte zuerst eine URL eingeben.");return}
+ setState("custom","wait","⏳ Anfrage läuft …");
+ document.getElementById("result-custom").textContent="Lade …";
+ try{
+   const response=await fetch(url,{method:"GET",cache:"no-store"});
+   const text=await response.text();
+   let data;try{data=JSON.parse(text)}catch{data=text}
+   setState("custom",response.ok?"ok":"error",(response.ok?"✅":"❌")+" HTTP "+response.status);
+   document.getElementById("result-custom").textContent=pretty(data);
+ }catch(error){
+   setState("custom","error","❌ Anfrage fehlgeschlagen");
+   document.getElementById("result-custom").textContent=String(error);
+ }
+}
+
+function clearResults(){
+ ["auctions","categories","stream","shards","custom"].forEach(key=>{
+   const s=document.getElementById("status-"+key),r=document.getElementById("result-"+key);
+   if(s){s.className="status wait";s.textContent=key==="shards"?"Nicht getestet":"Noch nicht getestet"}
+   if(r)r.textContent="—";
+ });
+ document.getElementById("result-stream").textContent="Der Stream-Test prüft nur, ob der Endpunkt erreichbar ist.";
+ document.getElementById("result-shards").textContent="Wir testen hier zunächst keine erfundene URL. Wenn du einen konkreten Shard-Endpunkt findest, kannst du ihn unten einsetzen.";
+}
+</script>
+</body>
+</html>
