@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ehrenmarkt – OPSUCHT Auktionen</title>
+<style>
+:root{--bg:#090a0d;--p:#12151b;--p2:#181c23;--b:#292e38;--t:#f3f4f6;--m:#969daa;--g:#d9aa50;--g2:#f0c96c;--ok:#61d394;--bad:#e36b6b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#33271433,transparent 32%),var(--bg);color:var(--t);font-family:Arial,sans-serif}
+header{height:68px;padding:0 4%;display:flex;align-items:center;border-bottom:1px solid var(--b);background:#0b0c10;position:sticky;top:0;z-index:5}.logo{font-size:21px;font-weight:800}.logo span{color:var(--g)}
+main{max-width:1450px;margin:auto;padding:25px 4% 50px}.k{color:var(--g2);font-size:10px;letter-spacing:2px;font-weight:800}.hero h1{font-size:32px;margin:7px 0}.hero p{color:var(--m);line-height:1.5;margin:0}
+.status{margin:18px 0 12px;background:var(--p);border:1px solid var(--b);border-radius:10px;padding:10px 13px;font-size:11px;color:var(--m)}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.tools{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-bottom:18px}.search,select{min-width:0;background:var(--p);border:1px solid var(--b);color:var(--t);padding:11px;border-radius:8px;outline:none;font-size:12px}button{background:var(--g);border:0;border-radius:8px;padding:10px 13px;font-weight:800;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:linear-gradient(155deg,var(--p2),var(--p));border:1px solid var(--b);border-radius:11px;overflow:hidden}.image{height:125px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#292d36,#101217 70%);padding:12px}.image img{max-width:92px;max-height:92px;object-fit:contain}.fallback{font-size:45px}.body{padding:12px}.tag{font-size:8px;color:var(--g2);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.name{font-size:14px;font-weight:750;margin:6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.price{color:var(--g2);font-weight:800;font-size:16px}.muted{color:var(--m);font-size:10px;margin-top:5px}.view{width:100%;margin-top:9px;font-size:11px;padding:9px}
+.empty{color:var(--m);background:var(--p);border:1px solid var(--b);border-radius:10px;padding:25px;grid-column:1/-1;text-align:center}
+.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:15px;z-index:20;overflow:auto}.overlay.show{display:flex}.modal{width:min(760px,100%);background:linear-gradient(160deg,#171b22,#0f1116);border:1px solid #3a3f49;border-radius:15px;box-shadow:0 20px 70px #000;max-height:92vh;overflow:auto}.modalTop{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--b)}.close{background:#242932;color:white;padding:7px 10px}
+.detailHero{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:18px}.detailImg{height:220px;border-radius:11px;background:radial-gradient(circle,#2c303a,#0d0f13);display:flex;align-items:center;justify-content:center}.detailImg img{max-width:165px;max-height:165px}.detailImg .fallback{font-size:70px}.detailTitle{font-size:24px;margin:5px 0 13px}.bigprice{font-size:27px;color:var(--g2);font-weight:900}.info{margin-top:14px;border-top:1px solid var(--b);padding-top:10px}.infoRow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:12px}.infoRow span{color:var(--m)}.chartBox{margin:0 18px 18px;padding:15px;border:1px solid var(--b);border-radius:11px;background:#0d0f13}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{background:var(--p2);border:1px solid var(--b);border-radius:8px;padding:9px}.stat small{display:block;color:var(--m);font-size:10px}.stat b{display:block;margin-top:4px;color:var(--g2);font-size:13px}.chart{height:145px;margin-top:12px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,#252a33 36px)}.chart svg{width:100%;height:100%}.chartNote{font-size:10px;color:var(--m);margin-top:8px}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.tools{grid-template-columns:1fr 1fr}.search{grid-column:1/-1}}
+@media(max-width:650px){main{padding:22px 3%}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.image{height:112px}.image img{max-width:80px;max-height:80px}.body{padding:10px}.name{font-size:13px}.price{font-size:15px}.tools{grid-template-columns:1fr}.search{grid-column:auto}.detailHero{grid-template-columns:1fr}.detailImg{height:190px}.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="logo">EHREN<span>MARKT</span> · OPSUCHT</div></header>
+<main>
+<section class="hero"><div class="k">ECHTE API-DATEN · TEST V4</div><h1>Auktionen</h1><p>Kompakte Übersicht. Eine Auktion öffnet sich erst beim Anklicken.</p></section>
+<div id="status" class="status">⏳ Lade …</div>
+<div class="tools">
+<input id="search" class="search" placeholder="Item, Verkäufer oder Kategorie suchen …">
+<select id="cat"><option value="">Alle Kategorien</option></select>
+<select id="sort">
+<option value="default">Sortierung</option>
+<option value="ending">Bald ablaufend</option>
+<option value="newest">Neueste</option>
+<option value="priceLow">Preis aufsteigend</option>
+<option value="priceHigh">Preis absteigend</option>
+</select>
+<button onclick="load()">↻ Aktualisieren</button>
+</div>
+<div id="grid" class="grid"></div>
+</main>
+
+<div id="overlay" class="overlay" onclick="if(event.target===this)closeDetail()">
+<div class="modal">
+<div class="modalTop"><strong>🔨 Auktion</strong><button class="close" onclick="closeDetail()">✕</button></div>
+<div id="detail"></div>
+</div></div>
+
+<script>
+const API="https://api.opsucht.net/auctions";
+let auctions=[],categories=[];
+
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function deep(o,keys){if(!o||typeof o!=="object")return;for(const k of keys)if(o[k]!==undefined&&o[k]!==null&&o[k]!=="")return o[k];for(const v of Object.values(o))if(v&&typeof v==="object"){const x=deep(v,keys);if(x!==undefined)return x}}
+function str(o,k){const v=deep(o,k);return v===undefined?undefined:String(v)}
+function num(o,k){const v=deep(o,k);return typeof v==="number"?v:(v!==undefined&&!isNaN(Number(v))?Number(v):undefined)}
+function name(a){return str(a,["displayName","itemName","name","display_name"])||"Unbekanntes Item"}
+function seller(a){return str(a,["sellerName","seller","username","playerName","ownerName","createdBy"])||"Nicht angegeben"}
+function category(a){return str(a,["categoryName","category","displayName","categoryDisplayName"])||"Unbekannt"}
+function current(a){return num(a,["currentBid","highestBid","currentPrice","bid","price","amount","highestPrice"])}
+function instant(a){return num(a,["instantBuyPrice","instantBoughtPrice","buyNowPrice","instantPrice","fixedPrice"])}
+function quantity(a){return num(a,["quantity","amount","count","itemAmount"])}
+function bids(a){return num(a,["bidCount","bids","numberOfBids","offers"])}
+function id(a){return str(a,["id","uid","auctionId","auctionID"])||"—"}
+function dateVal(a,keys){return deep(a,keys)}
+function dateObj(v){if(v===undefined)return null;const d=new Date(v);return isNaN(d)?null:d}
+function fmtDate(v){const d=dateObj(v);return !d?"—":d.toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})}
+function remainingSeconds(a){const d=dateObj(dateVal(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"]));return d?Math.max(0,Math.floor((d-Date.now())/1000)):null}
+function left(a){const n=remainingSeconds(a);if(n===null)return"—";let s=n,d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);let sec=s%60;return d?`${d} T. ${h} Std.`:h?`${h} Std. ${m} Min.`:m?`${m} Min.`:`${sec} Sek.`}
+function image(a){const u=deep(a,["imageUrl","iconUrl","image","icon","displayIcon","texture","thumbnail"]);return typeof u==="string"&&/^https?:\/\//i.test(u)?u:null}
+function money(v){return v===undefined?"—":Number(v).toLocaleString("de-DE")+" $"}
+function sorted(list){
+ const mode=document.getElementById("sort").value;
+ return [...list].sort((a,b)=>{
+  if(mode==="ending")return (remainingSeconds(a)??1e30)-(remainingSeconds(b)??1e30);
+  if(mode==="newest"){const ad=dateObj(dateVal(a,["createdAt","created","startTime","startedAt"])),bd=dateObj(dateVal(b,["createdAt","created","startTime","startedAt"]));return (bd?.getTime()??0)-(ad?.getTime()??0)}
+  if(mode==="priceLow")return (current(a)??1e30)-(current(b)??1e30);
+  if(mode==="priceHigh")return (current(b)??-1)-(current(a)??-1);
+  return 0;
+ });
+}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase(),c=document.getElementById("cat").value;
+ let list=auctions.filter(a=>(!c||category(a)===c)&&(!q||[name(a),seller(a),category(a)].join(" ").toLowerCase().includes(q)));
+ list=sorted(list);
+ const box=document.getElementById("grid");
+ if(!list.length){box.innerHTML='<div class="empty">Keine passenden Auktionen gefunden.</div>';return}
+ box.innerHTML=list.map((a,i)=>{const im=image(a);return `<article class="card"><div class="image">${im?`<img src="${esc(im)}" alt="" onerror="this.remove();this.parentElement.insertAdjacentHTML('beforeend','<div class=fallback>🧱</div>')">`:'<div class="fallback">🧱</div>'}</div><div class="body"><div class="tag">${esc(category(a))}</div><div class="name" title="${esc(name(a))}">${esc(name(a))}</div><div class="price">${money(current(a))}</div><div class="muted">⏳ ${esc(left(a))}</div><button class="view" data-index="${auctions.indexOf(a)}">Auktion ansehen</button></div></article>`}).join("");
+ document.querySelectorAll(".view").forEach(btn=>btn.onclick=()=>openDetail(Number(btn.dataset.index)));
+}
+function openDetail(i){
+ const a=auctions[i];if(!a)return;
+ const im=image(a),end=dateVal(a,["endTime","endsAt","endDate","expiresAt","expirationTime","expires"]);
+ document.getElementById("detail").innerHTML=`<div class="detailHero"><div class="detailImg">${im?`<img src="${esc(im)}" alt="">`:'<div class="fallback">🧱</div>'}</div><div><div class="tag">${esc(category(a))}</div><div class="detailTitle">${esc(name(a))}</div><div class="bigprice">${money(current(a))}</div><div class="info"><div class="infoRow"><span>⚡ Sofortkauf</span><b>${money(instant(a))}</b></div><div class="infoRow"><span>👤 Verkäufer</span><b>${esc(seller(a))}</b></div><div class="infoRow"><span>📦 Menge</span><b>${quantity(a)??"—"}</b></div><div class="infoRow"><span>🔨 Gebote</span><b>${bids(a)??"—"}</b></div><div class="infoRow"><span>⏳ Noch</span><b>${esc(left(a))}</b></div><div class="infoRow"><span>🏁 Ende</span><b>${esc(fmtDate(end))}</b></div><div class="infoRow"><span>🆔 Auktions-ID</span><b>${esc(id(a))}</b></div></div></div></div><div class="chartBox"><strong>📊 Verkaufspreis-Verlauf</strong><div class="stats"><div class="stat"><small>Durchschnitt</small><b>—</b></div><div class="stat"><small>Niedrigster</small><b>—</b></div><div class="stat"><small>Höchster</small><b>—</b></div></div><div class="chart"><svg viewBox="0 0 700 145" preserveAspectRatio="none"><polyline points="0,115 90,98 170,108 255,70 340,88 430,55 520,73 610,35 700,48" fill="none" stroke="#d9aa50" stroke-width="4"/><circle cx="0" cy="115" r="5" fill="#f0c96c"/><circle cx="700" cy="48" r="5" fill="#f0c96c"/></svg></div><div class="chartNote">Der Bereich ist vorbereitet. Historische Verkaufsdaten werden erst angezeigt, sobald eine echte Verlaufsquelle angebunden ist.</div></div>`;
+ document.getElementById("overlay").classList.add("show");
+}
+function closeDetail(){document.getElementById("overlay").classList.remove("show")}
+async function load(){
+ const st=document.getElementById("status");st.className="status";st.textContent="⏳ Lade echte aktive Auktionen …";
+ try{
+  const r=await fetch(API+"/active",{cache:"no-store"});const text=await r.text();if(!r.ok)throw Error("HTTP "+r.status);
+  const d=JSON.parse(text);auctions=Array.isArray(d)?d:(d.auctions||d.data||[]);
+  try{const cr=await fetch(API+"/categories",{cache:"no-store"}),cd=await cr.json();categories=Array.isArray(cd)?cd:(cd.categories||cd.data||[])}catch{}
+  const names=[...new Set([...categories.map(x=>x.displayName||x.name).filter(Boolean),...auctions.map(category).filter(x=>x!=="Unbekannt")])];
+  document.getElementById("cat").innerHTML='<option value="">Alle Kategorien</option>'+names.map(x=>`<option>${esc(x)}</option>`).join("");
+  render();st.className="status ok";st.textContent=`🟢 API erreichbar · ${auctions.length.toLocaleString("de-DE")} aktive Auktionen`;
+ }catch(e){st.className="status bad";st.textContent="🔴 Fehler: "+e.message;document.getElementById("grid").innerHTML='<div class="empty">Auktionen konnten nicht geladen werden.</div>'}
+}
+document.getElementById("search").oninput=render;document.getElementById("cat").onchange=render;document.getElementById("sort").onchange=render;load();
+</script>
+</body>
+</html>
