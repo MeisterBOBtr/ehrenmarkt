@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Logistik-Auftrag</title>
+
+    
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+ min-height:100vh;
+ font-family:Georgia,"Times New Roman",serif;
+ color:#ead9b5;
+ background:
+  linear-gradient(rgba(7,8,6,.82),rgba(9,7,5,.92)),
+  url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Dunkel.png")
+  center/cover fixed no-repeat;
+}
+.page{width:100%;max-width:1080px;margin:0 auto;padding:24px 18px 42px}
+.header{text-align:center;padding:8px 0 25px}
+.header h1{
+ color:#d4af37;font-size:34px;letter-spacing:4px;
+ text-shadow:0 2px 10px #000,0 0 18px rgba(212,175,55,.12)
+}
+.header p{margin-top:8px;color:#c7b78f;font-size:15px;letter-spacing:1px}
+.card{
+ margin-bottom:18px;padding:21px;
+ background:linear-gradient(145deg,rgba(25,20,14,.96),rgba(10,10,8,.95));
+ border:1px solid rgba(212,175,55,.48);
+ border-radius:12px;
+ box-shadow:0 8px 25px rgba(0,0,0,.48),inset 0 0 25px rgba(212,175,55,.025)
+}
+.card-title{
+ display:flex;align-items:center;gap:10px;
+ color:#d4af37;font-size:20px;font-weight:bold;
+ padding-bottom:13px;margin-bottom:18px;
+ border-bottom:1px solid rgba(212,175,55,.3)
+}
+.title-icon{width:27px;height:27px;object-fit:contain;image-rendering:pixelated}
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+label{display:block;margin-bottom:7px;color:#d8c69f;font-size:13px;font-weight:bold}
+.input-row{display:flex;align-items:center;gap:10px}
+.field-icon{width:28px;height:28px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;filter:drop-shadow(0 2px 3px #000)}
+input,select,textarea{
+ width:100%;padding:12px 13px;color:#ead9b5;
+ background:rgba(3,4,3,.9);
+ border:1px solid #66542d;border-radius:7px;outline:none;
+ font-family:Arial,sans-serif;font-size:14px;
+ transition:border-color .2s,box-shadow .2s,background .2s
+}
+input:focus,select:focus,textarea:focus{
+ border-color:#d4af37;
+ box-shadow:0 0 0 2px rgba(212,175,55,.08),0 0 12px rgba(212,175,55,.12);
+ background:rgba(8,8,6,.98)
+}
+select{appearance:auto}
+textarea{min-height:105px;resize:vertical}
+::placeholder{color:#776d5c}
+.two-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.radio-group{display:flex;flex-direction:column;gap:9px}
+.radio-option{
+ display:flex;align-items:center;gap:9px;margin:0;padding:7px 9px;
+ color:#d8c69f;font-size:13px;font-weight:normal;cursor:pointer;
+ border:1px solid transparent;border-radius:6px
+}
+.radio-option:hover{background:rgba(212,175,55,.04);border-color:rgba(212,175,55,.15)}
+.radio-option input{width:auto;padding:0;accent-color:#d4af37}
+.delivery-options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.delivery-option{
+ position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:8px;min-height:125px;padding:14px;color:#d8c69f;
+ background:linear-gradient(145deg,rgba(8,8,6,.78),rgba(20,16,10,.65));
+ border:1px solid #66542d;border-radius:9px;cursor:pointer;
+ transition:.2s
+}
+.delivery-option:hover{border-color:#c5a342;transform:translateY(-1px);box-shadow:0 5px 15px rgba(0,0,0,.3)}
+.delivery-option input{width:auto;padding:0;accent-color:#d4af37}
+.delivery-option img{width:50px;height:50px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 3px 4px #000)}
+.delivery-option span{font-size:13px;font-weight:bold}
+.price-list{display:flex;flex-direction:column}
+.price-row{
+ display:flex;justify-content:space-between;align-items:center;gap:15px;
+ padding:11px 3px;color:#cdbd9c;border-bottom:1px solid rgba(143,113,48,.22)
+}
+.price-row strong{color:#ead9b5}
+.price-row.total{
+ margin-top:5px;padding:15px 3px 7px;border-top:1px solid #806b32;border-bottom:none
+}
+.price-row.total span,.price-row.total strong{color:#d4af37;font-size:18px;font-weight:bold}
+.payment-box{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.payment-item{
+ display:flex;align-items:center;gap:12px;padding:14px;
+ background:rgba(4,5,4,.62);border:1px solid #66542d;border-radius:9px
+}
+.payment-item img{width:44px;height:44px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 2px 3px #000)}
+.payment-item div{display:flex;flex-direction:column;gap:5px}
+.payment-item span{color:#bcae94;font-size:12px}
+.payment-item strong{color:#d4af37;font-size:16px}
+.price-note{margin-top:15px;color:#91856e;font-size:12px;line-height:1.5;text-align:center}
+.submit-button{
+ width:100%;padding:16px;color:#17130d;
+ background:linear-gradient(180deg,#e0bd4c,#a88327);
+ border:1px solid #e8c957;border-radius:9px;
+ box-shadow:0 5px 15px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.18);
+ font-size:16px;font-weight:bold;cursor:pointer;transition:.2s
+}
+.submit-button:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.submit-button:active{transform:translateY(1px)}
+.submit-button:disabled{opacity:.6;cursor:not-allowed}
+.footer{text-align:center;margin-top:22px;color:#9d8d70;font-size:12px}
+@media(max-width:700px){
+ .page{padding:14px 10px 28px}
+ .header h1{font-size:27px;letter-spacing:3px}
+ .card{padding:16px;margin-bottom:14px}
+ .card-title{font-size:18px}
+ .two-columns{grid-template-columns:1fr;gap:0}
+ .delivery-options{grid-template-columns:1fr 1fr;gap:9px}
+ .delivery-option{min-height:105px;padding:9px}
+ .delivery-option img{width:42px;height:42px}
+ .payment-box{grid-template-columns:1fr}
+ .price-row{font-size:13px}
+}
+@media(max-width:390px){
+ .delivery-option span{font-size:12px}
+ .delivery-option img{width:38px;height:38px}
+}
+
+/* EHRENMARKT – eigene Auswahlmenüs statt Android-Systemmenü */
+.ehren-select-wrap{position:relative;width:100%}
+.ehren-select-wrap>select{position:absolute!important;opacity:0!important;pointer-events:none!important;width:1px!important;height:1px!important;left:-9999px!important}
+.ehren-custom-select{
+ position:relative;width:100%;min-height:44px;padding:12px 42px 12px 13px;
+ color:#ead9b5;background:rgba(3,4,3,.94);border:1px solid #66542d;border-radius:7px;
+ font:14px Arial,sans-serif;cursor:pointer;text-align:left;
+ box-shadow:inset 0 0 12px rgba(0,0,0,.25)
+}
+.ehren-custom-select::after{
+ content:"";position:absolute;right:14px;top:50%;width:9px;height:9px;
+ border-right:2px solid #d4af37;border-bottom:2px solid #d4af37;
+ transform:translateY(-65%) rotate(45deg);transition:.18s
+}
+.ehren-custom-select.open{border-color:#d4af37;box-shadow:0 0 0 2px rgba(212,175,55,.08),0 0 14px rgba(212,175,55,.12)}
+.ehren-custom-select.open::after{transform:translateY(-25%) rotate(225deg)}
+.ehren-options{
+ display:none;position:absolute;z-index:1000;left:0;right:0;top:calc(100% + 5px);
+ overflow:hidden;background:linear-gradient(145deg,#191610,#0b0b09);
+ border:1px solid #8f7130;border-radius:8px;
+ box-shadow:0 12px 30px rgba(0,0,0,.72)
+}
+.ehren-options.open{display:block}
+.ehren-option{
+ padding:12px 13px;color:#d8c69f;background:transparent;
+ border-bottom:1px solid rgba(143,113,48,.22);font:14px Arial,sans-serif;cursor:pointer
+}
+.ehren-option:last-child{border-bottom:0}
+.ehren-option:hover,.ehren-option.selected{background:rgba(212,175,55,.11);color:#e6c85c}
+.ehren-option.placeholder{color:#897d68}
+@media(max-width:700px){
+ .ehren-custom-select{min-height:43px;padding:11px 40px 11px 12px}
+ .ehren-option{padding:13px 12px}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="header">
+        <h1>EHRENMARKT</h1>
+        <p>Logistik-Auftrag</p>
+    </header>
+
+
+    <!-- AUFTRAGGEBER -->
+
+    <section class="card">
+
+        <div class="card-title">
+            <span>⚒</span>
+            <span>Auftraggeber</span>
+        </div>
+
+        <div class="field">
+
+            <label for="customerName">
+                Minecraft-Name / Kundenname
+            </label>
+
+            <div class="input-row">
+
+                <img
+                    class="field-icon"
+                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/name_tag.png"
+                    alt=""
+                >
+
+                <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Dein Minecraft-Name"
+                    autocomplete="off"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TRANSPORTSTRECKE -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <img
+                class="title-icon"
+                src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/compass.png"
+                alt=""
+            >
+
+            <span>Transportstrecke</span>
+
+        </div>
+
+
+        <div class="two-columns">
+
+            <!-- STARTPUNKT -->
+
+            <div class="field">
+
+                <label for="startPoint">
+                    Startpunkt
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/compass.png"
+                        alt=""
+                    >
+
+                    <input
+                        type="text"
+                        id="startPoint"
+                        placeholder="z. B. Lager Falkenstein"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ZIEL -->
+
+            <div class="field">
+
+                <label for="destination">
+                    Ziel
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/map%20%281%29.png"
+                        alt=""
+                    >
+
+                    <input
+                        type="text"
+                        id="destination"
+                        placeholder="z. B. Baustelle"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="two-columns">
+
+            <!-- START CITYBUILD -->
+
+            <div class="field">
+
+                <label for="startCitybuild">
+                    Start-CityBuild
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chiseled_resin_bricks-3d.png"
+                        alt=""
+                    >
+
+                    <select id="startCitybuild">
+
+                        <option value="">
+                            Bitte auswählen
+                        </option>
+
+                        <option value="CB1">CB1</option>
+                        <option value="CB2">CB2</option>
+                        <option value="CB3">CB3</option>
+                        <option value="CB4">CB4</option>
+                        <option value="CB5">CB5</option>
+                        <option value="CB6">CB6</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ZIEL CITYBUILD -->
+
+            <div class="field">
+
+                <label for="destinationCitybuild">
+                    Ziel-CityBuild
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chiseled_resin_bricks-3d.png"
+                        alt=""
+                    >
+
+                    <select id="destinationCitybuild">
+
+                        <option value="">
+                            Bitte auswählen
+                        </option>
+
+                        <option value="CB1">CB1</option>
+                        <option value="CB2">CB2</option>
+                        <option value="CB3">CB3</option>
+                        <option value="CB4">CB4</option>
+                        <option value="CB5">CB5</option>
+                        <option value="CB6">CB6</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+        <!-- TRANSPORTDETAILS -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <img
+                class="title-icon"
+                src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chest.png"
+                alt=""
+            >
+
+            <span>Transportdetails</span>
+
+        </div>
+
+
+        <div class="two-columns">
+
+            <!-- KISTENANZAHL -->
+
+            <div class="field">
+
+                <label for="crateCount">
+                    Kistenanzahl
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chest.png"
+                        alt=""
+                    >
+
+                    <input
+                        type="number"
+                        id="crateCount"
+                        min="1"
+                        value="1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- SORTIERUNG -->
+
+            <div class="field">
+
+                <label>
+                    Sortierung
+                </label>
+
+                <div class="radio-group">
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="sorting"
+                            id="sortingNo"
+                            value="false"
+                            checked
+                        >
+
+                        <span>Nein</span>
+
+                    </label>
+
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="sorting"
+                            id="sortingYes"
+                            value="true"
+                        >
+
+                        <span>Ja</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LIEFERART -->
+
+        <div class="field">
+
+            <label>
+                Lieferart
+            </label>
+
+            <div class="delivery-options">
+
+                <label class="delivery-option">
+
+                    <input
+                        type="radio"
+                        name="deliveryType"
+                        id="plotPlot"
+                        value="plot"
+                        checked
+                    >
+
+                    <img
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/hopper_minecart.png"
+                        alt=""
+                    >
+
+                    <span>Plot – Plot</span>
+
+                </label>
+
+
+                <label class="delivery-option">
+
+                    <input
+                        type="radio"
+                        name="deliveryType"
+                        id="cbCb"
+                        value="cb"
+                    >
+
+                    <img
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/command_block_minecart.png"
+                        alt=""
+                    >
+
+                    <span>CB – CB</span>
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="two-columns">
+
+            <!-- EXPRESS -->
+
+            <div class="field">
+
+                <label>
+                    Express-Auftrag
+                </label>
+
+                <div class="radio-group">
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="express"
+                            id="expressNo"
+                            value="false"
+                            checked
+                        >
+
+                        <span>Nein</span>
+
+                    </label>
+
+
+                    <label class="radio-option">
+
+                        <input
+                            type="radio"
+                            name="express"
+                            id="expressYes"
+                            value="true"
+                        >
+
+                        <span>Ja</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- ZUSATZMITARBEITER -->
+
+            <div class="field">
+
+                <label for="extraWorkers">
+                    Zusätzliche Mitarbeiter
+                </label>
+
+                <div class="input-row">
+
+                    <img
+                        class="field-icon"
+                        src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/name_tag.png"
+                        alt=""
+                    >
+
+                    <input
+                        type="number"
+                        id="extraWorkers"
+                        min="0"
+                        value="0"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BESCHREIBUNG -->
+
+        <div class="field">
+
+            <label for="description">
+                Beschreibung
+            </label>
+
+            <div class="input-row">
+
+                <img
+                    class="field-icon"
+                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/knowledge_book.png"
+                    alt=""
+                >
+
+                <textarea
+                    id="description"
+                    placeholder="Weitere Informationen zum Logistik-Auftrag..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PREISÜBERSICHT -->
+
+    <section class="card">
+
+        <div class="card-title">
+
+            <img
+                class="title-icon"
+                src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/emerald.png"
+                alt=""
+            >
+
+            <span>Preisübersicht</span>
+
+        </div>
+
+
+        <div class="price-list">
+
+            <div class="price-row">
+                <span>Grundpreis</span>
+                <strong id="basePrice">0 $</strong>
+            </div>
+
+            <div class="price-row">
+                <span>Sortierung</span>
+                <strong id="sortingPrice">0 $</strong>
+            </div>
+
+            <div class="price-row">
+                <span>Lieferart</span>
+                <strong id="deliveryPrice">0 $</strong>
+            </div>
+
+            <div class="price-row">
+                <span>Express</span>
+                <strong id="expressPrice">0 $</strong>
+            </div>
+
+            <div class="price-row">
+                <span>Zusätzliche Mitarbeiter</span>
+                <strong id="workersPrice">0 $</strong>
+            </div>
+
+            <div class="price-row total">
+                <span>Gesamtpreis</span>
+                <strong id="totalPrice">0 $</strong>
+            </div>
+
+        </div>
+
+
+        <div class="payment-box">
+
+            <div class="payment-item">
+
+                <img
+                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/gold_ingot.png"
+                    alt=""
+                >
+
+                <div>
+                    <span>25 % Anzahlung</span>
+                    <strong id="deposit">0 $</strong>
+                </div>
+
+            </div>
+
+
+            <div class="payment-item">
+
+                <img
+                    src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/diamond.png"
+                    alt=""
+                >
+
+                <div>
+                    <span>75 % Restzahlung</span>
+                    <strong id="remainingPayment">0 $</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <p class="price-note">
+            Die Preise werden automatisch anhand der
+            gewählten Optionen berechnet.
+        </p>
+
+    </section>
+
+
+    <!-- AUFTRAG ERSTELLEN -->
+
+    <button
+        id="createOrderButton"
+        class="submit-button"
+        type="button"
+    >
+        Logistik-Auftrag erstellen
+    </button>
+
+
+    <div class="footer">
+        Ehrenmarkt • Falkenstein
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../supabase.js"></script>
+<script src="../JS/logistikauftrag.js"></script>
+
+
+<script>
+(function(){
+  function initEhrenSelects(){
+    document.querySelectorAll('select:not([data-ehren-custom])').forEach(function(select){
+      select.dataset.ehrenCustom='1';
+      var wrap=document.createElement('div');
+      wrap.className='ehren-select-wrap';
+      select.parentNode.insertBefore(wrap,select);
+      wrap.appendChild(select);
+
+      var trigger=document.createElement('button');
+      trigger.type='button';
+      trigger.className='ehren-custom-select';
+      trigger.setAttribute('aria-expanded','false');
+
+      var optionsBox=document.createElement('div');
+      optionsBox.className='ehren-options';
+
+      Array.from(select.options).forEach(function(opt){
+        var item=document.createElement('div');
+        item.className='ehren-option'+(opt.value===''?' placeholder':'');
+        item.textContent=opt.textContent.trim();
+        item.dataset.value=opt.value;
+        item.addEventListener('click',function(e){
+          e.stopPropagation();
+          select.value=opt.value;
+          select.dispatchEvent(new Event('input',{bubbles:true}));
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+          update();
+          closeAll();
+        });
+        optionsBox.appendChild(item);
+      });
+
+      function update(){
+        var current=select.options[select.selectedIndex];
+        trigger.textContent=current ? current.textContent.trim() : '';
+        optionsBox.querySelectorAll('.ehren-option').forEach(function(item){
+          item.classList.toggle('selected',item.dataset.value===select.value);
+        });
+      }
+      function close(){
+        trigger.classList.remove('open');
+        trigger.setAttribute('aria-expanded','false');
+        optionsBox.classList.remove('open');
+      }
+      trigger.addEventListener('click',function(e){
+        e.stopPropagation();
+        var isOpen=optionsBox.classList.contains('open');
+        closeAll();
+        if(!isOpen){
+          trigger.classList.add('open');
+          trigger.setAttribute('aria-expanded','true');
+          optionsBox.classList.add('open');
+        }
+      });
+      select.addEventListener('change',update);
+
+      wrap.appendChild(trigger);
+      wrap.appendChild(optionsBox);
+      update();
+    });
+  }
+  function closeAll(){
+    document.querySelectorAll('.ehren-custom-select.open').forEach(function(btn){
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+    });
+    document.querySelectorAll('.ehren-options.open').forEach(function(box){
+      box.classList.remove('open');
+    });
+  }
+  document.addEventListener('click',closeAll);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initEhrenSelects);
+  else initEhrenSelects();
+})();
+</script>
+</body>
+</html>
