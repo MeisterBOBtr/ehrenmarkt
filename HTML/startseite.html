@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ehrenmarkt – Falkenstein</title>
+
+    <style>
+        :root {
+            --gold: #c8a45d;
+            --gold-light: #e2c27b;
+            --gold-dark: #76552c;
+
+            --background: #120d09;
+            --section: #1c130d;
+            --card: #271a11;
+            --card-hover: #392516;
+
+            --border: rgba(200, 164, 93, 0.30);
+            --border-light: rgba(200, 164, 93, 0.18);
+
+            --text: #f0e4cf;
+            --muted: #b9aa91;
+            --dark-muted: #8d7b63;
+
+            --red: #751f25;
+            --red-hover: #922b31;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: min(1180px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 18px 0 35px;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            min-height: 280px;
+            margin-bottom: 18px;
+            padding: 45px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    rgba(18, 10, 5, 0.18),
+                    rgba(18, 10, 5, 0.68)
+                ),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
+                center / cover no-repeat;
+        }
+
+        .hero-content {
+            width: 100%;
+            text-align: center;
+        }
+
+        .hero-title {
+            color: var(--gold-light);
+            font-size: clamp(36px, 7vw, 72px);
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-shadow:
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 0 12px rgba(0, 0, 0, 0.75);
+        }
+
+        .hero-subtitle {
+            margin-top: 8px;
+            color: #e4d6bd;
+            font-size: 14px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px #000;
+        }
+
+        .hero-rating {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            margin-top: 22px;
+            padding: 10px 16px;
+
+            border: 1px solid rgba(200, 164, 93, 0.55);
+            border-radius: 8px;
+            background: rgba(18, 10, 5, 0.82);
+        }
+
+        .hero-stars {
+            color: var(--gold-light);
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .hero-rating-text {
+            color: #eadcc4;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           ABSCHNITTE
+        ========================= */
+
+        .section {
+            margin-bottom: 18px;
+            padding: 18px 14px 14px;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--section);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+
+            margin-bottom: 7px;
+            padding-bottom: 9px;
+
+            color: var(--gold-light);
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .section-title::after {
+            content: "";
+
+            position: absolute;
+            left: 0;
+            bottom: 0;
+
+            width: 42px;
+            height: 3px;
+
+            border-radius: 3px;
+            background: var(--gold);
+        }
+
+        .section-description {
+            margin-bottom: 16px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* =========================
+           STADTLEITUNG
+        ========================= */
+
+        .leadership-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .leader-card {
+            min-width: 0;
+            min-height: 205px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+
+            padding: 12px 8px 12px;
+
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            background: var(--card);
+            text-align: center;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .leader-card:hover {
+            background: var(--card-hover);
+            border-color: var(--border);
+        }
+
+        .leader-card img {
+            width: 100%;
+            height: 112px
+            
+            display: block;
+            object-fit: contain;
+            margin-bottom: 7px;
+
+        }
+
+        .leader-role {
+            color: var(--gold-light);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .leader-subtitle {
+            color: var(--dark-muted);
+            font-size: 11px;
+        }
+
+        .leader-name {
+            min-height: 18px;
+            margin-top: 3px;
+
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .leader-plus {
+            width: 27px;
+            height: 27px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 8px;
+
+            border: 1px solid var(--gold-dark);
+            border-radius: 50%;
+
+            color: var(--gold-light);
+            background: rgba(12, 7, 4, 0.70);
+
+            font-size: 19px;
+            line-height: 1;
+        }
+
+        /* =========================
+           PORTAL-KARTEN
+        ========================= */
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .portal-card {
+            min-width: 0;
+            min-height: 94px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 10px;
+
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            background: var(--card);
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .portal-card:hover {
+            background: var(--card-hover);
+            border-color: var(--border);
+        }
+
+        .portal-card img {
+            flex: 0 0 72px;
+
+            width: 72px;
+            height: 72px;
+
+            display: block;
+            object-fit: cover;
+
+            border-radius: 7px;
+            background: rgba(12, 7, 4, 0.75);
+        }
+
+        .portal-card-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .portal-card-title {
+            color: var(--gold-light);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .portal-card-text {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .portal-arrow {
+            flex: 0 0 auto;
+            color: var(--gold-light);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* =========================
+           ABSCHLUSS
+        ========================= */
+
+        .closing-section {
+            padding: 8px 0 20px;
+        }
+
+        .closing-section h2 {
+            color: var(--gold-light);
+            font-size: 23px;
+        }
+
+        .closing-section p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .primary-button {
+            display: inline-block;
+
+            margin-top: 12px;
+            padding: 11px 18px;
+
+            border: 1px solid #8c2929;
+            border-radius: 7px;
+
+            color: #f4e5d0;
+            background: var(--red);
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .primary-button:hover {
+            background: var(--red-hover);
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            padding: 16px 0 5px;
+
+            color: var(--dark-muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .footer-line {
+            width: 100%;
+            height: 1px;
+
+            margin-bottom: 12px;
+            background: var(--border-light);
+        }
+
+        .footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold-light);
+        }
+
+        .footer-copy {
+            margin-top: 5px;
+        }
+
+        /* =========================
+           HANDY
+        ========================= */
+
+        @media (max-width: 700px) {
+            .container {
+                width: calc(100% - 16px);
+                padding-top: 10px;
+            }
+
+            .hero {
+                min-height: 235px;
+                padding: 30px 12px;
+            }
+
+            .hero-title {
+                font-size: clamp(32px, 9vw, 54px);
+                letter-spacing: 2px;
+            }
+
+            .hero-subtitle {
+                font-size: 12px;
+            }
+
+            .section {
+                padding: 14px 9px 10px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .section-description {
+                font-size: 11px;
+            }
+
+            .leadership-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .leader-card {
+                min-height: 185px;
+                padding: 9px 5px 10px;
+            }
+
+            .leader-card img {
+                height: 100px;
+            }
+
+            .leader-role {
+                font-size: 12px;
+            }
+
+            .leader-subtitle {
+                font-size: 10px;
+            }
+
+            .leader-name {
+                font-size: 11px;
+            }
+
+            .portal-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .portal-card {
+                min-height: 88px;
+            }
+
+            .portal-card img {
+                flex-basis: 68px;
+                width: 68px;
+                height: 68px;
+            }
+
+            .portal-card-title {
+                font-size: 13px;
+            }
+
+            .portal-card-text {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .hero {
+                min-height: 215px;
+            }
+
+            .hero-rating {
+                gap: 5px;
+                padding: 8px 10px;
+            }
+
+            .hero-stars {
+                font-size: 15px;
+            }
+
+            .hero-rating-text {
+                font-size: 10px;
+            }
+
+            .leader-card {
+                min-height: 175px;
+            }
+
+            .leader-card img {
+                height: 88px;
+            }
+        }
+
+        /* =========================
+           EHRENMARKT DESIGN UPDATE
+        ========================= */
+        :root {
+            --gold: #b99652;
+            --gold-light: #e1c47d;
+            --gold-dark: #6f542d;
+            --background: #100b07;
+            --section: #1a120c;
+            --card: #202719;
+            --card-hover: #29311f;
+            --border: rgba(185,150,82,.30);
+            --border-light: rgba(185,150,82,.18);
+            --text: #eee3ce;
+            --muted: #b8aa91;
+            --dark-muted: #8e7d64;
+        }
+
+        .hero {
+            min-height: 330px;
+            background:
+                linear-gradient(rgba(12,8,4,.10), rgba(12,8,4,.58)),
+                url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png") center/cover no-repeat;
+            border-color: rgba(185,150,82,.40);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .hero-stat {
+            min-width: 96px;
+            padding: 8px 12px;
+            border: 1px solid rgba(185,150,82,.28);
+            border-radius: 8px;
+            background: rgba(18,12,7,.78);
+        }
+        .hero-stat strong { display:block; color:#e1c47d; font-size:15px; }
+        .hero-stat span { color:#b8aa91; font-size:10px; }
+        .hero-apply {
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .hero-apply:hover {
+            background: rgba(200,164,93,0.14);
+            border-color: rgba(200,164,93,0.45);
+        }
+        .hero-apply strong {
+            color:#e1c47d;
+            font-size:15px;
+        }
+
+        .section {
+            background: linear-gradient(135deg, #1b130d 0%, #1d2618 100%);
+            border-color: rgba(185,150,82,.24);
+        }
+        .leader-card, .portal-card {
+            background: rgba(28,36,22,.86);
+        }
+        .leader-card:hover, .portal-card:hover {
+            background: rgba(38,49,28,.96);
+        }
+
+        .leader-card img {
+            object-fit: contain;
+        }
+
+        .service-image-wrap {
+            position: relative;
+            flex: 0 0 72px;
+            width: 72px;
+            height: 72px;
+        }
+        .portal-card .service-image-wrap > img:first-child {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 7px;
+            display: block;
+        }
+        .service-item-icon {
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px;
+            object-fit: contain !important;
+            border: 1px solid rgba(225,196,125,.55);
+            border-radius: 6px !important;
+            background: rgba(10,10,7,.92);
+            padding: 3px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.55);
+        }
+
+        .recruitment-section {
+            margin: 0 0 18px;
+            padding: 20px 18px;
+            border: 1px solid rgba(185,150,82,.30);
+            border-radius: 12px;
+            background: linear-gradient(120deg, #24170f, #26301d);
+        }
+        .recruitment-content {
+            display:flex; align-items:center; justify-content:space-between; gap:18px;
+        }
+        .recruitment-kicker {
+            color:#c6a25a; font-size:11px; font-weight:800; letter-spacing:1.5px;
+        }
+        .recruitment-section h2 { margin-top:4px; color:#e1c47d; font-size:22px; }
+        .recruitment-section p { margin-top:5px; color:#b8aa91; font-size:12px; max-width:760px; }
+        .recruitment-button {
+            flex:0 0 auto; padding:11px 16px; border:1px solid #7d2328; border-radius:7px;
+            background:#751f25; color:#f4e5d0; font-size:12px; font-weight:800;
+        }
+        .recruitment-button:hover { background:#922b31; }
+
+        @media (max-width:700px) {
+            .hero { min-height: 290px; }
+            .leadership-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+            .portal-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+            .portal-card { min-height: 102px; gap:8px; padding:8px; }
+            .portal-card .service-image-wrap, .service-image-wrap { flex-basis:58px; width:58px; height:58px; }
+            .portal-card .service-image-wrap > img:first-child { width:58px; height:58px; }
+            .portal-card > img:not(.service-item-icon) { width:58px; height:58px; flex-basis:58px; }
+            .service-item-icon { width:24px !important; height:24px !important; min-width:24px; }
+            .recruitment-content { flex-direction:column; align-items:flex-start; }
+            .recruitment-button { width:100%; text-align:center; }
+        }
+
+        @media (max-width:390px) {
+            .portal-grid { grid-template-columns:1fr; }
+        }
+    
+/* =========================================================
+   LAVA + WASSER / OBSIDIAN DESIGN + SUBTILE LAVA-PARTIKEL
+   Vorschau: ruhig, zufällig, keine Daueranimation
+   ========================================================= */
+.section{
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(79,18,7,.92) 0%,
+            rgba(43,12,7,.94) 47%,
+            rgba(12,29,37,.94) 53%,
+            rgba(8,61,76,.90) 100%
+        ) !important;
+    border-color:rgba(150,116,72,.52) !important;
+}
+
+.section::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.48;
+    background:
+        radial-gradient(circle at 12% 24%,rgba(255,93,15,.30) 0 2px,transparent 3px),
+        radial-gradient(circle at 29% 73%,rgba(255,125,20,.20) 0 2px,transparent 3px),
+        radial-gradient(circle at 70% 27%,rgba(54,170,205,.18) 0 2px,transparent 3px),
+        radial-gradient(circle at 88% 75%,rgba(30,130,166,.18) 0 2px,transparent 3px);
+    background-size:82px 67px,107px 91px,91px 77px,117px 101px;
+}
+
+.section > *{
+    position:relative;
+    z-index:2;
+}
+
+.leader-card,
+.portal-card{
+    background:
+        linear-gradient(145deg,rgba(30,28,34,.98),rgba(8,8,10,.98) 58%,rgba(38,31,41,.98)) !important;
+    border-color:rgba(117,98,128,.62) !important;
+    box-shadow:
+        inset 0 0 18px rgba(89,58,108,.17),
+        0 3px 10px rgba(0,0,0,.34);
+}
+
+.leader-card:hover,
+.portal-card:hover{
+    background:
+        linear-gradient(145deg,rgba(41,38,46,.99),rgba(9,9,12,.99) 58%,rgba(48,39,52,.99)) !important;
+    border-color:rgba(211,166,83,.68) !important;
+}
+
+.lava-particles{
+    position:absolute;
+    inset:0 50% 0 0;
+    z-index:1;
+    pointer-events:none;
+    overflow:hidden;
+}
+
+.lava-particle{
+      position:absolute;
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:#ff8a24;
+      box-shadow:0 0 7px #ff6a00,0 0 12px rgba(255,70,0,.65);
+      pointer-events:none;
+      z-index:20;
+      animation:lavaFloat 1.7s ease-out forwards;
+      will-change:transform,opacity;
+    }
+
+@keyframes lavaRise{
+    0%{
+        transform:translate(0,0) scale(.55);
+        opacity:0;
+    }
+    15%{
+        opacity:.95;
+    }
+    72%{
+        opacity:.62;
+    }
+    100%{
+        transform:translate(var(--lava-drift),-65px) scale(.12);
+        opacity:0;
+    }
+}
+
+@media(max-width:700px){
+    .section{
+        background:
+            linear-gradient(
+                90deg,
+                rgba(74,17,7,.92) 0%,
+                rgba(39,11,7,.95) 47%,
+                rgba(10,27,35,.95) 53%,
+                rgba(7,57,71,.90) 100%
+            ) !important;
+    }
+}
+
+
+/* Feinere Lava/Wasser-Gestaltung: keine gerade Trennkante */
+.section{
+    position:relative;
+    overflow:hidden;
+    isolation:isolate;
+    background:
+        radial-gradient(circle at 18% 28%, rgba(255,105,18,.20) 0 2px, transparent 3px),
+        radial-gradient(circle at 31% 74%, rgba(255,128,20,.14) 0 2px, transparent 3px),
+        linear-gradient(90deg,#4b1609 0%,#2b0d08 47%,#111b20 53%,#07506a 100%) !important;
+    background-size:78px 67px, 103px 89px, auto;
+}
+
+/* Wasserfläche liegt über der Lava und bekommt eine wellige Kante */
+.section::before{
+    content:"";
+    position:absolute;
+    inset:0 0 0 48%;
+    z-index:0;
+    pointer-events:none;
+    opacity:.95;
+    background:
+        radial-gradient(circle at 78% 20%,rgba(87,194,224,.20) 0 2px,transparent 3px),
+        radial-gradient(circle at 63% 65%,rgba(25,139,173,.18) 0 2px,transparent 3px),
+        linear-gradient(90deg,#10252c,#07546d);
+    background-size:87px 73px,111px 91px,auto;
+    clip-path:polygon(
+        7% 0, 15% 3%, 24% 1%, 33% 5%, 42% 2%, 51% 6%,
+        60% 1%, 69% 4%, 78% 0, 87% 3%, 100% 1%,
+        100% 97%, 91% 95%, 82% 99%, 72% 96%, 62% 100%,
+        52% 96%, 42% 99%, 32% 95%, 22% 98%, 12% 94%, 0 97%,
+        0 5%
+    );
+}
+
+/* Kleine Details an der Übergangszone */
+.section::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:48%;
+    width:8%;
+    z-index:1;
+    pointer-events:none;
+    background:
+        radial-gradient(circle at 50% 9%,rgba(255,142,33,.55) 0 2px,transparent 3px),
+        radial-gradient(circle at 30% 24%,rgba(57,178,211,.42) 0 2px,transparent 3px),
+        radial-gradient(circle at 65% 43%,rgba(255,121,22,.38) 0 2px,transparent 3px),
+        radial-gradient(circle at 38% 67%,rgba(50,167,201,.40) 0 2px,transparent 3px),
+        radial-gradient(circle at 67% 84%,rgba(255,131,26,.40) 0 2px,transparent 3px);
+    filter:blur(.1px);
+}
+
+/* Karten klar als Obsidian */
+.leader-card,.portal-card{
+    position:relative;
+    z-index:3;
+    background:
+        linear-gradient(145deg,#27242a,#09090b 58%,#302837) !important;
+    border-color:rgba(122,105,133,.70) !important;
+    box-shadow:
+        inset 0 0 20px rgba(110,80,130,.16),
+        0 4px 12px rgba(0,0,0,.42);
+}
+
+.lava-particles{
+    z-index:2 !important;
+}
+
+/* Partikel etwas sichtbarer, aber weiterhin dezent */
+.lava-particle{
+      position:absolute;
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:#ff8a24;
+      box-shadow:0 0 7px #ff6a00,0 0 12px rgba(255,70,0,.65);
+      pointer-events:none;
+      z-index:20;
+      animation:lavaFloat 1.7s ease-out forwards;
+      will-change:transform,opacity;
+    }
+
+</style>
+
+<style>
+#global-lava-particles{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.global-lava-particle{position:absolute;width:5px;height:5px;border-radius:50%;background:#ff7a18;box-shadow:0 0 5px #ff7a18,0 0 11px rgba(255,70,0,.75);opacity:0;will-change:transform,opacity;animation:globalLavaRise 1.7s ease-out forwards;}
+@keyframes globalLavaRise{0%{opacity:0;transform:translate3d(0,10px,0) scale(.55)}12%{opacity:.95}70%{opacity:.8}100%{opacity:0;transform:translate3d(var(--drift),-42px,0) scale(.15)}}
+@media (prefers-reduced-motion:reduce){.global-lava-particle{animation-duration:1s}}
+</style>
+
+
+
+
+<style id="EHRENMARKT_LAVA_RAUCH_CSS">
+.ehrenmarkt-atmosphere{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:9999}
+.ehrenmarkt-atmosphere .atm-particle{position:absolute;pointer-events:none;will-change:transform,opacity}
+.ehrenmarkt-atmosphere .lava{
+ width:4px;height:4px;border-radius:50%;background:#ff9a2f;
+ box-shadow:0 0 7px #ff7200,0 0 15px rgba(255,70,0,.85),0 0 22px rgba(255,150,30,.35);
+ animation:atmLava 2s ease-out forwards;
+}
+.ehrenmarkt-atmosphere .ember{
+ width:3px;height:3px;border-radius:50%;background:#ffcc66;
+ box-shadow:0 0 8px #ff7a00,0 0 14px #ff3d00;
+ animation:atmLava 1.5s ease-out forwards;
+}
+.ehrenmarkt-atmosphere .smoke{
+ width:13px;height:13px;border-radius:50%;
+ background:rgba(75,75,75,.48);
+ box-shadow:0 0 10px rgba(25,25,25,.28);
+ filter:blur(2px);
+ animation:atmSmoke 3.5s ease-out forwards;
+}
+.ehrenmarkt-atmosphere .smoke2{
+ width:20px;height:16px;border-radius:50%;
+ background:rgba(105,105,105,.28);
+ filter:blur(4px);
+ animation:atmSmoke 4.2s ease-out forwards;
+}
+@keyframes atmLava{
+ 0%{transform:translate3d(0,15px,0) scale(.55);opacity:0}
+ 12%{opacity:1}
+ 100%{transform:translate3d(var(--dx),-75px,0) scale(1.15);opacity:0}
+}
+@keyframes atmSmoke{
+ 0%{transform:translate3d(0,15px,0) scale(.55);opacity:0}
+ 12%{opacity:.7}
+ 55%{opacity:.48}
+ 100%{transform:translate3d(var(--dx),-105px,0) scale(2.5);opacity:0}
+}
+</style>
+
+
+<style id="EHRENMARKT_ORGANIC_LAVA_WATER">
+.section{
+  position:relative !important;
+  isolation:isolate;
+  overflow:hidden !important;
+  background:
+    radial-gradient(circle at 22% 28%,rgba(255,92,20,.16),transparent 28%),
+    linear-gradient(135deg,#160b08 0%,#24100b 48%,#07151a 49%,#081e25 100%) !important;
+}
+
+/* Water side */
+.section::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-8% -4% -8% 43%;
+  background:
+    radial-gradient(ellipse at 28% 18%,rgba(80,190,220,.18),transparent 24%),
+    radial-gradient(ellipse at 70% 62%,rgba(20,90,115,.24),transparent 30%),
+    repeating-linear-gradient(165deg,rgba(95,190,210,.07) 0 3px,transparent 3px 18px),
+    linear-gradient(180deg,#0a3039,#061b23 58%,#041217);
+  clip-path:polygon(
+    13% 0%, 25% 4%, 20% 10%, 34% 14%, 25% 21%,
+    39% 27%, 31% 34%, 47% 40%, 38% 47%, 51% 53%,
+    43% 61%, 58% 68%, 48% 74%, 61% 81%, 54% 88%,
+    69% 94%, 62% 100%, 100% 100%, 100% 0%
+  );
+}
+
+/* Lava side */
+.section::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-8% 48% -8% -4%;
+  background:
+    radial-gradient(circle at 42% 20%,rgba(255,140,35,.22),transparent 24%),
+    radial-gradient(circle at 65% 72%,rgba(150,35,8,.30),transparent 32%),
+    repeating-linear-gradient(125deg,rgba(255,120,20,.055) 0 2px,transparent 2px 16px),
+    linear-gradient(180deg,#301009,#1b0806 55%,#100605);
+  clip-path:polygon(
+    0 0%, 100% 0%, 88% 5%, 95% 12%, 82% 18%,
+    91% 25%, 76% 32%, 85% 39%, 70% 46%, 80% 53%,
+    67% 60%, 77% 67%, 63% 74%, 72% 82%, 57% 89%,
+    66% 96%, 58% 100%, 0 100%
+  );
+}
+
+/* irregular "shoreline" fragments */
+.section .organic-shore{
+  position:absolute;
+  z-index:1;
+  left:38%;
+  top:0;
+  width:18%;
+  height:100%;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 45% 8%,rgba(255,110,20,.22) 0 7%,transparent 8%),
+    radial-gradient(ellipse at 20% 22%,rgba(18,82,98,.55) 0 9%,transparent 10%),
+    radial-gradient(ellipse at 72% 36%,rgba(255,90,15,.18) 0 8%,transparent 9%),
+    radial-gradient(ellipse at 35% 53%,rgba(16,77,92,.48) 0 10%,transparent 11%),
+    radial-gradient(ellipse at 68% 70%,rgba(255,105,18,.20) 0 7%,transparent 8%),
+    radial-gradient(ellipse at 27% 87%,rgba(17,81,96,.50) 0 9%,transparent 10%);
+  filter:blur(.2px);
+  opacity:.9;
+}
+
+.section > *:not(.organic-shore){
+  position:relative;
+  z-index:3;
+}
+
+/* More Minecraft-like water ripples */
+.section .card,
+.section .service-card,
+.section .area-card{
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.035);
+}
+
+/* small visual block fragments along the transition */
+.section .organic-block{
+  position:absolute;
+  z-index:2;
+  width:12px;height:12px;
+  background:#171717;
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 0 9px rgba(0,0,0,.55);
+  transform:rotate(8deg);
+  pointer-events:none;
+  opacity:.9;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<style id="EHRENMARKT_CLEAN_MISCHUNG">
+html,body {
+  background:#050607 url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Mischung.png") center top / cover fixed no-repeat !important;
+  background-attachment:fixed !important;
+}
+body { background-color:transparent !important; }
+
+.section {
+  position:relative !important;
+  background:transparent !important;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+  backdrop-filter:none !important;
+}
+.section::before,.section::after {
+  display:none !important;
+  content:none !important;
+}
+
+.section .leader-card,
+.section:first-of-type .card {
+  background:rgba(0,0,0,.08) !important;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+
+.section .service-card,
+.section .area-card,
+.section:not(:first-of-type) .card {
+  background:rgba(0,0,0,.24) !important;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+
+.section .card::before,.section .card::after,
+.section .service-card::before,.section .service-card::after,
+.section .area-card::before,.section .area-card::after,
+.section .leader-card::before,.section .leader-card::after {
+  display:none !important;
+  content:none !important;
+}
+
+.organic-shore,.organic-block,.minecraft-block,.minecraft-lava-crack,.lava-mark {
+  display:none !important;
+}
+
+.section h2,.section h3,.section p,.section strong,.section span {
+  text-shadow:0 2px 6px rgba(0,0,0,.88);
+}
+
+@media (max-width:700px) {
+  html,body {
+    background-attachment:scroll !important;
+    background-size:auto 100% !important;
+    background-position:center top !important;
+  }
+}
+</style>
+
+
+
+
+
+<style id="EHRENMARKT_DUNKEL_SCHLEIER">
+html,body{background:#020306!important}
+body{position:relative!important;min-height:100vh!important;overflow-x:hidden}
+body::before{
+  content:""!important;position:fixed!important;inset:0!important;z-index:0!important;
+  pointer-events:none!important;
+  background:linear-gradient(rgba(0,0,0,.34),rgba(0,0,0,.44)),url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Dunkel.png") center top/cover no-repeat!important;
+}
+.page{position:relative!important;z-index:1!important;background:transparent!important}
+.container,.section{background:transparent!important}
+.section{border:none!important;box-shadow:none!important}
+.section::before,.section::after{display:none!important}
+.section .leader-card,.section:first-of-type .card{
+  background:rgba(0,0,0,.07)!important;border:none!important;box-shadow:none!important
+}
+.section .service-card,.section .area-card,.section:not(:first-of-type) .card{
+  background:rgba(4,4,8,.38)!important;border:none!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.48)!important
+}
+.organic-shore,.organic-block,.minecraft-block,.minecraft-lava-crack,.lava-mark{display:none!important}
+.ehrenmarkt-atmosphere{position:fixed!important;inset:0!important;pointer-events:none!important;z-index:99999!important;overflow:hidden!important}
+.ehrenmarkt-wisp{position:absolute;pointer-events:none;will-change:transform,opacity;filter:blur(7px);border-radius:50%}
+.ehrenmarkt-lava-wisp{width:28px;height:9px;background:rgba(255,92,22,.18);box-shadow:0 0 28px rgba(255,70,0,.20)}
+.ehrenmarkt-smoke-wisp{width:58px;height:24px;background:rgba(120,120,120,.11);filter:blur(11px)}
+</style>
+
+<style id="EHRENMARKT_V4_FINAL_DESIGN">
+:root{
+  --em-gold:#d4ad63;
+  --em-gold-light:#f0d18a;
+  --em-gold-dark:#76552e;
+  --em-black:#080807;
+  --em-panel:#141412;
+  --em-panel-2:#1c1915;
+  --em-brown:#332416;
+  --em-border:#6e5435;
+  --em-text:#eee3cf;
+  --em-muted:#b6aa98;
+}
+
+/* Unified page background */
+html,body{
+  background:#050505 !important;
+  color:var(--em-text) !important;
+}
+body{
+  position:relative !important;
+  min-height:100vh !important;
+  overflow-x:hidden !important;
+}
+body::before{
+  content:"" !important;
+  position:fixed !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  background:
+    linear-gradient(rgba(0,0,0,.60),rgba(0,0,0,.70)),
+    url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Dunkel.png")
+    center top / cover no-repeat !important;
+}
+.page,.container{position:relative !important;z-index:1 !important;background:transparent !important;}
+.container{width:min(1180px,calc(100% - 42px)) !important;padding:0 0 34px !important;}
+
+/* Navigation */
+.ehrenmarkt-nav{
+  position:relative;
+  z-index:20;
+  min-height:76px;
+  margin:0 -10px 12px;
+  background:rgba(5,5,5,.82);
+  border-bottom:1px solid rgba(212,173,99,.28);
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+.ehrenmarkt-nav-inner{
+  width:min(1180px,calc(100% - 24px));
+  min-height:76px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+.ehrenmarkt-brand{
+  align-self:stretch;
+  width:76px;
+  min-width:76px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:5px 8px 0;
+  border-left:1px solid rgba(212,173,99,.45);
+  border-right:1px solid rgba(212,173,99,.45);
+  background:rgba(20,15,10,.55);
+}
+.ehrenmarkt-brand img{width:54px;height:68px;object-fit:contain;display:block;}
+.ehrenmarkt-nav-links{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0;}
+.ehrenmarkt-nav-links a,.ehrenmarkt-nav-actions a{
+  color:#d7d0c5;
+  padding:12px 13px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:14px;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+}
+.ehrenmarkt-nav-links a.active{color:var(--em-gold-light);border-bottom-color:var(--em-gold);}
+.ehrenmarkt-nav-links a:hover{color:#fff;border-bottom-color:var(--em-gold);}
+.ehrenmarkt-nav-actions{display:flex;gap:8px;align-items:center;}
+.nav-login{border:1px solid #665a4a;border-radius:6px;}
+.nav-register{border:1px solid #b38a4c;border-radius:6px;background:linear-gradient(#d5ae68,#b48645);color:#17120c !important;font-weight:700;}
+
+/* Hero: old Startseite image, no centered banner */
+.hero{
+  min-height:285px !important;
+  margin:0 0 12px !important;
+  padding:35px 20px !important;
+  border:2px solid #725637 !important;
+  border-radius:4px !important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.8),0 12px 30px rgba(0,0,0,.45) !important;
+  background:
+    linear-gradient(rgba(0,0,0,.10),rgba(0,0,0,.34)),
+    url("https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png")
+    center/cover no-repeat !important;
+}
+.hero-content{position:relative;z-index:2;}
+.hero-title{
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(42px,6vw,78px) !important;
+  color:#f0cf84 !important;
+  letter-spacing:2px !important;
+  text-shadow:0 4px 0 #3b2610,0 7px 16px #000 !important;
+}
+.hero-subtitle{font-family:Georgia,"Times New Roman",serif !important;font-size:16px !important;color:#f5ead8 !important;}
+
+/* Rating below hero */
+.hero-meta{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin:0 0 28px;
+}
+.hero-meta .hero-rating{
+  margin:0;
+  min-width:330px;
+  background:rgba(8,8,7,.90);
+  border:1px solid #8b6a3c;
+  border-radius:4px;
+  padding:10px 18px;
+}
+.hero-meta .hero-stats{margin:0;display:flex;justify-content:center;gap:10px;}
+.hero-meta .hero-stat{
+  min-width:150px;
+  text-align:center;
+  background:rgba(8,8,7,.90);
+  border:1px solid #8b6a3c;
+  border-radius:4px;
+}
+.hero-meta .hero-stat strong{color:var(--em-gold-light);}
+.hero-meta .hero-stat span{color:#d0c4b2;}
+
+/* All content panels */
+.section{
+  margin-bottom:20px !important;
+  padding:0 0 14px !important;
+  background:rgba(8,8,7,.88) !important;
+  border:2px solid #51412f !important;
+  border-radius:3px !important;
+  box-shadow:0 12px 26px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.025) !important;
+  overflow:hidden !important;
+}
+.section-title{
+  display:block !important;
+  margin:0 !important;
+  padding:13px 18px 4px 70px !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:28px !important;
+  color:#ead08d !important;
+  border-bottom:0 !important;
+}
+.section-title::after{display:none !important;}
+.section-description{
+  margin:0 !important;
+  padding:0 18px 12px 70px !important;
+  color:#b9ad9b !important;
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:12px !important;
+}
+
+/* Header icon illusion */
+.section-title::before{
+  content:"✦";
+  position:absolute;
+  left:22px;
+  color:#d7b16b;
+  font-size:27px;
+}
+.section-title{position:relative !important;}
+
+/* Leadership */
+.leadership-grid{
+  padding:4px 16px 4px;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+.leader-card{
+  min-height:205px !important;
+  padding:5px !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.leader-card img{height:120px !important;margin-bottom:5px !important;}
+.leader-role{font-family:Georgia,"Times New Roman",serif;color:#eee4d4 !important;font-size:13px !important;}
+.leader-subtitle{color:#9c9284 !important;}
+.leader-name{color:#eee4d4 !important;}
+
+/* Order cards: 4 across on desktop */
+.section:nth-of-type(3) .portal-grid,
+.portal-grid{
+  padding:0 14px;
+}
+.portal-grid{gap:12px !important;}
+.portal-card{
+  border:2px solid #5b4730 !important;
+  border-radius:2px !important;
+  background:linear-gradient(#201a14,#0d0c0a) !important;
+  box-shadow:inset 0 0 0 1px rgba(212,173,99,.12),0 6px 14px rgba(0,0,0,.45) !important;
+}
+.portal-card:hover{background:linear-gradient(#2b2117,#11100d) !important;border-color:#a57c43 !important;}
+.portal-card-title{font-family:Georgia,"Times New Roman",serif;color:#f0dfba !important;}
+.portal-card-text{color:#bdb1a0 !important;}
+.portal-arrow{color:#e4bd6e !important;}
+.service-image-wrap,.portal-card > img{
+  border-radius:0 !important;
+}
+
+/* Make the Auftrag section 4 cards in one row */
+.design-section .portal-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;}
+.design-section .portal-card{
+  min-height:210px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-end;
+  padding:5px !important;
+}
+.design-section .portal-card .service-image-wrap{
+  width:100% !important;
+  height:130px !important;
+  flex:0 0 130px !important;
+}
+.design-section .portal-card .service-image-wrap > img:first-child{
+  width:100% !important;height:100% !important;object-fit:cover !important;
+}
+.design-section .portal-card-content{
+  padding:10px 10px 5px;
+}
+.design-section .portal-arrow{position:absolute;right:12px;bottom:10px;}
+
+/* Falkenstein + Gemeinschaft side by side */
+.community-section,.bottom-layout{}
+
+/* visually create the two-column grouping */
+.community-section{
+  width:calc(34% - 8px);
+  float:right;
+  margin-left:16px;
+}
+.community-section .community-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  padding:0 14px;
+}
+.community-card{
+  min-height:155px !important;
+  flex-direction:column !important;
+  justify-content:flex-end !important;
+  align-items:stretch !important;
+  position:relative;
+}
+.community-card img{width:100% !important;height:75px !important;object-fit:contain !important;}
+.community-card .portal-card-content{padding:5px 8px;}
+.community-card .portal-arrow{position:absolute;right:8px;bottom:7px;}
+
+.community-section + .section{}
+/* The Falkenstein section is the section immediately before Gemeinschaft */
+.community-section ~ .bottom-layout{clear:both;}
+
+/* Bottom row */
+.bottom-layout{
+  display:grid;
+  grid-template-columns:55% 45%;
+  gap:16px;
+  margin-bottom:20px;
+}
+.bottom-layout .section{margin-bottom:0;}
+.access-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:0 14px;
+}
+.access-card{
+  min-height:150px;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-end;
+  position:relative;
+}
+.access-card img{width:100% !important;height:82px !important;object-fit:contain !important;}
+.access-card .portal-card-content{padding:6px 8px;}
+.access-card .portal-arrow{position:absolute;right:8px;bottom:7px;}
+.news-card{
+  display:block;
+  position:relative;
+  margin:0 14px;
+  border:2px solid #5b4730;
+  overflow:hidden;
+  background:#0d0c0a;
+}
+.news-card img{display:block;width:100%;height:135px;object-fit:cover;}
+.news-overlay{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:12px 14px;
+  background:linear-gradient(transparent,rgba(0,0,0,.95));
+  color:#f0dfba;
+}
+.news-overlay strong{display:block;font-family:Georgia,"Times New Roman",serif;font-size:16px;}
+.news-overlay span{font-size:11px;color:#c4b8a7;}
+.news-overlay b{position:absolute;right:12px;bottom:12px;color:#e5be70;font-size:22px;}
+
+/* Preserve original legacy links/markup in DOM without displaying duplicate blocks */
+.legacy-preserved-section{display:none !important;}
+
+/* Old effects remain in scripts/markup, but are visually disabled */
+.organic-shore,.organic-block,.minecraft-block,.minecraft-lava-crack,.lava-mark,
+.lava-particles,#global-lava-particles,.ehrenmarkt-atmosphere{display:none !important;}
+.section::before,.section::after{display:none !important;}
+.ehrenmarkt-wisp,.ehrenmarkt-lava-wisp,.ehrenmarkt-smoke-wisp{display:none !important;}
+
+/* Closing area becomes a compact footer-like statement */
+.closing-section{
+  margin:0 0 10px !important;
+  padding:12px 18px !important;
+  background:rgba(7,7,6,.7) !important;
+  border-top:1px solid #4f402d;
+}
+.closing-section h2{font-family:Georgia,"Times New Roman",serif;color:#d9bd7d !important;}
+.primary-button{background:linear-gradient(#d0a85e,#a87a3c) !important;color:#17120d !important;border-color:#7b5a32 !important;}
+
+/* Footer */
+.footer{border-top:1px solid rgba(180,140,80,.2);color:#9f968a;}
+.footer-links a:hover{color:#e5c57f;}
+
+/* Responsive */
+@media(max-width:850px){
+  .container{width:calc(100% - 20px) !important;}
+  .ehrenmarkt-nav-inner{gap:5px;}
+  .ehrenmarkt-brand{width:62px;min-width:62px;}
+  .ehrenmarkt-brand img{width:42px;height:62px;}
+  .ehrenmarkt-nav-links{overflow-x:auto;justify-content:flex-start;}
+  .ehrenmarkt-nav-links a{font-size:11px;padding:10px 8px;}
+  .ehrenmarkt-nav-actions{display:none;}
+  .hero{min-height:230px !important;}
+  .hero-title{font-size:clamp(35px,8vw,58px) !important;}
+  .leadership-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:4px !important;}
+  .leader-card{min-height:175px !important;}
+  .leader-card img{height:92px !important;}
+  .leader-role{font-size:10px !important;}
+  .leader-subtitle,.leader-name{font-size:9px !important;}
+  .portal-grid,.design-section .portal-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  .design-section .portal-card{min-height:165px;}
+  .design-section .portal-card .service-image-wrap{height:92px !important;flex-basis:92px !important;}
+  .design-section .portal-card .service-image-wrap > img:first-child{height:92px !important;}
+  .community-section{width:100%;float:none;margin-left:0;}
+  .bottom-layout{grid-template-columns:1fr;gap:12px;}
+}
+@media(max-width:520px){
+  .container{width:calc(100% - 12px) !important;}
+  .ehrenmarkt-nav{margin-left:-6px;margin-right:-6px;}
+  .ehrenmarkt-nav-inner{width:calc(100% - 8px);}
+  .ehrenmarkt-brand{width:48px;min-width:48px;}
+  .ehrenmarkt-brand img{width:34px;height:58px;}
+  .ehrenmarkt-nav-links a{font-size:10px;padding:8px 6px;}
+  .hero{min-height:205px !important;padding:25px 8px !important;}
+  .hero-subtitle{font-size:11px !important;}
+  .hero-meta .hero-rating{min-width:0;width:90%;font-size:10px;}
+  .hero-meta .hero-stat{min-width:120px;}
+  .section-title{font-size:22px !important;padding-left:48px !important;}
+  .section-title::before{left:16px;font-size:21px;}
+  .section-description{padding-left:48px !important;font-size:10px !important;}
+  .leadership-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important;}
+  .leader-card{min-height:150px !important;}
+  .leader-card img{height:75px !important;}
+  .leader-role{font-size:8px !important;}
+  .leader-subtitle,.leader-name{font-size:7px !important;}
+  .portal-grid,.design-section .portal-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  .design-section .portal-card{min-height:145px;}
+  .design-section .portal-card .service-image-wrap{height:72px !important;flex-basis:72px !important;}
+  .design-section .portal-card .service-image-wrap > img:first-child{height:72px !important;}
+  .portal-card-title{font-size:11px !important;}
+  .portal-card-text{font-size:9px !important;}
+  .access-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .access-card{min-height:125px;}
+  .access-card img{height:58px !important;}
+  .news-card img{height:105px;}
+}
+</style>
+
+
+<style id="EHRENMARKT_V7_LAYOUT">
+/* No top-right account buttons: access is only in the lower area. */
+.ehrenmarkt-nav-actions{display:none!important;}
+
+/* Desktop reference: four Auftrag cards in ONE row. Keep this on mobile too. */
+.design-section .portal-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+.design-section .portal-card{
+  min-width:0 !important;
+  min-height:205px !important;
+}
+.design-section .portal-card-content{min-width:0!important;}
+.design-section .portal-card-title{font-size:14px!important;}
+.design-section .portal-card-text{font-size:11px!important;}
+
+/* Falkenstein + Gemeinschaft side-by-side like the reference. */
+.mid-layout{
+  display:grid;
+  grid-template-columns:1.65fr 1fr;
+  gap:16px;
+  margin-bottom:20px;
+}
+.mid-layout .section{
+  margin-bottom:0 !important;
+}
+.mid-layout .section-title{
+  padding-left:70px !important;
+}
+.mini-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:0 14px 4px;
+}
+.community-section .mini-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.mini-card{
+  min-width:0;
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-end;
+  position:relative;
+  padding:5px !important;
+}
+.mini-card img{
+  width:100% !important;
+  height:78px !important;
+  object-fit:contain !important;
+}
+.mini-card .portal-card-content{padding:5px 7px;}
+.mini-card .portal-arrow{
+  position:absolute;
+  right:7px;
+  bottom:7px;
+}
+
+/* Bottom row remains the access/current-information row. */
+.bottom-layout{
+  grid-template-columns:55% 45% !important;
+}
+
+/* Mobile: preserve the 4-card row for Aufträge, as requested. */
+@media(max-width:850px){
+  .design-section .portal-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    overflow:visible;
+  }
+  .design-section .portal-card{
+    min-height:125px !important;
+    padding:3px !important;
+  }
+  .design-section .portal-card .service-image-wrap{
+    height:62px !important;
+    flex-basis:62px !important;
+  }
+  .design-section .portal-card .service-image-wrap > img:first-child{
+    height:62px !important;
+  }
+  .design-section .portal-card .service-item-icon{
+    width:18px !important;height:18px !important;min-width:18px !important;
+  }
+  .design-section .portal-card-content{padding:4px 4px 2px!important;}
+  .design-section .portal-card-title{font-size:9px!important;}
+  .design-section .portal-card-text{font-size:7px!important;line-height:1.15!important;}
+  .design-section .portal-arrow{font-size:14px!important;right:4px!important;bottom:3px!important;}
+
+  .mid-layout{
+    grid-template-columns:1.45fr 1fr;
+    gap:8px;
+  }
+  .mini-grid{gap:5px;padding:0 7px 4px;}
+  .mini-card{min-height:105px!important;padding:3px!important;}
+  .mini-card img{height:50px!important;}
+  .mini-card .portal-card-title{font-size:9px!important;}
+  .mini-card .portal-card-text{font-size:7px!important;}
+  .section-title{font-size:18px!important;}
+  .section-description{font-size:8px!important;}
+}
+@media(max-width:520px){
+  .mid-layout{grid-template-columns:1.45fr 1fr;gap:5px;}
+  .design-section .portal-card{min-height:105px!important;}
+  .design-section .portal-card .service-image-wrap{
+    height:48px!important;flex-basis:48px!important;
+  }
+  .design-section .portal-card .service-image-wrap > img:first-child{height:48px!important;}
+  .design-section .portal-card-title{font-size:7px!important;}
+  .design-section .portal-card-text{font-size:6px!important;}
+  .mini-card{min-height:92px!important;}
+  .mini-card img{height:40px!important;}
+  .mini-card .portal-card-title{font-size:7px!important;}
+  .mini-card .portal-card-text{font-size:6px!important;}
+}
+</style>
+
+
+<style id="EHRENMARKT_V8_BEREICH">
+.bereich-section{clear:both;margin-top:16px;}
+.bereich-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  padding:0 14px 4px;
+}
+.bereich-card{
+  min-height:170px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:stretch;
+  overflow:hidden;
+}
+.bereich-card > img{
+  width:100% !important;
+  height:92px !important;
+  object-fit:contain !important;
+  display:block;
+}
+.bereich-card .portal-card-content{padding:8px 10px 8px;}
+.bereich-card .portal-arrow{position:absolute;right:10px;bottom:9px;}
+@media(max-width:700px){
+  .bereich-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:0 8px 4px;}
+  .bereich-card{min-height:135px;}
+  .bereich-card > img{height:62px !important;}
+  .bereich-card .portal-card-content{padding:5px 6px;}
+  .bereich-card .portal-card-title{font-size:10px !important;}
+  .bereich-card .portal-card-text{font-size:8px !important;line-height:1.25;}
+}
+</style>
+
+
+<style id="EHRENMARKT_V9_FIX">
+/* Remove the accidental empty/oversized area between hero and content. */
+.hero{margin-bottom:10px !important;}
+.hero-meta{
+  margin:0 0 18px !important;
+  min-height:0 !important;
+  height:auto !important;
+  padding:0 !important;
+}
+
+/* The four orders are ALWAYS one row, including mobile. */
+.orders-section .portal-grid{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+  padding:0 14px !important;
+}
+.orders-section .portal-card{
+  min-width:0 !important;
+  min-height:145px !important;
+  display:flex !important;
+}
+.orders-section .service-image-wrap{
+  width:100% !important;
+  height:78px !important;
+  flex:0 0 78px !important;
+}
+.orders-section .service-image-wrap > img:first-child{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+}
+.orders-section .portal-card-content{padding:7px 6px !important;}
+.orders-section .portal-card-title{font-size:12px !important;}
+.orders-section .portal-card-text{font-size:8px !important;line-height:1.2 !important;}
+.orders-section .portal-arrow{right:7px !important;bottom:7px !important;}
+
+@media(max-width:700px){
+  .hero{margin-bottom:8px !important;}
+  .hero-meta{margin-bottom:12px !important;}
+  .orders-section .portal-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:5px !important;
+    padding:0 7px !important;
+  }
+  .orders-section .portal-card{
+    min-height:120px !important;
+    padding:3px !important;
+  }
+  .orders-section .service-image-wrap{
+    height:58px !important;
+    flex-basis:58px !important;
+  }
+  .orders-section .service-image-wrap > img:first-child{
+    height:58px !important;
+  }
+  .orders-section .portal-card-title{
+    font-size:9px !important;
+    line-height:1.1 !important;
+  }
+  .orders-section .portal-card-text{
+    font-size:6.5px !important;
+    line-height:1.15 !important;
+  }
+  .orders-section .portal-arrow{font-size:12px !important;}
+}
+</style>
+
+
+<style id="EHRENMARKT_V11_CLEAN_RESPONSIVE">
+/* V11: keep the working V9 DOM intact; only correct responsive layout. */
+
+/* Desktop: match the reference */
+@media (min-width: 851px){
+  .mid-layout{
+    display:grid !important;
+    grid-template-columns:1.65fr 1fr !important;
+    gap:16px !important;
+    margin-bottom:20px !important;
+    width:100% !important;
+  }
+  .mid-layout > .section{
+    width:auto !important;
+    float:none !important;
+    margin:0 !important;
+  }
+
+  .design-section .portal-grid{
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  }
+
+  .bottom-layout{
+    display:grid !important;
+    grid-template-columns:55% 45% !important;
+    gap:16px !important;
+  }
+}
+
+/* Tablet/mobile: no clipping or overflow */
+@media (max-width:850px){
+  .container{
+    width:calc(100% - 12px) !important;
+    max-width:none !important;
+    overflow:visible !important;
+  }
+
+  /* Orders become a readable 2x2 on phones */
+  .orders-section .portal-grid,
+  .design-section .portal-grid{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    width:auto !important;
+    overflow:visible !important;
+    padding:0 8px !important;
+  }
+
+  .design-section .portal-card{
+    min-width:0 !important;
+    min-height:145px !important;
+  }
+
+  .design-section .portal-card .service-image-wrap{
+    width:100% !important;
+    height:68px !important;
+    flex-basis:68px !important;
+  }
+
+  .design-section .portal-card .service-image-wrap > img:first-child{
+    width:100% !important;
+    height:68px !important;
+    object-fit:cover !important;
+  }
+
+  .design-section .portal-card-content{
+    min-width:0 !important;
+    padding:6px !important;
+  }
+
+  .design-section .portal-card-title{
+    font-size:10px !important;
+    line-height:1.1 !important;
+  }
+
+  .design-section .portal-card-text{
+    font-size:7px !important;
+    line-height:1.2 !important;
+  }
+
+  /* Falkenstein and Gemeinschaft stack cleanly on phones */
+  .mid-layout{
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+  }
+
+  .mid-layout > .section{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+    float:none !important;
+    margin:0 0 12px !important;
+  }
+
+  .mini-grid{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:6px !important;
+    padding:0 8px 6px !important;
+  }
+
+  .community-section .mini-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  .mini-card{
+    min-width:0 !important;
+    min-height:135px !important;
+    box-sizing:border-box !important;
+  }
+
+  .mini-card img{
+    width:100% !important;
+    height:62px !important;
+    object-fit:contain !important;
+  }
+
+  .mini-card .portal-card-title{
+    font-size:10px !important;
+  }
+
+  .mini-card .portal-card-text{
+    font-size:7px !important;
+    line-height:1.2 !important;
+  }
+
+  /* Bereich stays 3 cards */
+  .bereich-grid{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:6px !important;
+    padding:0 8px 6px !important;
+  }
+
+  .bereich-card{
+    min-width:0 !important;
+    min-height:140px !important;
+  }
+
+  .bereich-card > img{
+    width:100% !important;
+    height:62px !important;
+    object-fit:contain !important;
+  }
+
+  .bereich-card .portal-card-title{font-size:9px !important;}
+  .bereich-card .portal-card-text{font-size:7px !important;line-height:1.2 !important;}
+
+  /* Access + current are stacked, never cut off */
+  .bottom-layout{
+    display:block !important;
+    width:100% !important;
+  }
+
+  .bottom-layout > .section{
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 0 12px !important;
+  }
+
+  .access-grid{
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:6px !important;
+    padding:0 8px !important;
+  }
+
+  .access-card{
+    min-width:0 !important;
+    min-height:135px !important;
+  }
+
+  .access-card img{
+    width:100% !important;
+    height:58px !important;
+    object-fit:contain !important;
+  }
+
+  .access-card .portal-card-title{font-size:9px !important;}
+  .access-card .portal-card-text{font-size:7px !important;}
+
+  .news-card{
+    margin:0 8px !important;
+    max-width:none !important;
+  }
+
+  .news-card img{
+    width:100% !important;
+    height:105px !important;
+    object-fit:cover !important;
+  }
+}
+
+@media (max-width:520px){
+  .container{
+    width:calc(100% - 8px) !important;
+  }
+
+  .section-title{
+    font-size:20px !important;
+    padding-left:43px !important;
+  }
+
+  .section-description{
+    padding-left:43px !important;
+    font-size:8px !important;
+  }
+
+  .design-section .portal-card{
+    min-height:128px !important;
+  }
+
+  .design-section .portal-card .service-image-wrap,
+  .design-section .portal-card .service-image-wrap > img:first-child{
+    height:58px !important;
+    flex-basis:58px !important;
+  }
+
+  .design-section .portal-card-title{
+    font-size:8.5px !important;
+  }
+
+  .design-section .portal-card-text{
+    font-size:6.5px !important;
+  }
+
+  .mini-card{
+    min-height:125px !important;
+  }
+
+  .mini-card img{
+    height:55px !important;
+  }
+
+  .mini-card .portal-card-title{
+    font-size:8.5px !important;
+  }
+
+  .mini-card .portal-card-text{
+    font-size:6.5px !important;
+  }
+
+  .bereich-card{
+    min-height:125px !important;
+  }
+
+  .bereich-card > img{
+    height:55px !important;
+  }
+
+  .bereich-card .portal-card-title{
+    font-size:8.5px !important;
+  }
+
+  .bereich-card .portal-card-text{
+    font-size:6.5px !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <main class="container">
+
+<nav class="ehrenmarkt-nav" aria-label="Hauptnavigation">
+    <div class="ehrenmarkt-nav-inner">
+        <a class="ehrenmarkt-brand" href="#">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/ehrenmarkt_banner_transparent.png" alt="Ehrenmarkt Banner">
+        </a>
+        <div class="ehrenmarkt-nav-links">
+            <a class="active" href="#">⌂ <span>Startseite</span></a>
+            <a href="bauauftrag.html">⚒ <span>Aufträge</span></a>
+            <a href="karte.html">✥ <span>Falkenstein</span></a>
+            <a href="regelwerk.html">▤ <span>Informationen</span></a>
+            <a href="stadtleitung.html">♟ <span>Gemeinschaft</span></a>
+        </div>
+    </div>
+</nav>
+
+
+            <!-- =========================
+                 HERO
+            ========================= -->
+
+            <section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">EHRENMARKT</h1>
+        <p class="hero-subtitle">Das offizielle Portal von Falkenstein</p>
+    </div>
+</section>
+
+<section class="hero-meta" aria-label="Bewertungen und Mitarbeiter">
+    <div class="hero-rating">
+        <span class="hero-stars" id="startSterne" aria-label="0 von 5 Sternen">☆☆☆☆☆</span>
+        <span class="hero-rating-text">
+            <span id="startDurchschnitt">0,0 / 5</span> ·
+            <span id="startBewertungAnzahl">0 Bewertungen</span>
+        </span>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <strong id="startMitarbeiter">0</strong>
+            <span>Mitarbeiter</span>
+        </div>
+        <a class="hero-stat hero-apply" href="bewerbung.html">
+            <strong>✦</strong>
+            <span>Jetzt bewerben</span>
+        </a>
+    </div>
+</section>
+
+<!-- =========================
+                 DIENSTLEISTUNGEN
+            ========================= -->
+
+            <section class="section orders-section">
+<span class="minecraft-block crying" style="left:43%;top:17%"></span>
+<span class="minecraft-block" style="left:49%;top:38%;width:14px;height:14px"></span>
+<span class="minecraft-block crying" style="left:40%;top:64%;width:16px;height:20px"></span>
+<span class="minecraft-block" style="left:53%;top:82%;width:20px;height:14px"></span>
+<span class="minecraft-lava-crack" style="left:34%;top:24%"></span>
+<span class="minecraft-lava-crack" style="left:29%;top:68%;height:20px;transform:rotate(-14deg)"></span>
+
+<div class="organic-shore" aria-hidden="true"></div>
+<span class="organic-block" style="left:39%;top:13%"></span>
+<span class="organic-block" style="left:48%;top:29%;width:8px;height:15px;transform:rotate(-12deg)"></span>
+<span class="organic-block" style="left:42%;top:51%;width:15px;height:9px;transform:rotate(17deg)"></span>
+<span class="organic-block" style="left:51%;top:73%;width:9px;height:13px;transform:rotate(-7deg)"></span>
+<span class="organic-block" style="left:37%;top:91%;width:14px;height:8px;transform:rotate(11deg)"></span>
+
+
+                <h2 class="section-title">
+                    Aufträge
+                </h2>
+
+                <p class="section-description">
+                    Unsere Aufträge rund um Bau, Technik, Materialien und Logistik.
+                </p>
+
+                <div class="portal-grid">
+
+                    <!-- Bauauftrag -->
+
+                    <a
+                        class="portal-card"
+                        href="bauauftrag.html"
+                    >
+
+                        <div class="service-image-wrap">
+                            <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/BAU.png"
+                            alt="Bauauftrag"
+                        >
+                            <img class="service-item-icon" src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bauauftag/anvil-3d.png" alt="Bauauftrag Icon">
+                        </div>
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Bauauftrag
+                            </div>
+
+                            <p class="portal-card-text">
+                                Gebäude, Bauprojekte und individuelle Bauwünsche.
+                            </p>
+
+                        </div>
+
+                        <span class="portal-arrow">
+                            ›
+                        </span>
+
+                    </a>
+
+
+                    <!-- Redstone-Auftrag -->
+
+                    <a
+                        class="portal-card"
+                        href="redstoneauftrag.html"
+                    >
+
+                        <div class="service-image-wrap">
+                            <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/RED.png"
+                            alt="Redstone-Auftrag"
+                        >
+                            <img class="service-item-icon" src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/redstone_block.png" alt="Redstone-Auftrag Icon">
+                        </div>
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Redstone-Auftrag
+                            </div>
+
+                            <p class="portal-card-text">
+                                Technische Anlagen, Schaltungen und Redstone-Projekte.
+                            </p>
+
+                        </div>
+
+                        <span class="portal-arrow">
+                            ›
+                        </span>
+
+                    </a>
+
+
+                    <!-- Materialien-Auftrag -->
+
+                    <a
+                        class="portal-card"
+                        href="materialauftrag.html"
+                    >
+
+                        <div class="service-image-wrap">
+                            <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/MAD.png"
+                            alt="Materialien-Auftrag"
+                        >
+                            <img class="service-item-icon" src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Logistik/chest.png" alt="Materialien-Auftrag Icon">
+                        </div>
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Materialien-Auftrag
+                            </div>
+
+                            <p class="portal-card-text">
+                                Materialien suchen, bestellen und verwalten.
+                            </p>
+
+                        </div>
+
+                        <span class="portal-arrow">
+                            ›
+                        </span>
+
+                    </a>
+
+
+                    <!-- Logistik-Auftrag -->
+
+                    <a
+                        class="portal-card"
+                        href="logistikauftrag.html"
+                    >
+
+                        <div class="service-image-wrap">
+                            <img
+                            src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/LED.png"
+                            alt="Logistik-Auftrag"
+                        >
+                            <img class="service-item-icon" src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Redstone%20Auftrag/hopper_minecart.png" alt="Logistik-Auftrag Icon">
+                        </div>
+
+                        <div class="portal-card-content">
+
+                            <div class="portal-card-title">
+                                Logistik-Auftrag
+                            </div>
+
+                            <p class="portal-card-text">
+                                Transporte, Lagerung und weitere Logistikleistungen.
+                            </p>
+
+                        </div>
+
+                        <span class="portal-arrow">
+                            ›
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 FALKENSTEIN
+            ========================= -->
+
+            
+
+<div class="mid-layout">
+<section class="section falkenstein-mini">
+    <h2 class="section-title">Falkenstein</h2>
+    <p class="section-description">Alles rund um unsere Stadt, Karten, Regeln und mehr.</p>
+    <div class="mini-grid">
+        <a class="portal-card mini-card" href="karte.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Stadt.png" alt="Karte">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Karte</div>
+                <p class="portal-card-text">Unsere Stadt</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+        <a class="portal-card mini-card" href="regelwerk.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regel.png" alt="Regelwerk">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Regelwerk</div>
+                <p class="portal-card-text">Wichtige Regeln</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+        <a class="portal-card mini-card" href="bewertung.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewertung.png" alt="Bewertung">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Bewertung</div>
+                <p class="portal-card-text">Bewertungen abgeben</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+    </div>
+</section>
+
+<section class="section community-section">
+    <h2 class="section-title">Gemeinschaft</h2>
+    <p class="section-description">Unsere Stadtleitung und Mitarbeiter.</p>
+    <div class="mini-grid community-grid">
+        <a class="portal-card mini-card" href="stadtleitung.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Grunder.png" alt="Stadtleitung">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Stadtleitung</div>
+                <p class="portal-card-text">Verantwortliche</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+        <a class="portal-card mini-card" href="mitarbeiter.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Mitarbeiter.png" alt="Mitarbeiter">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Mitarbeiter</div>
+                <p class="portal-card-text">Unser Team</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+    </div>
+</section>
+</div>
+
+
+
+<!-- =========================
+     BEREICH
+========================= -->
+<section class="section design-section bereich-section">
+    <h2 class="section-title">Bereich</h2>
+    <p class="section-description">Die verschiedenen Bereiche für Kunden, Mitarbeiter und die Leitung.</p>
+
+    <div class="bereich-grid">
+        <a class="portal-card bereich-card" id="linkKundenbereich" href="kundenbereich.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Kunde.png" alt="Kundenbereich">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Kundenbereich</div>
+                <p class="portal-card-text">Aufträge, Bestellungen und persönliche Informationen verwalten.</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+
+        <a class="portal-card bereich-card" id="linkMitarbeiterbereich" href="mitarbeiterbereich.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Mitarbeiter.png" alt="Mitarbeiterbereich">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Mitarbeiterbereich</div>
+                <p class="portal-card-text">Aufträge, Aufgaben und Arbeitsbereiche für Mitarbeiter.</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+
+        <a class="portal-card bereich-card" id="linkVerwaltung" href="verwaltung.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Verwaltung.png" alt="Verwaltung">
+            <div class="portal-card-content">
+                <div class="portal-card-title">Verwaltung</div>
+                <p class="portal-card-text">Verwaltung und Organisation des Ehrenmarkt-Portals.</p>
+            </div>
+            <span class="portal-arrow">›</span>
+        </a>
+    </div>
+</section>
+
+<!-- =========================
+                 MITMACHEN / BEWERBUNG
+            ========================= -->
+
+
+
+
+            
+<div class="bottom-layout">
+    <section class="section access-section">
+        <h2 class="section-title">Zugang</h2>
+        <p class="section-description">Melde dich an, registriere dich oder bewirb dich bei uns.</p>
+        <div class="access-grid">
+            <a class="portal-card access-card" href="registrieren.html">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regrestrieren.png" alt="Anmelden">
+                <div class="portal-card-content">
+                    <div class="portal-card-title">Anmelden</div>
+                    <p class="portal-card-text">Zum Account</p>
+                </div>
+                <span class="portal-arrow">›</span>
+            </a>
+            <a class="portal-card access-card" href="registrieren.html">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Regrestrieren.png" alt="Registrieren">
+                <div class="portal-card-content">
+                    <div class="portal-card-title">Registrieren</div>
+                    <p class="portal-card-text">Jetzt starten</p>
+                </div>
+                <span class="portal-arrow">›</span>
+            </a>
+            <a class="portal-card access-card" href="bewerbung.html">
+                <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Bewerbung.png" alt="Bewerbung">
+                <div class="portal-card-content">
+                    <div class="portal-card-title">Bewerbung</div>
+                    <p class="portal-card-text">Werde Teil von Falkenstein</p>
+                </div>
+                <span class="portal-arrow">›</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="section news-section">
+        <h2 class="section-title">Aktuelles</h2>
+        <p class="section-description">Neuigkeiten und wichtige Informationen.</p>
+        <a class="news-card" href="regelwerk.html">
+            <img src="https://wvytteiqpwistcdcifcj.supabase.co/storage/v1/object/public/Bilder%20bereich/Startseite.png" alt="Willkommen auf Ehrenmarkt">
+            <div class="news-overlay">
+                <strong>Willkommen auf Ehrenmarkt</strong>
+                <span>Das offizielle Portal von Falkenstein.</span>
+                <b>›</b>
+            </div>
+        </a>
+    </section>
+</div>
+
+<!-- =========================
+                 ABSCHLUSS
+            ========================= -->
+
+            <section class="closing-section">
+
+                <h2>
+                    Willkommen im Ehrenmarkt
+                </h2>
+
+                <p>
+                    Gemeinsam bauen, handeln und gestalten wir die Zukunft von Falkenstein.
+                </p>
+
+                <a
+                    class="primary-button"
+                    id="linkRegistrieren"
+                    href="registrieren.html"
+                >
+                    Registrieren / Anmelden
+                </a>
+
+            </section>
+
+
+            <!-- =========================
+                 FOOTER
+            ========================= -->
+
+            <footer class="footer">
+
+                <div class="footer-line"></div>
+
+                <div class="footer-links">
+
+                    <a href="regelwerk.html">
+                        Regelwerk
+                    </a>
+
+                    <span>·</span>
+
+                    <a href="bewertung.html">
+                        Bewertungen
+                    </a>
+
+                    <span>·</span>
+
+                    <a href="faq.html">
+                        FAQ
+                    </a>
+
+                    <span>·</span>
+
+                    <a href="karte.html">
+                        Karte
+                    </a>
+
+                </div>
+
+                <p class="footer-copy">
+                    © Falkenstein · Ehrenmarkt
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    
+
+<script>
+/* Dezente Lava-Partikel: zufällig, sichtbar und nicht dauerhaft. */
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".section").forEach(section => {
+        const layer = section.querySelector(".lava-particles");
+        if (!layer) return;
+
+        const spawn = () => {
+            const p = document.createElement("span");
+            p.className = "lava-particle";
+            p.style.left = (8 + Math.random() * 78) + "%";
+            p.style.top = (70 + Math.random() * 24) + "%";
+            p.style.setProperty("--lava-drift", (Math.random() * 34 - 17).toFixed(1) + "px");
+            p.style.setProperty("--lava-duration", (1.1 + Math.random() * 1.3).toFixed(2) + "s");
+            layer.appendChild(p);
+            p.addEventListener("animationend", () => p.remove(), {once:true});
+        };
+
+        const loop = () => {
+            spawn();
+            if (Math.random() < 0.45) setTimeout(spawn, 180 + Math.random() * 300);
+            setTimeout(loop, 1300 + Math.random() * 2200);
+        };
+
+        setTimeout(loop, 500 + Math.random() * 700);
+    });
+});
+</script>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase.js"></script>
+    <script src="../JS/startseite.js"></script>
+    <script>
+    /* Sterne automatisch an den echten Bewertungs-Durchschnitt anpassen.
+       startseite.js lädt den Durchschnitt in #startDurchschnitt. */
+    document.addEventListener("DOMContentLoaded", () => {
+        const sterne = document.getElementById("startSterne");
+        const durchschnitt = document.getElementById("startDurchschnitt");
+        if (!sterne || !durchschnitt) return;
+
+        const aktualisiereSterne = () => {
+            const wert = parseFloat(
+                durchschnitt.textContent.replace(",", ".")
+            );
+
+            if (!Number.isFinite(wert)) return;
+
+            const anzahl = Math.max(0, Math.min(5, Math.round(wert)));
+            sterne.textContent = "★".repeat(anzahl) + "☆".repeat(5 - anzahl);
+            sterne.setAttribute("aria-label", `${anzahl} von 5 Sternen`);
+        };
+
+        aktualisiereSterne();
+
+        const observer = new MutationObserver(aktualisiereSterne);
+        observer.observe(durchschnitt, { childList: true, characterData: true, subtree: true });
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const client = window.supabaseClient;
+        if (!client) return;
+        try {
+            const [{ count: members }, { count: employees }] = await Promise.all([
+                client.from("profiles").select("id", { count: "exact", head: true }),
+                client.from("employees").select("id", { count: "exact", head: true }).eq("is_active", true)
+            ]);
+            const m = document.getElementById("startMitglieder");
+            const e = document.getElementById("startMitarbeiter");
+            if (m && typeof members === "number") m.textContent = members.toLocaleString("de-DE");
+            if (e && typeof employees === "number") e.textContent = employees.toLocaleString("de-DE");
+        } catch (err) {
+            console.error("Fehler beim Laden der Mitgliederzahlen:", err);
+        }
+    });
+    </script>
+
+
+<div id="global-lava-particles" aria-hidden="true"></div>
+
+<script>
+(() => {
+  const start = () => {
+    const layer = document.getElementById('global-lava-particles');
+    if (!layer) return;
+    const spawn = () => {
+      const p = document.createElement('span');
+      p.className = 'global-lava-particle';
+      p.style.left = (2 + Math.random()*96) + 'vw';
+      p.style.top = (5 + Math.random()*90) + 'vh';
+      const size = 4 + Math.random()*3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.setProperty('--drift', ((Math.random()-.5)*26) + 'px');
+      p.style.animationDuration = (1.35 + Math.random()*.9) + 's';
+      layer.appendChild(p);
+      setTimeout(() => p.remove(), 2600);
+    };
+    // First particles quickly, then continue at random intervals across the entire page.
+    setTimeout(spawn, 350);
+    setTimeout(spawn, 800);
+    const loop = () => {
+      spawn();
+      if (Math.random() < .28) setTimeout(spawn, 250 + Math.random()*350);
+      setTimeout(loop, 900 + Math.random()*1000);
+    };
+    setTimeout(loop, 1250);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+
+
+
+
+
+
+
+<script id="EHRENMARKT_LAVA_RAUCH">
+document.addEventListener("DOMContentLoaded", () => {
+  const layer=document.createElement("div");
+  layer.className="ehrenmarkt-atmosphere";
+  document.body.appendChild(layer);
+
+  const particles=new Set();
+  const MAX=20;
+
+  function spawn(){
+    if(particles.size>=MAX)return;
+    const p=document.createElement("span");
+    const r=Math.random();
+    p.className="atm-particle "+(r<.34?"lava":r<.54?"ember":r<.84?"smoke":"smoke2");
+    p.style.left=(1+Math.random()*98)+"vw";
+    p.style.top=(4+Math.random()*91)+"vh";
+    p.style.setProperty("--dx",((Math.random()-.5)*75)+"px");
+
+    if(p.classList.contains("lava")||p.classList.contains("ember")){
+      const s=p.classList.contains("lava")?3.5+Math.random()*2.5:2.5+Math.random()*2;
+      p.style.width=s+"px";p.style.height=s+"px";
+    }else{
+      const dur=p.classList.contains("smoke2")?3.4+Math.random()*1.4:2.8+Math.random()*1.4;
+      p.style.animationDuration=dur+"s";
+    }
+
+    layer.appendChild(p);particles.add(p);
+    p.addEventListener("animationend",()=>{particles.delete(p);p.remove()},{once:true});
+  }
+
+  const initial=14+Math.floor(Math.random()*7);
+  for(let i=0;i<initial;i++)setTimeout(spawn,i*100);
+
+  setInterval(()=>{
+    const target=14+Math.floor(Math.random()*7);
+    while(particles.size<target)spawn();
+  },700);
+});
+</script>
+
+
+
+
+
+<script id="EHRENMARKT_DUNKEL_SCHLEIER_JS">
+document.addEventListener("DOMContentLoaded",()=>{
+ const layer=document.createElement("div"); layer.className="ehrenmarkt-atmosphere"; document.body.appendChild(layer);
+ const active=new Set(), MAX=8;
+ function spawn(){
+  if(active.size>=MAX)return;
+  const p=document.createElement("span"), lava=Math.random()<.48;
+  p.className="ehrenmarkt-wisp "+(lava?"ehrenmarkt-lava-wisp":"ehrenmarkt-smoke-wisp");
+  p.style.left=(Math.random()*96)+"vw"; p.style.top=(15+Math.random()*78)+"vh";
+  layer.appendChild(p); active.add(p);
+  const dx=(Math.random()-.5)*150, rise=60+Math.random()*100, scale=1.2+Math.random()*1.4;
+  const a=p.animate([
+   {transform:"translate3d(0,12px,0) rotate(0deg) scale(.55)",opacity:0},
+   {transform:"translate3d("+dx*.35+"px,-"+rise*.35+"px,0) rotate("+((Math.random()-.5)*12)+"deg) scale(1)",opacity:lava?.22:.14,offset:.28},
+   {transform:"translate3d("+dx+"px,-"+rise+"px,0) rotate("+((Math.random()-.5)*35)+"deg) scale("+scale+")",opacity:0}
+  ],{duration:(lava?2200:3200)+Math.random()*1800,easing:"ease-in-out"});
+  a.finished.then(()=>{active.delete(p);p.remove()});
+ }
+ for(let i=0;i<6;i++)setTimeout(spawn,i*450);
+ setInterval(spawn,650);
+});
+</script>
+
+</body>
+
+</html>
